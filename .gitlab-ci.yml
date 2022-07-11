@@ -15,6 +15,6 @@ deploy_staging:
     name: production
     url: tavsir-api
   script:
-    - ssh jmto@172.16.8.13 "cd /var/www/html/tavsir-api && git checkout main && git pull origin main && /usr/bin/composer install && artisan migrate && exit"
+    - ssh jmto@172.16.4.47  "cd /var/www/html/tavsir-api && git checkout main && git pull origin main && /usr/bin/composer install && artisan migrate && exit"
   only:
     - main
