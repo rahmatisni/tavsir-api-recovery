@@ -15,11 +15,11 @@ class BusinessController extends Controller
      */
     public function index()
     {
-        $data = Business::when($name = request()->name, function($q)use ($name){
+        $business = Business::when($name = request()->name, function($q)use ($name){
             return $q->where('name', 'like', "%$name%");
         })->get();
 
-        return response()->json($data);
+        return response()->json($business);
     }
 
     /**
@@ -30,7 +30,10 @@ class BusinessController extends Controller
      */
     public function store(BusinessRequest $request)
     {
-        //
+        $business = new Business();
+        $business->fill($request->all());
+        $business->save();
+        return response()->json($business);
     }
 
     /**
@@ -41,7 +44,7 @@ class BusinessController extends Controller
      */
     public function show(Business $business)
     {
-        //
+        return response()->json($business);
     }
 
     /**
@@ -53,7 +56,9 @@ class BusinessController extends Controller
      */
     public function update(BusinessRequest $request, Business $business)
     {
-        //
+        $business->fill($request->all());
+        $business->save();
+        return response()->json($business);
     }
 
     /**
@@ -64,6 +69,7 @@ class BusinessController extends Controller
      */
     public function destroy(Business $business)
     {
-        //
+        $restArea->delete();
+        return response()->noContent();
     }
 }
