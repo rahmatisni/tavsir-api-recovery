@@ -7,7 +7,7 @@ building:
   script:
     - git pull origin main
     - composer install
-    - php artisan migrate
+    - php artisan migrate --force
     - php artisan cache:clear
     - php artisan config:clear
     - find /var/www/html/tavsir-api -type f -exec chmod 664 {} \;
