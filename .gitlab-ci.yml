@@ -1,20 +1,26 @@
-image: ubuntu:latest
 before_script:
-  # - apt-get update -qq
-  # - apt-get install -qq git
-  # Setup SSH deploy keys
-  - 'which ssh-agent || ( apt-get install -qq openssh-client )'
-  - eval $(ssh-agent -s)
-  - ssh-add <(echo "$SSH_PRIVATE_KEY")
-  - mkdir -p ~/.ssh
-  - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+  - echo "Before script"
+  - cd /var/www/html/{your-project-name} #your project path
+building:
+  stage: build
+  script:
+    - git checkout main
+    - git pull origin main
+    - composer install
+    - php artisan migrate
+    - php artisan cache:clear
+    - php artisan config:clear
+    - sudo chown -R deployer:www-data /var/www/html/tavsir-api/
+    - find /var/www/html/tavsir-api -type f -exec chmod 664 {} \;
+    - find /var/www/html/tavsir-api -type d -exec chmod 775 {} \;
+    - chgrp -R www-data storage bootstrap/cache
+    - chmod -R ug+rwx storage bootstrap/cache
 
-deploy_staging:
-  type: deploy
+deploying:
+  stage: deploy
   environment:
     name: production
-    url: tavsir-api
   script:
-    - ssh jmto@172.16.4.47 "cd /var/www/html/tavsir-api && git checkout main && git pull origin main && /usr/bin/composer install && artisan migrate && exit"
+    - echo "Deployed"
   only:
     - main
