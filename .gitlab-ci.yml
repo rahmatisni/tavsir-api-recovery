@@ -26,10 +26,10 @@
 #     - main
 # image: composer:1.10.7
 
-stages:
-  # - build
-  # - approve
-  - deploy
+# stages:
+#   # - build
+#   # - approve
+#   - deploy
 
 # Build:
 #     stage: build
@@ -44,11 +44,17 @@ stages:
 # test9
 #     allow_failure: false
 
-travoydashboard_dev:
-  stage: deploy
-  environment:
-    name: Production
-    url: http://172.16.4.47
+# travoydashboard_dev:
+  # stage: deploy
+  # environment:
+  #   name: Production
+  #   url: http://172.16.4.47
+
+  deploy_staging:
+  type: deploy
+  # environment:
+    # name: production
+    # url: tavsir-api
   script:
     - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
     - 'mkdir -p ~/.ssh'
