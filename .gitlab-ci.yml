@@ -56,7 +56,7 @@
     # name: production
     # url: tavsir-api
   script:
-    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    # - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
     - 'mkdir -p ~/.ssh'
     - 'eval $(ssh-agent -s)'
     - 'ssh-add <(echo "$SSH_TAVSIR")'
