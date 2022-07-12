@@ -1,26 +1,62 @@
-before_script:
-  - echo "Before script"
-  - cd /var/www/html/tavsir-api/ #your project path
-building:
-  stage: build
-  script:
-    - git checkout main
-    - git pull origin main
-    - composer install
-    - php artisan migrate
-    - php artisan cache:clear
-    - php artisan config:clear
-    - sudo chown -R deployer:www-data /var/www/html/tavsir-api/
-    - find /var/www/html/tavsir-api -type f -exec chmod 664 {} \;
-    - find /var/www/html/tavsir-api -type d -exec chmod 775 {} \;
-    - chgrp -R www-data storage bootstrap/cache
-    - chmod -R ug+rwx storage bootstrap/cache
+# before_script:
+#   - echo "Before script"
+#   - cd /var/www/html/tavsir-api/ #your project path
+# building:
+#   stage: build
+#   script:
+#     - git checkout main
+#     - git pull origin main
+#     - composer install
+#     - php artisan migrate
+#     - php artisan cache:clear
+#     - php artisan config:clear
+#     - sudo chown -R deployer:www-data /var/www/html/tavsir-api/
+#     - find /var/www/html/tavsir-api -type f -exec chmod 664 {} \;
+#     - find /var/www/html/tavsir-api -type d -exec chmod 775 {} \;
+#     - chgrp -R www-data storage bootstrap/cache
+#     - chmod -R ug+rwx storage bootstrap/cache
 
-deploying:
+# deploying:
+#   stage: deploy
+#   environment:
+#     name: production
+#   script:
+#     - echo "Deployed"
+#   only:
+#     - main
+# image: composer:1.10.7
+
+stages:
+  # - build
+  # - approve
+  - deploy
+
+# Build:
+#     stage: build
+#     script:
+#     - echo Hello Pipeline CICD already !
+
+# Approve:
+#     stage: approve
+#     script:
+#     - echo This stage need your approvel
+#     when: manual
+# test9
+#     allow_failure: false
+
+travoydashboard_dev:
   stage: deploy
   environment:
-    name: production
+    name: Production
+    url: http://172.16.4.47
   script:
-    - echo "Deployed"
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - 'mkdir -p ~/.ssh'
+    - 'eval $(ssh-agent -s)'
+    - 'ssh-add <(echo "$SSH_TAVSIR")'
+    # rubah gitlab ci test3
+    # - ssh -o StrictHostKeyChecking=no jasamarga@10.14.3.58 "cd /var/www/html/travoy/travoyx && git fetch origin master && git reset --hard origin/master && pm2 reload all"
+      - ssh -o StrictHostKeyChecking=no jmto@172.16.4.47 "cd /var/www/html/tavsir-api && git checkout main && git pull origin main && /usr/bin/composer install && artisan migrate && exit"
+
   only:
     - main
