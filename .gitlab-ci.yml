@@ -52,17 +52,17 @@
 
   deploy_staging:
   type: deploy
-  # environment:
-    # name: production
-    # url: tavsir-api
+  environment:
+    name: production
+    url: tavsir-api
   script:
-    # - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
     - 'mkdir -p ~/.ssh'
     - 'eval $(ssh-agent -s)'
     - 'ssh-add <(echo "$SSH_TAVSIR")'
     # rubah gitlab ci test3
     # - ssh -o StrictHostKeyChecking=no jasamarga@10.14.3.58 "cd /var/www/html/travoy/travoyx && git fetch origin master && git reset --hard origin/master && pm2 reload all"
-      - ssh -o StrictHostKeyChecking=no jmto@172.16.4.47 "cd /var/www/html/tavsir-api && git checkout main && git pull origin main && /usr/bin/composer install && artisan migrate && exit"
+    - ssh -o StrictHostKeyChecking=no jmto@172.16.4.47 "cd /var/www/html/tavsir-api && git checkout main && git pull origin main && /usr/bin/composer install && artisan migrate && exit"
 
   only:
     - main
