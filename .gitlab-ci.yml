@@ -11,9 +11,9 @@ before_script:
 
 deploy_staging:
   type: deploy
-  # environment:
-  #   name: production
-  #   url: tavsir-api
+  environment:
+    name: production
+    url: tavsir-api
   script:
     - ssh -o StrictHostKeyChecking=no jmto@172.16.4.47 "cd /var/www/html/tavsir-api && git checkout main && git pull origin main && /usr/bin/composer install && artisan migrate && exit"
   only:
