@@ -24,3 +24,4 @@ Route::apiResource('rest-area', App\Http\Controllers\API\RestAreaController::cla
 Route::apiResource('business', App\Http\Controllers\API\BusinessController::class);
 Route::apiResource('tenant', App\Http\Controllers\API\TenantController::class);
 Route::apiResource('product', App\Http\Controllers\API\ProductController::class);
+Route::apiResource('payment-method', App\Http\Controllers\API\PaymentMethodController::class);
