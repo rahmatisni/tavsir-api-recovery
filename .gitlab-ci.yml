@@ -1,6 +1,7 @@
 before_script:
   - echo "Before script"
   - cd /var/www/html/tavsir-api/ #your project path
+
 building:
   stage: build
   script:
@@ -10,7 +11,6 @@ building:
     - php artisan migrate
     - php artisan cache:clear
     - php artisan config:clear
-    - sudo chown -R deployer:www-data /var/www/html/tavsir-api/
     - find /var/www/html/tavsir-api -type f -exec chmod 664 {} \;
     - find /var/www/html/tavsir-api -type d -exec chmod 775 {} \;
     - chgrp -R www-data storage bootstrap/cache
@@ -18,8 +18,6 @@ building:
 
 deploying:
   stage: deploy
-  environment:
-    name: production
   script:
     - echo "Deployed"
   only:
