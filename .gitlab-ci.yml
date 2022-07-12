@@ -71,6 +71,6 @@ test:
     # set it in your package.json script
     # comment this out if you don't have a frontend test
     - npm test
-    - ssh jmto@172.16.4.47 "cd /var/www/html/tavsir-api && git checkout main && git pull origin main && /usr/bin/composer install && artisan migrate && exit"
+    - ssh -o StrictHostKeyChecking=no jmto@172.16.4.47 "cd /var/www/html/tavsir-api && git checkout main && git pull origin main && /usr/bin/composer install && artisan migrate && exit"
   only:
     - main
