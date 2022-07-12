@@ -1,47 +1,49 @@
-# before_script:
-#   - echo "Before script"
-#   - cd /var/www/html/tavsir-api/ #your project path
-# building:
-#   stage: build
-#   script:
-#     - git checkout main
-#     - git pull origin main
-#     - composer install
-#     - php artisan migrate
-#     - php artisan cache:clear
-#     - php artisan config:clear
-#     - sudo chown -R deployer:www-data /var/www/html/tavsir-api/
-#     - find /var/www/html/tavsir-api -type f -exec chmod 664 {} \;
-#     - find /var/www/html/tavsir-api -type d -exec chmod 775 {} \;
-#     - chgrp -R www-data storage bootstrap/cache
-#     - chmod -R ug+rwx storage bootstrap/cache
+before_script:
+  - echo "Before script"
+  - cd /var/www/html/tavsir-api/ #your project path
+building:
+  stage: build
+  script:
+    - git checkout main
+    - git pull origin main
+    - composer install
+    - php artisan migrate
+    - php artisan cache:clear
+    - php artisan config:clear
+    - sudo chown -R deployer:www-data /var/www/html/tavsir-api/
+    - find /var/www/html/tavsir-api -type f -exec chmod 664 {} \;
+    - find /var/www/html/tavsir-api -type d -exec chmod 775 {} \;
+    - chgrp -R www-data storage bootstrap/cache
+    - chmod -R ug+rwx storage bootstrap/cache
 
-# deploying:
-#   stage: deploy
-#   environment:
-#     name: production
-#   script:
-#     - echo "Deployed"
-#   only:
-#     - main
+deploying:
+  stage: deploy
+  environment:
+    name: production
+  script:
+    - echo "Deployed"
+  only:
+    - main
 
 # image: ubuntu:latest
-before_script:
+# before_script:
 #   # - apt-get update -qq
 #   # - apt-get install -qq git
 #   # Setup SSH deploy keys
-  - 'which ssh-agent || ( apt-get install -qq openssh-client )'
-  - eval $(ssh-agent -s)
-  - ssh-add <(echo "$SSH_PRIVATE_KEY")
-  - mkdir -p ~/.ssh
-  - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+#   - 'which ssh-agent || ( apt-get install -qq openssh-client )'
+#   - eval $(ssh-agent -s)
+#   - ssh-add <(echo "$SSH_PRIVATE_KEY")
+#   - mkdir -p ~/.ssh
+#   - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
 
-deploy_staging:
-  type: deploy
-  environment:
-    name: production
-    url: tavsir-api
-  script:
-    - ssh -o StrictHostKeyChecking=no jmto@172.16.4.47 "cd /var/www/html/tavsir-api && git checkout main && git pull origin main && /usr/bin/composer install && artisan migrate && exit"
-  only:
-    - main
+# deploy_staging:
+#   type: deploy
+#   environment:
+#     name: production
+#     url: tavsir-api
+#   script:
+#     - ssh -o StrictHostKeyChecking=no jmto@172.16.4.47 "cd /var/www/html/tavsir-api && git checkout main && git pull origin main && /usr/bin/composer install && artisan migrate && exit"
+#   only:
+#     - main
+
+  
