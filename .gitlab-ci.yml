@@ -24,7 +24,7 @@ deploying:
     - echo "Deployed"
   only:
     - main
-
+ 
 # image: ubuntu:latest
 # before_script:
 #   # - apt-get update -qq
