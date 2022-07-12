@@ -25,3 +25,4 @@ Route::apiResource('business', App\Http\Controllers\API\BusinessController::clas
 Route::apiResource('tenant', App\Http\Controllers\API\TenantController::class);
 Route::apiResource('product', App\Http\Controllers\API\ProductController::class);
 Route::apiResource('payment-method', App\Http\Controllers\API\PaymentMethodController::class);
+Route::apiResource('paystation', App\Http\Controllers\API\PayStationController::class);
