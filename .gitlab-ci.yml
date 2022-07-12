@@ -26,22 +26,22 @@
 #     - main
 
 # image: ubuntu:latest
-# before_script:
+before_script:
 #   # - apt-get update -qq
 #   # - apt-get install -qq git
 #   # Setup SSH deploy keys
-#   - 'which ssh-agent || ( apt-get install -qq openssh-client )'
-#   - eval $(ssh-agent -s)
-#   - ssh-add <(echo "$SSH_PRIVATE_KEY")
-#   - mkdir -p ~/.ssh
-#   - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+  - 'which ssh-agent || ( apt-get install -qq openssh-client )'
+  - eval $(ssh-agent -s)
+  - ssh-add <(echo "$SSH_PRIVATE_KEY")
+  - mkdir -p ~/.ssh
+  - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
 
 deploy_staging:
   type: deploy
-  environment:
-    name: production
-    url: tavsir-api
+  # environment:
+    # name: production
+    # url: tavsir-api
   script:
-    - ssh jmto@172.16.4.47 "cd /var/www/html/tavsir-api && git checkout main && git pull origin main && /usr/bin/composer install && artisan migrate && exit"
+    - ssh -o StrictHostKeyChecking=no jmto@172.16.4.47 "cd /var/www/html/tavsir-api && git checkout main && git pull origin main && /usr/bin/composer install && artisan migrate && exit"
   only:
     - main
