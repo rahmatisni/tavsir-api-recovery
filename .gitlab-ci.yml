@@ -1,4 +1,4 @@
-# # image: ubuntu:latest
+# image: ubuntu:latest
 # before_script:
 #   # - apt-get update -qq
 #   # - apt-get install -qq git
@@ -16,5 +16,5 @@ deploy_staging:
     url: tavsir-api
   script:
     - ssh jmto@172.16.4.47 "cd /var/www/html/tavsir-api && git checkout main && git pull origin main && /usr/bin/composer install && artisan migrate && exit"
-  # only:
-    # - main
+  only:
+    - main
