@@ -17,13 +17,14 @@ class CreateRefProduct extends Migration
             $table->increments('id');
             $table->integer('tenant_id')->unsigned();
             $table->string('name');
+            $table->string('sku');
             $table->string('category');
-            $table->string('photo_url')->nullable();
-            $table->string('variant_id')->nullable()->comment('Array');
-            $table->string('variant_name')->nullable()->comment('Array');
-            $table->string('price')->nullable()->comment('Array');
+            $table->string('photo')->nullable();
+            $table->string('variant')->nullable()->comment('Array');
+            $table->string('addon')->nullable()->comment('Array');
+            $table->string('price')->nullable();
             $table->boolean('is_active')->default(1);
-            $table->text('description')->nullable();
+            $table->string('description')->nullable();
             $table->timestamps();
         });
     }

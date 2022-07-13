@@ -20,7 +20,7 @@ return new class extends Migration
      */
     public function __construct()
     {
-        $this->schema = Schema::connection(config('database.connections.mysql'));
+        $this->schema = Schema::connection($this->getConnection());
     }
 
     /**
