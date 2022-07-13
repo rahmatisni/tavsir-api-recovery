@@ -25,10 +25,11 @@ class ProductRequest extends FormRequest
     {
         return [
             'tenant_id' => 'required|exists:ref_tenant,id',
-            'category' => 'required',
-            'sku' => 'required',
-            'name' => 'required|string|max:255',
+            'category' => 'required|string|max:20',
+            'sku' => 'required|string|max:20',
+            'name' => 'required|string|max:50',
             'photo' => 'nullable|image|max:2048',
+            'variant' => 'array',
             'variant.*' => 'required',
             'variant.*.name' => 'required|max:20',
             'variant.*.price' => 'required|numeric|min:100|max:1000000',
@@ -36,7 +37,7 @@ class ProductRequest extends FormRequest
             'addon.*' => 'required',
             'addon.*.name' => 'required|max:20',
             'addon.*.price' => 'required|numeric|min:100|max:100000',
-            'price' => 'required',
+            'price' => 'required|numeric|min:100|max:1000000',
             'is_active' => 'required|boolean',
             'description' => 'nullable|string|max:255',
         ];

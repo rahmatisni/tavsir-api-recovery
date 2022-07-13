@@ -46,13 +46,12 @@ class Product extends BaseModel
     {
         $request = request();
         if(is_file($request->file('photo'))) {
+            $imagebefore = $this->photo;
             $this->attributes['photo'] = $request->file('photo')->store('images/product');
+            if(file_exists($imagebefore)) {
+                unlink($imagebefore);
+            }
         }
-    }
-
-    public function getPhotoAttribute($value)
-    {
-        return asset($value);
     }
 
     public function tenant()
