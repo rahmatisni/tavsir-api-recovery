@@ -4,7 +4,8 @@ namespace App\Models;
 
 use App\Models\BaseModel;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-
+use Illuminate\Support\Carbon;
+use Image;
 class Product extends BaseModel
 {
     protected $table = 'ref_product';
@@ -44,10 +45,15 @@ class Product extends BaseModel
 
     public function setPhotoAttribute($value)
     {
-        $request = request();
-        if(is_file($request->file('photo'))) {
+        $file = request()->file('photo');
+        if(is_file($file)) {
             $imagebefore = $this->photo;
-            $this->attributes['photo'] = $request->file('photo')->store('images/product');
+            $img = Image::make($file->getRealPath());
+            $imgPath = 'images/product/'.Carbon::now()->format('Ymd').time().'.'.$file->getClientOriginalExtension();
+            $img->resize(200, null, function ($constraint) {
+                $constraint->aspectRatio();
+            })->save(public_path($imgPath));
+            $this->attributes['photo'] = $imgPath;
             if(file_exists($imagebefore)) {
                 unlink($imagebefore);
             }
