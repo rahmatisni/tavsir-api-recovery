@@ -27,6 +27,16 @@ class CreateRefVoucher extends Migration
             $table->integer('created_by')->nullable();
             $table->timestamps();
         });
+
+        Schema::create('ref_voucher_detail', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('voucher_id')->unsigned();
+            $table->integer('type')->unsigned();
+            $table->integer('trx_id')->unsigned();
+            $table->integer('trx_amount')->unsigned();
+            $table->integer('current_balance')->unsigned();
+            $table->integer('last_balance')->unsigned();
+        });
     }
 
     /**
@@ -36,6 +46,7 @@ class CreateRefVoucher extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('ref_voucher_detail');
         Schema::dropIfExists('ref_voucher');
     }
 }
