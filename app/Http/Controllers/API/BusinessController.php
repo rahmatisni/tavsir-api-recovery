@@ -8,6 +8,10 @@ use App\Http\Requests\BusinessRequest;
 
 class BusinessController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('is_admin')->except('index', 'show');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -69,7 +73,7 @@ class BusinessController extends Controller
      */
     public function destroy(Business $business)
     {
-        $restArea->delete();
+        $business->delete();
         return response()->noContent();
     }
 }

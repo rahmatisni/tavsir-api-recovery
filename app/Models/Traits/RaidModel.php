@@ -18,8 +18,6 @@ trait RaidModel
 
             if (\Schema::hasColumn(with(new static )->getTable(), 'created_by')) {
                 static::creating(function ($table) {
-                    $table->updated_by = null;
-                    $table->updated_at = null;
                     $table->created_by = auth()->user()->id;
                 });
             }
