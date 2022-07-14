@@ -26,3 +26,4 @@ Route::apiResource('tenant', App\Http\Controllers\API\TenantController::class);
 Route::apiResource('product', App\Http\Controllers\API\ProductController::class);
 Route::apiResource('payment-method', App\Http\Controllers\API\PaymentMethodController::class);
 Route::apiResource('paystation', App\Http\Controllers\API\PayStationController::class);
+Route::apiResource('voucher', App\Http\Controllers\API\VoucherController::class);
