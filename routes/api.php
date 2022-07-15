@@ -24,5 +24,6 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('paystation', App\Http\Controllers\API\PayStationController::class);
     Route::apiResource('voucher', App\Http\Controllers\API\VoucherController::class);
     Route::apiResource('category', App\Http\Controllers\API\CategoryController::class);
+    Route::apiResource('user', App\Http\Controllers\API\UserController::class);
 });
 Route::post('/login', [App\Http\Controllers\API\AuthController::class,'login']);
