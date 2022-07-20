@@ -25,5 +25,6 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('voucher', App\Http\Controllers\API\VoucherController::class);
     Route::apiResource('category', App\Http\Controllers\API\CategoryController::class);
     Route::apiResource('user', App\Http\Controllers\API\UserController::class);
+    Route::post('/logout', [App\Http\Controllers\API\AuthController::class,'logout']);
 });
 Route::post('/login', [App\Http\Controllers\API\AuthController::class,'login']);
