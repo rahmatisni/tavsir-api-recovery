@@ -23,26 +23,6 @@ class Product extends BaseModel
         'description'
     ];
 
-    public function getVariantAttribute($value)
-    {
-        return json_decode($value);
-    }
-
-    public function setVariantAttribute($value)
-    {
-        $this->attributes['variant'] = json_encode($value);
-    }
-
-    public function getAddonAttribute($value)
-    {
-        return json_decode($value);
-    }
-
-    public function setAddonAttribute($value)
-    {
-        $this->attributes['addon'] = json_encode($value);
-    }
-
     public function setPhotoAttribute($value)
     {
         $file = request()->file('photo');
@@ -58,6 +38,11 @@ class Product extends BaseModel
                 unlink($imagebefore);
             }
         }
+    }
+
+    public function variants()
+    {
+        return $this->hasMany(Variant::class, 'product_id');
     }
 
     public function tenant()

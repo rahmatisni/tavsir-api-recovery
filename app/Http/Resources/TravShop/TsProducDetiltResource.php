@@ -20,42 +20,7 @@ class TsProducDetiltResource extends JsonResource
             'category' => $this->category,
             'photo' => $this->photo,
             "price" => $this->price,
-            "variant" => [
-                "Size" => [
-                    [
-
-                        "name" => "S",
-                        "price" => "5000",
-                    ],
-                    [
-
-                        "name" => "M",
-                        "price" => "6000",
-                    ],
-                    [
-
-                        "name" => "L",
-                        "price" => "7000",
-                    ],
-                ],
-                "Rasa" => [
-                    [
-
-                        "name" => "Original",
-                        "price" => "0",
-                    ],
-                    [
-
-                        "name" => "Keju",
-                        "price" => "0",
-                    ],
-                    [
-
-                        "name" => "Coklat",
-                        "price" => "0",
-                    ],
-                ],
-            ]
+            "variant" => $this->variants,
         ];
     }
 }

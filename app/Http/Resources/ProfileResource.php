@@ -19,6 +19,7 @@ class ProfileResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'is_admin' => $this->is_admin,
+            'tenant_id' => $this->tenant_id,
         ];
     }
 }

@@ -54,7 +54,6 @@ class TravShopController extends Controller
                         })->when($category = $request->category, function($q)use ($category){
                             return $q->where('category', $category);
                         })->get();
-        
         return response()->json(TsProductResource::collection($data));
     }
 

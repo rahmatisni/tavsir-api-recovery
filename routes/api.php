@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->group(function () {
     Route::get('/profile', [App\Http\Controllers\API\Authcontroller::class, 'profile']);
     
+    Route::post('/logout', [App\Http\Controllers\API\AuthController::class,'logout']);
     Route::apiResource('rest-area', App\Http\Controllers\API\RestAreaController::class);
     Route::apiResource('business', App\Http\Controllers\API\BusinessController::class);
     Route::apiResource('tenant', App\Http\Controllers\API\TenantController::class);
@@ -25,11 +26,11 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('voucher', App\Http\Controllers\API\VoucherController::class);
     Route::apiResource('category', App\Http\Controllers\API\CategoryController::class);
     Route::apiResource('user', App\Http\Controllers\API\UserController::class);
-    Route::post('/logout', [App\Http\Controllers\API\AuthController::class,'logout']);
+    Route::apiResource('variant', App\Http\Controllers\API\VariantController::class);
 });
 Route::post('/login', [App\Http\Controllers\API\AuthController::class,'login']);
 
-Route::middleware('client')->prefix('travshop')->group(function () {
+Route::prefix('travshop')->group(function () {
     Route::post('/rest-area', [App\Http\Controllers\API\TravShopController::class,'restArea']);
     Route::post('/tenant', [App\Http\Controllers\API\TravShopController::class,'tenant']);
     Route::post('/product', [App\Http\Controllers\API\TravShopController::class,'product']);
