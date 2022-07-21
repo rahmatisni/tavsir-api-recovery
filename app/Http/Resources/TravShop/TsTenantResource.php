@@ -24,9 +24,6 @@ class TsTenantResource extends JsonResource
             'sub_category' => 'Restaurant',
             'is_open' => true,
             'time_end' => $this->time_end,
-            "bebas" => [
-                'name' => 'Bebas',
-            ]
         ];
     }
 }
