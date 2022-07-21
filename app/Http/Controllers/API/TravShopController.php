@@ -60,7 +60,7 @@ class TravShopController extends Controller
 
     function productById($id)
     {
-        $data = Product::find($id);
+        $data = Product::findOrfail($id);
         return response()->json(new TsProducDetiltResource($data));
     }
 }
