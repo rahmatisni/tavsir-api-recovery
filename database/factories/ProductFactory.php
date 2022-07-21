@@ -14,18 +14,16 @@ class ProductFactory extends Factory
      */
     public function definition()
     {
-        if(Tenant::count() == 0) {
-            Tenant::factory()->count(10)->create();
-        }
-        $tenan = Tenant::all()->pluck('id')->toArray();
+        $faker = \Faker\Factory::create();
+        $faker->addProvider(new \FakerRestaurant\Provider\en_US\Restaurant($faker));
         return [
-            'tenant_id' => array_rand($tenan),
+            'tenant_id' => Tenant::all()->random()->id,
             'category' => $this->faker->word,
-            'name' => $this->faker->word,
-            'photo_url' => $this->faker->imageUrl,
-            'variant_id' => $this->faker->word,
-            'variant_name' => $this->faker->word,
-            'price' => $this->faker->word,
+            'name' => $faker->foodName(),
+            'photo' => $this->faker->imageUrl,
+            'variant' => ['L', 'M', 'S'],
+            'addon' => ['1', '2', '3'],
+            'price' => $this->faker->numberBetween(1000, 20000),
             'is_active' => $this->faker->boolean,
             'description' => $this->faker->word,
         ];

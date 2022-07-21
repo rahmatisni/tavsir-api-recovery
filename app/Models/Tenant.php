@@ -28,4 +28,9 @@ class Tenant extends BaseModel
         'created_at',
         'updated_at'
     ];
+
+    public function product()
+    {
+        return $this->hasMany(Product::class, 'tenant_id');
+    }
 }

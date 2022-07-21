@@ -4,7 +4,7 @@ namespace App\Http\Resources\TravShop;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class TsRestAreaResource extends JsonResource
+class TsProductResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,10 +17,9 @@ class TsRestAreaResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'address' => $this->address,
-            'time_start' => $this->time_start,
-            'time_end' => $this->time_end,
-            'is_open' => true,
+            'photo' => $this->photo,
+            "price" => $this->price,
+            "is_active" => $this->is_active,
         ];
     }
 }
