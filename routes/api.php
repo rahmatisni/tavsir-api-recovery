@@ -28,3 +28,8 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/logout', [App\Http\Controllers\API\AuthController::class,'logout']);
 });
 Route::post('/login', [App\Http\Controllers\API\AuthController::class,'login']);
+
+Route::middleware('client')->prefix('travshop')->group(function () {
+    Route::get('/rest-area', [App\Http\Controllers\API\TravShopController::class,'restArea']);
+    Route::get('/tenant/{id}', [App\Http\Controllers\API\TravShopController::class,'tenantByRestarea']);
+});
