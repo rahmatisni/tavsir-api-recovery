@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('auth:api')->group(function () {
-    Route::get('/profile', [App\Http\Controllers\API\Authcontroller::class, 'profile']);
+    Route::get('/profile', [App\Http\Controllers\API\AuthController::class, 'profile']);
     
     Route::post('/logout', [App\Http\Controllers\API\AuthController::class,'logout']);
     Route::apiResource('rest-area', App\Http\Controllers\API\RestAreaController::class);
