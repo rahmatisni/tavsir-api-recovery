@@ -16,12 +16,12 @@ class Variant extends BaseModel
 
     public function getDetilAttribute($value)
     {
-        return json_decode($value);
+        return $value ? json_decode($value) : [];
     }
 
     public function setDetilAttribute($value)
     {
-        $this->attributes['detil'] = json_encode($value);
+        $this->attributes['detil'] = $value ? json_encode($value) : [];
     }
 
     public function product()

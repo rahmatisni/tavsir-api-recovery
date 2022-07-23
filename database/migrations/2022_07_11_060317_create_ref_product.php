@@ -20,8 +20,6 @@ class CreateRefProduct extends Migration
             $table->string('sku');
             $table->string('category');
             $table->string('photo')->nullable();
-            $table->string('variant')->nullable()->comment('Array');
-            $table->string('addon')->nullable()->comment('Array');
             $table->string('price')->nullable();
             $table->boolean('is_active')->default(1);
             $table->string('description')->nullable();

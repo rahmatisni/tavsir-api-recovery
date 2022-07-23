@@ -14,12 +14,8 @@ class CategoryFactory extends Factory
      */
     public function definition()
     {
-        if(Tenant::count() == 0) {
-            Tenant::factory()->count(10)->create();
-        }
-        $tenant = Tenant::all()->pluck('id')->toArray();
         return [
-            'tenant_id' => array_rand($tenant),
+            'tenant_id' => Tenant::all()->random()->id,
             'name' => $this->faker->name,
         ];
     }

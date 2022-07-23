@@ -4,7 +4,7 @@ namespace App\Http\Resources\TravShop;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class TsProducDetiltResource extends JsonResource
+class TsVariantResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,12 +15,8 @@ class TsProducDetiltResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->id,
             'name' => $this->name,
-            'category' => $this->category,
-            'photo' => $this->photo,
-            "price" => $this->price,
-            "variant" => TsVariantResource::collection($this->variant),
+            'detil' => $this->detil,
         ];
     }
 }

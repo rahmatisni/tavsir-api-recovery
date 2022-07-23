@@ -70,3 +70,4 @@ class VariantController extends Controller
         return response()->json($variant);
     }
 }
+ 

@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
+use App\Models\Tenant;
 use Illuminate\Database\Seeder;
 
 class CategorySeeder extends Seeder
@@ -14,6 +15,13 @@ class CategorySeeder extends Seeder
      */
     public function run()
     {
-        Category::factory()->count(10)->create();
+        Tenant::all()->each(function ($tenant) {
+            $tenant->category()->saveMany([
+                new Category(['name' => 'Food']),
+                new Category(['name' => 'Drink']),
+                new Category(['name' => 'Snack']),
+                new Category(['name' => 'Dessert']),
+            ]);
+        });
     }
 }

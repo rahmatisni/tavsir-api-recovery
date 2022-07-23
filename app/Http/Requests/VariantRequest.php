@@ -28,7 +28,7 @@ class VariantRequest extends FormRequest
             'product_id' => 'required|exists:ref_product,id',
             'detil' => 'required|array',
             'detil.*.name' => 'required|string|max:255',
-            'detil.*.price' => 'required|numeric',
+            'detil.*.price' => 'required|numeric|min:0|max:1000000',
         ];
     }
 }

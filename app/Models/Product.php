@@ -16,8 +16,6 @@ class Product extends BaseModel
         'sku',
         'name',
         'photo',
-        'variant',
-        'addon',
         'price',
         'is_active',
         'description'
@@ -40,7 +38,7 @@ class Product extends BaseModel
         }
     }
 
-    public function variants()
+    public function variant()
     {
         return $this->hasMany(Variant::class, 'product_id');
     }
