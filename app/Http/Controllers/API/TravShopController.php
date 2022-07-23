@@ -117,6 +117,7 @@ class TravShopController extends Controller
                 $order_detil->variant = json_encode($variant_x);
                 $order_detil->qty = $v['qty'];
                 $order_detil->total_price = $order_detil->price * $v['qty'];
+                $order_detil->note = $v['note'];
 
                 $data->sub_total += $order_detil->total_price;
                 
