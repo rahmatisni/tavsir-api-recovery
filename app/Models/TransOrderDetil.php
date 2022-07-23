@@ -3,23 +3,28 @@
 namespace App\Models;
 use App\Models\BaseModel;
 
-class TransOrder extends BaseModel
+class TransOrderDetil extends BaseModel
 {
     protected $table = 'trans_order_detil';
-
+    public $timestamps = false;
     protected $filable = [
         'trans_order_id',
         'product_id',
-        'variant_name',
-        'variant_price',
-        'addon_name',
-        'addon_price',
+        'product_name',
+        'variant',
+        'addon',
+        'price',
         'qty',
-        'discount',
+        'total_price',
     ];
 
     public function trans_order()
     {
         return $this->belongsTo(TransOrder::class, 'trans_order_id');
+    }
+
+    public function getVariantAttribute($value)
+    {
+        return json_decode($value);
     }
 }

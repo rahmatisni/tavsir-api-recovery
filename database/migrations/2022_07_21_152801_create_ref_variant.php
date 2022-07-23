@@ -17,7 +17,7 @@ class CreateRefVariant extends Migration
             $table->increments('id');
             $table->string('name');
             $table->integer('product_id')->unsigned()->nullable();
-            $table->text('detil');
+            $table->text('sub_variant');
         });
     }
 

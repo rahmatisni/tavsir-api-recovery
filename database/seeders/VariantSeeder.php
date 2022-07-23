@@ -20,7 +20,7 @@ class VariantSeeder extends Seeder
                 new Variant([
                     'name' => 'Size',
                     'product_id' => $product->id,
-                    'detil' => [
+                    'sub_variant' => [
                         [
                             'name' => 'Small',
                             'price' => 0,
@@ -38,7 +38,7 @@ class VariantSeeder extends Seeder
                 new Variant([
                     'name' => 'Rasa',
                     'product_id' => $product->id,
-                    'detil' => [
+                    'sub_variant' => [
                         [
                             'name' => 'Coklat',
                             'price' => 0,

@@ -26,9 +26,9 @@ class VariantRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'product_id' => 'required|exists:ref_product,id',
-            'detil' => 'required|array',
-            'detil.*.name' => 'required|string|max:255',
-            'detil.*.price' => 'required|numeric|min:0|max:1000000',
+            'sub_variant' => 'required|array',
+            'sub_variant.*.name' => 'required|string|max:255',
+            'sub_variant.*.price' => 'required|numeric|min:0|max:1000000',
         ];
     }
 }

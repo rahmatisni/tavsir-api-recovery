@@ -11,17 +11,24 @@ class Variant extends BaseModel
     protected $fillable = [
         'name',
         'product_id',
-        "detil",
+        "sub_variant",
     ];
 
-    public function getDetilAttribute($value)
+    public function getSubVariantAttribute($value)
     {
         return $value ? json_decode($value) : [];
     }
 
-    public function setDetilAttribute($value)
+    public function setSubVariantAttribute($value)
     {
-        $this->attributes['detil'] = $value ? json_encode($value) : [];
+        $vv = array_map(function ($v, $k) {
+            return [
+                "id" => $k+1,
+                "name" => $v["name"],
+                "price" => $v["price"],
+            ];
+        }, $value, array_keys($value));
+        $this->attributes['sub_variant'] = $vv ? json_encode($vv) : [];
     }
 
     public function product()

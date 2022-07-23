@@ -2,11 +2,21 @@
 
 namespace App\Models;
 use App\Models\BaseModel;
-use Illuminate\Database\Eloquent\Casts\Attribute;
+use App\Models\Traits\Uuid;
 
 class TransOrder extends BaseModel
 {
+    use Uuid;
+
     protected $table = 'trans_order';
+    public const PENDING = 'PENDING';
+    public const CONFIRM = 'CONFIRM';
+    public const PAYMENT = 'PAYMENT';
+    public const WAITING = 'WAITING';
+    public const PREPARED = 'PREPARED';
+    public const READY = 'READY';
+    public const DONE = 'DONE';
+    public const CANCEL = 'CANCEL';
 
     protected $filable = [
         'sub_total',
@@ -23,7 +33,7 @@ class TransOrder extends BaseModel
 
     public function detil()
     {
-        return $this->hasMany(TransOrder::class, 'trans_order_id');
+        return $this->hasMany(TransOrderDetil::class, 'trans_order_id');
     }
 
 }

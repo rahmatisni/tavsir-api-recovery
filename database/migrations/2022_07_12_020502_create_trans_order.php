@@ -14,10 +14,11 @@ class CreateTransOrder extends Migration
     public function up()
     {
         Schema::create('trans_order', function (Blueprint $table) {
-            $table->uuid('id');
+            $table->uuid('id')->primary();
             $table->string('order_id');
             $table->integer('sub_total')->unsigned();
             $table->integer('fee')->unsigned();
+            $table->integer('service_fee')->unsigned();
             $table->integer('total')->unsigned();
             $table->date('pickup_date')->nullable();
             $table->date('confirm_date')->nullable();
@@ -33,7 +34,7 @@ class CreateTransOrder extends Migration
             $table->integer('payment_id')->unsigned();
             $table->integer('discount')->unsigned()->nullable();
             $table->string('casheer_id')->nullable();
-            
+            $table->string('status')->default('PENDING');
             $table->timestamps();
         });
 
@@ -41,13 +42,11 @@ class CreateTransOrder extends Migration
             $table->increments('id');
             $table->string('trans_order_id');
             $table->integer('product_id')->unsigned();
-            $table->string('variant_name')->nullable();
-            $table->string('variant_price')->nullable();
-            $table->string('addon_name')->nullable();
-            $table->string('addon_price')->nullable();
-            $table->tinyInteger('qty')->unsigned();
-            $table->integer('discount')->unsigned()->nullable();
+            $table->string('product_name');
+            $table->text('variant')->nullable();
+            $table->text('addon')->nullable();
             $table->integer('price')->unsigned();
+            $table->tinyInteger('qty')->unsigned();
             $table->integer('total_price')->unsigned();
         });
     }
