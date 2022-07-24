@@ -27,6 +27,13 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('category', App\Http\Controllers\API\CategoryController::class);
     Route::apiResource('user', App\Http\Controllers\API\UserController::class);
     Route::apiResource('variant', App\Http\Controllers\API\VariantController::class);
+
+    Route::prefix('tavsir')->group(function () {
+        Route::post('/product', [App\Http\Controllers\API\TavsirController::class,'Product']);
+        Route::get('/category', [App\Http\Controllers\API\TavsirController::class,'Category']);
+        Route::get('/countnewtng', [App\Http\Controllers\API\TavsirController::class,'CountNewTNG']);
+        Route::post('/cartorder', [App\Http\Controllers\API\TavsirController::class,'CartOrder']);
+    });
 });
 Route::post('/login', [App\Http\Controllers\API\AuthController::class,'login']);
 

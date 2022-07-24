@@ -20,7 +20,9 @@ class CreateRefProduct extends Migration
             $table->string('sku');
             $table->string('category');
             $table->string('photo')->nullable();
-            $table->string('price')->nullable();
+            $table->decimal('discount', $precision = 15, $scale = 4);
+            $table->decimal('price', $precision = 15, $scale = 4);
+            //$table->string('price')->nullable();
             $table->boolean('is_active')->default(1);
             $table->string('description')->nullable();
             $table->timestamps();
