@@ -4,7 +4,9 @@ namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\TsOrderConfirmRequest;
 use App\Http\Requests\TsOrderRequest;
+use App\Http\Resources\TravShop\TsOrderResource;
 use App\Http\Resources\TravShop\TsProducDetiltResource;
 use App\Http\Resources\TravShop\TsProductResource;
 use App\Http\Resources\TravShop\TsTenantResource;
@@ -15,7 +17,6 @@ use App\Models\Tenant;
 use App\Models\TransOrder;
 use App\Models\TransOrderDetil;
 use Illuminate\Support\Facades\DB;
-use PhpParser\Node\Stmt\TryCatch;
 
 class TravShopController extends Controller
 {
@@ -125,6 +126,7 @@ class TravShopController extends Controller
             }
             $data->fee = 2000;
             $data->total = $data->sub_total + $data->fee + $data->service_fee;
+            $data->status = TransOrder::WAITING_CONFIRMATION;
             $data->save();
             $data->detil()->saveMany($order_detil_many);
             DB::commit();
@@ -133,5 +135,24 @@ class TravShopController extends Controller
             DB::rollback();
             return response()->json(['error' => $th->getMessage()], 500);
         }
+    }
+
+    function orderById($id)
+    {
+        $data = TransOrder::findOrfail($id);
+        return response()->json(new TsOrderResource($data));
+    }
+
+    function orderConfirm(TsOrderConfirmRequest $request, $id)
+    {
+        $data = TransOrder::findOrfail($id);
+        $data->detil->whereNotIn('id', $request->detil_id)->each(function ($item) {
+            $item->delete();
+        });
+        $data->status = TransOrder::WAITING_PAYMENT;
+        $data->save();
+
+        $data = TransOrder::findOrfail($id);
+        return response()->json(new TsOrderResource($data));
     }
 }

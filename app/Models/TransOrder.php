@@ -10,9 +10,9 @@ class TransOrder extends BaseModel
 
     protected $table = 'trans_order';
     public const PENDING = 'PENDING';
-    public const CONFIRM = 'CONFIRM';
     public const PAYMENT = 'PAYMENT';
-    public const WAITING = 'WAITING';
+    public const WAITING_CONFIRMATION = 'WAITING_CONFIRMATION';
+    public const WAITING_PAYMENT = 'WAITING_PAYMENT';
     public const PREPARED = 'PREPARED';
     public const READY = 'READY';
     public const DONE = 'DONE';
