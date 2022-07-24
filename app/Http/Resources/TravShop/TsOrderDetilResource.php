@@ -19,6 +19,9 @@ class TsOrderDetilResource extends JsonResource
             'product_id' => $this->product_id,
             'product_name' => $this->product_name,
             'product_photo' => $this->product->photo ?  asset($this->product->photo) : null,
+            'product_qty' => $this->qty,
+            'product_price' => $this->price,
+            'product_note' => $this->note,
             'variant' => $this->variant,
         ];
     }

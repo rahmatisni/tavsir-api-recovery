@@ -36,4 +36,9 @@ class TransOrder extends BaseModel
         return $this->hasMany(TransOrderDetil::class, 'trans_order_id');
     }
 
+    public function tenant()
+    {
+        return $this->belongsTo(Tenant::class, 'tenant_id');
+    }
+
 }

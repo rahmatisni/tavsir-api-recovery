@@ -38,4 +38,9 @@ class Tenant extends BaseModel
     {
         return $this->hasMany(Category::class, 'tenant_id');
     }
+
+    public function rest_area()
+    {
+        return $this->belongsTo(RestArea::class, 'rest_area_id');
+    }
 }
