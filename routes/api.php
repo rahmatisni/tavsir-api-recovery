@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\PgJmto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 /*
@@ -46,4 +47,13 @@ Route::prefix('travshop')->group(function () {
     Route::get('/order/{id}', [App\Http\Controllers\API\TravShopController::class,'orderById']);
     Route::post('/order-confirmation/{id}', [App\Http\Controllers\API\TravShopController::class,'orderConfirm']);
     Route::get('/payment-method', [App\Http\Controllers\API\TravShopController::class,'paymentMethod']);
+});
+
+
+
+Route::get('/pg-cek', function(){
+    $body = [
+        'sof_id' => '1',
+    ];
+    return PgJmto::service('POST','/sof/list',$body);
 });
