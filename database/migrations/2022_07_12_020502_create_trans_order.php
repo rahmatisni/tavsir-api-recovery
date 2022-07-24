@@ -16,6 +16,8 @@ class CreateTransOrder extends Migration
         Schema::create('trans_order', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('order_id');
+            $table->tinyInteger('order_type')->default(1)->comment('1 = Take&Go (Travoy) 
+                                                                    2 = Onsite');
             $table->integer('sub_total')->unsigned();
             $table->integer('fee')->unsigned();
             $table->integer('service_fee')->unsigned();
@@ -28,13 +30,15 @@ class CreateTransOrder extends Migration
             $table->integer('merchant_id')->unsigned()->nullable();
             $table->integer('sub_merchant_id')->unsigned()->nullable();
             $table->string('paystation_id')->nullable();
-            $table->integer('customer_id')->unsigned()->comment('customer_id from id user travoy');
+            $table->integer('customer_id')->unsigned()->nullable()->comment('customer_id from id user travoy');
             $table->integer('voucher_id')->unsigned()->nullable();
-            $table->integer('payment_method_id')->unsigned();
-            $table->integer('payment_id')->unsigned();
+            $table->integer('payment_method_id')->unsigned()->nullable();
+            $table->integer('payment_id')->unsigned()->nullable();
             $table->integer('discount')->unsigned()->nullable();
             $table->string('casheer_id')->nullable();
+            $table->tinyInteger('is_save')->unsigned()->default(0);
             $table->string('status')->default('PENDING');
+            
             $table->timestamps();
         });
 

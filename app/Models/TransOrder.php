@@ -9,6 +9,7 @@ class TransOrder extends BaseModel
     use Uuid;
 
     protected $table = 'trans_order';
+    public const CART = 'CART';
     public const PENDING = 'PENDING';
     public const PAYMENT = 'PAYMENT';
     public const WAITING_CONFIRMATION = 'WAITING_CONFIRMATION';
@@ -18,7 +19,11 @@ class TransOrder extends BaseModel
     public const DONE = 'DONE';
     public const CANCEL = 'CANCEL';
 
+    public const ORDERTNG = 1;
+    public const ORDERTAVSIR = 2;
+
     protected $filable = [
+        'order_type',
         'sub_total',
         'fee',
         'total',
@@ -29,6 +34,7 @@ class TransOrder extends BaseModel
         'payment_method_id',
         'payment_id',
         'discount',
+        'is_save',
     ];
 
     public function detil()
