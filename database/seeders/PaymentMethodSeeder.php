@@ -17,21 +17,35 @@ class PaymentMethodSeeder extends Seeder
         if(PaymentMethod::count() == 0){
             PaymentMethod::insert([
                 [
-                    'name' => 'tavqr',
-                    'code' => '001',
+                    'name' => 'Mandiri Virtual Account',
+                    'code_name' => 'pg_va_mandiri',
+                    'code_number' => '001',
                 ],
                 [
-                    'name' => 'pg_va_bri',
-                    'code' => '002',
+                    'name' => 'BRI Virtual Account',
+                    'code_name' => 'pg_va_bri',
+                    'code_number' => '002',
                 ],
                 [
-                    'name' => 'pg_dd+bri',
-                    'code' => '003',
+                    'name' => 'BRI Direct Debit',
+                    'code_name' => 'pg_dd_bri',
+                    'code_number' => '003',
                 ],
                 [
-                    'name' => 'pg_link_aja',
-                    'code' => '004',
-                ]
+                    'name' => 'LinjAja',
+                    'code_name' => 'pg_link_aja',
+                    'code_number' => '004',
+                ],
+                [
+                    'name' => 'QR',
+                    'code_name' => 'tav_qr',
+                    'code_number' => '005',
+                ],
+                [
+                    'name' => 'Cash',
+                    'code_name' => 'cash',
+                    'code_number' => '006',
+                ],
             ]);
         }
     }

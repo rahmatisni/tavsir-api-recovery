@@ -38,4 +38,5 @@ Route::prefix('travshop')->group(function () {
     Route::post('/order', [App\Http\Controllers\API\TravShopController::class,'order']);
     Route::get('/order/{id}', [App\Http\Controllers\API\TravShopController::class,'orderById']);
     Route::post('/order-confirmation/{id}', [App\Http\Controllers\API\TravShopController::class,'orderConfirm']);
+    Route::get('/payment-method', [App\Http\Controllers\API\TravShopController::class,'paymentMethod']);
 });

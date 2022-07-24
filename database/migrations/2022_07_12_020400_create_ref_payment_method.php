@@ -15,8 +15,9 @@ class CreateRefPaymentMethod extends Migration
     {
         Schema::create('ref_payment_method', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('code');
             $table->string('name');
+            $table->string('code_name');
+            $table->string('code_number')->nullable();
             $table->timestamps();
         });
     }

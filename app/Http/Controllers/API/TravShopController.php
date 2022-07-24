@@ -11,6 +11,7 @@ use App\Http\Resources\TravShop\TsProducDetiltResource;
 use App\Http\Resources\TravShop\TsProductResource;
 use App\Http\Resources\TravShop\TsTenantResource;
 use App\Http\Resources\TravShop\TsRestAreaResource;
+use App\Models\PaymentMethod;
 use App\Models\Product;
 use App\Models\RestArea;
 use App\Models\Tenant;
@@ -154,5 +155,11 @@ class TravShopController extends Controller
 
         $data = TransOrder::findOrfail($id);
         return response()->json(new TsOrderResource($data));
+    }
+
+    function paymentMethod()
+    {
+        $data = PaymentMethod::all();
+        return response()->json($data);   
     }
 }
