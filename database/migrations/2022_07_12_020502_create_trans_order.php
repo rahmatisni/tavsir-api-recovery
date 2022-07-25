@@ -37,6 +37,7 @@ class CreateTransOrder extends Migration
             $table->integer('discount')->unsigned()->nullable();
             $table->string('casheer_id')->nullable();
             $table->tinyInteger('is_save')->unsigned()->default(0);
+            $table->integer('pay_amount')->unsigned()->nullable();
             $table->string('status')->default('PENDING');
             
             $table->timestamps();
