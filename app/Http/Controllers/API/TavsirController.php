@@ -47,13 +47,73 @@ class TavsirController extends Controller
 
     function cartSaved()
     {
-        $data = TransOrder::where('tenant_id', '=', auth()->user()->tenant_id)
-                    ->where('order_type', '=', TransOrder::ORDERTAVSIR) 
-                    ->where('status', '=', TransOrder::CART) 
-                    ->where('is_save', '=', 1)
-                    ->get();
+        
+        $data =DB::table('trans_order AS O')
+        ->where('order_type', '=', TransOrder::ORDERTAVSIR) 
+        ->where('status', '=', TransOrder::CART) 
+        ->where('is_save', '=', 1)
+        ->selectRaw('O.id, O.order_id, O.sub_total, O.fee, O.service_fee, O.total, O.business_id, O.tenant_id,
+            O.merchant_id, O.sub_merchant_id')
+        ->get();
 
-        return response()->json(TrCartSavedResource::collection($data));
+        for ($i = 0; $i < count($data); $i++) {
+
+            $detail = DB::table('trans_order_detil')->where('trans_order_id', $data[$i]->id)->get();
+            $order_detil_many = [];
+            
+            foreach ($detail as $k => $v) 
+            {
+                //return response()->json($v);
+                $product = Product::find($v->product_id);
+
+                $order_detil = new TransOrderDetil();
+                $order_detil->trans_order_id = $data[$i]->id;
+                $order_detil->product_id = $product->id;
+                $order_detil->product_name = $product->name;
+                $order_detil->price = $product->price;
+                $variant_x = array();
+                foreach(json_decode($v->variant) as $key => $value)
+                {
+                    //return response()->json($value);
+                    $variant_y = collect($product->variant)->where('id', $value->variant_id)->first();
+                    //return response()->json($variant_y);
+                    if($variant_y)
+                    {
+                        $sub_variant_collection = collect($variant_y->sub_variant);
+                        //return response()->json($sub_variant_collection);
+                        $sub_variant = $sub_variant_collection->where('id', $value->sub_variant_id)->first();
+                        if($sub_variant)
+                        {
+                            $variant_z = [
+                                'variant_id' => $variant_y->id,
+                                'variant_name' => $variant_y->name,
+                                'sub_variant_id' => $sub_variant->id,
+                                'sub_variant_name' => $sub_variant->name,
+                                'sub_variant_price' => $sub_variant->price,
+                            ];
+                            $variant_x[] = $variant_z;
+                            $order_detil->price += $sub_variant->price;
+                        }
+                    }
+                }
+                //dd($variant_x);
+                $order_detil->variant = json_encode($variant_x);
+                $order_detil->qty = $v->qty;
+                $order_detil->total_price = $order_detil->price * $v->qty;
+                $order_detil->note = $v->note;
+
+                $data[$i]->sub_total += $order_detil->total_price;
+                
+                $order_detil_many[] = $order_detil;
+            }
+            $data[$i]->fee = 0;
+            $data[$i]->total = $data[$i]->sub_total + $data[$i]->fee + $data[$i]->service_fee;
+            $data[$i]->detil = $order_detil_many;
+
+        }
+
+        return response()->json($data);
+        //return response()->json(TrCartSavedResource::collection($data));
     }
 
     function CartDelete(Request $request) 
@@ -119,6 +179,7 @@ class TavsirController extends Controller
                             $variant_z = [
                                 'variant_id' => $variant_y->id,
                                 'variant_name' => $variant_y->name,
+                                'sub_variant_id' => $sub_variant->id,
                                 'sub_variant_name' => $sub_variant->name,
                                 'sub_variant_price' => $sub_variant->price,
                             ];
@@ -187,6 +248,7 @@ class TavsirController extends Controller
                             $variant_z = [
                                 'variant_id' => $variant_y->id,
                                 'variant_name' => $variant_y->name,
+                                'sub_variant_id' => $sub_variant->id,
                                 'sub_variant_name' => $sub_variant->name,
                                 'sub_variant_price' => $sub_variant->price,
                             ];
