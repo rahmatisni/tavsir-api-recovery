@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Tavsir;
 
 use Illuminate\Foundation\Http\FormRequest;
 
