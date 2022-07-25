@@ -47,4 +47,14 @@ class TransOrder extends BaseModel
         return $this->belongsTo(Tenant::class, 'tenant_id');
     }
 
+    public function payment_method()
+    {
+        return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
+    }
+
+    public function payment()
+    {
+        return $this->hasOne(TransPayment::class, 'trans_order_id');
+    }
+
 }

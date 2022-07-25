@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\TsCreatePaymentRequest;
 use App\Http\Requests\TsOrderConfirmRequest;
 use App\Http\Requests\TsOrderRequest;
 use App\Http\Resources\TravShop\TsOrderResource;
@@ -11,12 +12,15 @@ use App\Http\Resources\TravShop\TsProducDetiltResource;
 use App\Http\Resources\TravShop\TsProductResource;
 use App\Http\Resources\TravShop\TsTenantResource;
 use App\Http\Resources\TravShop\TsRestAreaResource;
+use App\Http\Resources\TsPaymentresource;
 use App\Models\PaymentMethod;
+use App\Models\PgJmto;
 use App\Models\Product;
 use App\Models\RestArea;
 use App\Models\Tenant;
 use App\Models\TransOrder;
 use App\Models\TransOrderDetil;
+use App\Models\TransPayment;
 use Illuminate\Support\Facades\DB;
 
 class TravShopController extends Controller
@@ -86,8 +90,7 @@ class TravShopController extends Controller
 
             // dd($request->all());
 
-            foreach ($request->product as $k => $v) 
-            {
+            foreach ($request->product as $k => $v) {
                 $product = Product::find($v['product_id']);
 
                 $order_detil = new TransOrderDetil();
@@ -96,15 +99,12 @@ class TravShopController extends Controller
                 $order_detil->product_name = $product->name;
                 $order_detil->price = $product->price;
                 $variant_x = array();
-                foreach($v['variant'] as $key => $value)
-                {
+                foreach ($v['variant'] as $key => $value) {
                     $variant_y = collect($product->variant)->where('id', $value)->first();
-                    if($variant_y)
-                    {
+                    if ($variant_y) {
                         $sub_variant_collection = collect($variant_y->sub_variant);
                         $sub_variant = $sub_variant_collection->where('id', $v['sub_variant'][$key])->first();
-                        if($sub_variant)
-                        {
+                        if ($sub_variant) {
                             $variant_z = [
                                 'variant_id' => $variant_y->id,
                                 'variant_name' => $variant_y->name,
@@ -122,7 +122,7 @@ class TravShopController extends Controller
                 $order_detil->note = $v['note'];
 
                 $data->sub_total += $order_detil->total_price;
-                
+
                 $order_detil_many[] = $order_detil;
             }
             $data->fee = 2000;
@@ -138,6 +138,17 @@ class TravShopController extends Controller
         }
     }
 
+    function orderCustomer($id)
+    {
+        $data = TransOrder::with('detil')->where('customer_id',$id)
+                ->when($status = request()->status, function ($q) use ($status) {
+                    return $q->where('status', $status);
+                })->when($order_id = request()->order_id, function ($q) use ($order_id) {
+                    return $q->where('order_id', $order_id);
+                })->get();
+        return response()->json(TsOrderResource::collection($data));
+    }
+
     function orderById($id)
     {
         $data = TransOrder::findOrfail($id);
@@ -150,6 +161,9 @@ class TravShopController extends Controller
         $data->detil->whereNotIn('id', $request->detil_id)->each(function ($item) {
             $item->delete();
         });
+        $sum = $data->detil->sum('total_price');
+        $data->sub_total = $sum;
+        $data->total = $data->sub_total + $data->fee + $data->service_fee;
         $data->status = TransOrder::WAITING_PAYMENT;
         $data->save();
 
@@ -160,6 +174,54 @@ class TravShopController extends Controller
     function paymentMethod()
     {
         $data = PaymentMethod::all();
-        return response()->json($data);   
+        return response()->json($data);
+    }
+
+    function createPayment(TsCreatePaymentRequest $request, $id)
+    {
+        try {
+            DB::beginTransaction();
+
+            $data = TransOrder::findOrfail($id);
+            $data->payment_method_id = $request->payment_method_id;
+
+            $res = 'Invalid';
+            $payment_method = PaymentMethod::findOrFail($request->payment_method_id);
+            switch ($payment_method->code_name) {
+                case 'pg_va_bri':
+                    $res = PgJmto::vaBriCreate($data->order_id, 'Take N Go', $data->total, $data->tenant->name ?? '', $request->customer_phone, $request->customer_email, $request->customer_name);
+                    if($res['status'] == 'success'){
+                        $payment = new TransPayment();
+                        $payment->trans_order_id = $data->id;
+                        $payment->data = $res['responseData'];
+                        $data->payment()->save($payment);
+                        $data->service_fee = $payment->data->fee;
+                        $data->total = $data->total + $data->service_fee;
+                        $data->save();
+                    }else{
+                        return response()->json($res, 500);
+                    }
+                    break;
+
+                default:
+                    return response()->json(['error' => $payment_method->name.' Coming Soon'], 500);
+                    
+                    break;
+            }
+            DB::commit();
+            return response()->json($res);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return response()->json(['error' => $th->getMessage()], 500);
+        }
+    }
+
+    function paymentByOrderId($id)
+    {
+        $data = TransOrder::findOrfail($id);
+        if(!$data->payment){
+            return response()->json(['error' => 'Payment Not Found'], 404);
+        }
+        return response()->json(new TsPaymentresource($data->payment));
     }
 }

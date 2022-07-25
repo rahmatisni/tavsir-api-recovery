@@ -45,15 +45,18 @@ Route::prefix('travshop')->group(function () {
     Route::get('/product/{id}', [App\Http\Controllers\API\TravShopController::class,'productById']);
     Route::post('/order', [App\Http\Controllers\API\TravShopController::class,'order']);
     Route::get('/order/{id}', [App\Http\Controllers\API\TravShopController::class,'orderById']);
+    Route::get('/order-customer/{id}', [App\Http\Controllers\API\TravShopController::class,'orderCustomer']);
     Route::post('/order-confirmation/{id}', [App\Http\Controllers\API\TravShopController::class,'orderConfirm']);
     Route::get('/payment-method', [App\Http\Controllers\API\TravShopController::class,'paymentMethod']);
+    Route::post('/create-payment/{id}', [App\Http\Controllers\API\TravShopController::class,'createPayment']);
+    Route::get('/payment-order/{id}', [App\Http\Controllers\API\TravShopController::class,'paymentByOrderId']);
 });
 
 
 
 Route::get('/pg-cek', function(){
-    $body = [
-        'sof_id' => '1',
+    $payload = [
+        'sof_id' => 1
     ];
-    return PgJmto::service('POST','/sof/list',$body);
+    return PgJmto::service('POST','/sof/list',$payload);
 });
