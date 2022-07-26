@@ -24,14 +24,19 @@ class VariantSeeder extends Seeder
                         [
                             'name' => 'Small',
                             'price' => 0,
+                            'is_avail' => 1,
                         ],
                         [
                             'name' => 'Medium',
                             'price' => 5000,
+                            'is_avail' => 0,
+
                         ],
                         [
                             'name' => 'Large',
                             'price' => 10000,
+                            'is_avail' => 1,
+
                         ],
                     ]
                 ]),
@@ -42,10 +47,12 @@ class VariantSeeder extends Seeder
                         [
                             'name' => 'Coklat',
                             'price' => 0,
+                            'is_avail' => 1,
                         ],
                         [
                             'name' => 'Keju',
                             'price' => 0,
+                            'is_avail' => 1,
                         ],
                     ]
                 ])
