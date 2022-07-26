@@ -19,6 +19,9 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->string('role')->default('USER')->comment('USER, ADMIN');
             $table->integer('tenant_id')->unsigned()->nullable();
+            $table->integer('business_id')->unsigned()->nullable();
+            $table->integer('rest_area_id')->unsigned()->nullable();
+            $table->integer('paystation_id')->unsigned()->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
