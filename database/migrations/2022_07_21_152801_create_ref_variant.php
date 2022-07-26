@@ -18,6 +18,8 @@ class CreateRefVariant extends Migration
             $table->string('name');
             $table->integer('product_id')->unsigned()->nullable();
             $table->text('sub_variant');
+            $table->boolean('is_mandatory')->default(true);
+
         });
     }
 
