@@ -20,6 +20,7 @@ class CreateRefVoucher extends Migration
             $table->string('phone')->nullable();
             //$table->integer('trx_id')->unsigned();
             $table->string('balance')->nullable();
+            $table->string('balance_history')->nullable();
             $table->string('qr')->nullable();
             $table->string('auth_id');
             $table->integer('paystation_id')->unsigned()->nullable();
