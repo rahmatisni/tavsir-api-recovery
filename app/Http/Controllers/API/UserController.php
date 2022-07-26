@@ -31,7 +31,12 @@ class UserController extends Controller
         $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => Hash::make($request->password),
+                'password' => bcrypt($request->password),
+                'role' => $request->email,
+                'tenant_id' => $request->tenant_id,
+                'business_id' => $request->business_id,
+                'rest_area_id' => $request->rest_area_id,
+                'paystation_id' => $request->paystation_id,
         ]);
         return response()->json($user); 
     }
@@ -60,7 +65,12 @@ class UserController extends Controller
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'password' => bcrypt($request->password),
+            'role' => $request->email,
+            'tenant_id' => $request->tenant_id,
+            'business_id' => $request->business_id,
+            'rest_area_id' => $request->rest_area_id,
+            'paystation_id' => $request->paystation_id,
         ]);
         return response()->json($user);
     }

@@ -24,7 +24,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'tenant_id'
+        'tenant_id',
+        'business_id',
+        'rest_area_id',
+        'paystation_id',
     ];
 
     /**
