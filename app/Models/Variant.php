@@ -26,6 +26,8 @@ class Variant extends BaseModel
                 "id" => $k+1,
                 "name" => $v["name"],
                 "price" => $v["price"],
+                "is_avail" => $v["is_avail"],
+
             ];
         }, $value, array_keys($value));
         $this->attributes['sub_variant'] = $vv ? json_encode($vv) : [];
