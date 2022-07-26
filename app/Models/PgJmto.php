@@ -91,15 +91,23 @@ class PgJmto extends Model
         return $res->json();
     }
 
-    public static function vaBriStatus($payload = [])
+    public static function vaBriStatus($bill_id,$va_number,$refnum,$phone,$email,$customer_name)
     {
+        $payload = [
+            "sof_code" =>  "BRI",
+            "bill_id" =>  $bill_id,
+            "va_number" => $va_number,
+            "refnum" =>  $refnum,
+            "phone" =>  $phone,
+            "email" =>  $email,
+            "customer_name" =>  $customer_name,
+        ];
         $data = [
             'method' => 'POST',
             'path' => '/va/cekstatus',
             'payload' => $payload,
         ];
-        $res = Http::post(env('TRAVOY_API_URL') . '/vpg-jmto', $data);
-        
+        $res = Http::post(env('TRAVOY_API_URL') . '/pg-jmto', $data);
         return $res->json();
     }
 

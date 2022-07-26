@@ -140,12 +140,12 @@ class TravShopController extends Controller
 
     function orderCustomer($id)
     {
-        $data = TransOrder::with('detil')->where('customer_id',$id)
-                ->when($status = request()->status, function ($q) use ($status) {
-                    return $q->where('status', $status);
-                })->when($order_id = request()->order_id, function ($q) use ($order_id) {
-                    return $q->where('order_id', $order_id);
-                })->get();
+        $data = TransOrder::with('detil')->where('customer_id', $id)
+            ->when($status = request()->status, function ($q) use ($status) {
+                return $q->where('status', $status);
+            })->when($order_id = request()->order_id, function ($q) use ($order_id) {
+                return $q->where('order_id', $order_id);
+            })->get();
         return response()->json(TsOrderResource::collection($data));
     }
 
@@ -189,8 +189,16 @@ class TravShopController extends Controller
             $payment_method = PaymentMethod::findOrFail($request->payment_method_id);
             switch ($payment_method->code_name) {
                 case 'pg_va_bri':
-                    $res = PgJmto::vaBriCreate($data->order_id, 'Take N Go', $data->total, $data->tenant->name ?? '', $request->customer_phone, $request->customer_email, $request->customer_name);
-                    if($res['status'] == 'success'){
+                    $res = PgJmto::vaBriCreate(
+                        $data->order_id, 
+                        'Take N Go', 
+                        $data->total, 
+                        $data->tenant->name ?? '', 
+                        $request->customer_phone, 
+                        $request->customer_email, 
+                        $request->customer_name
+                    );
+                    if ($res['status'] == 'success') {
                         $payment = new TransPayment();
                         $payment->trans_order_id = $data->id;
                         $payment->data = $res['responseData'];
@@ -198,14 +206,14 @@ class TravShopController extends Controller
                         $data->service_fee = $payment->data->fee;
                         $data->total = $data->total + $data->service_fee;
                         $data->save();
-                    }else{
+                    } else {
                         return response()->json($res, 500);
                     }
                     break;
 
                 default:
-                    return response()->json(['error' => $payment_method->name.' Coming Soon'], 500);
-                    
+                    return response()->json(['error' => $payment_method->name . ' Coming Soon'], 500);
+
                     break;
             }
             DB::commit();
@@ -219,9 +227,45 @@ class TravShopController extends Controller
     function paymentByOrderId($id)
     {
         $data = TransOrder::findOrfail($id);
-        if(!$data->payment){
+        if (!$data->payment) {
             return response()->json(['error' => 'Payment Not Found'], 404);
         }
         return response()->json(new TsPaymentresource($data->payment));
+    }
+
+    function statusPayment($id)
+    {
+        try {
+            DB::beginTransaction();
+
+            $data = TransOrder::findOrfail($id);
+            if (!$data->payment) {
+                return response()->json(['error' => 'Payment Not Found'], 404);
+            }
+            $data_payment = $data->payment->data;
+            $res = PgJmto::vaBriStatus(
+                $data_payment->bill,
+                $data_payment->va_number,
+                $data_payment->refnum,
+                $data_payment->phone,
+                $data_payment->email,
+                $data_payment->customer_name
+            );
+            if($res['status'] == 'success'){
+                $res_data = $res['responseData'];
+                $res_data['fee'] = $data_payment->fee;
+                $res_data['bill'] = $data_payment->bill;
+                if($res_data['pay_status'] == '1'){
+                    $data->status = TransOrder::PAYMENT_SUCCESS;
+                    $data->save();
+                }
+                $data->payment()->update([ 'data' => $res_data]);
+            }
+            DB::commit();
+            return response()->json($res);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['error' => $th->getMessage()], 500);
+        }
     }
 }
