@@ -15,11 +15,12 @@ class CreateRefVoucher extends Migration
     {
         Schema::create('ref_voucher', function (Blueprint $table) {
             $table->increments('id');
-            $table->uuid('voucher_uuid')->default(DB::raw('(UUID())'));
+            $table->string('nama_lengkap');
+            $table->string('username');
+            $table->uuid('voucher_uuid');
             $table->string('customer_id');
             $table->string('phone')->nullable();
             //$table->integer('trx_id')->unsigned();
-            $table->string('username');
             $table->string('balance');
             $table->string('balance_history');
             $table->string('qr_code_use');
