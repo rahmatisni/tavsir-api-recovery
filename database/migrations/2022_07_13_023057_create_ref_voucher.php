@@ -24,6 +24,8 @@ class CreateRefVoucher extends Migration
             $table->string('balance');
             $table->string('balance_history');
             $table->string('qr_code_use');
+            $table->string('qr_code_image');
+
             $table->string('auth_id');
             $table->integer('paystation_id')->unsigned()->nullable();
             $table->integer('created_by')->nullable();
