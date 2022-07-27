@@ -17,6 +17,7 @@ class CreateRefVoucher extends Migration
             $table->increments('id');
             $table->string('nama_lengkap');
             $table->string('username');
+            $table->string('password');
             $table->uuid('voucher_uuid');
             $table->string('customer_id');
             $table->string('phone')->nullable();
@@ -25,14 +26,13 @@ class CreateRefVoucher extends Migration
             $table->string('balance_history');
             $table->string('qr_code_use');
             $table->string('qr_code_image');
-
-            $table->string('auth_id');
             $table->integer('paystation_id')->unsigned()->nullable();
             $table->integer('created_by')->nullable();
             $table->timestamps();
             $table->integer('is_active');
-            $table->integer('public_key');
-            $table->integer('hash');
+            $table->string('public_key');
+            $table->string('hash');
+
 
             
 
