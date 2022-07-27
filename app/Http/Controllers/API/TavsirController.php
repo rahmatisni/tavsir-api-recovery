@@ -13,6 +13,7 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\TransOrder;
 use App\Models\TransOrderDetil;
+use App\Models\PaymentMethod;
 
 class TavsirController extends Controller
 {
@@ -103,10 +104,22 @@ class TavsirController extends Controller
         return response()->json($data);
     }
 
+    function CountCarSaved()
+    {
+        $data = TransOrder::where('tenant_id', '=', auth()->user()->tenant_id)
+                    ->where('order_type', '=', TransOrder::ORDERTAVSIR)       
+                    ->where('status', '=', TransOrder::CART) 
+                    ->where('is_save', '=', 1)
+                    ->count();
+
+        return response()->json(['count' => $data]);
+    }
+
     function cartSaved()
     {
 
         $data =DB::table('trans_order AS O')
+        ->where('tenant_id', '=', auth()->user()->tenant_id)
         ->where('order_type', '=', TransOrder::ORDERTAVSIR) 
         ->where('status', '=', TransOrder::CART) 
         ->where('is_save', '=', 1)
@@ -268,6 +281,17 @@ class TavsirController extends Controller
         }
 
     }
+    
+    function PaymentMethod()
+    {
+        $data = PaymentMethod::where('is_tavsir',1)->get();
+        return response()->json($data);
+    }
+
+    function OrderById($id) {
+        $data = TransOrder::findOrfail($id);
+        return response()->json(new TrOrderResource($data));
+    }
 
     function Order(TrOrderRequest $request) 
     {
@@ -344,12 +368,16 @@ class TavsirController extends Controller
         try {
             DB::beginTransaction();
             $data = TransOrder::find($request->id);
-            if ($request->payment_method_id == 6)
+            $payment_method = PaymentMethod::findOrFail($request->payment_method_id);
+            if ($payment_method->code_name == 'tunai')
             {
                 if($request->total > $request->pay_amount)
                 {
                     return response()->json(['message' => "Not Enough Balance"]);
                 }
+            }
+            else{
+                return response()->json(['error' => $payment_method->name.' Coming Soon'], 500);
             }
 
             $data->pay_amount = $request->pay_amount;

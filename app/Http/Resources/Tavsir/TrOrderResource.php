@@ -30,6 +30,7 @@ class TrOrderResource extends JsonResource
             'total' => $this->total,
             'pay_amount' => $this->pay_amount,
             'status' => $this->status,
+            'detil' => TrOrderDetilResource::collection($this->detil),
         ];
     }
 }
