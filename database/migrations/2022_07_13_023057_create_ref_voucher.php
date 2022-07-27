@@ -38,6 +38,13 @@ class CreateRefVoucher extends Migration
 
         });
 
+         Schema::create('paystation_setting', function (Blueprint $table) {
+            $table->increments('status_setting');
+            $table->string('nama_app');
+            $table->string('logo_app');
+        });
+
+
         Schema::create('ref_voucher_detail', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('voucher_id')->unsigned();
