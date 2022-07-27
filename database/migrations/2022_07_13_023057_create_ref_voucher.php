@@ -23,7 +23,7 @@ class CreateRefVoucher extends Migration
             $table->string('phone')->nullable();
             //$table->integer('trx_id')->unsigned();
             $table->string('balance');
-            $table->string('balance_history');
+            $table->longText('balance_history');
             $table->string('qr_code_use');
             $table->string('qr_code_image');
             $table->integer('paystation_id')->unsigned()->nullable();
