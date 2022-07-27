@@ -31,6 +31,10 @@ class CreateRefVoucher extends Migration
             $table->integer('created_by')->nullable();
             $table->timestamps();
             $table->integer('is_active');
+            $table->integer('public_key');
+            $table->integer('hash');
+
+            
 
         });
 
