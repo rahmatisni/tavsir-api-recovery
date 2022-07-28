@@ -16,54 +16,51 @@ class PgJmto extends Model
             'Accept' => 'application/sjon',
             'Authorization' => 'Basic ' . base64_encode(env('PG_CLIENT_ID') . ':' . env('PG_CLIENT_SECRET')),
             'Content-Type' => 'application/json',
-        ])->post('https://api-jmto.onbilling.id/oauth/token', [
-            'grant_type' => 'client_credentials'
-        ]);
-
+        ])
+        // ->withoutVerifying()
+        ->post(env('PG_BASE_URL').'/oauth/token', ['grant_type' => 'client_credentials']);
         return $response->json();
     }
 
-    public static function generateSignature($http_method, $path, $token, $timestamp, $request_body)
+    public static function generateSignature($path, $token, $timestamp, $request_body)
     {
         //data you want to sign
-        empty($request_body) ? $request_body = '' : $request_body = '';
+        if(empty($request_body)){
+            $request_body = ['dumy' => 'abc'];
+        } else {
+            $request_body = json_encode($request_body);
+        }
 
-        $data = $http_method . ':' . $path . ':' . 'Bearer ' . $token . ':' . hash('sha256', $request_body) . ':' . $timestamp;
+        $data = 'POST' . ':' . $path . ':' . 'Bearer ' . $token . ':' . hash('sha256', $request_body) . ':' . $timestamp;
         
         $privateKey = env('PG_PRIVATE_KEY');
-        openssl_sign($data, $signature, $privateKey, 'SHA256');
-        return Base64::encode($signature);
+        $publicKey = env('PG_PUBLIC_KEY');
+        openssl_sign($data, $signature, $privateKey, 'sha256WithRSAEncryption');
+        $sign = Base64::encode($signature);
+        $verify = openssl_verify($data, $signature, $publicKey, 'sha256WithRSAEncryption');
+        // dd($verify);
+        return $sign;
     }
 
-    public static function service($method, $path, $payload)
+    public static function service($path, $payload)
     {
-        $data = [
-            'method' => $method,
-            'path' => $path,
-            'payload' => $payload,
-        ];
-        $res = Http::post(env('TRAVOY_API_URL') . '/pg-jmto', $data);
+        $token = self::getToken();
+        $timestamp = Carbon::now()->format('c');
 
-        return $res->json();
-
-        // $token = self::getToken();
-        // $timestamp = Carbon::now()->format('c');
-
-
-        // $signature = self::generateSignature($method, $path, $token['access_token'], $timestamp, $payload);
-        // $response = Http::withHeaders([
-        //     'Authorization' => 'Bearer ' . $token['access_token'],
-        //     'Accept' => 'application/json',
-        //     'Content-Type' => 'application/json',
-        //     'JMTO-TIMESTAMP' => $timestamp,
-        //     'JMTO-SIGNATURE' => $signature,
-        //     'JMTO-DEVCE-ID' => 'POSTMAN',
-        //     'CHANNEL-ID' => 'PC',
-        //     'JMTO-LATITUDE' => '+40.75',
-        //     'JMTO-LONGITUDE' => '-074.00',
-        // ])
-        //     ->send($method, env('PG_BASE_URL') . $path, $payload);
-        // return $response->json();
+        $signature = self::generateSignature($path, $token['access_token'], $timestamp, $payload);
+        $response = Http::withHeaders([
+            'JMTO-TIMESTAMP' => $timestamp,
+            'JMTO-SIGNATURE' => $signature,
+            'JMTO-DEVICE-ID' => env('PG_DEVICE_ID','123456789'),
+            'CHANNEL-ID' => 'PC',
+            'JMTO-LATITUDE' => '106.8795316',
+            'JMTO-LONGITUDE' => '-6.2927969',
+            'Content-Type' => 'Application/json',
+            'Authorization' => 'Bearer ' . $token['access_token'],
+        ])
+        // ->withoutVerifying()
+        ->post(env('PG_BASE_URL') . $path,$payload);
+        return $response;
     }
 
     public static function vaBriCreate($bill_id,$bill_name,$amount,$desc,$phone,$email,$customer_name)
@@ -81,13 +78,7 @@ class PgJmto extends Model
             "customer_name" =>  $customer_name,
             "submerchant_id" => '98'
         ];
-        $data = [
-            'method' => 'POST',
-            'path' => '/va/create',
-            'payload' => $payload,
-        ];
-        $res = Http::post(env('TRAVOY_API_URL') . '/pg-jmto', $data);
-
+        $res = self::service('/va/create', $payload);
         return $res->json();
     }
 
@@ -102,24 +93,22 @@ class PgJmto extends Model
             "email" =>  $email,
             "customer_name" =>  $customer_name,
         ];
-        $data = [
-            'method' => 'POST',
-            'path' => '/va/cekstatus',
-            'payload' => $payload,
-        ];
-        $res = Http::post(env('TRAVOY_API_URL') . '/pg-jmto', $data);
+        $res = self::service('/va/cekstatus', $payload);
         return $res->json();
     }
 
-    public static function vaBriDelete($payload = [])
+    public static function vaBriDelete($bill_id,$va_number,$refnum,$phone,$email,$customer_name)
     {
-        $data = [
-            'method' => 'POST',
-            'path' => '/va/delete',
-            'payload' => $payload,
+        $payload = [
+            "sof_code" =>  "BRI",
+            "bill_id" =>  $bill_id,
+            "va_number" => $va_number,
+            "refnum" =>  $refnum,
+            "phone" =>  $phone,
+            "email" =>  $email,
+            "customer_name" =>  $customer_name,
         ];
-        $res = Http::post(env('TRAVOY_API_URL') . '/vpg-jmto', $data);
-        
+        $res = self::service('/va/delete', $payload);
         return $res->json();
     }
 }

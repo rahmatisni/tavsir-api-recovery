@@ -67,5 +67,5 @@ Route::get('/pg-cek', function(){
     $payload = [
         'sof_id' => 1
     ];
-    return PgJmto::service('POST','/sof/list',$payload);
+    return PgJmto::service('/sof/list',$payload);
 });

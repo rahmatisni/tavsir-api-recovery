@@ -179,16 +179,29 @@ class TravShopController extends Controller
 
     function createPayment(TsCreatePaymentRequest $request, $id)
     {
+        $payment_payload = [];
         try {
             DB::beginTransaction();
 
             $data = TransOrder::findOrfail($id);
+            if($data->status != TransOrder::WAITING_PAYMENT){
+                return response()->json(['info' => $data->status], 422);
+            }
             $data->payment_method_id = $request->payment_method_id;
 
             $res = 'Invalid';
             $payment_method = PaymentMethod::findOrFail($request->payment_method_id);
             switch ($payment_method->code_name) {
                 case 'pg_va_bri':
+                    $payment_payload = [
+                        $data->order_id, 
+                        'Take N Go', 
+                        $data->total, 
+                        $data->tenant->name ?? '', 
+                        $request->customer_phone, 
+                        $request->customer_email, 
+                        $request->customer_name
+                    ];
                     $res = PgJmto::vaBriCreate(
                         $data->order_id, 
                         'Take N Go', 
@@ -207,7 +220,7 @@ class TravShopController extends Controller
                         $data->total = $data->total + $data->service_fee;
                         $data->save();
                     } else {
-                        return response()->json($res, 500);
+                        return response()->json([$res], 500);
                     }
                     break;
 
@@ -220,7 +233,7 @@ class TravShopController extends Controller
             return response()->json($res);
         } catch (\Throwable $th) {
             DB::rollback();
-            return response()->json(['error' => $th->getMessage()], 500);
+            return response()->json(['error' => $th->getMessage(),$payment_payload], 500);
         }
     }
 
@@ -239,9 +252,15 @@ class TravShopController extends Controller
             DB::beginTransaction();
 
             $data = TransOrder::findOrfail($id);
-            if (!$data->payment) {
-                return response()->json(['error' => 'Payment Not Found'], 404);
+            if($data->status != TransOrder::WAITING_PAYMENT){
+                return response()->json(['info' => $data->status], 422);
             }
+
+
+            if($data->status == TransOrder::PAYMENT_SUCCESS){
+                return response()->json(['info' => $data->status], 200);
+            }
+
             $data_payment = $data->payment->data;
             $res = PgJmto::vaBriStatus(
                 $data_payment->bill,
