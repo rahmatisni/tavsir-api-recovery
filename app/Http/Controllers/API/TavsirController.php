@@ -5,7 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Http\Requests\tavsir\TrOrderRequest;
+use App\Http\Requests\Tavsir\TrOrderRequest;
 use App\Http\Resources\Tavsir\TrProductResource;
 use App\Http\Resources\Tavsir\TrCartSavedResource;
 use App\Http\Resources\Tavsir\TrOrderResource;
@@ -13,6 +13,7 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\TransOrder;
 use App\Models\TransOrderDetil;
+use App\Models\PaymentMethod;
 
 class TavsirController extends Controller
 {
@@ -45,10 +46,80 @@ class TavsirController extends Controller
         return response()->json(['count' => $data]);
     }
 
+    function CartById($id)
+    {
+        $data =DB::table('trans_order AS O') 
+        ->where('id', '=', $id)
+        ->selectRaw('O.id, O.order_id, O.sub_total, O.fee, O.service_fee, O.total, O.business_id, O.tenant_id,
+            O.merchant_id, O.sub_merchant_id')
+        ->first();
+
+        $detail = DB::table('trans_order_detil')->where('trans_order_id', $data->id)->get();
+        $order_detil_many = [];
+
+        foreach ($detail as $k => $v) 
+        {
+            $product = Product::find($v->product_id);
+
+            $order_detil = new TransOrderDetil();
+            $order_detil->trans_order_id = $data->id;
+            $order_detil->product_id = $product->id;
+            $order_detil->product_name = $product->name;
+            $order_detil->price = $product->price;
+            $variant_x = array();
+            foreach(json_decode($v->variant) as $key => $value)
+            {
+                $variant_y = collect($product->variant)->where('id', $value->variant_id)->first();
+                if($variant_y)
+                {
+                    $sub_variant_collection = collect($variant_y->sub_variant);
+                    $sub_variant = $sub_variant_collection->where('id', $value->sub_variant_id)->first();
+                    if($sub_variant)
+                    {
+                        $variant_z = [
+                            'variant_id' => $variant_y->id,
+                            'variant_name' => $variant_y->name,
+                            'sub_variant_id' => $sub_variant->id,
+                            'sub_variant_name' => $sub_variant->name,
+                            'sub_variant_price' => $sub_variant->price,
+                        ];
+                        $variant_x[] = $variant_z;
+                        $order_detil->price += $sub_variant->price;
+                    }
+                }
+            }
+            $order_detil->variant = json_encode($variant_x);
+            $order_detil->qty = $v->qty;
+            $order_detil->total_price = $order_detil->price * $v->qty;
+            $order_detil->note = $v->note;
+
+            $data->sub_total += $order_detil->total_price;
+            
+            $order_detil_many[] = $order_detil;
+        }
+        $data->fee = 0;
+        $data->total = $data->sub_total + $data->fee + $data->service_fee;
+        $data->detil = $order_detil_many;
+
+        return response()->json($data);
+    }
+
+    function CountCarSaved()
+    {
+        $data = TransOrder::where('tenant_id', '=', auth()->user()->tenant_id)
+                    ->where('order_type', '=', TransOrder::ORDERTAVSIR)       
+                    ->where('status', '=', TransOrder::CART) 
+                    ->where('is_save', '=', 1)
+                    ->count();
+
+        return response()->json(['count' => $data]);
+    }
+
     function cartSaved()
     {
-        
+
         $data =DB::table('trans_order AS O')
+        ->where('tenant_id', '=', auth()->user()->tenant_id)
         ->where('order_type', '=', TransOrder::ORDERTAVSIR) 
         ->where('status', '=', TransOrder::CART) 
         ->where('is_save', '=', 1)
@@ -60,7 +131,7 @@ class TavsirController extends Controller
 
             $detail = DB::table('trans_order_detil')->where('trans_order_id', $data[$i]->id)->get();
             $order_detil_many = [];
-            
+
             foreach ($detail as $k => $v) 
             {
                 //return response()->json($v);
@@ -210,6 +281,17 @@ class TavsirController extends Controller
         }
 
     }
+    
+    function PaymentMethod()
+    {
+        $data = PaymentMethod::where('is_tavsir',1)->get();
+        return response()->json($data);
+    }
+
+    function OrderById($id) {
+        $data = TransOrder::findOrfail($id);
+        return response()->json(new TrOrderResource($data));
+    }
 
     function Order(TrOrderRequest $request) 
     {
@@ -286,12 +368,16 @@ class TavsirController extends Controller
         try {
             DB::beginTransaction();
             $data = TransOrder::find($request->id);
-            if ($request->payment_method_id == 6)
+            $payment_method = PaymentMethod::findOrFail($request->payment_method_id);
+            if ($payment_method->code_name == 'tunai')
             {
                 if($request->total > $request->pay_amount)
                 {
                     return response()->json(['message' => "Not Enough Balance"]);
                 }
+            }
+            else{
+                return response()->json(['error' => $payment_method->name.' Coming Soon'], 500);
             }
 
             $data->pay_amount = $request->pay_amount;

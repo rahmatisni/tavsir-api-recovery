@@ -15,21 +15,35 @@ class CreateRefVoucher extends Migration
     {
         Schema::create('ref_voucher', function (Blueprint $table) {
             $table->increments('id');
-            $table->uuid('voucher_uuid')->default(DB::raw('(UUID())'));
+            $table->string('nama_lengkap');
+            $table->string('username');
+            $table->string('password');
+            $table->uuid('voucher_uuid');
             $table->string('customer_id');
             $table->string('phone')->nullable();
             //$table->integer('trx_id')->unsigned();
-            $table->string('username');
             $table->string('balance');
-            $table->string('balance_history');
+            $table->longText('balance_history');
             $table->string('qr_code_use');
-            $table->string('auth_id');
+            $table->string('qr_code_image');
             $table->integer('paystation_id')->unsigned()->nullable();
             $table->integer('created_by')->nullable();
             $table->timestamps();
             $table->integer('is_active');
+            $table->string('public_key');
+            $table->string('hash');
+
+
+            
 
         });
+
+         Schema::create('paystation_setting', function (Blueprint $table) {
+            $table->increments('status_setting');
+            $table->string('nama_app');
+            $table->string('logo_app');
+        });
+
 
         Schema::create('ref_voucher_detail', function (Blueprint $table) {
             $table->increments('id');
