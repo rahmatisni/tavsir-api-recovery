@@ -40,12 +40,15 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/cart/{id}', [App\Http\Controllers\API\TavsirController::class,'CartById']);
         Route::post('/order', [App\Http\Controllers\API\TavsirController::class,'Order']);
         Route::get('/order/{id}', [App\Http\Controllers\API\TavsirController::class,'OrderById']);
+        Route::post('/order-confirmation/{id}', [App\Http\Controllers\API\TravShopController::class,'orderConfirm']);
         Route::get('/payment-method', [App\Http\Controllers\API\TavsirController::class,'PaymentMethod']);
         Route::post('/payment-order', [App\Http\Controllers\API\TavsirController::class,'PaymentOrder']);
     });
 
     Route::prefix('tavsir/tng')->group(function () {
-        Route::post('/tenant-order', [App\Http\Controllers\API\TavsirTnGController::class,'TenantOrder']);    
+        Route::post('/tenant-order', [App\Http\Controllers\API\TavsirTnGController::class,'TenantOrder']);  
+        Route::post('/order-ready/{id}', [App\Http\Controllers\API\TavsirTnGController::class,'OrderReady']);  
+        Route::post('/order-verif/{id}', [App\Http\Controllers\API\TavsirTnGController::class,'OrderVerification']);  
     });
 });
 Route::post('/login', [App\Http\Controllers\API\AuthController::class,'login']);
