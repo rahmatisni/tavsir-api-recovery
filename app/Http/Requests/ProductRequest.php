@@ -28,7 +28,7 @@ class ProductRequest extends FormRequest
             'category' => 'required|string|max:20',
             'sku' => 'required|string|max:20',
             'name' => 'required|string|max:50',
-            'photo' => 'nullable|image|max:5000',
+            'photo' => 'nullable|max:5000',
             'price' => 'required|numeric|min:100|max:1000000',
             'is_active' => 'required|boolean',
             'description' => 'nullable|string|max:255',
