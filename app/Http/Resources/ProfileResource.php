@@ -19,16 +19,16 @@ class ProfileResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'is_admin' => $this->is_admin,
-            'tenant_id' => $this->tenant_id,
             'tenant_name' => $this->tenant->name ?? '',
             'business_id' => $this->business_id,
+            'merchant_id' => $this->merchant_id,
+            'sub_merchant_id' => $this->sub_merchant_id,
+            'tenant_id' => $this->tenant_id,
             'rest_area_id' => $this->rest_area_id,
             'paystation_id' => $this->paystation_id,
             'jabatan' => 'Karyawan',
             'role' => $this->role,
-            'business_id' => $this->business_id,
             'paystation_id' => $this->paystation_id,
-            'rest_area_id' => $this->rest_area_id,
         ];
     }
 }

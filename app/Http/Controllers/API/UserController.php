@@ -33,8 +33,10 @@ class UserController extends Controller
                 'email' => $request->email,
                 'password' => bcrypt($request->password),
                 'role' => $request->role,
-                'tenant_id' => $request->tenant_id,
                 'business_id' => $request->business_id,
+                'merchant_id' => $request->merchant_id,
+                'sub_merchant_id' => $request->sub_merchant_id,
+                'tenant_id' => $request->tenant_id,
                 'rest_area_id' => $request->rest_area_id,
                 'paystation_id' => $request->paystation_id,
         ]);
@@ -67,8 +69,10 @@ class UserController extends Controller
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'role' => $request->role,
-            'tenant_id' => $request->tenant_id,
             'business_id' => $request->business_id,
+            'merchant_id' => $request->merchant_id,
+            'sub_merchant_id' => $request->sub_merchant_id,
+            'tenant_id' => $request->tenant_id,
             'rest_area_id' => $request->rest_area_id,
             'paystation_id' => $request->paystation_id,
         ]);

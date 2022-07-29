@@ -22,14 +22,24 @@ class UserSeeder extends Seeder
                 'email' => 'admin@email.com',
                 'role' => User::ADMIN,
                 'password' => bcrypt('password'),
+                'business_id' => 1,
+                'merchant_id' => 1,
+                'sub_merchant_id' => 1,
                 'tenant_id' => Tenant::first()->id,
+                'rest_area_id' => 0,
+                'paystation_id' => 1,
             ],
             [
                 'name' => 'User',
                 'email' => 'user@email.com',
                 'role' => User::USER,
                 'password' => bcrypt('password'),
+                'business_id' => 1,
+                'merchant_id' => 1,
+                'sub_merchant_id' => 1,
                 'tenant_id' => Tenant::first()->id,
+                'rest_area_id' => 0,
+                'paystation_id' => 1,
             ]
         ]);
         Artisan::call('passport:install');

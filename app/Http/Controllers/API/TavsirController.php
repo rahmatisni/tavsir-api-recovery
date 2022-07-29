@@ -290,7 +290,8 @@ class TavsirController extends Controller
 
     function OrderById($id) {
         $data = TransOrder::findOrfail($id);
-        return response()->json(new TrOrderResource($data));
+        return response()->json(TransOrder::with('detil')->find($data->id));
+        //return response()->json(new TrOrderResource($data));
     }
 
     function Order(TrOrderRequest $request) 

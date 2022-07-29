@@ -65,5 +65,6 @@ class CreateRefVoucher extends Migration
     {
         Schema::dropIfExists('ref_voucher_detail');
         Schema::dropIfExists('ref_voucher');
+        Schema::dropIfExists('paystation_setting');
     }
 }
