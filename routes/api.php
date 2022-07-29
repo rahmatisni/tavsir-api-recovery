@@ -27,7 +27,6 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('voucher', App\Http\Controllers\API\VoucherController::class);
     Route::apiResource('category', App\Http\Controllers\API\CategoryController::class);
     Route::apiResource('user', App\Http\Controllers\API\UserController::class);
-    Route::apiResource('variant', App\Http\Controllers\API\VariantController::class);
 
     Route::prefix('tavsir')->group(function () {
         Route::post('/product', [App\Http\Controllers\API\TavsirController::class,'Product']);
