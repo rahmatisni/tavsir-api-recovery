@@ -12,6 +12,7 @@ class Product extends BaseModel
 
     protected $fillable = [
         'tenant_id',
+        'category_id',
         'category',
         'sku',
         'name',

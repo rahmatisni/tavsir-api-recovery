@@ -1,6 +1,6 @@
 <?php
-
 namespace App\Http\Resources\Tavsir;
+use App\Http\Resources\CustomizeResource;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -16,14 +16,16 @@ class TrProductResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'category_id' => $this->category_id,
             'category' => $this->category,
-            'variant'=> TrVariantResource::collection($this->variant),
-            'addon'=> $this->addon,
-            'photo' => $this->photo,
-            "discount" => $this->discount,
-            "price" => $this->price,
-            "is_active" => $this->is_active,
+            'sku' => $this->sku,
+            'name' => $this->name,
+            'photo' => $this->photo ? asset($this->photo) : null,
+            'discount' => $this->discount,
+            'price' => $this->price,
+            'is_active' => $this->is_active,
+            'description' => $this->description,
+            'customize' => CustomizeResource::collection($this->customize),
         ];
     }
 }

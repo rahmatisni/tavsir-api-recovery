@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Tenant;
+use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ProductFactory extends Factory
@@ -18,6 +19,7 @@ class ProductFactory extends Factory
         $faker->addProvider(new \FakerRestaurant\Provider\en_US\Restaurant($faker));
         return [
             'tenant_id' => Tenant::all()->random()->id,
+            'category_id' => Category::all()->random()->id,
             'category' => $this->faker->word,
             'name' => $faker->foodName(),
             'photo' => $this->faker->imageUrl,
