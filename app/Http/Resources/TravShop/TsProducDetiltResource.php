@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\TravShop;
 
+use App\Http\Resources\CustomizeResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class TsProducDetiltResource extends JsonResource
@@ -20,7 +21,7 @@ class TsProducDetiltResource extends JsonResource
             'category' => $this->category,
             'photo' => $this->photo,
             "price" => $this->price,
-            "variant" => TsVariantResource::collection($this->variant),
+            "customize" => CustomizeResource::collection($this->customize),
         ];
     }
 }

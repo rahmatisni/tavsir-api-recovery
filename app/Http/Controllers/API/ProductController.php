@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -27,10 +28,18 @@ class ProductController extends Controller
      */
     public function store(ProductRequest $request)
     {
-        $data = new Product();
-        $data->fill($request->all());
-        $data->save();
-        return response()->json($data);
+        try {
+            DB::beginTransaction();
+            $data = new Product();
+            $data->fill($request->all());
+            $data->save();
+            $data->customize()->sync($request->customize);
+            DB::commit();
+            return response()->json($data);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['message' => $th->getMessage()], 500);
+        }
     }
 
     /**
@@ -53,9 +62,17 @@ class ProductController extends Controller
      */
     public function update(ProductRequest $request, Product $product)
     {
-        $product->fill($request->all());
-        $product->save();
-        return response()->json($product);
+        try {
+            DB::beginTransaction();
+            $product->fill($request->all());
+            $product->save();
+            $product->customize()->sync($request->customize);
+            DB::commit();
+            return response()->json($product);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['message' => $th->getMessage()], 500);
+        }
     }
 
     /**

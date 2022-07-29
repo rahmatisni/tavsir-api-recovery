@@ -37,14 +37,14 @@ class Product extends BaseModel
             }
         }
     }
-
-    public function variant()
-    {
-        return $this->hasMany(Variant::class, 'product_id');
-    }
-
+    
     public function tenant()
     {
         return $this->belongsTo(Tenant::class,'tenant_id');
+    }
+
+    public function customize()
+    {
+        return $this->belongsToMany(Customize::class, 'trans_product_customize', 'product_id', 'customize_id')->withPivot('must_choose');
     }
 }

@@ -43,6 +43,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/order-confirmation/{id}', [App\Http\Controllers\API\TravShopController::class,'orderConfirm']);
         Route::get('/payment-method', [App\Http\Controllers\API\TavsirController::class,'PaymentMethod']);
         Route::post('/payment-order', [App\Http\Controllers\API\TavsirController::class,'PaymentOrder']);
+        Route::apiResource('customize', App\Http\Controllers\API\CustomizeController::class);
     });
 
     Route::prefix('tavsir/tng')->group(function () {
@@ -66,6 +67,7 @@ Route::prefix('travshop')->group(function () {
     Route::post('/create-payment/{id}', [App\Http\Controllers\API\TravShopController::class,'createPayment']);
     Route::get('/payment-order/{id}', [App\Http\Controllers\API\TravShopController::class,'paymentByOrderId']);
     Route::get('/payment-status/{id}', [App\Http\Controllers\API\TravShopController::class,'statusPayment']);
+
 });
 
 
@@ -76,3 +78,8 @@ Route::get('/pg-cek', function(){
     ];
     return PgJmto::service('/sof/list',$payload);
 });
+
+
+// Route::fallback(function(){
+//     return response()->json(['message' => 'Route Not Found'], 404);
+// });

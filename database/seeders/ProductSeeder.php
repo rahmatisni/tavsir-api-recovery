@@ -2,8 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Customize;
 use App\Models\Product;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class ProductSeeder extends Seeder
 {
@@ -14,6 +16,11 @@ class ProductSeeder extends Seeder
      */
     public function run()
     {
-        Product::factory()->count(10)->create();
+        Product::factory()->count(10)->create()->each(function ($product) {
+            $product->customize()->sync([
+                'customize_id' => Customize::all()->random()->id,
+                'must_choose' => true,
+            ]);
+        });
     }
 }

@@ -28,10 +28,30 @@ class ProductRequest extends FormRequest
             'category' => 'required|string|max:20',
             'sku' => 'required|string|max:20',
             'name' => 'required|string|max:50',
-            'photo' => 'nullable|image|max:2048',
+            'photo' => 'nullable|image|max:5000',
             'price' => 'required|numeric|min:100|max:1000000',
             'is_active' => 'required|boolean',
             'description' => 'nullable|string|max:255',
+            'customize' => 'nullable|array',
+            'customize.*.customize_id' => 'nullable|integer|exists:ref_customize,id',
+            'customize.*.must_choose' => 'nullable|boolean',
+        ];
+    }
+
+    public function attributes()
+    {
+        return [
+            'tenant_id' => 'Tenant',
+            'category' => 'Category',
+            'sku' => 'SKU',
+            'name' => 'Name',
+            'photo' => 'Photo',
+            'price' => 'Price',
+            'is_active' => 'Is Active',
+            'description' => 'Description',
+            'customize' => 'List Customize',
+            'customize.*.customize_id' => 'Customize',
+            'customize.*.must_choose' => 'Must Choose',
         ];
     }
 }
