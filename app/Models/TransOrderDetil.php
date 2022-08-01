@@ -11,8 +11,7 @@ class TransOrderDetil extends BaseModel
         'trans_order_id',
         'product_id',
         'product_name',
-        'variant',
-        'addon',
+        'customize',
         'price',
         'qty',
         'total_price',
@@ -22,6 +21,11 @@ class TransOrderDetil extends BaseModel
     public function trans_order()
     {
         return $this->belongsTo(TransOrder::class, 'trans_order_id');
+    }
+
+    public function getCustomizeAttribute($value)
+    {
+        return json_decode($value);
     }
 
     public function getVariantAttribute($value)
