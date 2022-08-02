@@ -79,6 +79,7 @@ class TravShopController extends Controller
         try {
             DB::beginTransaction();
             $data = new TransOrder();
+            $data->order_type = TransOrder::ORDER_TAKE_N_GO;
             $data->order_id = 'TNG-' . date('YmdHis');
             $data->tenant_id = $request->tenant_id;
             $data->business_id = $request->business_id;
@@ -141,7 +142,7 @@ class TravShopController extends Controller
 
     function orderCustomer($id)
     {
-        $data = TransOrder::with('detil')->where('customer_id', $id)
+        $data = TransOrder::fromTakengo()->with('detil')->where('customer_id', $id)
             ->when($status = request()->status, function ($q) use ($status) {
                 return $q->where('status', $status);
             })->when($order_id = request()->order_id, function ($q) use ($order_id) {

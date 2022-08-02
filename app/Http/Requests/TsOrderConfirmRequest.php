@@ -25,6 +25,15 @@ class TsOrderConfirmRequest extends FormRequest
     {
         return [
             'detil_id' => 'required|array',
+            'detil_id.*' => 'exists:trans_order_detil,id',
+        ];
+    }
+
+    public function attributes()
+    {
+        return [
+            'detil_id' => 'Product',
+            'detil_id.*' => 'Product Confirmation'
         ];
     }
 }

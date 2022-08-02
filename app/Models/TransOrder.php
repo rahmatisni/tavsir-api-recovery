@@ -19,8 +19,8 @@ class TransOrder extends BaseModel
     public const DONE = 'DONE';
     public const CANCEL = 'CANCEL';
 
-    public const ORDERTNG = 1;
-    public const ORDERTAVSIR = 2;
+    public const ORDER_TAKE_N_GO = 'TAKE_N_GO';
+    public const ORDER_TAVSIR = 'ORDER_TAVSIR';
 
     protected $filable = [
         'order_type',
@@ -55,6 +55,16 @@ class TransOrder extends BaseModel
     public function payment()
     {
         return $this->hasOne(TransPayment::class, 'trans_order_id');
+    }
+
+    public function scopeFromTakengo($query)
+    {
+        return $query->where('order_type',self::ORDER_TAKE_N_GO);
+    }
+
+    public function scopeFromTavsir($query)
+    {
+        return $query->where('order_type',self::ORDER_TAVSIR);
     }
 
 }
