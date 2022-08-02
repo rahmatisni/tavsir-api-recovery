@@ -28,11 +28,6 @@ class TransOrderDetil extends BaseModel
         return json_decode($value);
     }
 
-    public function getVariantAttribute($value)
-    {
-        return json_decode($value);
-    }
-
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id');

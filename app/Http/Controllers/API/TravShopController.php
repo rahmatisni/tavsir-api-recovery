@@ -98,25 +98,26 @@ class TravShopController extends Controller
                 $order_detil->product_id = $product->id;
                 $order_detil->product_name = $product->name;
                 $order_detil->price = $product->price;
-                $variant_x = array();
-                foreach ($v['variant'] as $key => $value) {
-                    $variant_y = collect($product->variant)->where('id', $value)->first();
-                    if ($variant_y) {
-                        $sub_variant_collection = collect($variant_y->sub_variant);
-                        $sub_variant = $sub_variant_collection->where('id', $v['sub_variant'][$key])->first();
-                        if ($sub_variant) {
-                            $variant_z = [
-                                'variant_id' => $variant_y->id,
-                                'variant_name' => $variant_y->name,
-                                'sub_variant_name' => $sub_variant->name,
-                                'sub_variant_price' => $sub_variant->price,
+                $customize_x = array();
+                foreach ($v['customize'] as $key => $value) {
+                    $customize_y = collect($product->customize)->where('id', $value)->first();
+                    if ($customize_y) {
+                        $pilihan = collect($customize_y->pilihan);
+                        $pilihan = $pilihan->where('id', $v['pilihan'][$key])->first();
+                        if ($pilihan) {
+                            $customize_z = [
+                                'customize_id' => $customize_y->id,
+                                'customize_name' => $customize_y->name,
+                                'pilihan_id' => $pilihan->id,
+                                'pilihan_name' => $pilihan->name,
+                                'pilihan_price' => $pilihan->price,
                             ];
-                            $variant_x[] = $variant_z;
-                            $order_detil->price += $sub_variant->price;
+                            $customize_x[] = $customize_z;
+                            $order_detil->price += $pilihan->price;
                         }
                     }
                 }
-                $order_detil->variant = json_encode($variant_x);
+                $order_detil->customize = json_encode($customize_x);
                 $order_detil->qty = $v['qty'];
                 $order_detil->total_price = $order_detil->price * $v['qty'];
                 $order_detil->note = $v['note'];
@@ -252,7 +253,7 @@ class TravShopController extends Controller
             DB::beginTransaction();
 
             $data = TransOrder::findOrfail($id);
-            if($data->status != TransOrder::WAITING_PAYMENT){
+            if($data->status != TransOrder::WAITING_PAYMENT || !$data->payment){
                 return response()->json(['info' => $data->status], 422);
             }
 

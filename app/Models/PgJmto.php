@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Http;
 use ParagonIE\ConstantTime\Base64;
+use phpDocumentor\Reflection\DocBlock\Tags\Throws;
 
 class PgJmto extends Model
 {
@@ -17,7 +19,7 @@ class PgJmto extends Model
             'Authorization' => 'Basic ' . base64_encode(env('PG_CLIENT_ID') . ':' . env('PG_CLIENT_SECRET')),
             'Content-Type' => 'application/json',
         ])
-        // ->withoutVerifying()
+        ->withoutVerifying()
         ->post(env('PG_BASE_URL').'/oauth/token', ['grant_type' => 'client_credentials']);
         return $response->json();
     }
@@ -45,8 +47,10 @@ class PgJmto extends Model
     public static function service($path, $payload)
     {
         $token = self::getToken();
+        if(!$token){
+            throw new Exception("token not found");
+        }
         $timestamp = Carbon::now()->format('c');
-
         $signature = self::generateSignature($path, $token['access_token'], $timestamp, $payload);
         $response = Http::withHeaders([
             'JMTO-TIMESTAMP' => $timestamp,

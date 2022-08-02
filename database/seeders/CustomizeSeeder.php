@@ -61,7 +61,7 @@ class CustomizeSeeder extends Seeder
                     'is_available' => 1
                 ],
                 [
-                    'name' => 'Keji',
+                    'name' => 'Keju',
                     'price' => 1000,
                     'is_available' => 0
                 ]

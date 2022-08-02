@@ -23,7 +23,7 @@ class ProductFactory extends Factory
             'category' => $this->faker->word,
             'name' => $faker->foodName(),
             'photo' => $this->faker->imageUrl,
-            'price' => $this->faker->numberBetween(1000, 20000),
+            'price' => 10000,
             'is_active' => $this->faker->boolean,
             'description' => $this->faker->word,
         ];

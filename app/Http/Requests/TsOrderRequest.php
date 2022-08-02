@@ -31,8 +31,8 @@ class TsOrderRequest extends FormRequest
             'sub_merchant_id' => 'required',
             'product' => 'required|array',
             'product.*.product_id' => 'required|integer|exists:ref_product,id',
-            'product.*.variant' => 'required|array',
-            'product.*.addon' => 'required|array',
+            'product.*.customize' => 'array',
+            'product.*.pilihan' => 'array',
             'product.*.qty' => 'required|integer|min:1|max:99',
             'product.*.note' => 'nullable|string|max:255',
         ];
