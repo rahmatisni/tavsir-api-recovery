@@ -69,16 +69,9 @@ Route::prefix('travshop')->group(function () {
 
 });
 
-
-
 Route::get('/pg-cek', function(){
     $payload = [
         'sof_id' => 1
     ];
     return PgJmto::service('/sof/list',$payload);
 });
-
-
-// Route::fallback(function(){
-//     return response()->json(['message' => 'Route Not Found'], 404);
-// });

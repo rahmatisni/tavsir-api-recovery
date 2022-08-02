@@ -17,7 +17,12 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return response()->json(ProductResource::collection(Product::all()));
+        $data = Product::when($name = request()->name, function($q) use ($name){
+            $q->where('name', 'like', '%'.$name.'%');
+        })->when($sku = request()->sku, function($q) use ($sku){
+            $q->where('sku', 'like', '%'.$sku.'%');
+        })->get();
+        return response()->json(ProductResource::collection($data));
     }
 
     /**
