@@ -34,19 +34,10 @@ class TavsirTnGController extends Controller
 
     }
 
-    public function TenantOrderDetail(Request $request) 
+    public function TenantOrderDetail($id) 
     {
-        $data = TransOrder::with('detil')->when($order_id = $request->order_id, function($q)use ($order_id){
-            return $q->where('order_id', 'like', "%$order_id%");
-        });
-          
-        $data = $data->where('tenant_id', '=', auth()->user()->tenant_id)
-                    ->where('order_type', '=', TransOrder::ORDERTNG)
-                    ->whereIn('status',[TransOrder::PENDING, TransOrder::WAITING_CONFIRMATION, 
-                        TransOrder::WAITING_PAYMENT, TransOrder::PREPARED, TransOrder::READY])  
-                    ->get();
-
-        return response()->json(TnGOrderResource::collection($data));
+        $data = TransOrder::findOrfail($id);
+        return response()->json(new TrOrderResource($data));
 
     }
 
