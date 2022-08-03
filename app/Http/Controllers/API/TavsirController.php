@@ -29,8 +29,8 @@ class TavsirController extends Controller
         $data = Product::byTenant()->when($filter = $request->filter, function($q)use ($filter){
             return $q->where('name', 'like', "%$filter%")
                     ->orwhere('sku', 'like', "%$filter%");
-        })->when($category = $request->category, function($q)use ($category){
-            return $q->where('category', $category);
+        })->when($category_id = $request->category_id, function($q)use ($category_id){
+            return $q->where('category_id', $category_id);
         })->get();
 
         return response()->json(TrProductResource::collection($data));

@@ -21,6 +21,8 @@ class ProductController extends Controller
             $q->where('name', 'like', '%'.$name.'%');
         })->when($sku = request()->sku, function($q) use ($sku){
             $q->where('sku', 'like', '%'.$sku.'%');
+        })->when($category_id = request()->category_id, function($q)use ($category_id){
+            return $q->where('category_id', $category_id);
         })->get();
         return response()->json(ProductResource::collection($data));
     }
