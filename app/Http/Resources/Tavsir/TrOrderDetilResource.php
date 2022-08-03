@@ -22,7 +22,7 @@ class TrOrderDetilResource extends JsonResource
             'product_qty' => $this->qty,
             'product_price' => $this->price,
             'product_note' => $this->note,
-            'variant' => $this->variant,
+            'customize' => $this->customize,
         ];
     }
 }
