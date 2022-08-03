@@ -62,8 +62,8 @@ class TravShopController extends Controller
             return $q->where('name', 'like', "%$name%");
         })->when($tenant_id = $request->tenant_id, function ($q) use ($tenant_id) {
             return $q->where('tenant_id', $tenant_id);
-        })->when($category = $request->category, function ($q) use ($category) {
-            return $q->where('category', $category);
+        })->when($category_id = $request->category_id, function ($q) use ($category_id) {
+            return $q->where('category_id', $category_id);
         })->get();
         return response()->json(TsProductResource::collection($data));
     }
@@ -160,6 +160,10 @@ class TravShopController extends Controller
     function orderConfirm(TsOrderConfirmRequest $request, $id)
     {
         $data = TransOrder::findOrfail($id);
+        if($data->status == TransOrder::CANCEL)
+        {
+            return response()->json(['error' => 'Order '.TransOrder::CANCEL], 500);
+        }
         $data->detil->whereNotIn('id', $request->detil_id)->each(function ($item) {
             $item->delete();
         });
@@ -170,6 +174,15 @@ class TravShopController extends Controller
         $data->save();
 
         $data = TransOrder::findOrfail($id);
+        return response()->json(new TsOrderResource($data));
+    }
+
+    function orderCancel($id)
+    {
+        $data = TransOrder::findOrfail($id);
+        $data->status = TransOrder::CANCEL;
+        $data->save();
+
         return response()->json(new TsOrderResource($data));
     }
 
