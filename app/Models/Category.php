@@ -17,4 +17,9 @@ class Category extends BaseModel
     {
         return $this->belongsTo(Tenant::class,'tenant_id');
     }
+
+    public function scopeByTenant($query)
+    {
+        return $query->where('tenant_id', auth()->user()->tenant_id);
+    }
 }

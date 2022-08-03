@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Tavsir;
 
+use App\Models\TransOrder;
 use Illuminate\Foundation\Http\FormRequest;
 
 class TrOrderRequest extends FormRequest
@@ -24,6 +25,8 @@ class TrOrderRequest extends FormRequest
     public function rules()
     {
         return [
+            'action' => 'required|in:'.TransOrder::ACTION_SAVE.','.TransOrder::ACTION_PAY,
+            'pembayaran' => 'min:0|max:10000000|required_if:action,'.TransOrder::ACTION_PAY,
             'id' => 'required',
             'product' => 'required|array',
             'product.*.product_id' => 'required|integer|exists:ref_product,id',
@@ -31,6 +34,28 @@ class TrOrderRequest extends FormRequest
             'product.*.pilihan' => 'nullable|array',
             'product.*.qty' => 'required|integer|min:1|max:99',
             'product.*.note' => 'nullable|string|max:255',
+        ];
+    }
+
+    public function attributes()
+    {
+        return [
+            'action' => 'Action',
+            'pembayaran' => 'Pembayaran',
+            'id' => 'ID',
+            'product' => 'Product',
+            'product.*.product_id' => 'Product',
+            'product.*.customize' => 'Customize',
+            'product.*.pilihan' => 'Pilihan',
+            'product.*.qty' => 'Qty',
+            'product.*.note' => 'Note',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'action.in' => 'Value Action  '.TransOrder::ACTION_SAVE.' or '.TransOrder::ACTION_PAY,
         ];
     }
 }

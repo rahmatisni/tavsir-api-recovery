@@ -29,8 +29,16 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('user', App\Http\Controllers\API\UserController::class);
 
     Route::prefix('tavsir')->group(function () {
-        Route::post('/product', [App\Http\Controllers\API\TavsirController::class,'Product']);
-        Route::get('/category', [App\Http\Controllers\API\TavsirController::class,'Category']);
+        Route::get('/product', [App\Http\Controllers\API\TavsirController::class,'productList']);
+        Route::get('/product/{id}', [App\Http\Controllers\API\TavsirController::class,'productShow']);
+        Route::post('/product', [App\Http\Controllers\API\TavsirController::class,'productStore']);
+        Route::put('/product/{id}', [App\Http\Controllers\API\TavsirController::class,'productUpdate']);
+        Route::delete('/product/{id}', [App\Http\Controllers\API\TavsirController::class,'productDestroy']);
+        Route::get('/category', [App\Http\Controllers\API\TavsirController::class,'categoryList']);
+        Route::get('/category/{category}', [App\Http\Controllers\API\TavsirController::class,'categoryShow']);
+        Route::post('/category', [App\Http\Controllers\API\TavsirController::class,'categoryStore']);
+        Route::put('/category/{category}', [App\Http\Controllers\API\TavsirController::class,'categoryUpdate']);
+        Route::delete('/category/{category}', [App\Http\Controllers\API\TavsirController::class,'categoryDestroy']);
         Route::get('/countnewtng', [App\Http\Controllers\API\TavsirController::class,'CountNewTNG']);
         Route::post('/cart-order', [App\Http\Controllers\API\TavsirController::class,'CartOrder']);
         Route::post('/cart-delete', [App\Http\Controllers\API\TavsirController::class,'CartDelete']);
@@ -39,7 +47,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/cart/{id}', [App\Http\Controllers\API\TavsirController::class,'CartById']);
         Route::post('/order', [App\Http\Controllers\API\TavsirController::class,'Order']);
         Route::get('/order/{id}', [App\Http\Controllers\API\TavsirController::class,'OrderById']);
-        Route::post('/order-confirmation/{id}', [App\Http\Controllers\API\TravShopController::class,'orderConfirm']);
+        Route::post('/order-confirmation/{id}', [App\Http\Controllers\API\TavsirController::class,'orderConfirm']);
         Route::get('/payment-method', [App\Http\Controllers\API\TavsirController::class,'PaymentMethod']);
         Route::post('/payment-order', [App\Http\Controllers\API\TavsirController::class,'PaymentOrder']);
         Route::apiResource('customize', App\Http\Controllers\API\CustomizeController::class);

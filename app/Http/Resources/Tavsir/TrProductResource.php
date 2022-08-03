@@ -16,10 +16,10 @@ class TrProductResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'category_id' => $this->category_id,
-            'category' => $this->category,
             'sku' => $this->sku,
             'name' => $this->name,
+            'category_id' => $this->category_id,
+            'category_name' => $this->category->name ?? '',
             'photo' => $this->photo ? asset($this->photo) : null,
             'discount' => $this->discount,
             'price' => $this->price,

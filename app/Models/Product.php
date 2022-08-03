@@ -13,7 +13,6 @@ class Product extends BaseModel
     protected $fillable = [
         'tenant_id',
         'category_id',
-        'category',
         'sku',
         'name',
         'photo',
@@ -47,5 +46,15 @@ class Product extends BaseModel
     public function customize()
     {
         return $this->belongsToMany(Customize::class, 'trans_product_customize', 'product_id', 'customize_id')->withPivot('must_choose');
+    }
+
+    public function scopeByTenant($query)
+    {
+        return $query->where('tenant_id', auth()->user()->tenant_id);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id');
     }
 }

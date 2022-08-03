@@ -17,11 +17,12 @@ class ProductFactory extends Factory
     {
         $faker = \Faker\Factory::create();
         $faker->addProvider(new \FakerRestaurant\Provider\en_US\Restaurant($faker));
+        $tenant = Tenant::all()->random();
         return [
-            'tenant_id' => Tenant::all()->random()->id,
-            'category_id' => Category::all()->random()->id,
-            'category' => $this->faker->word,
+            'tenant_id' => $tenant->id,
+            'category_id' => Category::where('tenant_id',$tenant->id)->get()->random()->id,
             'name' => $faker->foodName(),
+            'sku' => 'P-'.$faker->unique()->numberBetween(1,9999),
             'photo' => $this->faker->imageUrl,
             'price' => 10000,
             'is_active' => $this->faker->boolean,

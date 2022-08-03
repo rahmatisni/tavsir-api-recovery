@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ProductRequest extends FormRequest
+class TavsirProductRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,6 @@ class ProductRequest extends FormRequest
     public function rules()
     {
         return [
-            'tenant_id' => 'required|exists:ref_tenant,id',
             'category_id' => 'required|exists:ref_category,id',
             'sku' => 'required|string|max:20',
             'name' => 'required|string|max:50',
@@ -41,7 +40,6 @@ class ProductRequest extends FormRequest
     public function attributes()
     {
         return [
-            'tenant_id' => 'Tenant',
             'category_id' => 'Category',
             'sku' => 'SKU',
             'name' => 'Name',

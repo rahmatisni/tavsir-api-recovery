@@ -21,6 +21,11 @@ class TransOrder extends BaseModel
 
     public const ORDER_TAKE_N_GO = 'TAKE_N_GO';
     public const ORDER_TAVSIR = 'ORDER_TAVSIR';
+    
+    public const ACTION_SAVE = 'ACTION_SAVE';
+    public const ACTION_PAY = 'ACTION_PAY';
+
+    
 
     protected $filable = [
         'order_type',

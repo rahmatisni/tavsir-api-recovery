@@ -18,8 +18,7 @@ class CreateRefProduct extends Migration
             $table->integer('tenant_id')->unsigned();
             $table->string('name');
             $table->string('sku');
-            $table->integer('category_id');
-            $table->string('category');
+            $table->integer('category_id')->unsigned();
             $table->string('photo')->nullable();
             $table->integer('discount')->unsigned();
             $table->integer('price')->unsigned();
