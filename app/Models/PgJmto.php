@@ -62,7 +62,7 @@ class PgJmto extends Model
             'Content-Type' => 'Application/json',
             'Authorization' => 'Bearer ' . $token['access_token'],
         ])
-        // ->withoutVerifying()
+        ->withoutVerifying()
         ->post(env('PG_BASE_URL') . $path,$payload);
         return $response;
     }

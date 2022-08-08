@@ -21,6 +21,7 @@ use App\Models\Tenant;
 use App\Models\TransOrder;
 use App\Models\TransOrderDetil;
 use App\Models\TransPayment;
+use App\Models\Voucher;
 use Illuminate\Support\Facades\DB;
 
 class TravShopController extends Controller
@@ -239,10 +240,36 @@ class TravShopController extends Controller
                     }
                     break;
 
+                case 'tav_qr':
+                    $voucher = Voucher::where('hash', request()->voucher)->where('is_active', 1)->first();
+                    if(!$voucher){
+                        return response()->json(['error' => 'Voucher tidak ditemukan'], 500);
+                    }
+
+                    $payment_payload = [
+                        $data->order_id, 
+                        'Take N Go', 
+                        $data->total, 
+                        $data->tenant->name ?? '', 
+                        $request->customer_phone, 
+                        $request->customer_email, 
+                        $request->customer_name,
+                        $voucher->id
+                    ];
+                    $payment = new TransPayment();
+                    $payment->trans_order_id = $data->id;
+                    $payment->data = $payment_payload;
+                    $data->payment()->save($payment);
+                    $data->total = $data->total + $data->service_fee;
+                    $data->save();
+                    $res = $payment_payload;
+                        
+                break;
+
                 default:
                     return response()->json(['error' => $payment_method->name . ' Coming Soon'], 500);
 
-                    break;
+                break;
             }
             DB::commit();
             return response()->json($res);

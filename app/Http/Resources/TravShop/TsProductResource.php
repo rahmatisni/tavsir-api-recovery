@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\TravShop;
 
+use App\Http\Resources\CustomizeResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class TsProductResource extends JsonResource
@@ -20,6 +21,7 @@ class TsProductResource extends JsonResource
             'photo' => $this->photo,
             "price" => $this->price,
             "is_active" => $this->is_active,
+            "customize" => CustomizeResource::collection($this->customize),
         ];
     }
 }
