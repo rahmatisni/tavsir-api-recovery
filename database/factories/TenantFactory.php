@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Business;
 use App\Models\RestArea;
+use App\Models\Ruas;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class TenantFactory extends Factory
@@ -25,6 +26,7 @@ class TenantFactory extends Factory
         
         return [
             'business_id' => $business_id,
+            'ruas_id' => Ruas::all()->random()->id,
             'name' => $this->faker->name,
             'category' => $this->faker->word,
             'address' => $this->faker->address,

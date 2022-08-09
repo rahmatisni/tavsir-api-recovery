@@ -15,6 +15,7 @@ class CreateRefRestArea extends Migration
     {
         Schema::create('ref_rest_area', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('ruas_id')->unsigned();
             $table->string('name');
             $table->string('address');
             $table->decimal('latitude',10,8);

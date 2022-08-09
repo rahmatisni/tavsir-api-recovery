@@ -26,6 +26,7 @@ class CreateUsersTable extends Migration
             $table->integer('paystation_id')->unsigned()->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('status')->default('ACTIVE')->comment('ACTIVE, INACTIVE');
             $table->rememberToken();
             $table->timestamps();
         });

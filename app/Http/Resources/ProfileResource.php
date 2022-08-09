@@ -29,6 +29,7 @@ class ProfileResource extends JsonResource
             'jabatan' => 'Karyawan',
             'role' => $this->role,
             'paystation_id' => $this->paystation_id,
+            'status' => $this->status,
         ];
     }
 }

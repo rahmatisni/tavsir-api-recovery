@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Business;
+use App\Models\Ruas;
 use App\Models\RestArea;
 use App\Models\Tenant;
 use Illuminate\Database\Seeder;
@@ -22,6 +23,7 @@ class TenantSeeder extends Seeder
                 [
                     'name' => 'Rumah Talas',
                     'business_id' => Business::all()->random()->id,
+                    'ruas_id' => Ruas::all()->random()->id,
                     'category' => 'Food',
                     'address' => 'Jl. Raya Jawa Timur',
                     'latitude' => -6.91436,
@@ -42,6 +44,7 @@ class TenantSeeder extends Seeder
                 [
                     'name' => 'Drink Sweet',
                     'business_id' => Business::all()->random()->id,
+                    'ruas_id' => Ruas::all()->random()->id,
                     'category' => 'Drink',
                     'address' => 'Jl. Raya Jakarta',
                     'latitude' => -41.03622500,
@@ -62,6 +65,7 @@ class TenantSeeder extends Seeder
                 [
                     'name' => 'Pecel Sedap',
                     'business_id' => Business::all()->random()->id,
+                    'ruas_id' => Ruas::all()->random()->id,
                     'category' => 'Food',
                     'address' => 'Jl. Raya Bandung',
                     'latitude' => 35.47488000,

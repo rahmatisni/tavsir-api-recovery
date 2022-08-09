@@ -16,6 +16,7 @@ class CreateRefBusiness extends Migration
         Schema::create('ref_business', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
+            $table->string('email')->nullable();
             $table->string('category');
             $table->string('address');
             $table->decimal('latitude',10,8);

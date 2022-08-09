@@ -15,6 +15,7 @@ class BusinessFactory extends Factory
     {
         return [
             'name' => $this->faker->company,
+            'email' => $this->faker->email,
             'category' => $this->faker->word,
             'address' => $this->faker->address,
             'latitude' => $this->faker->latitude,

@@ -31,6 +31,7 @@ class User extends Authenticatable
         'tenant_id',
         'rest_area_id',
         'paystation_id',
+        'status'
     ];
 
     /**

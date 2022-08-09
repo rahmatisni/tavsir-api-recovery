@@ -10,6 +10,7 @@ class Tenant extends BaseModel
 
     protected $fillable = [
         'business_id',
+        'ruas_id',
         'name',
         'category',
         'address',
@@ -42,5 +43,15 @@ class Tenant extends BaseModel
     public function rest_area()
     {
         return $this->belongsTo(RestArea::class, 'rest_area_id');
+    }
+
+    public function ruas()
+    {
+        return $this->belongsTo(Ruas::class, 'ruas_id');
+    }
+
+    public function business()
+    {
+        return $this->belongsTo(Business::class, 'business_id');
     }
 }
