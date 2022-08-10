@@ -23,19 +23,21 @@ class Product extends BaseModel
 
     public function setPhotoAttribute($value)
     {
-        $file = request()->file('photo');
-        if(is_file($file)) {
-            $imagebefore = $this->photo;
-            $img = Image::make($file->getRealPath());
-            $imgPath = 'images/product/'.Carbon::now()->format('Ymd').time().'.'.$file->getClientOriginalExtension();
-            $img->resize(200, null, function ($constraint) {
-                $constraint->aspectRatio();
-            })->save($imgPath);
-            $this->attributes['photo'] = $imgPath;
-            if(file_exists($imagebefore)) {
-                unlink($imagebefore);
-            }
-        }
+        $file = request()->file('photo')->store('images');
+        // if(is_file($file)) {
+        //     $imagebefore = $this->photo;
+        //     $img = Image::make($file->getRealPath());
+        //     $imgPath = 'images/product/'.Carbon::now()->format('Ymd').time().'.'.$file->getClientOriginalExtension();
+        //     dd(\file_exists('images/product'));
+        //     $img->resize(200, null, function ($constraint) {
+        //         $constraint->aspectRatio();
+        //     })->save($imgPath);
+        //     dd(\file_exists($imagebefore));
+            $this->attributes['photo'] = $file;
+        //     if(file_exists($imagebefore)) {
+        //         unlink($imagebefore);
+        //     }
+        // }
     }
     
     public function tenant()
