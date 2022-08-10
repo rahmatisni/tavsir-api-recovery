@@ -30,7 +30,7 @@ class Product extends BaseModel
             $imgPath = 'images/product/'.Carbon::now()->format('Ymd').time().'.'.$file->getClientOriginalExtension();
             $img->resize(200, null, function ($constraint) {
                 $constraint->aspectRatio();
-            })->save(public_path($imgPath));
+            })->save($imgPath);
             $this->attributes['photo'] = $imgPath;
             if(file_exists($imagebefore)) {
                 unlink($imagebefore);
