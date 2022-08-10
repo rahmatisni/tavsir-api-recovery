@@ -72,4 +72,9 @@ class TransOrder extends BaseModel
         return $query->where('order_type',self::ORDER_TAVSIR);
     }
 
+    public function casheer()
+    {
+        return $this->belongsTo(User::class, 'casheer_id');
+    }
+
 }

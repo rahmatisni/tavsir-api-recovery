@@ -23,6 +23,7 @@ use App\Models\TransOrderDetil;
 use App\Models\TransPayment;
 use App\Models\Voucher;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class TravShopController extends Controller
 {
@@ -246,6 +247,27 @@ class TravShopController extends Controller
                         return response()->json(['error' => 'Voucher tidak ditemukan'], 500);
                     }
 
+                    if($voucher->balance < $data->total){
+                        return response()->json(['error' => 'Ballance tidak cukup'], 500);
+                    }
+                    
+                    $balance_now = $voucher->balance;
+                    $voucher->balance -= $data->total;
+                    $ballaceHistory = [
+                                "trx_id" => $data->order_id,
+                                "trx_amount" => $data->total,
+                                "current_balance" => $voucher->balance,
+                                "last_balance" => $balance_now,
+                                "datetime" => Carbon::now()->toDateTimeString(),
+                    ];
+                    $dataHistori = $voucher->balance_history;
+                    $dataHistori['data'] = array_merge($voucher->balance_history['data'], [$ballaceHistory]);
+                    $dataHistori['current_balance'] = $voucher->balance;
+                    $voucher->balance_history = $dataHistori;
+                    $voucher->qr_code_used = $voucher->qr_code_used + 1;
+                    $voucher->updated_at = Carbon::now()->format('Y-m-d H:i:s');
+                    $voucher->save();
+
                     $payment_payload = [
                         $data->order_id, 
                         'Take N Go', 
@@ -261,8 +283,9 @@ class TravShopController extends Controller
                     $payment->data = $payment_payload;
                     $data->payment()->save($payment);
                     $data->total = $data->total + $data->service_fee;
+                    $data->status = TransOrder::PAYMENT_SUCCESS;
                     $data->save();
-                    $res = $payment_payload;
+                    $res = $data;
                         
                 break;
 

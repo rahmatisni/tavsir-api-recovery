@@ -211,60 +211,8 @@ class TavsirController extends Controller
 
     function CartById($id)
     {
-        $data =DB::table('trans_order AS O') 
-        ->where('id', '=', $id)
-        ->selectRaw('O.id, O.order_id, O.sub_total, O.fee, O.service_fee, O.total, O.business_id, O.tenant_id,
-            O.merchant_id, O.sub_merchant_id')
-        ->first();
-
-        $detail = DB::table('trans_order_detil')->where('trans_order_id', $data->id)->get();
-        $order_detil_many = [];
-
-        foreach ($detail as $k => $v) 
-        {
-            $product = Product::find($v->product_id);
-
-            $order_detil = new TransOrderDetil();
-            $order_detil->trans_order_id = $data->id;
-            $order_detil->product_id = $product->id;
-            $order_detil->product_name = $product->name;
-            $order_detil->price = $product->price;
-            $customize_x = array();
-            foreach(json_decode($v->customize) as $key => $value)
-            {
-                $customize_y = collect($product->customize)->where('id', $value->customize_id)->first();
-                if($customize_y)
-                {
-                    $customize_pilihan_collection = collect($customize_y->pilihan);
-                    $customize_pilihan = $customize_pilihan_collection->where('id', $value->pilihan_id)->first();
-                    if($customize_pilihan)
-                    {
-                        $customize_z = [
-                                'customize_id' => $customize_y->id,
-                                'customize_name' => $customize_y->name,
-                                'pilihan_id' => $customize_pilihan->id,
-                                'pilihan_name' => $customize_pilihan->name,
-                                'pilihan_price' => $customize_pilihan->price,
-                        ];
-                        $customize_x[] = $customize_z;
-                        $order_detil->price += $customize_pilihan->price;
-                    }
-                }
-            }
-            $order_detil->customize = json_encode($customize_x);
-            $order_detil->qty = $v->qty;
-            $order_detil->total_price = $order_detil->price * $v->qty;
-            $order_detil->note = $v->note;
-
-            $data->sub_total += $order_detil->total_price;
-            
-            $order_detil_many[] = $order_detil;
-        }
-        $data->fee = 0;
-        $data->total = $data->sub_total + $data->fee + $data->service_fee;
-        $data->detil = $order_detil_many;
-
-        return response()->json($data);
+        $data = TransOrder::findOrfail($id);
+        return response()->json(new TsOrderResource($data));
     }
 
     function CountCarSaved()
@@ -280,7 +228,6 @@ class TavsirController extends Controller
 
     function cartSaved()
     {
-
         $data =DB::table('trans_order AS O')
         ->where('tenant_id', '=', auth()->user()->tenant_id)
         ->where('order_type', '=', TransOrder::ORDER_TAVSIR) 
@@ -330,7 +277,6 @@ class TavsirController extends Controller
                         }
                     }
                 }
-                //dd($variant_x);
                 $order_detil->customize = json_encode($customize_x);
                 $order_detil->qty = $v->qty;
                 $order_detil->total_price = $order_detil->price * $v->qty;
@@ -352,7 +298,6 @@ class TavsirController extends Controller
 
     function CartDelete(Request $request) 
     {
-        //$data = TransOrder::find($request->id);
         $data = TransOrder::whereIn('id',$request->id)
                 ->where('tenant_id', '=', auth()->user()->tenant_id)
                 ->where('order_type', '=', TransOrder::ORDER_TAVSIR) 
@@ -360,7 +305,6 @@ class TavsirController extends Controller
                 ->get();
 
         $deleteDetail = TransOrderDetil::whereIn('trans_order_id', $request->id)->delete();
-        //DB::table('trans_order_detil')->where('trans_order_id', $data->id)->delete();
         $data->each->delete();
 
         return response()->json($data);
@@ -382,6 +326,7 @@ class TavsirController extends Controller
             
             $data->order_type = TransOrder::ORDER_TAVSIR;
             $data->status = TransOrder::CART;
+            $data->casheer_id = auth()->user()->id;
             $data->tenant_id = $request->tenant_id;
             $data->business_id = $request->business_id;
             $data->merchant_id = $request->merchant_id;
@@ -465,8 +410,6 @@ class TavsirController extends Controller
         return response()->json(new TsOrderResource($data));
     }
 
-
-
     function PaymentMethod()
     {
         $data = PaymentMethod::where('is_tavsir',1)->get();
@@ -475,8 +418,7 @@ class TavsirController extends Controller
 
     function OrderById($id) {
         $data = TransOrder::findOrfail($id);
-        return response()->json(TransOrder::with('detil')->find($data->id));
-        //return response()->json(new TrOrderResource($data));
+        return response()->json(new TrOrderResource($data));
     }
 
     function PaymentOrder(Request $request)

@@ -21,4 +21,15 @@ class Voucher extends BaseModel
         'created_at',
         'updated_at'
     ];
+
+
+    public function setBalanceHistoryAttribute($value)
+    {
+        $this->attributes['balance_history'] = json_encode($value);
+    }
+
+    public function getBalanceHistoryAttribute($value)
+    {
+        return json_decode($value, true);
+    }
 }
