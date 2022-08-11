@@ -27,6 +27,7 @@ class ProductFactory extends Factory
             'price' => 10000,
             'is_active' => $this->faker->boolean,
             'description' => $this->faker->word,
+            'updated_at' => null,
         ];
     }
 }

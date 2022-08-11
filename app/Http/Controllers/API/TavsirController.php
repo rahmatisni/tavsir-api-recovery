@@ -31,7 +31,7 @@ class TavsirController extends Controller
                     ->orwhere('sku', 'like', "%$filter%");
         })->when($category_id = $request->category_id, function($q)use ($category_id){
             return $q->where('category_id', $category_id);
-        })->get();
+        })->orderBy('updated_at','desc')->get();
 
         return response()->json(TrProductResource::collection($data));
     }
