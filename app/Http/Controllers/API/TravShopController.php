@@ -264,7 +264,7 @@ class TravShopController extends Controller
                     $dataHistori['data'] = array_merge($voucher->balance_history['data'], [$ballaceHistory]);
                     $dataHistori['current_balance'] = $voucher->balance;
                     $voucher->balance_history = $dataHistori;
-                    $voucher->qr_code_used = $voucher->qr_code_used + 1;
+                    $voucher->qr_code_use = $voucher->qr_code_use + 1;
                     $voucher->updated_at = Carbon::now()->format('Y-m-d H:i:s');
                     $voucher->save();
 
