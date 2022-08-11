@@ -23,8 +23,9 @@ class Product extends BaseModel
 
     public function setPhotoAttribute($value)
     {
-        $file = request()->file('photo')->store('images');
-        // if(is_file($file)) {
+        $file = request()->file('photo');
+        if(is_file($file)) {
+            $file = request()->file('photo')->store('images');
         //     $imagebefore = $this->photo;
         //     $img = Image::make($file->getRealPath());
         //     $imgPath = 'images/product/'.Carbon::now()->format('Ymd').time().'.'.$file->getClientOriginalExtension();
@@ -37,7 +38,7 @@ class Product extends BaseModel
         //     if(file_exists($imagebefore)) {
         //         unlink($imagebefore);
         //     }
-        // }
+        }
     }
     
     public function tenant()

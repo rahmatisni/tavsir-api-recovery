@@ -14,8 +14,23 @@ class PgJmto extends Model
 {
     public static function getToken()
     {
+        if(env('PG_FAKE_RESPON') === true) {
+        //for fake
+        Http::fake([
+            env('PG_BASE_URL').'/oauth/token' => function () {
+                return Http::response([
+                    'access_token' => 'ini-fake-access-token',
+                    "token_type" => "Bearer",
+                    "expires_in" => 36000,
+                    "scope" => "resource.WRITE resource.READ"
+                ], 200);
+            },
+        ]);
+        //end fake
+        }
+
         $response = Http::withHeaders([
-            'Accept' => 'application/sjon',
+            'Accept' => 'application/json',
             'Authorization' => 'Basic ' . base64_encode(env('PG_CLIENT_ID') . ':' . env('PG_CLIENT_SECRET')),
             'Content-Type' => 'application/json',
         ])
@@ -82,6 +97,39 @@ class PgJmto extends Model
             "customer_name" =>  $customer_name,
             "submerchant_id" => '98'
         ];
+
+        if(env('PG_FAKE_RESPON') === true) {
+            //for fake 
+            $fake_respo_create_va = [
+                "status" => "success",
+                "rc" => "0000",
+                "rcm" => "success",
+                "responseData" => [
+                    "sof_code" => "BRI",
+                    "va_number" => "7777700100299999",
+                    "bill" => $payload['amount'],
+                    "fee" => "1000",
+                    "amount" => (string) $amount + 1000,
+                    "bill_id" => $payload['bill_id'],
+                    "bill_name" => $payload['bill_name'],
+                    "desc" => $payload['desc'],
+                    "exp_date" => $payload['exp_date'],
+                    "refnum" => "VA".Carbon::now()->format('YmdHis'),
+                    "phone" => $payload['phone'],
+                    "email" => $payload['email'],
+                    "customer_name" => $payload['customer_name'],
+                ],
+                "requestData" => $payload
+            ];
+
+            Http::fake([
+                env('PG_BASE_URL').'/va/create' => function () use($fake_respo_create_va){
+                    return Http::response($fake_respo_create_va, 200);
+                }
+            ]);
+            //end fake
+        }
+
         $res = self::service('/va/create', $payload);
         return $res->json();
     }
@@ -96,7 +144,39 @@ class PgJmto extends Model
             "phone" =>  $phone,
             "email" =>  $email,
             "customer_name" =>  $customer_name,
+            "submerchant_id" => '98'
         ];
+
+        if(env('PG_FAKE_RESPON') === true) {
+            //for fake
+            $fake_respon_status_va = [
+                "status"=> "success",
+                "rc"=> "0000",
+                "rcm"=> "success",
+                "responseData"=> [
+                    "sof_code"=> $payload['sof_code'],
+                    "bill_id"=> $payload['bill_id'],
+                    "va_number"=> $payload['va_number'],
+                    "pay_status"=> "1",
+                    "amount"=> "99999.00",
+                    "bill_name"=> "FAKE BILL NAME",
+                    "desc"=> "FAKE DESC",
+                    "exp_date"=> "2022-08-12 00:00:00",
+                    "refnum"=> "VA20220811080829999999",
+                    "phone"=> $payload['phone'],
+                    "email"=> $payload['email'],
+                    "customer_name"=> $payload['customer_name'],
+                ],
+                "requestData"=> $payload
+            ];
+            Http::fake([
+                env('PG_BASE_URL').'/va/cekstatus' => function () use($fake_respon_status_va){
+                    return Http::response($fake_respon_status_va, 200);
+                }
+            ]);
+            //end fake
+        }
+
         $res = self::service('/va/cekstatus', $payload);
         return $res->json();
     }
