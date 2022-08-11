@@ -26,6 +26,7 @@ class TsOrderResource extends JsonResource
             'status' => $this->status,
             'casheer_name' => $this->casheer->name ?? '',
             'total_pesanan' => $this->detil->count(),
+            'created_at' => $this->created_at,
             'detil' => TsOrderDetilResource::collection($this->detil),
         ];
     }
