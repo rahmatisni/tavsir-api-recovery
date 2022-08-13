@@ -190,7 +190,7 @@ class TravShopController extends Controller
 
     function paymentMethod()
     {
-        $data = PaymentMethod::where('is_tavsir',0)->get();
+        $data = PaymentMethod::get();
         return response()->json($data);
     }
 
