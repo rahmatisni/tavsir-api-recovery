@@ -32,9 +32,8 @@ class TavsirController extends Controller
         })->when($category_id = $request->category_id, function($q)use ($category_id){
             return $q->where('category_id', $category_id);
         })->when($is_active = request()->is_active, function($q)use ($is_active){
-            return $q->where('is_active', $is_active);
+            return $q->where('is_active',$is_active);
         })->orderBy('updated_at','desc')->get();
-
         return response()->json(TrProductResource::collection($data));
     }
 
