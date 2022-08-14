@@ -317,12 +317,18 @@ class TravShopController extends Controller
             DB::beginTransaction();
 
             $data = TransOrder::findOrfail($id);
+            
             if($data->status == TransOrder::PAYMENT_SUCCESS){
-                return response()->json(['status' => $data->status ,'responseData' => $data->payment->data ?? ''], 200);
+                
+                return response()->json(['status' => $data->status ,'responseData' => $data->payment->data ?? '']);
             }
 
             if($data->status != TransOrder::WAITING_PAYMENT){
-                return response()->json(['info' => $data->status], 422);
+                return response()->json(['status' => $data->status, 'responseData' => $data->payment ?? '']);
+            }
+
+            if(!$data->payment){
+                return response()->json(['status' => $data->status, 'responseData' => null]);
             }
 
             $data_payment = $data->payment->data;
@@ -341,6 +347,8 @@ class TravShopController extends Controller
                 if($res_data['pay_status'] == '1'){
                     $data->status = TransOrder::PAYMENT_SUCCESS;
                     $data->save();
+                }else{
+                    return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '']);
                 }
                 $data->payment()->update([ 'data' => $res_data]);
             }
