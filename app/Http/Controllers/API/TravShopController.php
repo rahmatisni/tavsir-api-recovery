@@ -318,7 +318,7 @@ class TravShopController extends Controller
 
             $data = TransOrder::findOrfail($id);
             if($data->status == TransOrder::PAYMENT_SUCCESS){
-                return response()->json(['status' => $data->status ,'data' => $data->payment->data ?? ''], 200);
+                return response()->json(['status' => $data->status ,'responseData' => $data->payment->data ?? ''], 200);
             }
 
             if($data->status != TransOrder::WAITING_PAYMENT){
