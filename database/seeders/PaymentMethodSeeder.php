@@ -35,7 +35,7 @@ class PaymentMethodSeeder extends Seeder
                     'is_tavsir' => 0,
                 ],
                 [
-                    'name' => 'LinjAja',
+                    'name' => 'LinkAja',
                     'code_name' => 'pg_link_aja',
                     'code_number' => '004',
                     'is_tavsir' => 0,
@@ -51,24 +51,6 @@ class PaymentMethodSeeder extends Seeder
                     'code_name' => 'cash',
                     'code_number' => '006',
                     'is_tavsir' => 0,
-                ],
-                [
-                    'name' => 'TAVQR',
-                    'code_name' => 'tavqr',
-                    'code_number' => '007',
-                    'is_tavsir' => 1,
-                ],
-                [
-                    'name' => 'DEBIT',
-                    'code_name' => 'debit',
-                    'code_number' => '008',
-                    'is_tavsir' => 1,
-                ],
-                [
-                    'name' => 'TUNAI',
-                    'code_name' => 'tunai',
-                    'code_number' => '009',
-                    'is_tavsir' => 1,
                 ],
             ]);
         }

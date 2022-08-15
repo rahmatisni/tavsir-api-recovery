@@ -26,7 +26,7 @@ class PaymentOrderRequest extends FormRequest
         return [
             'payment_method_id' => 'required|exists:ref_payment_method,id',
             'voucher' => 'required_if:payment_method_id,5|max:50',
-            'cash' => 'number|required_if:payment_method_id,6|max:10000000|min:0',
+            'cash' => 'required_if:payment_method_id,6|max:10000000|min:0',
         ];
     }
 }

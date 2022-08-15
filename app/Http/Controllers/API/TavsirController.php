@@ -433,10 +433,24 @@ class TavsirController extends Controller
             $payment_method = PaymentMethod::findOrFail($request->payment_method_id);
             switch ($payment_method->code_name) {
                 case 'cash':
-                    if($request->total > $request->pay_amount)
+                    if($data->total > $request->cash)
                     {
                         return response()->json(['message' => "Not Enough Balance"]);
                     }
+                    $payment = new TransPayment();
+                    $payment->trans_order_id = $data->id;
+                    $payment->data = [
+                        'cash' => $request->cash,
+                        'total' => $data->total,
+                        'kembalian' => $request->cash - $data->total
+                    ];
+                    $data->payment()->save($payment);
+                    $data->payment_method_id = $request->payment_method_id;
+                    $data->payment_id = $payment->id;
+                    $data->pay_amount =  $request->cash;
+                    $data->total = $data->total;
+                    $data->status = TransOrder::DONE;
+                    $data->save();
                     break;
                 
                 case 'tav_qr':
@@ -467,19 +481,17 @@ class TavsirController extends Controller
                     $voucher->save();
 
                     $payment_payload = [
-                        $data->order_id, 
-                        'Take N Go', 
-                        $data->total, 
-                        $data->tenant->name ?? '', 
-                        $request->customer_phone, 
-                        $request->customer_email, 
-                        $request->customer_name,
-                        $voucher->id
+                        'order_id' => $data->order_id, 
+                        'total' => $data->total, 
+                        'tenant' => $data->tenant->name ?? '', 
+                        'voucher' => request()->voucher
                     ];
                     $payment = new TransPayment();
                     $payment->trans_order_id = $data->id;
                     $payment->data = $payment_payload;
                     $data->payment()->save($payment);
+                    $data->payment_method_id = $request->payment_method_id;
+                    $data->payment_id = $payment->id;
                     $data->total = $data->total + $data->service_fee;
                     $data->status = TransOrder::DONE;
                     $data->save();
