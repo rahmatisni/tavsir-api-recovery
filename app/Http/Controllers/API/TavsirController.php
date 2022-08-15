@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PaymentOrderRequest;
 use App\Http\Requests\TavsirProductRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -21,6 +22,8 @@ use App\Models\TransOrder;
 use App\Models\TransOrderDetil;
 use App\Models\PaymentMethod;
 use App\Models\TransPayment;
+use App\Models\Voucher;
+use Carbon\Carbon;
 
 class TavsirController extends Controller
 {
@@ -413,7 +416,7 @@ class TavsirController extends Controller
 
     function PaymentMethod()
     {
-        $data = PaymentMethod::where('is_tavsir',1)->get();
+        $data = PaymentMethod::get();
         return response()->json($data);
     }
 
@@ -422,26 +425,70 @@ class TavsirController extends Controller
         return response()->json(new TrOrderResource($data));
     }
 
-    function PaymentOrder(Request $request)
+    function PaymentOrder(PaymentOrderRequest $request)
     {
         try {
             DB::beginTransaction();
             $data = TransOrder::find($request->id);
             $payment_method = PaymentMethod::findOrFail($request->payment_method_id);
-            if ($payment_method->code_name == 'tunai')
-            {
-                if($request->total > $request->pay_amount)
-                {
-                    return response()->json(['message' => "Not Enough Balance"]);
-                }
-            }
-            else{
-                return response()->json(['error' => $payment_method->name.' Coming Soon'], 500);
-            }
+            switch ($payment_method->code_name) {
+                case 'cash':
+                    if($request->total > $request->pay_amount)
+                    {
+                        return response()->json(['message' => "Not Enough Balance"]);
+                    }
+                    break;
+                
+                case 'tav_qr':
+                    $voucher = Voucher::where('hash', request()->voucher)->where('is_active', 1)->first();
+                    if(!$voucher){
+                        return response()->json(['error' => 'Voucher tidak ditemukan'], 500);
+                    }
 
-            $data->pay_amount = $request->pay_amount;
-            $data->status = TransOrder::DONE;
-            $data->save();
+                    if($voucher->balance < $data->total){
+                        return response()->json(['error' => 'Ballance tidak cukup'], 500);
+                    }
+
+                    $balance_now = $voucher->balance;
+                    $voucher->balance -= $data->total;
+                    $ballaceHistory = [
+                                "trx_id" => $data->order_id,
+                                "trx_amount" => $data->total,
+                                "current_balance" => $voucher->balance,
+                                "last_balance" => $balance_now,
+                                "datetime" => Carbon::now()->toDateTimeString(),
+                    ];
+                    $dataHistori = $voucher->balance_history;
+                    $dataHistori['data'] = array_merge($voucher->balance_history['data'], [$ballaceHistory]);
+                    $dataHistori['current_balance'] = $voucher->balance;
+                    $voucher->balance_history = $dataHistori;
+                    $voucher->qr_code_use = $voucher->qr_code_use + 1;
+                    $voucher->updated_at = Carbon::now()->format('Y-m-d H:i:s');
+                    $voucher->save();
+
+                    $payment_payload = [
+                        $data->order_id, 
+                        'Take N Go', 
+                        $data->total, 
+                        $data->tenant->name ?? '', 
+                        $request->customer_phone, 
+                        $request->customer_email, 
+                        $request->customer_name,
+                        $voucher->id
+                    ];
+                    $payment = new TransPayment();
+                    $payment->trans_order_id = $data->id;
+                    $payment->data = $payment_payload;
+                    $data->payment()->save($payment);
+                    $data->total = $data->total + $data->service_fee;
+                    $data->status = TransOrder::DONE;
+                    $data->save();
+                    break;
+                
+                default:
+                    return response()->json(['error' => $payment_method->name.' Coming Soon'], 500);
+                    break;
+            }
             DB::commit();
             return response()->json( new TrOrderResource($data));
         }
