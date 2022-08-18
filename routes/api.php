@@ -2,6 +2,7 @@
 
 use App\Models\PgJmto;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 /*
 |--------------------------------------------------------------------------
@@ -81,7 +82,8 @@ Route::prefix('travshop')->group(function () {
 });
 
 Route::get('/pg-cek', function(){
-    return Illuminate\Support\Facades\Http::withoutVerifying()->post('https://travoy.jasamarga.co.id:3000/pg-jmto',[
+    DB::beginTransaction();
+    $payload = [
         'method' => 'POST',
         'path' => '/va/create',
         'payload' => [
@@ -97,7 +99,9 @@ Route::get('/pg-cek', function(){
             "customer_name" => "travoy customer test",
             "submerchant_id" => "98"
         ]
-    ])->json();
+    ];
+    return Illuminate\Support\Facades\Http::withoutVerifying()->post('https://travoy.jasamarga.co.id:3000/pg-jmto',$payload)->json();
+    DB::commit();
     // $payload = [
     //     'sof_id' => 1
     // ];

@@ -24,6 +24,7 @@ use App\Models\TransPayment;
 use App\Models\Voucher;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Http;
 
 class TravShopController extends Controller
 {
@@ -219,15 +220,16 @@ class TravShopController extends Controller
                         'email' => $request->customer_email, 
                         'customer_name' => $request->customer_name
                     ];
-                    $res = PgJmto::vaBriCreate(
-                        $data->order_id, 
-                        'Take N Go', 
-                        $data->total, 
-                        $data->tenant->name ?? '', 
-                        $request->customer_phone, 
-                        $request->customer_email, 
-                        $request->customer_name
-                    );
+                    $res = Http::withoutVerifying()->post('https://travoy.jasamarga.co.id:3000/pg-jmto',$payment_payload)->json();
+                    // $res = PgJmto::vaBriCreate(
+                    //     $data->order_id, 
+                    //     'Take N Go', 
+                    //     $data->total, 
+                    //     $data->tenant->name ?? '', 
+                    //     $request->customer_phone, 
+                    //     $request->customer_email, 
+                    //     $request->customer_name
+                    // );
                     if ($res['status'] == 'success') {
                         $payment = new TransPayment();
                         $payment->trans_order_id = $data->id;
