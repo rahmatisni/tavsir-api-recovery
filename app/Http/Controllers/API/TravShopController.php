@@ -224,7 +224,11 @@ class TravShopController extends Controller
                         'customer_name' => $request->customer_name,
                         "submerchant_id" => '98'
                     ];
-                    $res = Http::withoutVerifying()->post('https://travoy.jasamarga.co.id:3000/pg-jmto',$payment_payload)->json();
+                    $res = Http::withoutVerifying()->post('https://travoy.jasamarga.co.id:3000/pg-jmto',[
+                        'method' => 'POST',
+                        'path' => '/va/create',
+                        'payload' => $payment_payload
+                    ])->json();
                     // $res = PgJmto::vaBriCreate(
                     //     $data->order_id, 
                     //     'Take N Go', 
