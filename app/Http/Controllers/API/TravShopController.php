@@ -211,13 +211,13 @@ class TravShopController extends Controller
             switch ($payment_method->code_name) {
                 case 'pg_va_bri':
                     $payment_payload = [
-                        $data->order_id, 
-                        'Take N Go', 
-                        $data->total, 
-                        $data->tenant->name ?? '', 
-                        $request->customer_phone, 
-                        $request->customer_email, 
-                        $request->customer_name
+                        'bill_id' => $data->order_id, 
+                        'bill_name' => 'Take N Go', 
+                        'amount' => $data->total, 
+                        'desc' => $data->tenant->name ?? '', 
+                        'phone' => $request->customer_phone, 
+                        'email' => $request->customer_email, 
+                        'customer_name' => $request->customer_name
                     ];
                     $res = PgJmto::vaBriCreate(
                         $data->order_id, 
@@ -269,14 +269,14 @@ class TravShopController extends Controller
                     $voucher->save();
 
                     $payment_payload = [
-                        $data->order_id, 
-                        'Take N Go', 
-                        $data->total, 
-                        $data->tenant->name ?? '', 
-                        $request->customer_phone, 
-                        $request->customer_email, 
-                        $request->customer_name,
-                        $voucher->id
+                        'order_id' => $data->order_id, 
+                        'order_name' => 'Take N Go', 
+                        'amount' => $data->total, 
+                        'desc' => $data->tenant->name ?? '', 
+                        'phone' => $request->customer_phone, 
+                        'email' => $request->customer_email, 
+                        'customer_name' => $request->customer_name,
+                        'voucher' => $voucher->id
                     ];
                     $payment = new TransPayment();
                     $payment->trans_order_id = $data->id;
