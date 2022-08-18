@@ -84,7 +84,19 @@ Route::get('/pg-cek', function(){
     return Illuminate\Support\Facades\Http::withoutVerifying()->post('https://travoy.jasamarga.co.id:3000/pg-jmto',[
         'method' => 'POST',
         'path' => '/sof/list',
-        'payload' => []
+        'payload' => [
+            "sof_code" => "BRI",
+            "bill_id" => "TNG-20220816132356",
+            "bill_name" => "Take N Go",
+            "amount" => "7000",
+            "desc" => "Rumah Talas",
+            "exp_date" => "2022-08-19 15:40:15",
+            "va_type" => "close",
+            "phone" => "6285156903693",
+            "email" => "rony.cetzl@gmail.com",
+            "customer_name" => "travoy customer test",
+            "submerchant_id" => "98"
+        ]
     ])->json();
     $payload = [
         'sof_id' => 1
