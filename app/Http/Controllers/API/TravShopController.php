@@ -215,7 +215,7 @@ class TravShopController extends Controller
                         "sof_code" =>  "BRI",
                         'bill_id' => $data->order_id, 
                         'bill_name' => 'Take N Go', 
-                        'amount' => $data->total, 
+                        'amount' => (string) $data->total, 
                         'desc' => $data->tenant->name ?? '', 
                         "exp_date" =>  Carbon::now()->addDay(1)->format('Y-m-d H:i:s'),
                         "va_type" =>  "close",
