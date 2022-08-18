@@ -83,7 +83,7 @@ Route::prefix('travshop')->group(function () {
 Route::get('/pg-cek', function(){
     return Illuminate\Support\Facades\Http::withoutVerifying()->post('https://travoy.jasamarga.co.id:3000/pg-jmto',[
         'method' => 'POST',
-        'path' => '/sof/list',
+        'path' => '/va/create',
         'payload' => [
             "sof_code" => "BRI",
             "bill_id" => "TNG-20220816132356",
@@ -98,8 +98,8 @@ Route::get('/pg-cek', function(){
             "submerchant_id" => "98"
         ]
     ])->json();
-    $payload = [
-        'sof_id' => 1
-    ];
-    return PgJmto::service('/sof/list',$payload);
+    // $payload = [
+    //     'sof_id' => 1
+    // ];
+    // return PgJmto::service('/sof/list',$payload);
 });
