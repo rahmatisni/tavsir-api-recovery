@@ -98,6 +98,10 @@ class PgJmto extends Model
             "submerchant_id" => '98'
         ];
 
+        if(env('PG_FROM_TRAVOY') === true){
+            return Http::post(env('TRAVOY_URL').'/va/create',$payload)->json();
+        }
+
         if(env('PG_FAKE_RESPON') === true) {
             //for fake 
             $fake_respo_create_va = [
@@ -146,6 +150,10 @@ class PgJmto extends Model
             "customer_name" =>  $customer_name,
             "submerchant_id" => '98'
         ];
+
+        if(env('PG_FROM_TRAVOY') === true){
+            return Http::post(env('TRAVOY_URL').'/va/cekstatus',$payload)->json();
+        }
 
         if(env('PG_FAKE_RESPON') === true) {
             //for fake

@@ -81,6 +81,11 @@ Route::prefix('travshop')->group(function () {
 });
 
 Route::get('/pg-cek', function(){
+    return Illuminate\Support\Facades\Http::withoutVerifying()->post('https://travoy.jasamarga.co.id:3000/pg-jmto',[
+        'method' => 'POST',
+        'path' => '/sof/list',
+        'payload' => []
+    ])->json();
     $payload = [
         'sof_id' => 1
     ];
