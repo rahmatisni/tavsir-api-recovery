@@ -18,7 +18,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:api')->group(function () {
     Route::get('/profile', [App\Http\Controllers\API\AuthController::class, 'profile']);
-    
+    Route::apiResource('chat', App\Http\Controllers\API\ChatController::class);
+
     Route::post('/logout', [App\Http\Controllers\API\AuthController::class,'logout']);
     Route::apiResource('rest-area', App\Http\Controllers\API\RestAreaController::class);
     Route::apiResource('business', App\Http\Controllers\API\BusinessController::class);
@@ -57,10 +58,10 @@ Route::middleware('auth:api')->group(function () {
     });
 
     Route::prefix('tavsir/tng')->group(function () {
-        Route::post('/tenant-order', [App\Http\Controllers\API\TavsirTnGController::class,'TenantOrder']);  
-        Route::post('/tenant-order/{id}', [App\Http\Controllers\API\TavsirTnGController::class,'TenantOrderDetail']);  
-        Route::post('/order-ready/{id}', [App\Http\Controllers\API\TavsirTnGController::class,'OrderReady']);  
-        Route::post('/order-verif/{id}', [App\Http\Controllers\API\TavsirTnGController::class,'OrderVerification']); 
+        Route::post('/tenant-order', [App\Http\Controllers\API\TavsirTnGController::class,'TenantOrder']);
+        Route::post('/tenant-order/{id}', [App\Http\Controllers\API\TavsirTnGController::class,'TenantOrderDetail']);
+        Route::post('/order-ready/{id}', [App\Http\Controllers\API\TavsirTnGController::class,'OrderReady']);
+        Route::post('/order-verif/{id}', [App\Http\Controllers\API\TavsirTnGController::class,'OrderVerification']);
     });
 });
 Route::post('/login', [App\Http\Controllers\API\AuthController::class,'login']);
