@@ -21,12 +21,11 @@ class CreateRefVoucher extends Migration
             $table->uuid('voucher_uuid');
             $table->string('customer_id');
             $table->string('phone')->nullable();
-            //$table->integer('trx_id')->unsigned();
+            $table->integer('rest_area_id')->unsigned()->nullable();
             $table->string('balance');
             $table->longText('balance_history');
             $table->string('qr_code_use');
             $table->string('qr_code_image');
-            $table->integer('rest_area_id')->unsigned()->nullable();
             $table->integer('created_by')->nullable();
             $table->timestamps();
             $table->integer('is_active');

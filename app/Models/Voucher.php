@@ -9,17 +9,14 @@ class Voucher extends BaseModel
     protected $table = 'ref_voucher';
 
     protected $fillable = [
+        'nama_lengkap',
+        'username',
         'voucher_uuid',
         'customer_id',
         'phone',
-        //'trx_id',
         'balance',
-        'qr',
-        'auth_id',
-        'paystation_id',
-        'created_by',
-        'created_at',
-        'updated_at'
+        'qr_code_use',
+        'rest_area_id',
     ];
 
 

@@ -364,4 +364,19 @@ class TravShopController extends Controller
             return response()->json(['error' => $th->getMessage()], 500);
         }
     }
+
+    public function saldo()
+    {
+        $data = Voucher::when($rest_area_id = request()->rest_area_id, function($q) use ($rest_area_id) {
+                            return $q->where('rest_area_id', $rest_area_id);
+                        })
+                        ->when($username = request()->username, function ($q) use ($username) {
+                            return $q->where('username', $username);
+                        })->when($customer_id = request()->customer_id, function ($q) use ($customer_id) {
+                            return $q->where('customer_id', $customer_id);
+                        })->when($phone = request()->phone, function ($q) use ($phone) {
+                            return $q->where('phone', $phone);
+                        })->get();
+        return response()->json($data);
+    }
 }
