@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\TsCreatePaymentRequest;
 use App\Http\Requests\TsOrderConfirmRequest;
 use App\Http\Requests\TsOrderRequest;
+use App\Http\Resources\SaldoResource;
 use App\Http\Resources\TravShop\TsOrderResource;
 use App\Http\Resources\TravShop\TsProducDetiltResource;
 use App\Http\Resources\TravShop\TsProductResource;
@@ -377,6 +378,6 @@ class TravShopController extends Controller
                         })->when($phone = request()->phone, function ($q) use ($phone) {
                             return $q->where('phone', $phone);
                         })->get();
-        return response()->json($data);
+        return response()->json(SaldoResource::collection($data));
     }
 }
