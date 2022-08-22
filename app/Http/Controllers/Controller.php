@@ -21,3 +21,4 @@ class Controller extends BaseController
         return $d < $distance;
     }
 }
+
