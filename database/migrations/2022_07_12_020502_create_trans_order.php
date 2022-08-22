@@ -16,8 +16,7 @@ class CreateTransOrder extends Migration
         Schema::create('trans_order', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('order_id');
-            $table->tinyInteger('order_type')->default(1)->comment('1 = Take&Go (Travoy) 
-                                                                    2 = Onsite');
+            $table->string('order_type');
             $table->integer('sub_total')->unsigned();
             $table->integer('fee')->unsigned();
             $table->integer('service_fee')->unsigned();

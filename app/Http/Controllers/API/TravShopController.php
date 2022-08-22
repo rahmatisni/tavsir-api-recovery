@@ -211,24 +211,19 @@ class TravShopController extends Controller
             $payment_method = PaymentMethod::findOrFail($request->payment_method_id);
             switch ($payment_method->code_name) {
                 case 'pg_va_bri':
-                    // $payment_payload = [
-                    //     "sof_code" =>  "BRI",
-                    //     'bill_id' => $data->order_id, 
-                    //     'bill_name' => 'Take N Go', 
-                    //     'amount' => (string) $data->total, 
-                    //     'desc' => $data->tenant->name ?? '', 
-                    //     "exp_date" =>  Carbon::now()->addDay(1)->format('Y-m-d H:i:s'),
-                    //     "va_type" =>  "close",
-                    //     'phone' => $request->customer_phone, 
-                    //     'email' => $request->customer_email, 
-                    //     'customer_name' => $request->customer_name,
-                    //     "submerchant_id" => '98'
-                    // ];
-                    // $res = Http::withoutVerifying()->post('https://travoy.jasamarga.co.id:3000/pg-jmto',[
-                    //     'method' => 'POST',
-                    //     'path' => '/va/create',
-                    //     'payload' => $payment_payload
-                    // ])->json();
+                    $payment_payload = [
+                        "sof_code" =>  "BRI",
+                        'bill_id' => $data->order_id, 
+                        'bill_name' => 'Take N Go', 
+                        'amount' => (string) $data->total, 
+                        'desc' => $data->tenant->name ?? '', 
+                        "exp_date" =>  Carbon::now()->addDay(1)->format('Y-m-d H:i:s'),
+                        "va_type" =>  "close",
+                        'phone' => $request->customer_phone, 
+                        'email' => $request->customer_email, 
+                        'customer_name' => $request->customer_name,
+                        "submerchant_id" => '98'
+                    ];
                     $res = PgJmto::vaBriCreate(
                         $data->order_id, 
                         'Take N Go', 
