@@ -99,7 +99,11 @@ class PgJmto extends Model
         ];
 
         if(env('PG_FROM_TRAVOY') === true){
-            return Http::withoutVerifying()->post(env('TRAVOY_URL').'/va/create',$payload)->json();
+            return Http::withoutVerifying()->post(env('TRAVOY_URL').'/pg-jmto',[
+                'method' => 'POST',
+                'path' => '/va/create',
+                'payload' => $payload
+            ])->json();
         }
 
         if(env('PG_FAKE_RESPON') === true) {
@@ -152,7 +156,11 @@ class PgJmto extends Model
         ];
 
         if(env('PG_FROM_TRAVOY') === true){
-            return Http::withoutVerifying()->post(env('TRAVOY_URL').'/va/cekstatus',$payload)->json();
+            return Http::withoutVerifying()->post(env('TRAVOY_URL').'/pg-jmto',[
+                'method' => 'POST',
+                'path' => '/va/cekstatus',
+                'payload' => $payload
+            ])->json();
         }
 
         if(env('PG_FAKE_RESPON') === true) {

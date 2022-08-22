@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\PgJmto;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -82,7 +83,6 @@ Route::prefix('travshop')->group(function () {
 });
 
 Route::get('/pg-cek', function(){
-    DB::beginTransaction();
     $payload = [
         'method' => 'POST',
         'path' => '/va/create',
@@ -92,7 +92,7 @@ Route::get('/pg-cek', function(){
             "bill_name" => "Take N Go",
             "amount" => "7000",
             "desc" => "Rumah Talas",
-            "exp_date" => "2022-08-19 15:40:15",
+            "exp_date" => Carbon::now()->addDay(1)->format('Y-m-d H:i:s'),
             "va_type" => "close",
             "phone" => "6285156903693",
             "email" => "rony.cetzl@gmail.com",
@@ -101,9 +101,8 @@ Route::get('/pg-cek', function(){
         ]
     ];
     return Illuminate\Support\Facades\Http::withoutVerifying()->post('https://travoy.jasamarga.co.id:3000/pg-jmto',$payload)->json();
-    DB::commit();
-    // $payload = [
-    //     'sof_id' => 1
-    // ];
-    // return PgJmto::service('/sof/list',$payload);
+    $payload = [
+        'sof_id' => 1
+    ];
+    return PgJmto::service('/sof/list',$payload);
 });
