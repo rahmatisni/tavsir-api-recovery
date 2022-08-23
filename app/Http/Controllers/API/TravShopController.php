@@ -136,6 +136,10 @@ class TravShopController extends Controller
             $data->status = TransOrder::WAITING_CONFIRMATION;
             $data->save();
             $data->detil()->saveMany($order_detil_many);
+
+            // Send Email
+            // \Mail::to('test@email.com')->send(new \App\Mail\SendMail('Struk', 'struk'));
+
             DB::commit();
             return response()->json(TransOrder::with('detil')->find($data->id));
         } catch (\Throwable $th) {
@@ -214,24 +218,24 @@ class TravShopController extends Controller
                 case 'pg_va_bri':
                     $payment_payload = [
                         "sof_code" =>  "BRI",
-                        'bill_id' => $data->order_id, 
-                        'bill_name' => 'Take N Go', 
-                        'amount' => (string) $data->total, 
-                        'desc' => $data->tenant->name ?? '', 
+                        'bill_id' => $data->order_id,
+                        'bill_name' => 'Take N Go',
+                        'amount' => (string) $data->total,
+                        'desc' => $data->tenant->name ?? '',
                         "exp_date" =>  Carbon::now()->addDay(1)->format('Y-m-d H:i:s'),
                         "va_type" =>  "close",
-                        'phone' => $request->customer_phone, 
-                        'email' => $request->customer_email, 
+                        'phone' => $request->customer_phone,
+                        'email' => $request->customer_email,
                         'customer_name' => $request->customer_name,
                         "submerchant_id" => '98'
                     ];
                     $res = PgJmto::vaBriCreate(
-                        $data->order_id, 
-                        'Take N Go', 
-                        $data->total, 
-                        $data->tenant->name ?? '', 
-                        $request->customer_phone, 
-                        $request->customer_email, 
+                        $data->order_id,
+                        'Take N Go',
+                        $data->total,
+                        $data->tenant->name ?? '',
+                        $request->customer_phone,
+                        $request->customer_email,
                         $request->customer_name
                     );
                     if ($res['status'] == 'success') {
@@ -256,7 +260,7 @@ class TravShopController extends Controller
                     if($voucher->balance < $data->total){
                         return response()->json(['error' => 'Ballance tidak cukup'], 500);
                     }
-                    
+
                     $balance_now = $voucher->balance;
                     $voucher->balance -= $data->total;
                     $ballaceHistory = [
@@ -275,12 +279,12 @@ class TravShopController extends Controller
                     $voucher->save();
 
                     $payment_payload = [
-                        'order_id' => $data->order_id, 
-                        'order_name' => 'Take N Go', 
-                        'amount' => $data->total, 
-                        'desc' => $data->tenant->name ?? '', 
-                        'phone' => $request->customer_phone, 
-                        'email' => $request->customer_email, 
+                        'order_id' => $data->order_id,
+                        'order_name' => 'Take N Go',
+                        'amount' => $data->total,
+                        'desc' => $data->tenant->name ?? '',
+                        'phone' => $request->customer_phone,
+                        'email' => $request->customer_email,
                         'customer_name' => $request->customer_name,
                         'voucher' => $voucher->id
                     ];
@@ -292,7 +296,7 @@ class TravShopController extends Controller
                     $data->status = TransOrder::PAYMENT_SUCCESS;
                     $data->save();
                     $res = $data;
-                        
+
                 break;
 
                 default:
@@ -323,9 +327,9 @@ class TravShopController extends Controller
             DB::beginTransaction();
 
             $data = TransOrder::findOrfail($id);
-            
+
             if($data->status == TransOrder::PAYMENT_SUCCESS){
-                
+
                 return response()->json(['status' => $data->status ,'responseData' => $data->payment->data ?? '']);
             }
 
