@@ -19,6 +19,7 @@ class TsTenantResource extends JsonResource
             'name' => $this->name,
             'photo' => $this->photo_url,
             'rating' => round($this->rating, 1),
+            'total_rating' => $this->total_rating,
             'penilaian' => 200,
             'category' => $this->category,
             'sub_category' => 'Restaurant',

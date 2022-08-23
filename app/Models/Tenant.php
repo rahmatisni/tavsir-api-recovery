@@ -64,4 +64,9 @@ class Tenant extends BaseModel
     {
         return $this->order() ? $this->order()->average('rating') : 0;
     }
+
+    public function getTotalRatingAttribute()
+    {
+        return $this->order() ? $this->order()->where('rating', '>', 0)->count() : 0;
+    }
 }

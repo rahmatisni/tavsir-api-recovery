@@ -35,6 +35,7 @@ class TenantResource extends JsonResource
             'sub_merchant_id' => $this->sub_merchant_id,
             'is_open' => $this->is_open,
             'rating' => round($this->rating, 1),
+            'total_rating' => $this->total_rating,
             'created_by' => $this->created_by,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
