@@ -21,13 +21,13 @@ class TransOrder extends BaseModel
 
     public const ORDER_TAKE_N_GO = 'TAKE_N_GO';
     public const ORDER_TAVSIR = 'ORDER_TAVSIR';
-    
+
     public const ACTION_SAVE = 'ACTION_SAVE';
     public const ACTION_PAY = 'ACTION_PAY';
 
-    
 
-    protected $filable = [
+
+    protected $fillable = [
         'order_type',
         'sub_total',
         'fee',
@@ -40,6 +40,7 @@ class TransOrder extends BaseModel
         'payment_id',
         'discount',
         'is_save',
+        'rating',
     ];
 
     public function detil()

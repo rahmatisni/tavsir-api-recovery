@@ -54,4 +54,14 @@ class Tenant extends BaseModel
     {
         return $this->belongsTo(Business::class, 'business_id');
     }
+
+    public function order()
+    {
+        return $this->hasMany(TransOrder::class, 'tenant_id');
+    }
+
+    public function getRatingAttribute()
+    {
+        return $this->order() ? $this->order()->average('rating') : 0;
+    }
 }
