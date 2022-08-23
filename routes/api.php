@@ -85,6 +85,8 @@ Route::prefix('travshop')->group(function () {
 
 });
 
+Route::post('/send-email/{order}', [App\Http\Controllers\API\SendController::class, 'mail']);
+
 Route::get('/pg-cek', function(){
     $payload = [
         'method' => 'POST',
