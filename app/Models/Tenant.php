@@ -30,6 +30,26 @@ class Tenant extends BaseModel
         'updated_at'
     ];
 
+    public function setPhotoUrlAttribute($value)
+    {
+        $file = request()->file('photo');
+        if(is_file($file)) {
+            $file = request()->file('photo')->store('images');
+        //     $imagebefore = $this->photo;
+        //     $img = Image::make($file->getRealPath());
+        //     $imgPath = 'images/product/'.Carbon::now()->format('Ymd').time().'.'.$file->getClientOriginalExtension();
+        //     dd(\file_exists('images/product'));
+        //     $img->resize(200, null, function ($constraint) {
+        //         $constraint->aspectRatio();
+        //     })->save($imgPath);
+        //     dd(\file_exists($imagebefore));
+            $this->attributes['photo_url'] = $file;
+        //     if(file_exists($imagebefore)) {
+        //         unlink($imagebefore);
+        //     }
+        }
+    }
+
     public function product()
     {
         return $this->hasMany(Product::class, 'tenant_id');

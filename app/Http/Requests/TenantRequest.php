@@ -35,7 +35,6 @@ class TenantRequest extends FormRequest
             'time_end' => 'required|string',
             'phone' => 'nullable|string',
             'manager' => 'nullable|string',
-            'photo_url' => 'nullable|string',
             'merchant_id' => 'nullable|integer',
             'sub_merchant_id' => 'nullable|integer',
             'is_open' => 'required|boolean',

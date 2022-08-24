@@ -30,7 +30,7 @@ class TenantResource extends JsonResource
             'time_end' => $this->time_end,
             'phone' => $this->phone,
             'manager' => $this->manager,
-            'photo_url' => $this->photo_url,
+            'photo_url' => $this->photo_url ? asset($this->photo_url) : null,
             'merchant_id' => $this->merchant_id,
             'sub_merchant_id' => $this->sub_merchant_id,
             'is_open' => $this->is_open,

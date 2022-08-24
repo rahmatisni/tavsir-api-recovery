@@ -18,6 +18,7 @@ class TsOrderResource extends JsonResource
             "id" => $this->id,
             'rest_area_name' => $this->tenant ? ($this->tenant->rest_area ? $this->tenant->rest_area->name : null) : null,
             'tenant_name' => $this->tenant->name ?? null,
+            'tenant_photo' => $this->tenant ? ($this->tenant->photo_url ? asset($this->tenant->photo_url) : null) : null,
             'order_id' => $this->order_id,
             'order_type' => $this->order_type,
             'sub_total' => $this->sub_total,

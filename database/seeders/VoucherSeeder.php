@@ -15,6 +15,8 @@ class VoucherSeeder extends Seeder
      */
     public function run()
     {
+        $restarea = RestArea::all()->random();
+
         Voucher::create([
             'nama_lengkap' => 'Admin',
             'username' => 'admin@email.com',
@@ -27,18 +29,41 @@ class VoucherSeeder extends Seeder
             'public_key' => '018754839921632',
             'hash' => 'hRV/12TBXGURXT1vH4yy',
             'balance_history' => [
-                "current_balance" => "300000",
+                "current_balance" => 300000,
                 "data" => [
                     [
                         "trx_id" => "INIT TOPUP-939412828407556-1661146885",
-                        "trx_amount" => "300000",
-                        "current_balance"=>"300000",
+                        "trx_type" => 'Top Up',
+                        "trx_area" => 'Pay Station '.$restarea->name,
+                        "trx_name" => 'TAVQR',
+                        "trx_amount" => "500000",
+                        "current_balance"=>"500000",
                         "last_balance"=>0,
-                        "datetime"=>"2022-08-22 05:41:25"
-                    ]
+                        "datetime"=>"2022-08-21 05:41:25"
+                    ],
+                    [
+                        "trx_id" => "TNG-20220822130914",
+                        "trx_type" => 'Belanja',
+                        "trx_area" => $restarea->name,
+                        "trx_name" => 'Rumah Talas',
+                        "trx_amount" => "100000",
+                        "current_balance" => "400000",
+                        "last_balance" => 500000,
+                        "datetime"=>"2022-08-21 12:31:11"
+                    ],
+                    [
+                        "trx_id" => "REFUND-2022082313023",
+                        "trx_type" => 'Refund',
+                        "trx_area" => 'Pay Station '.$restarea->name,
+                        "trx_name" => 'TAVQR',
+                        "trx_amount" => "100000",
+                        "current_balance"=>"300000",
+                        "last_balance"=>40000,
+                        "datetime"=>"2022-08-23 15:22:45"
+                    ],
                 ]
             ],
-            'rest_area_id' => RestArea::all()->random()->id
+            'rest_area_id' => $restarea->id
         ]);
 
     }
