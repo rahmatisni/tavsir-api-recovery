@@ -252,7 +252,10 @@ class TravShopController extends Controller
                     break;
 
                 case 'tav_qr':
-                    $voucher = Voucher::where('hash', request()->voucher)->where('is_active', 1)->first();
+                    $voucher = Voucher::where('hash', request()->voucher)
+                                        ->where('is_active', 1)
+                                        ->where('rest_area_id', $data->tenant->rest_area_id)
+                                        ->first();
                     if(!$voucher){
                         return response()->json(['error' => 'Voucher tidak ditemukan'], 500);
                     }

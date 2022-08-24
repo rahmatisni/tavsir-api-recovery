@@ -16,7 +16,7 @@ class CreateRefVoucher extends Migration
         Schema::create('ref_voucher', function (Blueprint $table) {
             $table->increments('id');
             $table->string('nama_lengkap');
-            $table->string('username');
+            $table->string('username')->unique();
             $table->string('password');
             $table->uuid('voucher_uuid');
             $table->string('customer_id');
