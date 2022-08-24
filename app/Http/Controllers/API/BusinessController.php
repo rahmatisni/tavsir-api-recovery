@@ -10,7 +10,7 @@ class BusinessController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('is_admin')->except('index', 'show');
+        // $this->middleware('is_admin')->except('index', 'show');
     }
     /**
      * Display a listing of the resource.
