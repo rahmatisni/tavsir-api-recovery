@@ -50,7 +50,7 @@ class UserSeeder extends Seeder
                 'merchant_id' => 0,
                 'sub_merchant_id' => 0,
                 'tenant_id' => 0,
-                'rest_area_id' => 0,
+                'rest_area_id' => 1,
                 'paystation_id' => 0,
             ],
             [
