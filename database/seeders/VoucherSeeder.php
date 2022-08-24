@@ -15,13 +15,13 @@ class VoucherSeeder extends Seeder
      */
     public function run()
     {
-        $restarea = RestArea::all()->random();
+        $restarea = RestArea::first();
 
         Voucher::create([
             'nama_lengkap' => 'Admin',
-            'username' => 'admin@email.com',
+            'username' => '1-08123456789',
             'customer_id' => '939412828407556',
-            'phone' => '12345678',
+            'phone' => '08123456789',
             'balance' => '300000',
             'qr_code_use' => 1,
             'qr_code_image' => 'qr_code_939412828407556.png',
