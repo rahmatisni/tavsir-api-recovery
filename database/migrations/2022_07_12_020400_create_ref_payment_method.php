@@ -17,8 +17,7 @@ class CreateRefPaymentMethod extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('code_name');
-            $table->string('code_number')->nullable();
-            $table->tinyInteger('is_tavsir')->unsigned()->default(0);
+            $table->string('code_sof')->nullable();
             $table->timestamps();
         });
     }

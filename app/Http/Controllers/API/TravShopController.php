@@ -215,9 +215,9 @@ class TravShopController extends Controller
             $res = 'Invalid';
             $payment_method = PaymentMethod::findOrFail($request->payment_method_id);
             switch ($payment_method->code_name) {
-                case 'pg_va_bri':
+                case 'pg_va_mandiri':
                     $payment_payload = [
-                        "sof_code" =>  "BRI",
+                        "sof_code" =>  $payment_method->code_sof,
                         'bill_id' => $data->order_id,
                         'bill_name' => 'Take N Go',
                         'amount' => (string) $data->total,
@@ -229,7 +229,8 @@ class TravShopController extends Controller
                         'customer_name' => $request->customer_name,
                         "submerchant_id" => '98'
                     ];
-                    $res = PgJmto::vaBriCreate(
+                    $res = PgJmto::vaCreate(
+                        $payment_method->code_sof,
                         $data->order_id,
                         'Take N Go',
                         $data->total,
@@ -249,8 +250,79 @@ class TravShopController extends Controller
                     } else {
                         return response()->json([$res], 500);
                     }
-                    break;
-
+                break;
+                case 'pg_va_bri':
+                    $payment_payload = [
+                        "sof_code" =>  $payment_method->code_sof,
+                        'bill_id' => $data->order_id,
+                        'bill_name' => 'Take N Go',
+                        'amount' => (string) $data->total,
+                        'desc' => $data->tenant->name ?? '',
+                        "exp_date" =>  Carbon::now()->addDay(1)->format('Y-m-d H:i:s'),
+                        "va_type" =>  "close",
+                        'phone' => $request->customer_phone,
+                        'email' => $request->customer_email,
+                        'customer_name' => $request->customer_name,
+                        "submerchant_id" => '98'
+                    ];
+                    $res = PgJmto::vaCreate(
+                        $payment_method->code_sof,
+                        $data->order_id,
+                        'Take N Go',
+                        $data->total,
+                        $data->tenant->name ?? '',
+                        $request->customer_phone,
+                        $request->customer_email,
+                        $request->customer_name
+                    );
+                    if ($res['status'] == 'success') {
+                        $payment = new TransPayment();
+                        $payment->trans_order_id = $data->id;
+                        $payment->data = $res['responseData'];
+                        $data->payment()->save($payment);
+                        $data->service_fee = $payment->data->fee;
+                        $data->total = $data->total + $data->service_fee;
+                        $data->save();
+                    } else {
+                        return response()->json([$res], 500);
+                    }
+                break;
+                case 'pg_va_bni':
+                    $payment_payload = [
+                        "sof_code" =>  $payment_method->code_sof,
+                        'bill_id' => $data->order_id,
+                        'bill_name' => 'Take N Go',
+                        'amount' => (string) $data->total,
+                        'desc' => $data->tenant->name ?? '',
+                        "exp_date" =>  Carbon::now()->addDay(1)->format('Y-m-d H:i:s'),
+                        "va_type" =>  "close",
+                        'phone' => $request->customer_phone,
+                        'email' => $request->customer_email,
+                        'customer_name' => $request->customer_name,
+                        "submerchant_id" => '98'
+                    ];
+                    $res = PgJmto::vaCreate(
+                        $payment_method->code_sof,
+                        $data->order_id,
+                        'Take N Go',
+                        $data->total,
+                        $data->tenant->name ?? '',
+                        $request->customer_phone,
+                        $request->customer_email,
+                        $request->customer_name
+                    );
+                    if ($res['status'] == 'success') {
+                        $payment = new TransPayment();
+                        $payment->trans_order_id = $data->id;
+                        $payment->data = $res['responseData'];
+                        $data->payment()->save($payment);
+                        $data->service_fee = $payment->data->fee;
+                        $data->total = $data->total + $data->service_fee;
+                        $data->save();
+                    } else {
+                        return response()->json([$res], 500);
+                    }
+                break;
                 case 'tav_qr':
                     $voucher = Voucher::where('hash', request()->voucher)
                                         ->where('is_active', 1)
@@ -349,7 +421,8 @@ class TravShopController extends Controller
             }
 
             $data_payment = $data->payment->data;
-            $res = PgJmto::vaBriStatus(
+            $res = PgJmto::vaStatus(
+                $data_payment->sof_code,
                 $data_payment->bill,
                 $data_payment->va_number,
                 $data_payment->refnum,

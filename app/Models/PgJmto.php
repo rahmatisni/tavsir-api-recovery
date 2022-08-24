@@ -82,10 +82,10 @@ class PgJmto extends Model
         return $response;
     }
 
-    public static function vaBriCreate($bill_id,$bill_name,$amount,$desc,$phone,$email,$customer_name)
+    public static function vaCreate($sof_code,$bill_id,$bill_name,$amount,$desc,$phone,$email,$customer_name)
     {
         $payload = [
-            "sof_code" =>  "BRI",
+            "sof_code" =>  $sof_code,
             "bill_id" =>  $bill_id,
             "bill_name" => $bill_name,
             "amount" => (string) $amount,
@@ -142,10 +142,10 @@ class PgJmto extends Model
         return $res->json();
     }
 
-    public static function vaBriStatus($bill_id,$va_number,$refnum,$phone,$email,$customer_name)
+    public static function vaStatus($sof_code,$bill_id,$va_number,$refnum,$phone,$email,$customer_name)
     {
         $payload = [
-            "sof_code" =>  "BRI",
+            "sof_code" =>  $sof_code,
             "bill_id" =>  $bill_id,
             "va_number" => $va_number,
             "refnum" =>  $refnum,

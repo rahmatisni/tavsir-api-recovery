@@ -19,38 +19,37 @@ class PaymentMethodSeeder extends Seeder
                 [
                     'name' => 'Mandiri Virtual Account',
                     'code_name' => 'pg_va_mandiri',
-                    'code_number' => '001',
-                    'is_tavsir' => 0,
+                    'code_sof' => 'MANDIRI'
                 ],
                 [
                     'name' => 'BRI Virtual Account',
                     'code_name' => 'pg_va_bri',
-                    'code_number' => '002',
-                    'is_tavsir' => 0,
+                    'code_sof' => 'BRI'
                 ],
                 [
                     'name' => 'BRI Direct Debit',
                     'code_name' => 'pg_dd_bri',
-                    'code_number' => '003',
-                    'is_tavsir' => 0,
+                    'code_sof' => ''
                 ],
                 [
                     'name' => 'LinkAja',
                     'code_name' => 'pg_link_aja',
-                    'code_number' => '004',
-                    'is_tavsir' => 0,
+                    'code_sof' => ''
                 ],
                 [
                     'name' => 'QR',
                     'code_name' => 'tav_qr',
-                    'code_number' => '005',
-                    'is_tavsir' => 0,
+                    'code_sof' => ''
                 ],
                 [
                     'name' => 'Cash',
                     'code_name' => 'cash',
-                    'code_number' => '006',
-                    'is_tavsir' => 0,
+                    'code_sof' => ''
+                ],
+                [
+                    'name' => 'BNI Virtual Account',
+                    'code_name' => 'pg_va_bni',
+                    'code_sof' => 'BNI'
                 ],
             ]);
         }
