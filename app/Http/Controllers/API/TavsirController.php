@@ -256,6 +256,7 @@ class TavsirController extends Controller
                 $order_detil->product_id = $product->id;
                 $order_detil->product_name = $product->name;
                 $order_detil->price = $product->price;
+                $order_detil->id = $detail->id;
                 $customize_x = array();
                 foreach(json_decode($v->customize) as $key => $value)
                 {
