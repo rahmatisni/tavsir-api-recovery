@@ -14,6 +14,8 @@ class User extends Authenticatable
 
     public const ADMIN = 'ADMIN';
     public const USER = 'USER';
+    public const PAYSTATION = 'PAYSTATION';
+    public const JMRB = 'JMRB';
 
     /**
      * The attributes that are mass assignable.

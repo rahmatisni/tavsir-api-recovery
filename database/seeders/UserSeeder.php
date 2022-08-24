@@ -40,6 +40,30 @@ class UserSeeder extends Seeder
                 'tenant_id' => Tenant::first()->id,
                 'rest_area_id' => 0,
                 'paystation_id' => 1,
+            ],
+            [
+                'name' => 'Paystation Rest Area KM 149 B',
+                'email' => 'paystation@email.com',
+                'role' => User::PAYSTATION,
+                'password' => bcrypt('password'),
+                'business_id' => 0,
+                'merchant_id' => 0,
+                'sub_merchant_id' => 0,
+                'tenant_id' => 0,
+                'rest_area_id' => 0,
+                'paystation_id' => 0,
+            ],
+            [
+                'name' => 'JMRB',
+                'email' => 'jmrb@email.com',
+                'role' => User::JMRB,
+                'password' => bcrypt('password'),
+                'business_id' => 1,
+                'merchant_id' => 0,
+                'sub_merchant_id' => 0,
+                'tenant_id' => 0,
+                'rest_area_id' => 0,
+                'paystation_id' => 0,
             ]
         ]);
         Artisan::call('passport:install');
