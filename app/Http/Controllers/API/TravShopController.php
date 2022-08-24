@@ -264,7 +264,8 @@ class TravShopController extends Controller
                     $balance_now = $voucher->balance;
                     $voucher->balance -= $data->total;
                     $ballaceHistory = [
-                                "trx_id" => $data->order_id,
+                                "trx_id" => $data->id,
+                                "trx_order_id" => $data->order_id,
                                 "trx_type" => 'Belanja',
                                 "trx_area" => $data->tenant ? ($data->tenant->rest_area ? $data->tenant->rest_area->name : ''): '',
                                 "trx_name" => $data->tenant ? $data->tenant->name : '',
