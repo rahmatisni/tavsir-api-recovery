@@ -20,6 +20,7 @@ class VoucherSeeder extends Seeder
         Voucher::create([
             'nama_lengkap' => 'Admin',
             'username' => '1-08123456789',
+            'password' => bcrypt('password'),
             'customer_id' => '939412828407556',
             'phone' => '08123456789',
             'balance' => '300000',
