@@ -19,6 +19,7 @@ class TenantResource extends JsonResource
             'business_id' => $this->business_id,
             'business_name' => $this->business->name ?? '',
             'business_owner_name' => $this->business->owner ?? '',
+            'business_status_perusahaan' => $this->business->status_perusahaan ?? '',
             'rest_area_id' => $this->rest_area_id,
             'rest_area_name' => $this->rest_area->name ?? '',
             'ruas_id' => $this->ruas_id,

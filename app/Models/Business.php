@@ -11,6 +11,7 @@ class Business extends BaseModel
         'name',
         'category',
         'address',
+        'status_perusahaan',
         'latitude',
         'longitude',
         'owner',

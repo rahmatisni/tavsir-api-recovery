@@ -26,6 +26,7 @@ class BusinessRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'category' => 'required|string|max:255',
+            'status_perusahaan' => 'required|string|max:255',
             'address' => 'required|string|max:255',
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',

@@ -18,6 +18,7 @@ class CreateRefBusiness extends Migration
             $table->string('name');
             $table->string('email')->nullable();
             $table->string('category');
+            $table->string('status_perusahaan');
             $table->string('address');
             $table->decimal('latitude',10,8);
             $table->decimal('longitude',11,8);

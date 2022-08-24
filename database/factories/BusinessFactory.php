@@ -13,9 +13,12 @@ class BusinessFactory extends Factory
      */
     public function definition()
     {
+        $status = ['Perseorangan','Persero'];
+        $key = array_rand($status);
         return [
             'name' => $this->faker->company,
             'email' => $this->faker->email,
+            'status_perusahaan' => $status[$key],
             'category' => $this->faker->word,
             'address' => $this->faker->address,
             'latitude' => $this->faker->latitude,
