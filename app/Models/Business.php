@@ -9,6 +9,7 @@ class Business extends BaseModel
 
     protected $fillable = [
         'name',
+        'email',
         'category',
         'address',
         'status_perusahaan',
