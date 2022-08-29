@@ -478,7 +478,7 @@ class TavsirController extends Controller
                         "datetime" => Carbon::now()->toDateTimeString(),
                     ];
                     $dataHistori = $voucher->balance_history;
-                    $dataHistori['data'] = array_merge($voucher->balance_history['data'], [$ballaceHistory]);
+                    $dataHistori['data'] = array_merge([$ballaceHistory],$voucher->balance_history['data']);
                     $dataHistori['current_balance'] = $voucher->balance;
                     $voucher->balance_history = $dataHistori;
                     $voucher->qr_code_use = $voucher->qr_code_use + 1;
