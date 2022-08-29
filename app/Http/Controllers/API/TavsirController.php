@@ -467,11 +467,15 @@ class TavsirController extends Controller
                     $balance_now = $voucher->balance;
                     $voucher->balance -= $data->total;
                     $ballaceHistory = [
-                                "trx_id" => $data->order_id,
-                                "trx_amount" => $data->total,
-                                "current_balance" => $voucher->balance,
-                                "last_balance" => $balance_now,
-                                "datetime" => Carbon::now()->toDateTimeString(),
+                        "trx_id" => $data->id,
+                        "trx_order_id" => $data->order_id,
+                        "trx_type" => 'Belanja',
+                        "trx_area" => $data->tenant ? ($data->tenant->rest_area ? $data->tenant->rest_area->name : ''): '',
+                        "trx_name" => $data->tenant ? $data->tenant->name : '',
+                        "trx_amount" => $data->total,
+                        "current_balance" => $voucher->balance,
+                        "last_balance" => $balance_now,
+                        "datetime" => Carbon::now()->toDateTimeString(),
                     ];
                     $dataHistori = $voucher->balance_history;
                     $dataHistori['data'] = array_merge($voucher->balance_history['data'], [$ballaceHistory]);
