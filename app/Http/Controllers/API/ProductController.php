@@ -93,4 +93,12 @@ class ProductController extends Controller
         $product->delete();
         return response()->json($product);
     }
+
+    public function updateStatus()
+    {
+        $product = Product::whereIn('id',request()->product_id);
+        $product->update(['is_active' => request()->is_active]);;
+
+        return response()->json($product->get());
+    }
 }
