@@ -31,8 +31,8 @@ class ChatController extends Controller
     public function store(ChatRequest $request)
     {
         $chat = [
-            'user_id' => auth()->user()->id ?? 0,
-            'user_name' => auth()->user()->name ?? '',
+            'user_id' => auth()->user()->id ?? $request->user_id,
+            'user_name' => auth()->user()->name ?? $request->user_name,
             'text'  => $request->text ?? '-',
             'date' => date('Y-m-d H:i:s'),
         ];
