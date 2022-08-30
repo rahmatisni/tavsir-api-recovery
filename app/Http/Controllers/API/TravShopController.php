@@ -207,9 +207,20 @@ class TravShopController extends Controller
             DB::beginTransaction();
 
             $data = TransOrder::findOrfail($id);
+
+            if(request()->from_tavsir)
+            {
+                if($data->staus == TransOrder::CART || $data->staus == TransOrder::PENDING || $data->status == null)
+                {
+                    $data->status = TransOrder::WAITING_PAYMENT;
+                }
+            }
+
             if($data->status != TransOrder::WAITING_PAYMENT){
+                
                 return response()->json(['info' => $data->status], 422);
             }
+            dd($data->status, request()->from_tavsir);
             $data->payment_method_id = $request->payment_method_id;
 
             $res = 'Invalid';
