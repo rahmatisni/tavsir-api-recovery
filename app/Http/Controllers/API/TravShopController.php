@@ -208,7 +208,7 @@ class TravShopController extends Controller
 
             $data = TransOrder::findOrfail($id);
 
-            if(request()->from_tavsir)
+            if(request()->order_from_qr == true)
             {
                 if($data->staus == TransOrder::CART || $data->staus == TransOrder::PENDING || $data->status == null)
                 {
