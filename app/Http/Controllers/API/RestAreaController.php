@@ -6,6 +6,7 @@ use App\Models\RestArea;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RestAreaRequest;
+use App\Http\Resources\RestAreaResource;
 
 class RestAreaController extends Controller
 {
@@ -26,7 +27,7 @@ class RestAreaController extends Controller
                 return $this->haversine($item->latitude, $item->longitude, request()->lat, request()->lon, request()->distance ?? 1);
             });
         }
-        return response()->json($data);
+        return response()->json(RestAreaResource::collection($data));
     }
 
    
@@ -53,7 +54,7 @@ class RestAreaController extends Controller
      */
     public function show(RestArea $restArea)
     {
-        return response()->json($restArea);
+        return response()->json(new RestAreaResource($restArea));
     }
 
     /**

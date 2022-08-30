@@ -30,7 +30,8 @@ class RestAreaRequest extends FormRequest
             'longitude' => 'required|numeric|between:-180,180',
             'time_start' => 'required|date_format:H:i',
             'time_end' => 'required|date_format:H:i|after:time_start',
-            'is_open' => 'required|boolean'
+            'is_open' => 'required|boolean',
+            'ruas_id' => 'required|exists:ref_ruas,id'
         ];
     }
 }

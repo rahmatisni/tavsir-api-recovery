@@ -15,6 +15,17 @@ class RestArea extends BaseModel
         'longitude',
         'time_start',
         'time_end',
-        'is_open'
+        'is_open',
+        'ruas_id'
     ];
+
+    public function ruas()
+    {
+        return $this->belongsTo(Ruas::class,'ruas_id');
+    }
+
+    public function tenant()
+    {
+        return $this->hasMany(Tenant::class, 'rest_area_id');
+    }
 }
