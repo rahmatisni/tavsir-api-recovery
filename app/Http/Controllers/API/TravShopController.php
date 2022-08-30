@@ -220,7 +220,6 @@ class TravShopController extends Controller
                 
                 return response()->json(['info' => $data->status], 422);
             }
-            dd($data->status, request()->from_tavsir);
             $data->payment_method_id = $request->payment_method_id;
 
             $res = 'Invalid';
