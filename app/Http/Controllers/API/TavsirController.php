@@ -421,6 +421,18 @@ class TavsirController extends Controller
         return response()->json($data);
     }
 
+    public function OrderList()
+    {
+        $data = TransOrder::when($status = request()->status, function($q) use ($status){
+            $q->where('status', $status);
+        })->when($tenant_id = request()->tenant_id, function($q) use ($tenant_id){
+            $q->where('tenant_id', $tenant_id);
+        })
+        ->get();
+
+        return response()->json(TrOrderResource::collection($data));
+    }
+
     function OrderById($id) {
         $data = TransOrder::findOrfail($id);
         return response()->json(new TrOrderResource($data));

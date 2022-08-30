@@ -51,8 +51,9 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/count-cart-saved', [App\Http\Controllers\API\TavsirController::class,'CountCarSaved']);
         Route::get('/cart-saved', [App\Http\Controllers\API\TavsirController::class,'cartSaved']);
         Route::get('/cart/{id}', [App\Http\Controllers\API\TavsirController::class,'CartById']);
-        Route::post('/order', [App\Http\Controllers\API\TavsirController::class,'Order']);
         Route::get('/order/{id}', [App\Http\Controllers\API\TavsirController::class,'OrderById']);
+        Route::get('/order-list', [App\Http\Controllers\API\TavsirController::class,'OrderList']);
+        Route::post('/order', [App\Http\Controllers\API\TavsirController::class,'Order']);
         Route::post('/order-confirmation/{id}', [App\Http\Controllers\API\TavsirController::class,'orderConfirm']);
         Route::get('/payment-method', [App\Http\Controllers\API\TavsirController::class,'PaymentMethod']);
         Route::post('/payment-order', [App\Http\Controllers\API\TavsirController::class,'PaymentOrder']);
