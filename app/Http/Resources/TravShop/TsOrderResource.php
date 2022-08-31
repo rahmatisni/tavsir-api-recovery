@@ -30,6 +30,7 @@ class TsOrderResource extends JsonResource
             'total_pesanan' => $this->detil->count(),
             'created_at' => $this->created_at,
             'code' => $this->code_verif,
+            'payment' => $this->payment->data ?? null,
             'detil' => TsOrderDetilResource::collection($this->detil),
         ];
     }
