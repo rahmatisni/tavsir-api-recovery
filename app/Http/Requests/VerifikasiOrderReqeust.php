@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Models\TransOrder;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class RatingRequest extends FormRequest
+class VerifikasiOrderReqeust extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,8 +26,7 @@ class RatingRequest extends FormRequest
     public function rules()
     {
         return [
-            'rating' => 'required|numeric|min:1|max:5',
-            'comment' => 'max:255'
+            'code' => 'required|size:4',
         ];
     }
 }

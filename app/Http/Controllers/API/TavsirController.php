@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ChangeStatusOrderReqeust;
 use App\Http\Requests\PaymentOrderRequest;
 use App\Http\Requests\TavsirProductRequest;
 use Illuminate\Http\Request;
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Tavsir\TrOrderRequest;
 use App\Http\Requests\Tavsir\TrCategoryRequest;
 use App\Http\Requests\TsOrderConfirmRequest;
+use App\Http\Requests\VerifikasiOrderReqeust;
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\Tavsir\TrProductResource;
 use App\Http\Resources\Tavsir\TrCartSavedResource;
@@ -528,6 +530,38 @@ class TavsirController extends Controller
             DB::rollback();
             return response()->json(['error' => $th->getMessage()], 500);
         }
+    }
+
+    function changeStatusOrder($id, ChangeStatusOrderReqeust $request)
+    {
+        $data = TransOrder::findOrFail($id);
+        $data->status = $request->status;
+        $data->code_verif = random_int(1000, 9999);
+        $data->save();
+
+        return response()->json($data);
+    }
+
+    function verifikasiOrder($id, VerifikasiOrderReqeust $request)
+    {
+        $data = TransOrder::findOrFail($id);
+        if($data->code_verif == $request->code)
+        {
+            $data->status = TransOrder::DONE;
+            $data->confirm_date = Carbon::now();
+        }else{
+            return response()->json([
+                "message"=> "The given data was invalid.",
+                "errors"=> [
+                    "code"=> [
+                        "The code is invalid."
+                    ]
+                ]
+            ],422);
+        }
+        $data->save();
+
+        return response()->json($data);
     }
 
 }

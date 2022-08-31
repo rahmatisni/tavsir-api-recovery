@@ -24,6 +24,7 @@ class CreateTransOrder extends Migration
             $table->date('pickup_date')->nullable();
             $table->date('confirm_date')->nullable();
             $table->tinyInteger('rating')->nullable();
+            $table->string('rating_comment')->nullable();
             $table->integer('business_id')->unsigned()->nullable();
             $table->integer('tenant_id')->unsigned();
             $table->integer('merchant_id')->unsigned()->nullable();

@@ -19,7 +19,6 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->group(function () {
     Route::get('/profile', [App\Http\Controllers\API\AuthController::class, 'profile']);
     Route::apiResource('chat', App\Http\Controllers\API\ChatController::class);
-    Route::post('/rating/{id}', [App\Http\Controllers\API\RatingController::class, 'store']);
 
     Route::post('/logout', [App\Http\Controllers\API\AuthController::class,'logout']);
     Route::apiResource('rest-area', App\Http\Controllers\API\RestAreaController::class);
@@ -58,6 +57,9 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/payment-method', [App\Http\Controllers\API\TavsirController::class,'PaymentMethod']);
         Route::post('/payment-order', [App\Http\Controllers\API\TavsirController::class,'PaymentOrder']);
         Route::apiResource('customize', App\Http\Controllers\API\CustomizeController::class);
+        Route::post('/order-change-status/{id}', [App\Http\Controllers\API\TavsirController::class,'changeStatusOrder']);
+        Route::post('/order-verification/{id}', [App\Http\Controllers\API\TavsirController::class,'verifikasiOrder']);
+
     });
 
     Route::prefix('tavsir/tng')->group(function () {
@@ -84,7 +86,7 @@ Route::prefix('travshop')->group(function () {
     Route::get('/payment-order/{id}', [App\Http\Controllers\API\TravShopController::class,'paymentByOrderId']);
     Route::get('/payment-status/{id}', [App\Http\Controllers\API\TravShopController::class,'statusPayment']);
     Route::post('/saldo', [App\Http\Controllers\API\TravShopController::class,'saldo']);
-
+    Route::post('/rating/{id}', [App\Http\Controllers\API\RatingController::class, 'store']);
 });
 
 Route::post('/send-email/{order}', [App\Http\Controllers\API\SendController::class, 'mail']);

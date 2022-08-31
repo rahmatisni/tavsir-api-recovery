@@ -18,7 +18,9 @@ class RatingController extends Controller
      */
     public function store(RatingRequest $request, TransOrder $id)
     {
-        $id->update($request->all());
+        $id->rating = $request->rating;
+        $id->rating_comment = $request->comment;
+        $id->save();
         return response()->json(new TransOrderResource($id));
     }
 }
