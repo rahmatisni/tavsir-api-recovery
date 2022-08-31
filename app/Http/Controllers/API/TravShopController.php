@@ -170,15 +170,15 @@ class TravShopController extends Controller
     function orderConfirm(TsOrderConfirmRequest $request, $id)
     {
         $data = TransOrder::findOrfail($id);
-        if($data->status == TransOrder::CANCEL)
+        if($data->status != TransOrder::WAITING_CONFIRMATION)
         {
-            return response()->json(['error' => 'Order '.TransOrder::CANCEL], 500);
+            return response()->json(['error' => 'Order '.$data->status], 500);
         }
-        $data->detil->whereNotIn('id', $request->detil_id)->each(function ($item) {
+        $dataConfirm = $data->detil->whereNotIn('id', $request->detil_id)->each(function ($item) {
             $item->delete();
         });
-        $sum = $data->detil->sum('total_price');
-        $data->sub_total = $sum;
+
+        $data->sub_total = $dataConfirm->sum('total_price');
         $data->total = $data->sub_total + $data->fee + $data->service_fee;
         $data->status = TransOrder::WAITING_PAYMENT;
         $data->save();
