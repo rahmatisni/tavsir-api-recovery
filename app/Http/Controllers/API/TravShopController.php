@@ -174,16 +174,15 @@ class TravShopController extends Controller
         {
             return response()->json(['error' => 'Order '.$data->status], 500);
         }
-        $dataConfirm = $data->detil->whereNotIn('id', $request->detil_id)->each(function ($item) {
+
+        $data->detil->whereNotIn('id', $request->detil_id)->each(function ($item) {
             $item->delete();
         });
 
-        $data->sub_total = $dataConfirm->sum('total_price');
-        $data->sub_total = (int)$data->sub_total;
-        // $data->sub_total = $dataConfirm->options()->sum('total_price');
+        $data->sub_total = $data->detil->whereIn('id', $request->detil_id)->sum('total_price');
         $data->total = $data->sub_total + $data->fee + $data->service_fee;
         $data->status = TransOrder::WAITING_PAYMENT;
-        // $data->save();
+        $data->save();
 
         $data = TransOrder::findOrfail($id);
         return response()->json(new TsOrderResource($data));
