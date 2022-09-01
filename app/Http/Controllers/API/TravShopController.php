@@ -178,11 +178,12 @@ class TravShopController extends Controller
             $item->delete();
         });
 
-        $data->sub_total = $dataConfirm->('total_price');
+        $data->sub_total = $dataConfirm->sum('total_price');
         // $data->sub_total = $dataConfirm->options()->sum('total_price');
         $data->total = $data->sub_total + $data->fee + $data->service_fee;
         $data->status = TransOrder::WAITING_PAYMENT;
-        $data->save();
+        dd($data)
+        // $data->save();
 
         $data = TransOrder::findOrfail($id);
         return response()->json(new TsOrderResource($data));
