@@ -182,7 +182,6 @@ class TravShopController extends Controller
         // $data->sub_total = $dataConfirm->options()->sum('total_price');
         $data->total = $data->sub_total + $data->fee + $data->service_fee;
         $data->status = TransOrder::WAITING_PAYMENT;
-        dd($data)
         // $data->save();
 
         $data = TransOrder::findOrfail($id);
