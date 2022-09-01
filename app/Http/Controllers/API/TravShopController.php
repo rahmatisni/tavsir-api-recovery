@@ -178,7 +178,8 @@ class TravShopController extends Controller
             $item->delete();
         });
 
-        $data->sub_total = $dataConfirm->sum('total_price');
+        // $data->sub_total = $dataConfirm->sum('total_price');
+        $data->sub_total = $dataConfirm->sum(1000,3000);
         $data->total = $data->sub_total + $data->fee + $data->service_fee;
         $data->status = TransOrder::WAITING_PAYMENT;
         $data->save();
@@ -219,7 +220,7 @@ class TravShopController extends Controller
             }
 
             if($data->status != TransOrder::WAITING_PAYMENT){
-                
+
                 return response()->json(['info' => $data->status], 422);
             }
             $data->payment_method_id = $request->payment_method_id;
