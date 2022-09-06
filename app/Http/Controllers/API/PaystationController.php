@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PaystationRequest;
+use App\Http\Resources\PaystationResource;
 use App\Models\Paystation;
 
 class PaystationController extends Controller
@@ -16,7 +17,7 @@ class PaystationController extends Controller
     public function index()
     {
         $paystations = Paystation::all();
-        return response()->json($paystations);
+        return response()->json(PaystationResource::collection($paystations));
     }
 
     /**
@@ -39,7 +40,7 @@ class PaystationController extends Controller
      */
     public function show(Paystation $paystation)
     {
-        return response()->json($paystation);
+        return response()->json(new PaystationResource($paystation));
     }
 
     /**
