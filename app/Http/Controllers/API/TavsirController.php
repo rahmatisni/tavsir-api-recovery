@@ -431,8 +431,12 @@ class TavsirController extends Controller
     {
         $data = TransOrder::when($status = request()->status, function($q) use ($status){
             $q->where('status', $status);
+        })->when($filter = request()->filter, function($q)use ($filter){
+                return $q->where('order_id', 'like', "%$filter%");
         })->when($tenant_id = request()->tenant_id, function($q) use ($tenant_id){
             $q->where('tenant_id', $tenant_id);
+        })->when($order_type = request()->order_type, function($q) use ($order_type){
+            $q->where('order_type', $order_type);
         })
         ->get();
 

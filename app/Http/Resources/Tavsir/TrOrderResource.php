@@ -22,6 +22,8 @@ class TrOrderResource extends JsonResource
             'merchant_id' => $this->merchant_id,
             'sub_merchant_id' => $this->sub_merchant_id,
             "payment_method_id" => $this->payment_method_id,
+            "order_type" => @$this->order_type,
+            "created_at" => @$this->created_at,
             "payment_name" => $this->payment_method && $this->payment_method->name!=null ? $this->payment_method->name : '',
             "payment_id" => $this->payment_id,
             "voucher_id" => $this->voucher_id,
