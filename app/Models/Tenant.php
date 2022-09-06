@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\BaseModel;
+use Illuminate\Support\Facades\DB;
 
 class Tenant extends BaseModel
 {
@@ -55,11 +56,6 @@ class Tenant extends BaseModel
         return $this->hasMany(Product::class, 'tenant_id');
     }
 
-    public function category()
-    {
-        return $this->hasMany(Category::class, 'tenant_id');
-    }
-
     public function rest_area()
     {
         return $this->belongsTo(RestArea::class, 'rest_area_id');
@@ -88,5 +84,10 @@ class Tenant extends BaseModel
     public function getTotalRatingAttribute()
     {
         return $this->order() ? $this->order()->where('rating', '>', 0)->count() : 0;
+    }
+
+    public function scopeCategoryCount($query)
+    {
+        return $query->groupBy('category')->select('category as kategori', DB::raw('COUNT(*) as tenant'));
     }
 }

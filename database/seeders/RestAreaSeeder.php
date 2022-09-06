@@ -24,7 +24,8 @@ class RestAreaSeeder extends Seeder
                     'longitude' => 107.7124337,
                     'time_start' => '08:00',
                     'time_end' => '22:00',
-                    'is_open' => true
+                    'is_open' => true,
+                    'ruas_id' => 5
                 ],
                 [
                     'name' => 'Rest Area KM 149 B',
@@ -33,7 +34,8 @@ class RestAreaSeeder extends Seeder
                     'longitude' => 107.6883776,
                     'time_start' => '08:00',
                     'time_end' => '22:00',
-                    'is_open' => true
+                    'is_open' => true,
+                    'ruas_id' => 5
                 ],
                 [
                     'name' => 'Rest Area KM 125',
@@ -42,7 +44,8 @@ class RestAreaSeeder extends Seeder
                     'longitude' => 107.5132386,
                     'time_start' => '08:00',
                     'time_end' => '22:00',
-                    'is_open' => true
+                    'is_open' => true,
+                    'ruas_id' => 5
                 ],
             ]);
         }

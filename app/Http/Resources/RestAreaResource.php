@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\DB;
 
 class RestAreaResource extends JsonResource
 {
@@ -17,7 +18,8 @@ class RestAreaResource extends JsonResource
         return [
                 ...parent::toArray($request),
                 'ruas_name' => $this->ruas->name ?? '',
-                'tenant_total' => $this->tenant->count()
+                'tenant_total' => $this->tenant->count(),
+                'detil_tenant' => $this->tenant()->categoryCount()->get()
         ];
     }
 }
