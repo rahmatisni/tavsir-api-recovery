@@ -27,7 +27,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/product/update-status', [App\Http\Controllers\API\ProductController::class,'updateStatus']);
     Route::apiResource('product', App\Http\Controllers\API\ProductController::class);
     Route::apiResource('payment-method', App\Http\Controllers\API\PaymentMethodController::class);
-    Route::apiResource('paystation', App\Http\Controllers\API\PayStationController::class);
+    Route::apiResource('paystation', App\Http\Controllers\API\PaystationController::class);
     Route::apiResource('voucher', App\Http\Controllers\API\VoucherController::class);
     Route::apiResource('category', App\Http\Controllers\API\CategoryController::class);
     Route::apiResource('user', App\Http\Controllers\API\UserController::class);
