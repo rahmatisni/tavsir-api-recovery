@@ -173,30 +173,7 @@ class TavsirController extends Controller
             $data->fee = 0;
             $data->service_fee = 0;
             $data->total = $data->sub_total + $data->fee + $data->service_fee;
-
-            switch ($request->action) {
-                case TransOrder::ACTION_SAVE:
-                    $data->status = TransOrder::CART ;
-                    break;
-                
-                case TransOrder::ACTION_PAY:
-                    
-                    $payment = new TransPayment();
-                    $data_pay = [
-                        'total' => $data->total,
-                        'pembayaran' => $request->pembayaran,
-                        'kembalian' => $request->pembayaran - $data->total,
-                    ];
-                    $data->payment_method_id = 6;
-                    $payment->data = $data_pay;
-                    $data->status = TransOrder::DONE;
-                    $data->payment()->save($payment);
-                    break;
-                default:
-                    # code...
-                    break;
-            }
-
+            $data->status = TransOrder::CART;
             $data->save();
             $data->detil()->saveMany($order_detil_many);
             

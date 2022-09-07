@@ -25,8 +25,6 @@ class TrOrderRequest extends FormRequest
     public function rules()
     {
         return [
-            'action' => 'required|in:'.TransOrder::ACTION_SAVE.','.TransOrder::ACTION_PAY,
-            'pembayaran' => 'min:0|max:10000000|required_if:action,'.TransOrder::ACTION_PAY,
             'id' => 'nullable',
             'product' => 'required|array',
             'product.*.product_id' => 'required|integer|exists:ref_product,id',
@@ -40,8 +38,6 @@ class TrOrderRequest extends FormRequest
     public function attributes()
     {
         return [
-            'action' => 'Action',
-            'pembayaran' => 'Pembayaran',
             'id' => 'ID',
             'product' => 'Product',
             'product.*.product_id' => 'Product',
@@ -49,13 +45,6 @@ class TrOrderRequest extends FormRequest
             'product.*.pilihan' => 'Pilihan',
             'product.*.qty' => 'Qty',
             'product.*.note' => 'Note',
-        ];
-    }
-
-    public function messages()
-    {
-        return [
-            'action.in' => 'Value Action  '.TransOrder::ACTION_SAVE.' or '.TransOrder::ACTION_PAY,
         ];
     }
 }
