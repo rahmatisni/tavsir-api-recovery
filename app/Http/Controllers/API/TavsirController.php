@@ -132,6 +132,8 @@ class TavsirController extends Controller
             $data->business_id = auth()->user()->business_id;
             $data->detil()->delete();
             $order_detil_many = [];
+            $data->sub_total = 0;
+            $data->total = 0;
             $data->save();
 
             foreach ($request->product as $k => $v) {
