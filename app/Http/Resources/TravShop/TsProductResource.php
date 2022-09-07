@@ -18,9 +18,10 @@ class TsProductResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'photo' => $this->photo,
+            'photo' => $this->photo ? asset($this->photo) : null,
             "price" => $this->price,
             "is_active" => $this->is_active,
+            "category" => $this->category->name ?? '',
             "customize" => CustomizeResource::collection($this->customize),
         ];
     }

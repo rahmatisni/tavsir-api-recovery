@@ -16,7 +16,8 @@ class RestArea extends BaseModel
         'time_start',
         'time_end',
         'is_open',
-        'ruas_id'
+        'ruas_id',
+        'photo'
     ];
 
     public function ruas()
@@ -27,5 +28,25 @@ class RestArea extends BaseModel
     public function tenant()
     {
         return $this->hasMany(Tenant::class, 'rest_area_id');
+    }
+
+    public function setPhotoAttribute($value)
+    {
+        $file = request()->file('photo');
+        if(is_file($file)) {
+            $file = request()->file('photo')->store('images');
+        //     $imagebefore = $this->photo;
+        //     $img = Image::make($file->getRealPath());
+        //     $imgPath = 'images/product/'.Carbon::now()->format('Ymd').time().'.'.$file->getClientOriginalExtension();
+        //     dd(\file_exists('images/product'));
+        //     $img->resize(200, null, function ($constraint) {
+        //         $constraint->aspectRatio();
+        //     })->save($imgPath);
+        //     dd(\file_exists($imagebefore));
+            if(file_exists($this->photo)) {
+                unlink($this->photo);
+            }
+            $this->attributes['photo'] = $file;
+        }
     }
 }

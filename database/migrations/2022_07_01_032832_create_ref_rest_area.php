@@ -18,6 +18,7 @@ class CreateRefRestArea extends Migration
             $table->integer('ruas_id')->unsigned();
             $table->string('name');
             $table->string('address');
+            $table->string('photo')->nullable();
             $table->decimal('latitude',10,8);
             $table->decimal('longitude',11,8);
             $table->string('time_start');

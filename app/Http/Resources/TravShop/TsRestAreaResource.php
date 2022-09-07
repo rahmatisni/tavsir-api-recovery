@@ -21,6 +21,7 @@ class TsRestAreaResource extends JsonResource
             'time_start' => $this->time_start,
             'time_end' => $this->time_end,
             'is_open' => true,
+            'photo' => $this->photo ? asset($this->photo) : null,
         ];
     }
 }

@@ -34,10 +34,10 @@ class Product extends BaseModel
         //         $constraint->aspectRatio();
         //     })->save($imgPath);
         //     dd(\file_exists($imagebefore));
+            if(file_exists($this->photo)) {
+                unlink($this->photo);
+            }
             $this->attributes['photo'] = $file;
-        //     if(file_exists($imagebefore)) {
-        //         unlink($imagebefore);
-        //     }
         }
     }
     
