@@ -206,7 +206,6 @@ class TavsirController extends Controller
         $data = TransOrder::where('tenant_id', '=', auth()->user()->tenant_id)
                     ->where('order_type', '=', TransOrder::ORDER_TAVSIR)       
                     ->where('status', '=', TransOrder::CART) 
-                    ->where('is_save', '=', 1)
                     ->count();
 
         return response()->json(['count' => $data]);
