@@ -140,6 +140,7 @@ class TavsirController extends Controller
                 $order_detil->trans_order_id = $data->id;
                 $order_detil->product_id = $product->id;
                 $order_detil->product_name = $product->name;
+                $order_detil->base_price = $product->price;
                 $order_detil->price = $product->price;
                 $customize_x = array();
                 foreach ($v['customize'] as $key => $value) {
@@ -170,10 +171,8 @@ class TavsirController extends Controller
                 $order_detil_many[] = $order_detil;
             }
             $data->fee = 0;
-            $data->total = $data->sub_total + $data->fee + $data->service_fee;
             $data->service_fee = 0;
-            $data->total = $data->total + $data->service_fee;
-            $data->save();
+            $data->total = $data->sub_total + $data->fee + $data->service_fee;
 
             switch ($request->action) {
                 case TransOrder::ACTION_SAVE:
@@ -188,15 +187,19 @@ class TavsirController extends Controller
                         'pembayaran' => $request->pembayaran,
                         'kembalian' => $request->pembayaran - $data->total,
                     ];
-
+                    $data->payment_method = 6;
                     $payment->data = $data_pay;
+                    $data->status = TransOrder::DONE;
                     $data->payment()->save($payment);
                     break;
                 default:
                     # code...
                     break;
             }
+
+            $data->save();
             $data->detil()->saveMany($order_detil_many);
+            
             DB::commit();
             return response()->json(TransOrder::with('detil')->find($data->id));
         } catch (\Throwable $th) {
@@ -317,7 +320,6 @@ class TavsirController extends Controller
         return response()->json($data);
     }
 
-    
     function CartOrder(Request $request) 
     {
         try {
@@ -347,17 +349,15 @@ class TavsirController extends Controller
             foreach ($request->product as $k => $v) 
             {
                 $product = Product::find($v['product_id']);
-                //dd($product);
-
                 $order_detil = new TransOrderDetil();
                 $order_detil->trans_order_id = $data->id;
                 $order_detil->product_id = $product->id;
                 $order_detil->product_name = $product->name;
+                $order_detil->base_price = $product->price;
                 $order_detil->price = $product->price;
                 $customize_x = array();
                 foreach($v['customize'] as $key => $value)
-                {   //CustomizeResource::collection($this->customize)
-                    //dd($product->customize);
+                {   
                     $customize_y = collect($product->customize)->where('id', $value)->first();
                     if($customize_y)
                     {
@@ -377,9 +377,7 @@ class TavsirController extends Controller
                         }
                     }
                 }
-                //dd($customize_x);
                 $order_detil->customize = json_encode($customize_x);
-               // $order_detil->customize = $customize_x;
                 $order_detil->qty = $v['qty'];
                 $order_detil->total_price = $order_detil->price * $v['qty'];
                 $order_detil->note = $v['note'];
@@ -427,7 +425,7 @@ class TavsirController extends Controller
         return response()->json($data);
     }
 
-    public function OrderList()
+    function OrderList()
     {
         $data = TransOrder::when($status = request()->status, function($q) use ($status){
             $q->where('status', $status);

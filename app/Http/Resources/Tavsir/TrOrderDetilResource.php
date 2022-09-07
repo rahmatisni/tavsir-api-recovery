@@ -20,8 +20,10 @@ class TrOrderDetilResource extends JsonResource
             'product_name' => $this->product_name,
             'product_photo' => $this->product->photo ?  asset($this->product->photo) : null,
             'product_qty' => $this->qty,
-            'product_price' => $this->price,
             'product_note' => $this->note,
+            'base_price' => $this->base_price,
+            'price' => $this->price,
+            'total_price' => $this->total_price,
             'customize' => $this->customize,
         ];
     }

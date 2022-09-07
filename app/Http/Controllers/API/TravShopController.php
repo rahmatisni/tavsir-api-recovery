@@ -82,7 +82,7 @@ class TravShopController extends Controller
     {
         try {
             DB::beginTransaction();
-            $data = new TransOrder();
+            $data = TransOrder::firstOrNew(['id' => $request->id]);
             $data->order_type = TransOrder::ORDER_TAKE_N_GO;
             $data->order_id = 'TNG-' . date('YmdHis');
             $data->tenant_id = $request->tenant_id;
@@ -90,10 +90,9 @@ class TravShopController extends Controller
             $data->customer_id = $request->customer_id;
             $data->merchant_id = $request->merchant_id;
             $data->sub_merchant_id = $request->sub_merchant_id;
+            $data->detil()->delete();
             $order_detil_many = [];
             $data->save();
-
-            // dd($request->all());
 
             foreach ($request->product as $k => $v) {
                 $product = Product::find($v['product_id']);
@@ -102,6 +101,7 @@ class TravShopController extends Controller
                 $order_detil->trans_order_id = $data->id;
                 $order_detil->product_id = $product->id;
                 $order_detil->product_name = $product->name;
+                $order_detil->base_price = $product->price;
                 $order_detil->price = $product->price;
                 $customize_x = array();
                 foreach ($v['customize'] as $key => $value) {
@@ -132,13 +132,11 @@ class TravShopController extends Controller
                 $order_detil_many[] = $order_detil;
             }
             $data->fee = 2000;
+            $data->service_fee = 0;
             $data->total = $data->sub_total + $data->fee + $data->service_fee;
             $data->status = TransOrder::WAITING_CONFIRMATION;
             $data->save();
             $data->detil()->saveMany($order_detil_many);
-
-            // Send Email
-            // \Mail::to('test@email.com')->send(new \App\Mail\SendMail('Struk', 'struk'));
 
             DB::commit();
             return response()->json(TransOrder::with('detil')->find($data->id));

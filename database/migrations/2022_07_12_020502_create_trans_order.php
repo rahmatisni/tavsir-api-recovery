@@ -50,6 +50,7 @@ class CreateTransOrder extends Migration
             $table->integer('product_id')->unsigned();
             $table->string('product_name');
             $table->text('customize')->nullable();
+            $table->integer('base_price')->unsigned();
             $table->integer('price')->unsigned();
             $table->tinyInteger('qty')->unsigned();
             $table->integer('total_price')->unsigned();
