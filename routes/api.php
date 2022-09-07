@@ -45,11 +45,8 @@ Route::middleware('auth:api')->group(function () {
         Route::put('/category/{category}', [App\Http\Controllers\API\TavsirController::class,'categoryUpdate']);
         Route::delete('/category/{category}', [App\Http\Controllers\API\TavsirController::class,'categoryDestroy']);
         Route::get('/countnewtng', [App\Http\Controllers\API\TavsirController::class,'CountNewTNG']);
-        Route::post('/cart-order', [App\Http\Controllers\API\TavsirController::class,'CartOrder']);
         Route::post('/cart-delete', [App\Http\Controllers\API\TavsirController::class,'CartDelete']);
         Route::get('/count-cart-saved', [App\Http\Controllers\API\TavsirController::class,'CountCarSaved']);
-        Route::get('/cart-saved', [App\Http\Controllers\API\TavsirController::class,'cartSaved']);
-        Route::get('/cart/{id}', [App\Http\Controllers\API\TavsirController::class,'CartById']);
         Route::get('/order/{id}', [App\Http\Controllers\API\TavsirController::class,'OrderById']);
         Route::get('/order-list', [App\Http\Controllers\API\TavsirController::class,'OrderList']);
         Route::post('/order', [App\Http\Controllers\API\TavsirController::class,'Order']);
@@ -58,7 +55,6 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/payment-order', [App\Http\Controllers\API\TavsirController::class,'PaymentOrder']);
         Route::apiResource('customize', App\Http\Controllers\API\CustomizeController::class);
         Route::post('/order-change-status/{id}', [App\Http\Controllers\API\TavsirController::class,'changeStatusOrder']);
-        Route::post('/order-verification/{id}', [App\Http\Controllers\API\TavsirController::class,'verifikasiOrder']);
 
     });
 
@@ -87,6 +83,7 @@ Route::prefix('travshop')->group(function () {
     Route::get('/payment-status/{id}', [App\Http\Controllers\API\TravShopController::class,'statusPayment']);
     Route::post('/saldo', [App\Http\Controllers\API\TravShopController::class,'saldo']);
     Route::post('/rating/{id}', [App\Http\Controllers\API\RatingController::class, 'store']);
+    Route::post('/order-verification/{id}', [App\Http\Controllers\API\TravShopController::class,'verifikasiOrder']);
 });
 
 Route::post('/send-email/{order}', [App\Http\Controllers\API\SendController::class, 'mail']);

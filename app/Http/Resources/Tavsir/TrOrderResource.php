@@ -37,6 +37,7 @@ class TrOrderResource extends JsonResource
             'service_fee' => $this->service_fee,
             'status' => $this->status,
             'payment' => $this->payment,
+            'code_verif' => $this->code_verif,
             'detil' => TrOrderDetilResource::collection($this->detil),
         ];
     }

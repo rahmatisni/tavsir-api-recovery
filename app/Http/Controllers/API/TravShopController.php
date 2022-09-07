@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\TsCreatePaymentRequest;
 use App\Http\Requests\TsOrderConfirmRequest;
 use App\Http\Requests\TsOrderRequest;
+use App\Http\Requests\VerifikasiOrderReqeust;
 use App\Http\Resources\SaldoResource;
 use App\Http\Resources\TravShop\TsOrderResource;
 use App\Http\Resources\TravShop\TsProducDetiltResource;
@@ -474,5 +475,27 @@ class TravShopController extends Controller
                             return $q->where('phone', $phone);
                         })->get();
         return response()->json(SaldoResource::collection($data));
+    }
+
+    function verifikasiOrder($id, VerifikasiOrderReqeust $request)
+    {
+        $data = TransOrder::findOrFail($id);
+        if($data->code_verif == $request->code)
+        {
+            $data->status = TransOrder::DONE;
+            $data->confirm_date = Carbon::now();
+        }else{
+            return response()->json([
+                "message"=> "The given data was invalid.",
+                "errors"=> [
+                    "code"=> [
+                        "The code is invalid."
+                    ]
+                ]
+            ],422);
+        }
+        $data->save();
+
+        return response()->json($data);
     }
 }
