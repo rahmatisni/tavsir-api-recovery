@@ -168,7 +168,7 @@ class TravShopController extends Controller
     function orderConfirm(TsOrderConfirmRequest $request, $id)
     {
         $data = TransOrder::findOrfail($id);
-        if($data->status != TransOrder::WAITING_CONFIRMATION)
+        if($data->status != TransOrder::WAITING_CONFIRMATION && $data->status != TransOrder::WAITING_OPEN)
         {
             return response()->json(['error' => 'Order '.$data->status], 500);
         }
