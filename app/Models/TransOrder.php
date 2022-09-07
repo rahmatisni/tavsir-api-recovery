@@ -12,6 +12,7 @@ class TransOrder extends BaseModel
     public const CART = 'CART';
     public const PENDING = 'PENDING';
     public const PAYMENT_SUCCESS = 'PAYMENT_SUCCESS';
+    public const WAITING_OPEN = 'WAITING_OPEN';
     public const WAITING_CONFIRMATION = 'WAITING_CONFIRMATION';
     public const WAITING_PAYMENT = 'WAITING_PAYMENT';
     public const PREPARED = 'PREPARED';
@@ -21,11 +22,6 @@ class TransOrder extends BaseModel
 
     public const ORDER_TAKE_N_GO = 'TAKE_N_GO';
     public const ORDER_TAVSIR = 'ORDER_TAVSIR';
-
-    public const ACTION_SAVE = 'ACTION_SAVE';
-    public const ACTION_PAY = 'ACTION_PAY';
-
-
 
     protected $fillable = [
         'order_type',

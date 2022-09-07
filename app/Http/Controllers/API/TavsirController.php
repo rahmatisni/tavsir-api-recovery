@@ -130,6 +130,7 @@ class TavsirController extends Controller
             $data->order_id = 'TAV-' . date('YmdHis');
             $data->tenant_id = auth()->user()->tenant_id;
             $data->business_id = auth()->user()->business_id;
+            $data->detil()->delete();
             $order_detil_many = [];
             $data->save();
 
