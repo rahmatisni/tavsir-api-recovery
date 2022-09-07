@@ -82,7 +82,7 @@ class TravShopController extends Controller
     {
         try {
             DB::beginTransaction();
-            $data = TransOrder::firstOrNew(['id' => $request->id]);
+            $data = new TransOrder;
             $data->order_type = TransOrder::ORDER_TAKE_N_GO;
             $data->order_id = 'TNG-' . date('YmdHis');
             $data->tenant_id = $request->tenant_id;

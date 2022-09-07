@@ -125,7 +125,7 @@ class TavsirController extends Controller
     {
         try {
             DB::beginTransaction();
-            $data = new TransOrder();
+            $data = TransOrder::firstOrNew(['id' => $request->id]);
             $data->order_type = TransOrder::ORDER_TAVSIR;
             $data->order_id = 'TAV-' . date('YmdHis');
             $data->tenant_id = auth()->user()->tenant_id;
@@ -187,7 +187,7 @@ class TavsirController extends Controller
                         'pembayaran' => $request->pembayaran,
                         'kembalian' => $request->pembayaran - $data->total,
                     ];
-                    $data->payment_method = 6;
+                    $data->payment_method_id = 6;
                     $payment->data = $data_pay;
                     $data->status = TransOrder::DONE;
                     $data->payment()->save($payment);
