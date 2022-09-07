@@ -3,27 +3,41 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\RestArea;
+use App\Models\Tenant;
+use App\Models\TransOrder;
+use App\Models\Voucher;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $total_pemasukan = 50000000;
-        $total_transaksi_tavsir = 100;
-        $total_transaksi_takengo = 100;
+        $order = TransOrder::Done();
+
+        $rest_area = RestArea::get();
+
+        $tenant = Tenant::all();
+
+        $voucher = Voucher::get();
+
+        $total_pemasukan = $order->count();
+        $total_transaksi_tavsir = $order->fromTavsir()->count();
+        $total_transaksi_takengo = $order->fromTakengo()->count();
         $total_transaksi = $total_transaksi_tavsir + $total_transaksi_takengo;
-        $total_rest_area = 10;
+        $total_rest_area = $rest_area->count();
         $total_merchat = 100;
-        $total_tenant = 200;
-        $total_customer = 100;
+        $total_tenant = $tenant->count();
+        $total_customer = $voucher->count();
         $category_tenant = [
-            'labels' => ['Food','Market','Fashion'],
-            'data' => [20,10,15]
+            // 'labels' => ['Food','Market','Fashion'],
+            'labels' => Tenant::categoryCount()->pluck('kategori'),
+            'data' => Tenant::categoryCount()->pluck('tenant')
         ];
         $payment_method = [
-            'labels' => ['Tunai','TAVQR','Pembayaran Digital'],
-            'data' => [60,30,10]
+            'labels' => TransOrder::paymentMethodCount()->pluck('method'),
+            'data' => TransOrder::paymentMethodCount()->pluck('total')
         ];
 
         $top_rest_area = [
@@ -43,6 +57,10 @@ class DashboardController extends Controller
                 'total_transaksi' => 184,
             ]
         ];
+
+        // $top_rest_area = TransOrder::with(['tenant'], function($q){
+        //     return $q->groupBy('rest_area_id')->select('rest_area_id', DB::raw('COUNT(*) as total'));
+        // })->get();
 
         $top_tenant = [
             [
@@ -76,6 +94,7 @@ class DashboardController extends Controller
             'total_tenant' => $total_tenant,
             'total_customer' => $total_customer,
             'category_tenant' => $category_tenant,
+            'payment_method' => $payment_method,
             'top_rest_area' => $top_rest_area,
             'top_tenant' => $top_tenant,
         ];

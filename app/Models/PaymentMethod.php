@@ -14,4 +14,9 @@ class PaymentMethod extends BaseModel
         'code_sof',
         'is_active',
     ];
+
+    public function order()
+    {
+        return $this->hasMany(TransOrder::class,'payment_method_id');
+    }
 }

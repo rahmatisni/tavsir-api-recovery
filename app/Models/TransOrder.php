@@ -3,6 +3,7 @@
 namespace App\Models;
 use App\Models\BaseModel;
 use App\Models\Traits\Uuid;
+use Illuminate\Support\Facades\DB;
 
 class TransOrder extends BaseModel
 {
@@ -69,9 +70,23 @@ class TransOrder extends BaseModel
         return $query->where('order_type',self::ORDER_TAVSIR);
     }
 
+    public function scopeDone($query)
+    {
+        return $query->where('status',self::DONE);
+    }
+
     public function casheer()
     {
         return $this->belongsTo(User::class, 'casheer_id');
     }
 
+    public function scopePaymentMethodCount($query)
+    {
+        return $query->groupBy('payment_method_id')->select('payment_method_id as method', DB::raw('COUNT(*) as total'));
+    }
+
+    // public function scopeRestAreaCount($query)
+    // {
+    //     return $query->tenant()->groupBy('rest_area_id')->select('rest_area_id as area', DB::raw('COUNT(*) as total'));
+    // }
 }
