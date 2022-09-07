@@ -129,7 +129,7 @@ class TavsirController extends Controller
             $data->order_type = TransOrder::ORDER_TAVSIR;
             $data->order_id = 'TAV-' . date('YmdHis');
             $data->tenant_id = auth()->user()->tenant_id;
-            $data->business_id = auth()->user()->tenant->business_id;
+            $data->business_id = auth()->user()->business_id;
             $order_detil_many = [];
             $data->save();
 
