@@ -155,6 +155,8 @@ class TravShopController extends Controller
                 return $q->where('order_id', 'like', "%$order_id%");
             })->when($order_type = request()->order_type, function ($q) use ($order_type) {
                 return $q->where('order_type', $order_type);
+            })->when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
+                return $q->where('tenant_id', $tenant_id);
             })->get();
         return response()->json(TsOrderResource::collection($data));
     }
