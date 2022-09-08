@@ -139,7 +139,8 @@ class TravShopController extends Controller
             $data->detil()->saveMany($order_detil_many);
 
             DB::commit();
-            return response()->json(TransOrder::with('detil')->find($data->id));
+            $data = TransOrder::findOrfail($data->id);
+            return response()->json(new TsOrderResource($data));
         } catch (\Throwable $th) {
             DB::rollback();
             return response()->json(['error' => $th->getMessage()], 500);
