@@ -63,7 +63,13 @@ class TavsirController extends Controller
     {
         return response()->json(new ProductResource($product));
     }
+    function productById($id)
+    {
+        $data = Product::findOrfail($id);
+        // return response()->json(new TsProducDetiltResource($data));
+        return response()->json(new ProductResource($data));
 
+    }
     public function productUpdate(TavsirProductRequest $request, Product $product)
     {
         try {
