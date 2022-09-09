@@ -132,8 +132,11 @@ class TavsirController extends Controller
         try {
             DB::beginTransaction();
             $data = TransOrder::firstOrNew(['id' => $request->id]);
-            $data->order_type = TransOrder::ORDER_TAVSIR;
-            $data->order_id = 'TAV-' . date('YmdHis');
+            if($request->id == null or $request->id==""){
+                $data->order_type = TransOrder::ORDER_TAVSIR;
+                $data->order_id = 'TAV-' . date('YmdHis');
+            }
+
             $data->tenant_id = auth()->user()->tenant_id;
             $data->business_id = auth()->user()->business_id;
             $data->detil()->delete();
