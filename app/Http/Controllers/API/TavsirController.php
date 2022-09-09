@@ -136,7 +136,6 @@ class TavsirController extends Controller
                 $data->order_type = TransOrder::ORDER_TAVSIR;
                 $data->order_id = 'TAV-' . date('YmdHis');
             }
-
             $data->tenant_id = auth()->user()->tenant_id;
             $data->business_id = auth()->user()->business_id;
             $data->detil()->delete();
@@ -185,7 +184,9 @@ class TavsirController extends Controller
             $data->fee = 0;
             $data->service_fee = 0;
             $data->total = $data->sub_total + $data->fee + $data->service_fee;
-            $data->status = TransOrder::CART;
+            if($request->id == null or $request->id==""){
+                $data->status = TransOrder::CART;
+            }
             $data->save();
             $data->detil()->saveMany($order_detil_many);
             
