@@ -13,6 +13,7 @@ class PaymentMethod extends BaseModel
         'code_name',
         'code_sof',
         'is_active',
+        'fee',
     ];
 
     public function order()
