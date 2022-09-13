@@ -158,7 +158,7 @@ class TravShopController extends Controller
                 return $q->where('order_type', $order_type);
             })->when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
                 return $q->where('tenant_id', $tenant_id);
-            })->get();
+            })->orderByDesc('created_at')->get();
         return response()->json(TsOrderResource::collection($data));
     }
 

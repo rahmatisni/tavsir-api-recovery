@@ -59,9 +59,9 @@ class TavsirController extends Controller
         }
     }
 
-    public function productShow(Product $product)
+    public function productShow(Product $id)
     {
-        return response()->json(new ProductResource($product));
+        return response()->json(new ProductResource($id));
     }
     function productById($id)
     {

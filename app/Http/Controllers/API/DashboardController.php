@@ -14,29 +14,35 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $order = TransOrder::Done();
-
+        $order = TransOrder::Done()
+                            ->when($rest_area_id = request()->rest_area_id, function($q) use ($rest_area_id){
+                                $q->where('rest_area_id', $rest_area_id);
+                            })->when($tenant_id = request()->tenant_id, function($q) use ($tenant_id){
+                                $q->where('tenant_id', $tenant_id);
+                            })->when($tanggal = request()->tanggal, function($q) use ($tanggal){
+                                $q->whereDate('created_at', $tanggal);
+                            })->get();
+       
         $rest_area = RestArea::get();
 
         $tenant = Tenant::all();
 
         $voucher = Voucher::get();
-
+        
         $total_pemasukan = $order->count();
-        $total_transaksi_tavsir = $order->fromTavsir()->count();
-        $total_transaksi_takengo = $order->fromTakengo()->count();
+        $total_transaksi_takengo = $order->where('order_type', TransOrder::ORDER_TAKE_N_GO)->count();
+        $total_transaksi_tavsir = $order->where('order_type',TransOrder::ORDER_TAVSIR)->count();
         $total_transaksi = $total_transaksi_tavsir + $total_transaksi_takengo;
         $total_rest_area = $rest_area->count();
         $total_merchat = 100;
         $total_tenant = $tenant->count();
         $total_customer = $voucher->count();
         $category_tenant = [
-            // 'labels' => ['Food','Market','Fashion'],
             'labels' => Tenant::categoryCount()->pluck('kategori'),
             'data' => Tenant::categoryCount()->pluck('tenant')
         ];
         $payment_method = [
-            'labels' => TransOrder::paymentMethodCount()->pluck('method'),
+            'labels' => TransOrder::paymentMethodCount()->get(),
             'data' => TransOrder::paymentMethodCount()->pluck('total')
         ];
 
@@ -87,7 +93,7 @@ class DashboardController extends Controller
         $data = [
             'total_pemasukan' => number_format($total_pemasukan,0,',','.'),
             'total_transaksi_tavsir' => number_format($total_transaksi_tavsir,0,',','.'),
-            'total_transaksi_tng' => number_format($total_transaksi_tavsir,0,',','.'),
+            'total_transaksi_tng' => number_format($total_transaksi_takengo,0,',','.'),
             'total_transaksi' => number_format($total_transaksi,0,',','.'),
             'total_rest_area' => $total_rest_area,
             'total_merchat' => $total_merchat,
