@@ -193,6 +193,8 @@ class TravShopController extends Controller
     {
         $data = TransOrder::findOrfail($id);
         $data->status = TransOrder::CANCEL;
+        $data->canceled_by = TransOrder::CANCELED_BY_CUSTOMER;
+        $data->canceled_name = request()->name;
         $data->save();
 
         return response()->json(new TsOrderResource($data));

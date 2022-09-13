@@ -17,6 +17,7 @@ class CreateRefPaymentMethod extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('code_name');
+            $table->integer('fee')->unsigned();
             $table->string('code_sof')->nullable();
             $table->timestamps();
         });

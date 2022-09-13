@@ -375,6 +375,11 @@ class TavsirController extends Controller
         $data = TransOrder::findOrFail($id);
         $data->status = $request->status;
         $data->code_verif = random_int(1000, 9999);
+        if($request->status == TransOrder::CANCEL)
+        {
+            $data->canceled_by = TransOrder::CANCELED_BY_CASHEER;
+            $data->canceled_name = auth()->user()->name;
+        }
         $data->save();
 
         return response()->json($data);

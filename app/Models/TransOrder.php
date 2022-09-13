@@ -24,6 +24,10 @@ class TransOrder extends BaseModel
     public const ORDER_TAKE_N_GO = 'TAKE_N_GO';
     public const ORDER_TAVSIR = 'ORDER_TAVSIR';
 
+    public const CANCELED_BY_CASHEER = 'CASHEER';
+    public const CANCELED_BY_CUSTOMER = 'CUSTOMER';
+
+
     protected $fillable = [
         'order_type',
         'sub_total',
