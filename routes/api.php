@@ -22,6 +22,7 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('chat', App\Http\Controllers\API\ChatController::class);
 
     Route::post('/logout', [App\Http\Controllers\API\AuthController::class,'logout']);
+    Route::post('/rest-area/update-status', [App\Http\Controllers\API\RestAreaController::class,'updateStatus']);
     Route::apiResource('rest-area', App\Http\Controllers\API\RestAreaController::class);
     Route::apiResource('business', App\Http\Controllers\API\BusinessController::class);
     Route::apiResource('tenant', App\Http\Controllers\API\TenantController::class);

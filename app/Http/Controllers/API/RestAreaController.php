@@ -82,4 +82,12 @@ class RestAreaController extends Controller
         $restArea->delete();
         return response()->noContent();
     }
+
+    public function updateStatus()
+    {
+        $rest_area = RestArea::whereIn('id',request()->rest_area_id);
+        $rest_area->update(['is_open' => request()->is_open]);;
+
+        return response()->json($rest_area->get());
+    }
 }
