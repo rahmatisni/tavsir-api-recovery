@@ -20,6 +20,7 @@ class TrOrderResource extends JsonResource
             'tenant_id' => $this->tenant_id,
             'business_id' => $this->tenant_id,
             'merchant_id' => $this->merchant_id,
+            'rest_area_id' => $this->tenant->rest_area_id ?? null,
             'sub_merchant_id' => $this->sub_merchant_id,
             "payment_method_id" => $this->payment_method_id,
             "order_type" => @$this->order_type,
