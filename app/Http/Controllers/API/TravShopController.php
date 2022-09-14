@@ -89,6 +89,8 @@ class TravShopController extends Controller
             $data->tenant_id = $request->tenant_id;
             $data->business_id = $request->business_id;
             $data->customer_id = $request->customer_id;
+            $data->customer_name = $request->customer_name;
+            $data->customer_phone = $request->customer_phone;
             $data->merchant_id = $request->merchant_id;
             $data->sub_merchant_id = $request->sub_merchant_id;
             $order_detil_many = [];
