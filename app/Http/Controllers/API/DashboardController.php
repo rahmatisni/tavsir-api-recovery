@@ -24,11 +24,9 @@ class DashboardController extends Controller
                             })->when($tanggal = request()->tanggal, function($q) use ($tanggal){
                                 $q->whereDate('created_at', $tanggal);
                             })->get();
-        
-        $all1 = $order->all();
-        $all2 = $order->all();
-        $all3 = $order->all();
-
+        $all1 = $order;
+        $all2 = $order;
+        $all3 = $order;
         $all_count = $all1->count();
         $takengo_count = $all2->where('order_type', TransOrder::ORDER_TAKE_N_GO)->count();
         $tavsir = $all3->where('order_type', TransOrder::ORDER_TAVSIR)->count();
