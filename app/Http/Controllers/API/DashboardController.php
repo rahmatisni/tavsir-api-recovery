@@ -16,12 +16,22 @@ class DashboardController extends Controller
     {
         $order = TransOrder::Done()
                             ->when($rest_area_id = request()->rest_area_id, function($q) use ($rest_area_id){
-                                $q->where('rest_area_id', $rest_area_id);
+                                $q->whereHas('tenant', function($qq) use ($rest_area_id){
+                                    $qq->where('rest_area_id', $rest_area_id);
+                                });
                             })->when($tenant_id = request()->tenant_id, function($q) use ($tenant_id){
                                 $q->where('tenant_id', $tenant_id);
                             })->when($tanggal = request()->tanggal, function($q) use ($tanggal){
                                 $q->whereDate('created_at', $tanggal);
                             })->get();
+        
+        $all1 = $order->all();
+        $all2 = $order->all();
+        $all3 = $order->all();
+
+        $all_count = $all1->count();
+        $takengo_count = $all2->where('order_type', TransOrder::ORDER_TAKE_N_GO)->count();
+        $tavsir = $all3->where('order_type', TransOrder::ORDER_TAVSIR)->count();
        
         $rest_area = RestArea::get();
 
@@ -29,9 +39,9 @@ class DashboardController extends Controller
 
         $voucher = Voucher::get();
         
-        $total_pemasukan = $order->count();
-        $total_transaksi_takengo = $order->where('order_type', TransOrder::ORDER_TAKE_N_GO)->count();
-        $total_transaksi_tavsir = $order->where('order_type',TransOrder::ORDER_TAVSIR)->count();
+        $total_pemasukan = $all_count;
+        $total_transaksi_takengo = $takengo_count;
+        $total_transaksi_tavsir = $tavsir;
         $total_transaksi = $total_transaksi_tavsir + $total_transaksi_takengo;
         $total_rest_area = $rest_area->count();
         $total_merchat = 100;
