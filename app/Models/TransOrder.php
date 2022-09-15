@@ -12,10 +12,10 @@ class TransOrder extends BaseModel
     protected $table = 'trans_order';
     public const CART = 'CART';
     public const PENDING = 'PENDING';
-    public const PAYMENT_SUCCESS = 'PAYMENT_SUCCESS';
     public const WAITING_OPEN = 'WAITING_OPEN';
     public const WAITING_CONFIRMATION = 'WAITING_CONFIRMATION';
     public const WAITING_PAYMENT = 'WAITING_PAYMENT';
+    public const PAYMENT_SUCCESS = 'PAYMENT_SUCCESS';
     public const PREPARED = 'PREPARED';
     public const READY = 'READY';
     public const DONE = 'DONE';

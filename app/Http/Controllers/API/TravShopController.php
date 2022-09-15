@@ -489,7 +489,7 @@ class TravShopController extends Controller
         if($data->code_verif == $request->code)
         {
             $data->status = TransOrder::DONE;
-            $data->confirm_date = Carbon::now();
+            $data->pickup_date = Carbon::now();
         }else{
             return response()->json([
                 "message"=> "The given data was invalid.",

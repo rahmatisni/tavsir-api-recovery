@@ -246,6 +246,7 @@ class TavsirController extends Controller
         $data->sub_total = $data->detil->whereIn('id', $request->detil_id)->sum('total_price');
         $data->total = $data->sub_total + $data->fee + $data->service_fee;
         $data->status = TransOrder::WAITING_PAYMENT;
+        $data->confirm_date = Carbon::now();
         $data->save();
 
         $data = TransOrder::findOrfail($id);

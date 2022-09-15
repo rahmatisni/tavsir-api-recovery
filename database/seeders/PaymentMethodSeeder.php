@@ -31,25 +31,25 @@ class PaymentMethodSeeder extends Seeder
                 [
                     'name' => 'BRI Direct Debit',
                     'code_name' => 'pg_dd_bri',
-                    'code_sof' => '',
+                    'code_sof' => 'BRI',
                     'fee' => 2000
                 ],
                 [
                     'name' => 'LinkAja',
                     'code_name' => 'pg_link_aja',
-                    'code_sof' => '',
+                    'code_sof' => 'LinkAja',
                     'fee' => 2000
                 ],
                 [
                     'name' => 'QR',
                     'code_name' => 'tav_qr',
-                    'code_sof' => '',
+                    'code_sof' => 'QR',
                     'fee' => 0
                 ],
                 [
                     'name' => 'Cash',
                     'code_name' => 'cash',
-                    'code_sof' => '',
+                    'code_sof' => 'Cash',
                     'fee' => 0
                 ],
                 [
