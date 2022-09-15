@@ -27,7 +27,6 @@ class DashboardController extends Controller
         $all1 = $order;
         $all2 = $order;
         $all3 = $order;
-        $all_count = $all1->count();
         $takengo_count = $all2->where('order_type', TransOrder::ORDER_TAKE_N_GO)->count();
         $tavsir = $all3->where('order_type', TransOrder::ORDER_TAVSIR)->count();
        
@@ -37,7 +36,7 @@ class DashboardController extends Controller
 
         $voucher = Voucher::get();
         
-        $total_pemasukan = $all_count;
+        $total_pemasukan = $all1->sum('total');
         $total_transaksi_takengo = $takengo_count;
         $total_transaksi_tavsir = $tavsir;
         $total_transaksi = $total_transaksi_tavsir + $total_transaksi_takengo;
