@@ -84,6 +84,11 @@ class TransOrder extends BaseModel
         return $this->belongsTo(User::class, 'casheer_id');
     }
 
+    public function chat()
+    {
+        return $this->hasOne(Chat::class, 'trans_order_id');
+    }
+
     public function scopePaymentMethodCount($query)
     {
         return $query->groupBy('payment_method_id')->select('payment_method_id as method', DB::raw('COUNT(*) as total'));
