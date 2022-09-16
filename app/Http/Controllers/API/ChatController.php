@@ -64,8 +64,7 @@ class ChatController extends Controller
     public function show(TransOrder $chat)
     {
         $record = Chat::where('trans_order_id', $chat->id)->first();
-        if(!$record) return response()->json(['message' => 'Not Found.'], 404);
-        return response()->json(new ChatResource($record));
+        return response()->json(new ChatResource($record, $chat->id));
     }
 
     /**
