@@ -35,7 +35,7 @@ class TransOrderSeeder extends Seeder
                     $pilihan = collect($customize_product->pilihan)->random();
                     if($pilihan)
                     {
-                        $customize_order = [
+                        $customize_order[] = [
                             'customize_id' => $customize_product->id,
                             'customize_name' => $customize_product->name,
                             'pilihan_id' => $pilihan->id,
