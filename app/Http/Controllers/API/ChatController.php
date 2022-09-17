@@ -8,6 +8,7 @@ use App\Http\Requests\ChatRequest;
 use App\Http\Resources\ChatResource;
 use App\Models\Chat;
 use App\Models\TransOrder;
+use App\Models\User;
 
 class ChatController extends Controller
 {
@@ -30,8 +31,10 @@ class ChatController extends Controller
      */
     public function store(ChatRequest $request)
     {
+        $user = User::where('id', $request->user_id)->first();
         $chat = [
             'user_id' => $request->user_id ?? (auth()->user()->id ?? ''),
+            'tenant_id' => $user->tenant_id,
             'user_name' => $request->user_name ?? (auth()->user()->name ?? ''),
             'text'  => $request->text ?? '-',
             'date' => date('Y-m-d H:i:s'),
