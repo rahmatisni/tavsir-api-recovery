@@ -259,19 +259,40 @@ class TavsirController extends Controller
         return response()->json($data);
     }
 
-    function OrderList()
+    function OrderList(Request $request)
     {
+        DB::enableQueryLog();
+        $json = array();
         $data = TransOrder::when($status = request()->status, function($q) use ($status){
-            $q->where('status', $status);
-        })->when($filter = request()->filter, function($q)use ($filter){
+            if(is_array($status)){
+                $q->whereIn('status', $status);      
+            }else{
+                $q->where('status', $status);
+            }
+        })
+        ->when($statusnot = request()->statusnot, function($q) use ($statusnot){
+            if(is_array($statusnot)){
+                $q->whereNotIn('status', $statusnot);      
+            }else{
+                $q->whereNotIn('status', $statusnot);
+            }
+        })
+        ->when($filter = request()->filter, function($q)use ($filter){
                 return $q->where('order_id', 'like', "%$filter%");
         })->when($tenant_id = request()->tenant_id, function($q) use ($tenant_id){
             $q->where('tenant_id', $tenant_id);
         })->when($order_type = request()->order_type, function($q) use ($order_type){
             $q->where('order_type', $order_type);
+        })->when($sort = request()->sort, function($q) use ($sort){
+            if(is_array($sort)){
+                foreach($sort as $val){
+                        $jsonx = explode("&", $val);
+                        $q->orderBy($jsonx[0], $jsonx[1]);
+                }       
+            }
         })
-        ->get();
-
+        ->get();     
+        // return response()->json([DB::getQueryLog(), $request->order, $json]);
         return response()->json(TrOrderResource::collection($data));
     }
 
