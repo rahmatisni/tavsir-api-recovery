@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ChatRequest extends FormRequest
+class ReadChatRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,10 +25,6 @@ class ChatRequest extends FormRequest
     {
         return [
             'user_type' => 'required|in:customer,tenant',
-            'user_id' => 'required',
-            'user_name' => 'required',
-            'trans_order_id' => 'required|exists:trans_order,id',
-            'text' => 'required|string'
         ];
     }
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\ChatRequest;
+use App\Http\Requests\ReadChatRequest;
 use App\Http\Resources\ChatResource;
 use App\Models\Chat;
 use App\Models\TransOrder;
@@ -33,16 +34,18 @@ class ChatController extends Controller
     {
         $user = User::where('id', $request->user_id)->first();
         $chat = [
+            "user_type" => $request->user_type,
             'user_id' => $request->user_id ?? (auth()->user()->id ?? ''),
             'tenant_id' => $user->tenant_id,
             'user_name' => $request->user_name ?? (auth()->user()->name ?? ''),
             'text'  => $request->text ?? '-',
             'date' => date('Y-m-d H:i:s'),
+            'is_read' => false
         ];
 
         $order = Chat::where('trans_order_id', $request->trans_order_id)->first();
         if ($order) {
-            $oldChat = $order->chat;
+            $oldChat = $order->chat ?? [];
             array_push($oldChat, $chat);
             $order->update([
                 'chat' => $oldChat
@@ -77,9 +80,25 @@ class ChatController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function read(ReadChatRequest $request, TransOrder $chat)
     {
-        //
+        $record = Chat::where('trans_order_id', $chat->id)->first();
+        if($record)
+        {
+            $update_chat = [];
+            foreach ($record->chat as $key => $value) {
+                if($value->user_type != $request->user_type)
+                {
+                    $value->is_read = true;
+                }
+                $update_chat[] = $value;
+            }
+            $record->update([
+                'chat' => $update_chat
+            ]);
+            $record->save();
+        }
+        return response()->json(new ChatResource($record, $chat->id));
     }
 
     /**

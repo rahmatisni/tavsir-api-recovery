@@ -86,7 +86,10 @@ Route::prefix('travshop')->group(function () {
     Route::post('/rating/{id}', [App\Http\Controllers\API\RatingController::class, 'store']);
     Route::post('/order-verification/{id}', [App\Http\Controllers\API\TravShopController::class,'verifikasiOrder']);
 });
-Route::apiResource('chat', App\Http\Controllers\API\ChatController::class);
+Route::get('chat', [App\Http\Controllers\API\ChatController::class, 'index']);
+Route::get('chat/{chat}', [App\Http\Controllers\API\ChatController::class, 'show']);
+Route::post('chat', [App\Http\Controllers\API\ChatController::class, 'store']);
+Route::post('chat/{chat}', [App\Http\Controllers\API\ChatController::class, 'read']);
 
 Route::post('/send-email/{order}', [App\Http\Controllers\API\SendController::class, 'mail']);
 
