@@ -136,7 +136,7 @@ class TravShopController extends Controller
             $data->fee = 2000;
             $data->service_fee = 0;
             $data->total = $data->sub_total + $data->fee + $data->service_fee;
-            $data->status = TransOrder::WAITING_CONFIRMATION;
+            $data->status = TransOrder::WAITING_CONFIRMATION_TENANT;
             $data->save();
             $data->detil()->saveMany($order_detil_many);
 
@@ -170,20 +170,14 @@ class TravShopController extends Controller
         return response()->json(new TsOrderResource($data));
     }
 
-    function orderConfirm(TsOrderConfirmRequest $request, $id)
+    function orderConfirm($id)
     {
         $data = TransOrder::findOrfail($id);
-        if($data->status != TransOrder::WAITING_CONFIRMATION && $data->status != TransOrder::WAITING_OPEN)
+        if($data->status != TransOrder::WAITING_CONFIRMATION_USER)
         {
             return response()->json(['error' => 'Order '.$data->status], 500);
         }
 
-        $data->detil->whereNotIn('id', $request->detil_id)->each(function ($item) {
-            $item->delete();
-        });
-
-        $data->sub_total = $data->detil->whereIn('id', $request->detil_id)->sum('total_price');
-        $data->total = $data->sub_total + $data->fee + $data->service_fee;
         $data->status = TransOrder::WAITING_PAYMENT;
         $data->save();
 

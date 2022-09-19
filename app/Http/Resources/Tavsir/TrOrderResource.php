@@ -44,6 +44,7 @@ class TrOrderResource extends JsonResource
             'status' => $this->status,
             'canceled_by' => $this->canceled_by,
             'canceled_name' => $this->canceled_name,
+            'reason_cancel' => $this->reason_cancel,
             'payment' => $this->payment,
             'code_verif' => $this->code_verif,
             'detil' => TrOrderDetilResource::collection($this->detil),

@@ -33,6 +33,12 @@ class ChatController extends Controller
     public function store(ChatRequest $request)
     {
         $user = User::where('id', $request->user_id)->first();
+        $file = request()->file('photo');
+        if(is_file($file)) {
+            $file = request()->file('photo')->store('images');
+        }else{
+            $file = null;
+        }
         $chat = [
             "user_type" => $request->user_type,
             'user_id' => $request->user_id ?? (auth()->user()->id ?? ''),
@@ -40,7 +46,8 @@ class ChatController extends Controller
             'user_name' => $request->user_name ?? (auth()->user()->name ?? ''),
             'text'  => $request->text ?? '-',
             'date' => date('Y-m-d H:i:s'),
-            'is_read' => false
+            'is_read' => false,
+            'file' => $file ? asset($file) : null ,
         ];
 
         $order = Chat::where('trans_order_id', $request->trans_order_id)->first();

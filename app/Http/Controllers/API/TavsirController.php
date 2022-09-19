@@ -234,7 +234,7 @@ class TavsirController extends Controller
     function orderConfirm(TsOrderConfirmRequest $request, $id)
     {
         $data = TransOrder::findOrfail($id);
-        if($data->status != TransOrder::WAITING_CONFIRMATION && $data->status != TransOrder::WAITING_OPEN)
+        if($data->status != TransOrder::WAITING_CONFIRMATION_TENANT && $data->status != TransOrder::WAITING_OPEN)
         {
             return response()->json(['error' => 'Order '.$data->status], 500);
         }
@@ -402,6 +402,7 @@ class TavsirController extends Controller
         {
             $data->canceled_by = TransOrder::CANCELED_BY_CASHEER;
             $data->canceled_name = auth()->user()->name;
+            $data->reason_cancel = $request->reason_cancel;
         }
         $data->save();
 

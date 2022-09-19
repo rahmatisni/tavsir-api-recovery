@@ -28,7 +28,8 @@ class ChatRequest extends FormRequest
             'user_id' => 'required',
             'user_name' => 'required',
             'trans_order_id' => 'required|exists:trans_order,id',
-            'text' => 'required|string'
+            'text' => 'required|string',
+            'image' => 'nullable|max:5000',
         ];
     }
 

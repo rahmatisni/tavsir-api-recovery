@@ -26,7 +26,7 @@ class TavsirTnGController extends Controller
           
         $data = $data->where('tenant_id', '=', auth()->user()->tenant_id)
                     ->where('order_type', '=', TransOrder::ORDER_TAKE_N_GO)
-                    ->whereIn('status',[TransOrder::PENDING, TransOrder::WAITING_CONFIRMATION, 
+                    ->whereIn('status',[TransOrder::PENDING, TransOrder::WAITING_CONFIRMATION_TENANT, 
                         TransOrder::WAITING_PAYMENT, TransOrder::PREPARED, TransOrder::READY])  
                     ->get();
 

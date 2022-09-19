@@ -43,6 +43,7 @@ class CreateTransOrder extends Migration
             $table->string('status')->default('PENDING');
             $table->string('canceled_by')->nullable();
             $table->string('canceled_name')->nullable();
+            $table->string('reason_cancel')->nullable();
             
             $table->timestamps();
         });

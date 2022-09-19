@@ -13,7 +13,8 @@ class TransOrder extends BaseModel
     public const CART = 'CART';
     public const PENDING = 'PENDING';
     public const WAITING_OPEN = 'WAITING_OPEN';
-    public const WAITING_CONFIRMATION = 'WAITING_CONFIRMATION';
+    public const WAITING_CONFIRMATION_TENANT = 'WAITING_CONFIRMATION_TENANT';
+    public const WAITING_CONFIRMATION_USER = 'WAITING_CONFIRMATION_USER';
     public const WAITING_PAYMENT = 'WAITING_PAYMENT';
     public const PAYMENT_SUCCESS = 'PAYMENT_SUCCESS';
     public const PREPARED = 'PREPARED';

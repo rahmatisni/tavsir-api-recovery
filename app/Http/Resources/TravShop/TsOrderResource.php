@@ -31,6 +31,7 @@ class TsOrderResource extends JsonResource
             'status' => $this->status,
             'canceled_by' => $this->canceled_by,
             'canceled_name' => $this->canceled_name,
+            'reason_cancel' => $this->reason_cancel,
             'casheer_name' => $this->casheer->name ?? '',
             'total_pesanan' => $this->detil->count(),
             'created_at' => $this->created_at,
