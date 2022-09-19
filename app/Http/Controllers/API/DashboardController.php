@@ -21,6 +21,8 @@ class DashboardController extends Controller
                                 });
                             })->when($tenant_id = request()->tenant_id, function($q) use ($tenant_id){
                                 $q->where('tenant_id', $tenant_id);
+                            })->when($business_id = request()->business_id, function($q) use ($business_id){
+                                $q->where('business_id', $business_id);
                             })->when($tanggal = request()->tanggal, function($q) use ($tanggal){
                                 $q->whereDate('created_at', $tanggal);
                             })->get();

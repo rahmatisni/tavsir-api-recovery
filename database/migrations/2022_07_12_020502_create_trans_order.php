@@ -33,12 +33,11 @@ class CreateTransOrder extends Migration
             $table->integer('customer_id')->unsigned()->nullable()->comment('customer_id from id user travoy');
             $table->string('customer_name')->nullable()->comment('customer_name from id user travoy');
             $table->string('customer_phone')->nullable()->comment('customer_phone from id user travoy');
-            $table->integer('voucher_id')->unsigned()->nullable();
+            $table->integer('rest_area_id')->unsigned()->nullable();
             $table->integer('payment_method_id')->unsigned()->nullable();
             $table->integer('payment_id')->unsigned()->nullable();
             $table->integer('discount')->unsigned()->nullable();
             $table->string('casheer_id')->nullable();
-            $table->tinyInteger('is_save')->unsigned()->default(0);
             $table->integer('pay_amount')->unsigned()->nullable();
             $table->string('code_verif')->nullable();
             $table->string('status')->default('PENDING');
