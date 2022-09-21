@@ -16,8 +16,7 @@ class CustomizeController extends Controller
      */
     public function index()
     {
-        $customizes = Customize::ByTenant()
-                                ->when($name = request()->name, function($q) use($name){
+        $customizes = Customize::when($name = request()->name, function($q) use($name){
                                     $q->where('name', 'like', '%'.$name.'%');
                                 })->get();
         return response()->json($customizes);
@@ -43,7 +42,7 @@ class CustomizeController extends Controller
      */
     public function show($id)
     {
-        $customize = Customize::ByTenant()->findOrFail($id);
+        $customize = Customize::findOrFail($id);
         return response()->json($customize);
     }
 
