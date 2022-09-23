@@ -23,6 +23,8 @@ use App\Models\Category;
 use App\Models\TransOrder;
 use App\Models\TransOrderDetil;
 use App\Models\PaymentMethod;
+use App\Models\RestArea;
+use App\Models\Tenant;
 use App\Models\TransPayment;
 use App\Models\Voucher;
 use Carbon\Carbon;
@@ -136,6 +138,7 @@ class TavsirController extends Controller
                 $data->order_type = TransOrder::ORDER_TAVSIR;
                 $data->order_id = 'TAV-' . date('YmdHis');
             }
+            $data->rest_area_id = auth()->user()->tenant->rest_area_id ?? null;
             $data->tenant_id = auth()->user()->tenant_id;
             $data->business_id = auth()->user()->business_id;
             $data->detil()->delete();

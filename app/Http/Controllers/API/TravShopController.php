@@ -86,6 +86,7 @@ class TravShopController extends Controller
             $data = new TransOrder;
             $data->order_type = TransOrder::ORDER_TAKE_N_GO;
             $data->order_id = 'TNG-' . date('YmdHis');
+            $data->rest_area_id = RestArea::find($request->tenant_id)->id;
             $data->tenant_id = $request->tenant_id;
             $data->business_id = $request->business_id;
             $data->customer_id = $request->customer_id;

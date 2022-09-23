@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
 use App\Models\RestArea;
 use App\Models\Tenant;
 use App\Models\TransOrder;
@@ -46,59 +47,115 @@ class DashboardController extends Controller
         $total_merchat = 100;
         $total_tenant = $tenant->count();
         $total_customer = $voucher->count();
+
+        $ct = $order;
+        $ct_group = $ct->sortBy('tenant.category')
+                        ->groupBy('tenant.category')->map(function ($item) {
+                            return $item->count();
+                        });
         $category_tenant = [
-            'labels' => Tenant::categoryCount()->pluck('kategori'),
-            'data' => Tenant::categoryCount()->pluck('tenant')
+            'labels' => array_keys($ct_group->toArray()),
+            'data' => array_values($ct_group->toArray())
         ];
+
+        // $category_tenant = [
+        //     'labels' => Tenant::categoryCount()->pluck('kategori'),
+        //     'data' => Tenant::categoryCount()->pluck('tenant')
+        // ];
+
+        $pm = $order;
+        $grouped = $pm->sortBy('payment_method.name')
+                        ->groupBy('payment_method.name')->map(function ($item) {
+                            return $item->count();
+                        });
         $payment_method = [
-            'labels' => TransOrder::paymentMethodCount()->get(),
-            'data' => TransOrder::paymentMethodCount()->pluck('total')
+            'labels' => array_keys($grouped->toArray()),
+            'data' => array_values($grouped->toArray())
         ];
 
-        $top_rest_area = [
-            [
-                'name' => 'Rumah Rest Area KM 10 A Jagorawi',
-                'photo' => 'https://via.placeholder.com/50',
-                'total_transaksi' => 200,
-            ],
-            [
-                'name' => 'Rest Area KM 35 A Jagorawi',
-                'photo' => 'https://via.placeholder.com/50',
-                'total_transaksi' => 190,
-            ],
-            [
-                'name' => 'Rest Area KM 44 A Jagorawi',
-                'photo' => 'https://via.placeholder.com/50',
-                'total_transaksi' => 184,
-            ]
-        ];
+        $topRest = $order;
+        $topRest = $topRest->groupBy('rest_area_id')->map(function ($item) {
+                return $item->count();
+            })->sortDesc();
+        $top_rest_area = [];
+        foreach ($topRest as $key => $value) {
+            $restarea = RestArea::find($key);
+            $top_rest_area[] = [
+                'name' => $restarea->name,
+                'photo' => $restarea->photo ? asset($restarea->photo) : null,
+                'total_transaksi' => $value,
+            ];
+        }
 
-        // $top_rest_area = TransOrder::with(['tenant'], function($q){
-        //     return $q->groupBy('rest_area_id')->select('rest_area_id', DB::raw('COUNT(*) as total'));
-        // })->get();
+        // $top_rest_area = [
+        //     [
+        //         'name' => 'Rumah Rest Area KM 10 A Jagorawi',
+        //         'photo' => 'https://via.placeholder.com/50',
+        //         'total_transaksi' => 200,
+        //     ],
+        //     [
+        //         'name' => 'Rest Area KM 35 A Jagorawi',
+        //         'photo' => 'https://via.placeholder.com/50',
+        //         'total_transaksi' => 190,
+        //     ],
+        //     [
+        //         'name' => 'Rest Area KM 44 A Jagorawi',
+        //         'photo' => 'https://via.placeholder.com/50',
+        //         'total_transaksi' => 184,
+        //     ]
+        // ];
 
-        $top_tenant = [
-            [
-                'name' => 'Rumah Talas',
-                'photo' => 'https://via.placeholder.com/50',
-                'total_transaksi' => 200,
-            ],
-            [
-                'name' => 'Starbucks',
-                'photo' => 'https://via.placeholder.com/50',
-                'total_transaksi' => 190,
-            ],
-            [
-                'name' => 'MCD',
-                'photo' => 'https://via.placeholder.com/50',
-                'total_transaksi' => 184,
-            ],
-            [
-                'name' => 'KFC',
-                'photo' => 'https://via.placeholder.com/50',
-                'total_transaksi' => 179,
-            ]
-        ];
+        $topTenant = $order;
+        $topTenant = $topTenant->groupBy('tenant_id')->map(function ($item) {
+                return $item->count();
+            })->sortDesc();
+        $top_tenant = [];
+        foreach ($topTenant as $key => $value) {
+            $tenant = Tenant::find($key);
+            $top_tenant[] = [
+                'name' => $tenant->name,
+                'photo' => $tenant->photo ? asset($tenant->photo) : null,
+                'total_transaksi' => $value,
+            ];
+        }
+
+        // $top_tenant = [
+        //     [
+        //         'name' => 'Rumah Talas',
+        //         'photo' => 'https://via.placeholder.com/50',
+        //         'total_transaksi' => 200,
+        //     ],
+        //     [
+        //         'name' => 'Starbucks',
+        //         'photo' => 'https://via.placeholder.com/50',
+        //         'total_transaksi' => 190,
+        //     ],
+        //     [
+        //         'name' => 'MCD',
+        //         'photo' => 'https://via.placeholder.com/50',
+        //         'total_transaksi' => 184,
+        //     ],
+        //     [
+        //         'name' => 'KFC',
+        //         'photo' => 'https://via.placeholder.com/50',
+        //         'total_transaksi' => 179,
+        //     ]
+        // ];
+
+        // $topProduct = $order;
+        // $topProduct = $topProduct->groupBy('detil.product_id')->map(function ($item) {
+        //         return $item->count();
+        //     })->sortDesc();
+        // $top_product = [];
+        // foreach ($topProduct as $key => $value) {
+        //     $product = Product::find($key);
+        //     $top_product[] = [
+        //         'name' => $product->name,
+        //         'photo' => $product->photo ? asset($product->photo) : null,
+        //         'total' => $value,
+        //     ];
+        // }
+
         $data = [
             'total_pemasukan' => number_format($total_pemasukan,0,',','.'),
             'total_transaksi_tavsir' => number_format($total_transaksi_tavsir,0,',','.'),
@@ -112,6 +169,7 @@ class DashboardController extends Controller
             'payment_method' => $payment_method,
             'top_rest_area' => $top_rest_area,
             'top_tenant' => $top_tenant,
+            // 'top_product' => $top_product,
         ];
 
         return response()->json($data);

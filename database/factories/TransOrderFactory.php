@@ -52,6 +52,7 @@ class TransOrderFactory extends Factory
             'order_type' => $order_type,
             'order_id' => $order_type == TransOrder::ORDER_TAKE_N_GO ? 'TNG-'.$this->faker->date('YmdHis') : 'TAV-'.$this->faker->date('YmdHis'),
             'tenant_id' => $tenant->id,
+            'rest_area_id' => $tenant->rest_area_id,
             'business_id' => $tenant->business_id,
             'customer_id' => $this->faker->randomElement([1,2,3,4,5,6,7,8,9,10]),
             'customer_name' => $this->faker->name,
