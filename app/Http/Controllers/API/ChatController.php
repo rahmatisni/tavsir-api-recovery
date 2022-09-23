@@ -41,9 +41,9 @@ class ChatController extends Controller
         }
         $chat = [
             "user_type" => $request->user_type,
-            'user_id' => $request->user_id ?? (auth()->user()->id ?? ''),
+            'user_id' => $request->user_id,
             'tenant_id' => $user->tenant_id,
-            'user_name' => $request->user_name ?? (auth()->user()->name ?? ''),
+            'user_name' => $request->user_name,
             'text'  => $request->text ?? '-',
             'date' => date('Y-m-d H:i:s'),
             'is_read' => false,
