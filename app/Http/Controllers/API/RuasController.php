@@ -37,9 +37,9 @@ class RuasController extends Controller
      * @param  \App\Models\Ruas  $ruas
      * @return \Illuminate\Http\Response
      */
-    public function show(Ruas $ruas)
+    public function show($id)
     {
-        return $ruas;
+        $ruas = Ruas::findOrFail($id);
         return response()->json($ruas);
     }
 
@@ -62,9 +62,10 @@ class RuasController extends Controller
      * @param  \App\Models\Ruas  $ruas
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Ruas $ruas)
+    public function destroy($id)
     {
+        $ruas = Ruas::findOrFail($id);
         $ruas->delete();
-        return response()->json(null, 204);
+        return response()->noContent();
     }
 }
