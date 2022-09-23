@@ -50,8 +50,9 @@ class RuasController extends Controller
      * @param  \App\Models\Ruas  $ruas
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Ruas $ruas)
+    public function update(Request $request,$id)
     {
+        $ruas = Ruas::findOrFail($id);
         $ruas->update($request->all());
         return response()->json($ruas);
     }
@@ -66,6 +67,6 @@ class RuasController extends Controller
     {
         $ruas = Ruas::findOrFail($id);
         $ruas->delete();
-        return response()->noContent();
+        return response()->json($ruas);
     }
 }
