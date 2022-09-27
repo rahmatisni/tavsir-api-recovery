@@ -27,6 +27,7 @@ class ChatRequest extends FormRequest
             'user_type' => 'required|in:customer,tenant',
             'user_id' => 'required',
             'user_name' => 'required',
+            'tenant_id' => 'required_if:user_type,tenant',
             'trans_order_id' => 'required|exists:trans_order,id',
             'text' => 'required|string',
             'image' => 'nullable|max:5000',
