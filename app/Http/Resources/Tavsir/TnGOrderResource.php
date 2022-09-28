@@ -17,7 +17,7 @@ class TnGOrderResource extends JsonResource
         return [
             'id' => $this->id,
             'order_id' => $this->order_id,
-            'order_date' => $this->created_at->format('Y-m-d H:i:s'),
+            'order_date' => $this->created_at,
             'sub_total' => $this->sub_total,
             'discount'=> $this->discount,
             'total' => $this->total,
