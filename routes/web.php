@@ -1,5 +1,7 @@
 <?php
 
+use App\Events\StatusOrderEvent;
+use App\Models\TransOrder;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,4 +17,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+
+
+Route::get('/cek', function () {
+    $trans_order = TransOrder::first();
+    $cek = StatusOrderEvent::dispatch($trans_order);
+    return $cek;
 });

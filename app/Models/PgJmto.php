@@ -197,10 +197,10 @@ class PgJmto extends Model
         return $res->json();
     }
 
-    public static function vaBriDelete($bill_id,$va_number,$refnum,$phone,$email,$customer_name)
+    public static function vaBriDelete($sof_code,$bill_id,$va_number,$refnum,$phone,$email,$customer_name)
     {
         $payload = [
-            "sof_code" =>  "BRI",
+            "sof_code" =>  $sof_code,
             "bill_id" =>  $bill_id,
             "va_number" => $va_number,
             "refnum" =>  $refnum,
@@ -210,5 +210,35 @@ class PgJmto extends Model
         ];
         $res = self::service('/va/delete', $payload);
         return $res->json();
+    }
+
+    public static function tarifFee($sof_id,$payment_method_id,$sub_merchant_id)
+    {
+        $payload = [
+            "sof_id" =>  $sof_id,
+            "payment_method_id" =>  $payment_method_id,
+            "sub_merchant_id" =>  $sub_merchant_id,
+        ];
+        $res = self::service('/sof/tariffee', $payload);
+        if($res->successful()){
+            return $res->json()['responseData']['value'];
+        }
+       
+        return null;
+    }
+
+    public static function feeBriVa()
+    {
+        return PgJmto::tarifFee(1,2,null);
+    }
+
+    public static function feeMandiriVa()
+    {
+        return PgJmto::tarifFee(3,2,null);
+    }
+
+    public static function feeBniVa()
+    {
+        return PgJmto::tarifFee(4,2,null);
     }
 }

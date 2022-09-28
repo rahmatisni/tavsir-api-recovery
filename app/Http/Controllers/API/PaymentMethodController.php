@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PaymentMethodRequest;
 use App\Models\PaymentMethod;
+use App\Models\PgJmto;
 
 class PaymentMethodController extends Controller
 {
@@ -16,6 +17,22 @@ class PaymentMethodController extends Controller
     public function index()
     {
         $paymentMethods = PaymentMethod::all();
+        foreach ($paymentMethods as $value) {
+            if($value->code_name == 'pg_va_bri'){
+                $value->fee = PgJmto::feeBriVa();
+                $value->save();
+            }
+
+            if($value->code_name == 'pg_va_mandiri'){
+                $value->fee = PgJmto::feeMandiriVa();
+                $value->save();
+            }
+
+            if($value->code_name == 'pg_va_bni'){
+                $value->fee = PgJmto::feeBniVa();
+                $value->save();
+            }
+        }
         return response()->json($paymentMethods);
     }
 
@@ -39,6 +56,19 @@ class PaymentMethodController extends Controller
      */
     public function show(PaymentMethod $paymentMethod)
     {
+        if($paymentMethod->code_name == 'pg_va_bri'){
+            $paymentMethod->fee = PgJmto::feeBriVa();
+        }
+
+        if($paymentMethod->code_name == 'pg_va_mandiri'){
+            $paymentMethod->fee = PgJmto::feeMandiriVa();
+        }
+
+        if($paymentMethod->code_name == 'pg_va_bni'){
+            $paymentMethod->fee = PgJmto::feeBniVa();
+        }
+        $paymentMethod->save();
+
         return response()->json($paymentMethod);
     }
 
