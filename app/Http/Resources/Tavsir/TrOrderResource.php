@@ -29,7 +29,7 @@ class TrOrderResource extends JsonResource
             "customer_id" => @$this->customer_id,
             "customer_name" => @$this->customer_name,
             "customer_phone" => @$this->customer_phone,
-            "created_at" => $this->created_at,
+            "created_at" => $this->created_at->format('Y-m-d H:i:s'),
             "payment_name" => $this->payment_method && $this->payment_method->name!=null ? $this->payment_method->name : '',
             "payment_id" => $this->payment_id,
             "voucher_id" => $this->voucher_id,

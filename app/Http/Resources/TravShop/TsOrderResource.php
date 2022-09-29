@@ -34,7 +34,7 @@ class TsOrderResource extends JsonResource
             'reason_cancel' => $this->reason_cancel,
             'casheer_name' => $this->casheer->name ?? '',
             'total_pesanan' => $this->detil->count(),
-            'created_at' => $this->created_at,
+            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'payment' => $this->payment->data ?? null,
             'detil' => TsOrderDetilResource::collection($this->detil),
         ];
