@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\PaymentMethod;
+use App\Models\PgJmto;
 use Illuminate\Database\Seeder;
 
 class PaymentMethodSeeder extends Seeder
@@ -20,25 +21,25 @@ class PaymentMethodSeeder extends Seeder
                     'name' => 'Mandiri Virtual Account',
                     'code_name' => 'pg_va_mandiri',
                     'code_sof' => 'MANDIRI',
-                    'fee' => 2000
+                    'fee' => 1000
                 ],
                 [
                     'name' => 'BRI Virtual Account',
                     'code_name' => 'pg_va_bri',
                     'code_sof' => 'BRI',
-                    'fee' => 2000
+                    'fee' => PgJmto::getFee('BRI')
                 ],
                 [
                     'name' => 'BRI Direct Debit',
                     'code_name' => 'pg_dd_bri',
                     'code_sof' => 'BRI',
-                    'fee' => 2000
+                    'fee' => 1000
                 ],
                 [
                     'name' => 'LinkAja',
                     'code_name' => 'pg_link_aja',
                     'code_sof' => 'LinkAja',
-                    'fee' => 2000
+                    'fee' => 1000
                 ],
                 [
                     'name' => 'QR',
@@ -56,7 +57,7 @@ class PaymentMethodSeeder extends Seeder
                     'name' => 'BNI Virtual Account',
                     'code_name' => 'pg_va_bni',
                     'code_sof' => 'BNI',
-                    'fee' => 2000
+                    'fee' => 1000
                 ],
             ]);
         }

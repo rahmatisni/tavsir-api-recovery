@@ -93,27 +93,34 @@ Route::post('chat/{chat}', [App\Http\Controllers\API\ChatController::class, 'rea
 
 Route::post('/send-email/{order}', [App\Http\Controllers\API\SendController::class, 'mail']);
 
-Route::get('/pg-cek', function(){
+Route::get('/pg-cek', function(Request $request){
+    if($request->sof_id && $request->payment_method_id )
+    {
+        return PgJmto::tarifFee($request->sof_id, $request->payment_method_id,$request->sub_merchant_id );
+    }
     $payload = [
-        'method' => 'POST',
-        'path' => '/va/create',
-        'payload' => [
-            "sof_code" => "BRI",
-            "bill_id" => "TNG-20220816132356",
-            "bill_name" => "Take N Go",
-            "amount" => "7000",
-            "desc" => "Rumah Talas",
-            "exp_date" => Carbon::now()->addDay(1)->format('Y-m-d H:i:s'),
-            "va_type" => "close",
-            "phone" => "6285156903693",
-            "email" => "rony.cetzl@gmail.com",
-            "customer_name" => "travoy customer test",
-            "submerchant_id" => "98"
-        ]
+        "sof_code" => "BRI",
+        "bill_id" => "TNG-20220816132356",
+        "bill_name" => "Take N Go",
+        "amount" => "7000",
+        "desc" => "Rumah Talas",
+        "exp_date" => Carbon::now()->addDay(1)->format('Y-m-d H:i:s'),
+        "va_type" => "close",
+        "phone" => "6285156903693",
+        "email" => "rony.cetzl@gmail.com",
+        "customer_name" => "travoy customer test",
+        "submerchant_id" => "98"
     ];
-    return Illuminate\Support\Facades\Http::withoutVerifying()->post('https://travoy.jasamarga.co.id:3000/pg-jmto',$payload)->json();
-    $payload = [
-        'sof_id' => 1
+    return PgJmto::vaCreate($payload['sof_code'], $payload['bill_id'], $payload['bill_name'], $payload['amount'], $payload['desc'], $payload['phone'], $payload['email'], $payload['customer_name']);
+});
+
+Route::get('/pg-tarif', function(){
+    $mandiri_va = PgJmto::feeMandiriVa();
+    $bri_va = PgJmto::feeBriVa();
+    $bni_va = PgJmto::feeBniVa();
+    return [
+        'bri_va' => $bri_va,
+        'mandiri_va' => $mandiri_va,
+        'bni_va' => $bni_va
     ];
-    return PgJmto::service('/sof/list',$payload);
 });
