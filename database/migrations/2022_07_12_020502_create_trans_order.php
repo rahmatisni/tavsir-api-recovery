@@ -44,6 +44,8 @@ class CreateTransOrder extends Migration
             $table->string('canceled_by')->nullable();
             $table->string('canceled_name')->nullable();
             $table->string('reason_cancel')->nullable();
+            $table->integer('voucher_id')->nullable();
+            $table->integer('id_ops')->nullable();
             
             $table->timestamps();
         });
