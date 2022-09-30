@@ -16,8 +16,21 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::all();
-        return response()->json($users);
+        $data = User::when($name = request()->name, function($q) use ($name){
+            $q->where('name', 'like', '%'.$name.'%');
+        })->when($email = request()->email, function($q) use ($email){
+            $q->where('email', 'like', '%'.$email.'%');
+        })->when($tenant_id = request()->tenant_id, function($q)use ($tenant_id){
+            return $q->where('tenant_id', $tenant_id);
+        })->when($status = request()->status, function($q)use ($status){
+            return $q->where('status', $status);
+        })->when($reset_pin = request()->reset_pin, function($q)use ($reset_pin){
+            return $q->where('reset_pin', $reset_pin);
+        })->when($role = request()->role, function($q)use ($role){
+            return $q->where('role', $role);
+        })->get();
+        
+        return response()->json($data);
     }
 
     /**
@@ -91,10 +104,10 @@ class UserController extends Controller
         return response()->json($user);
     }
 
-    public function resetPin($id)
+    public function approveResetPin($id)
     {
         User::findOrfail($id)->update([
-            'is_reset_pin' => 1,
+            'reset_pin' => User::APPROVED,
         ]);
         return response()->json(['message' => 'Permintaan Reset PIN berhasil']);
     }

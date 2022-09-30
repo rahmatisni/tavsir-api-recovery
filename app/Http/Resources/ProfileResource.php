@@ -31,6 +31,7 @@ class ProfileResource extends JsonResource
             'paystation_id' => $this->paystation_id,
             'status' => $this->status,
             'have_pin' => $this->pin ? true : false,
+            'reset_pin' => $this->reset_pin,
         ];
     }
 }

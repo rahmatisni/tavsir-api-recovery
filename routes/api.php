@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->group(function () {
     Route::get('/profile', [App\Http\Controllers\API\AuthController::class, 'profile']);
     Route::post('/pin', [App\Http\Controllers\API\AuthController::class, 'pinStore']);
+    Route::post('/reset-pin', [App\Http\Controllers\API\AuthController::class, 'resetPin']);
     Route::post('/open-cashier', [App\Http\Controllers\API\AuthController::class, 'openCashier']);
     Route::post('/dashboard', [App\Http\Controllers\API\DashboardController::class, 'index']);
 
@@ -33,7 +34,7 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('paystation', App\Http\Controllers\API\PaystationController::class);
     Route::apiResource('voucher', App\Http\Controllers\API\VoucherController::class);
     Route::apiResource('category', App\Http\Controllers\API\CategoryController::class);
-    Route::post('/user/reset-pin/{id}', [App\Http\Controllers\API\UserController::class,'resetPin']);
+    Route::post('/user/approve-reset-pin/{id}', [App\Http\Controllers\API\UserController::class,'approveResetPin']);
     Route::apiResource('user', App\Http\Controllers\API\UserController::class);
     Route::apiResource('ruas', App\Http\Controllers\API\RuasController::class);
 

@@ -58,22 +58,33 @@ class AuthController extends Controller
         return response()->json(new ProfileResource(auth()->user()));
     }
 
-    public function pinStore(PinStoreRequest $request)
+    public function resetPin()
     {
         $user = auth()->user();
-        if($user->pin != null && $user->is_reset_pin != 1)
-        {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Request atur ulang PIN belum di setujui'
-            ], 422);
-        }
-        $user->pin = bcrypt($request->pin);
-        $user->is_reset_pin = false;
+        $user->reset_pin = User::WAITING_APPROVE;
         $user->save();
         return response()->json([
             'status' => 'success',
-            'message' => 'Set PIN successfully'
+            'message' => 'Atur ulang PIN menunggu persetujuan'
+        ]);
+    }
+
+    public function pinStore(PinStoreRequest $request)
+    {
+        $user = auth()->user();
+        if($user->pin != null && $user->reset_pin != User::APPROVED)
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Atur ulang PIN belum di setujui'
+            ], 422);
+        }
+        $user->pin = bcrypt($request->pin);
+        $user->reset_pin = null;
+        $user->save();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Autut ulang PIN successfully'
         ]);
     }
 

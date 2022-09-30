@@ -17,6 +17,9 @@ class User extends Authenticatable
     public const PAYSTATION = 'PAYSTATION';
     public const JMRB = 'JMRB';
 
+    public const WAITING_APPROVE = 'WAITING_APPROVE';
+    public const APPROVED = 'APPROVED';
+
     /**
      * The attributes that are mass assignable.
      *

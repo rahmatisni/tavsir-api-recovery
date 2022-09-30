@@ -27,6 +27,7 @@ class CreateUsersTable extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('pin')->nullable();
+            $table->string('reset_pin')->nullable();
             $table->string('status')->default('ACTIVE')->comment('ACTIVE, INACTIVE');
             $table->rememberToken();
             $table->timestamps();
