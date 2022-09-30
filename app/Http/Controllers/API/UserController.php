@@ -29,7 +29,7 @@ class UserController extends Controller
         })->when($role = request()->role, function($q)use ($role){
             return $q->where('role', $role);
         })->get();
-        
+
         return response()->json($data);
     }
 
@@ -106,9 +106,20 @@ class UserController extends Controller
 
     public function approveResetPin($id)
     {
-        User::findOrfail($id)->update([
-            'reset_pin' => User::APPROVED,
-        ]);
-        return response()->json(['message' => 'Permintaan Reset PIN berhasil']);
+        $user = User::findOrfail($id);
+        if($user->reset_pin == User::WAITING_APPROVE){
+            $user->update([
+                'reset_pin' => User::APPROVED,
+            ]);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Permintaan Reset PIN berhasil'
+            ]);
+        }else{
+            return response()->json([
+                'status' => 'error',
+                'message' => 'User tidak mempunyai permintaan reset PIN'
+            ]);
+        }
     }
 }
