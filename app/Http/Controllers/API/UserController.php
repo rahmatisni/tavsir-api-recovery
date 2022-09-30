@@ -90,4 +90,12 @@ class UserController extends Controller
         $user->delete();
         return response()->json($user);
     }
+
+    public function resetPin($id)
+    {
+        User::findOrfail($id)->update([
+            'is_reset_pin' => 1,
+        ]);
+        return response()->json(['message' => 'Permintaan Reset PIN berhasil']);
+    }
 }

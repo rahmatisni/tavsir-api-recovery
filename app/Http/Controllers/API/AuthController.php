@@ -3,7 +3,11 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PinRequest;
+use App\Http\Requests\PinStoreRequest;
 use App\Http\Resources\ProfileResource;
+use App\Models\TransOperasional;
+use App\Models\TransOperational;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -52,5 +56,41 @@ class AuthController extends Controller
     public function profile()
     {
         return response()->json(new ProfileResource(auth()->user()));
+    }
+
+    public function pinStore(PinStoreRequest $request)
+    {
+        $user = auth()->user();
+        if($user->pin != null && $user->is_reset_pin != 1)
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Request atur ulang PIN belum di setujui'
+            ], 422);
+        }
+        $user->pin = bcrypt($request->pin);
+        $user->is_reset_pin = false;
+        $user->save();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Set PIN successfully'
+        ]);
+    }
+
+    public function openCashier(PinRequest $request)
+    {
+        $user = auth()->user();
+        if (Hash::check($request->pin, $user->pin))
+        {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'PIN verified successfully'
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'PIN verification failed'
+        ],422);
     }
 }
