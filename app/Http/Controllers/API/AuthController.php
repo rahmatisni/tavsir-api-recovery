@@ -63,18 +63,7 @@ class AuthController extends Controller
         $user = auth()->user();
         $user->reset_pin = User::WAITING_APPROVE;
         $user->save();
-        // TransOperational::where('casheer_id', $user->id)
-        //                     ->where('tenant_id', $user->tenant_id)
-        //                     ->where('start_date', '<=', Carbon::now())
-        //                     ->where('end_date', '>=', )
-                            
-        // TransOperational::create([
-        //     'tenant_id' => $user->tenant_id,
-        //     'periode' => 1,
-        //     'casheer_id' => $user->id,
-        //     'start_date' => Carbon::now(),
-        //     'duration' => 0,
-        // ]);
+        
         return response()->json([
             'status' => 'success',
             'message' => 'Atur ulang PIN menunggu persetujuan'
@@ -105,11 +94,71 @@ class AuthController extends Controller
         $user = auth()->user();
         if (Hash::check($request->pin, $user->pin))
         {
+            $cek = TransOperational::where('casheer_id', $user->id)
+                            ->where('tenant_id', $user->tenant_id)
+                            ->whereNull('end_date')
+                            ->first();
+            if($cek){
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Silahkan tutup kasir terlebih dahulu'
+                ], 422);
+            }
+
+            TransOperational::create([
+                'tenant_id' => $user->tenant_id,
+                'casheer_id' => $user->id,
+                'start_date' => Carbon::now(),
+            ]);
+
             return response()->json([
                 'status' => 'success',
-                'message' => 'PIN verified successfully'
+                'message' => 'Open cashier successfully'
             ]);
         }
+
+        
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'PIN verification failed'
+        ],422);
+    }
+
+    public function closeCashier(PinRequest $request)
+    {
+        $user = auth()->user();
+        if (Hash::check($request->pin, $user->pin))
+        {
+            $data = TransOperational::where('casheer_id', $user->id)
+                            ->where('tenant_id', $user->tenant_id)
+                            ->whereNull('end_date')
+                            ->first();
+            if(!$data){
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Silahkan buka kasir terlebih dahulu'
+                ], 422);
+            }
+            
+            $periode = TransOperational::where('tenant_id', $user->tenant_id)
+                            ->whereNotNull('end_date')
+                            ->where('start_date',Carbon::now()->format('Y-m-d'))
+                            ->count() + 1;
+
+            $end_date = Carbon::now();             
+            $data->periode = $periode;
+            $data->duration = $data->start_date->diffInSeconds($end_date);
+            $data->end_date = $end_date;
+            $data->save();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Close cashier successfully'
+            ]);
+        }
+
+        
 
         return response()->json([
             'status' => 'error',

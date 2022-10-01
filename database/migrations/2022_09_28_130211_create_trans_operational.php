@@ -16,11 +16,11 @@ class CreateTransOperational extends Migration
         Schema::create('trans_operational', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('tenant_id');
-            $table->integer('periode')->unsigned();
+            $table->integer('periode')->unsigned()->nullable();
             $table->string('casheer_id');
             $table->dateTime('start_date');
-            $table->dateTime('end_date');
-            $table->integer('duration');
+            $table->dateTime('end_date')->nullable();
+            $table->integer('duration')->nullable();
             $table->timestamps();
         });
     }
