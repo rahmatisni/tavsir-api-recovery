@@ -27,7 +27,7 @@ class PaymentMethodSeeder extends Seeder
                     'name' => 'BRI Virtual Account',
                     'code_name' => 'pg_va_bri',
                     'code_sof' => 'BRI',
-                    'fee' => PgJmto::getFee('BRI')
+                    'fee' => 1000
                 ],
                 [
                     'name' => 'BRI Direct Debit',
