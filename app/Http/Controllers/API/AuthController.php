@@ -63,13 +63,18 @@ class AuthController extends Controller
         $user = auth()->user();
         $user->reset_pin = User::WAITING_APPROVE;
         $user->save();
-        TransOperational::create([
-            'tenant_id' => $user->tenant_id,
-            'periode' => 1,
-            'casheer_id' => $user->id,
-            'start_date' => Carbon::now(),
-            'duration' => 0,
-        ]);
+        // TransOperational::where('casheer_id', $user->id)
+        //                     ->where('tenant_id', $user->tenant_id)
+        //                     ->where('start_date', '<=', Carbon::now())
+        //                     ->where('end_date', '>=', )
+                            
+        // TransOperational::create([
+        //     'tenant_id' => $user->tenant_id,
+        //     'periode' => 1,
+        //     'casheer_id' => $user->id,
+        //     'start_date' => Carbon::now(),
+        //     'duration' => 0,
+        // ]);
         return response()->json([
             'status' => 'success',
             'message' => 'Atur ulang PIN menunggu persetujuan'
