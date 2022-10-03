@@ -23,6 +23,7 @@ use App\Models\Category;
 use App\Models\TransOrder;
 use App\Models\TransOrderDetil;
 use App\Models\PaymentMethod;
+use App\Models\PgJmto;
 use App\Models\RestArea;
 use App\Models\Tenant;
 use App\Models\TransPayment;
@@ -258,8 +259,24 @@ class TavsirController extends Controller
 
     function PaymentMethod()
     {
-        $data = PaymentMethod::get();
-        return response()->json($data);
+        $paymentMethods = PaymentMethod::all();
+        foreach ($paymentMethods as $value) {
+            if($value->code_name == 'pg_va_bri'){
+                $value->fee = PgJmto::feeBriVa();
+                $value->save();
+            }
+
+            if($value->code_name == 'pg_va_mandiri'){
+                $value->fee = PgJmto::feeMandiriVa();
+                $value->save();
+            }
+
+            if($value->code_name == 'pg_va_bni'){
+                $value->fee = PgJmto::feeBniVa();
+                $value->save();
+            }
+        }
+        return response()->json($paymentMethods);
     }
 
     function OrderList(Request $request)
