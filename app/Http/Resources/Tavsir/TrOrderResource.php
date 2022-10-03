@@ -47,6 +47,7 @@ class TrOrderResource extends JsonResource
             'reason_cancel' => $this->reason_cancel,
             'payment' => $this->payment,
             'code_verif' => $this->code_verif,
+            'rating' => $this->rating,
             'detil' => TrOrderDetilResource::collection($this->detil),
         ];
     }
