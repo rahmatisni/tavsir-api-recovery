@@ -17,4 +17,9 @@ class TransOperational extends BaseModel
         'end_date',
         'duration',
     ];
+
+    public function trans_cashbox()
+    {
+        return $this->hasOne(TransCashbox::class);
+    }
 }

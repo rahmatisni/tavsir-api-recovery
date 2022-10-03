@@ -17,10 +17,10 @@ class CreateTransOperational extends Migration
             $table->increments('id');
             $table->integer('tenant_id');
             $table->integer('periode')->unsigned()->nullable();
-            $table->string('casheer_id');
+            $table->integer('casheer_id')->unsigned();
             $table->dateTime('start_date');
             $table->dateTime('end_date')->nullable();
-            $table->integer('duration')->nullable();
+            $table->integer('duration')->unsigned();
             $table->timestamps();
         });
     }

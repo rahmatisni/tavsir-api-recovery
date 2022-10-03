@@ -3,14 +3,18 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CloseCashierRequest;
 use App\Http\Requests\PinRequest;
 use App\Http\Requests\PinStoreRequest;
 use App\Http\Resources\ProfileResource;
+use App\Models\TransCashbox;
 use App\Models\TransOperasional;
 use App\Models\TransOperational;
+use App\Models\TransOrder;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 
@@ -96,18 +100,31 @@ class AuthController extends Controller
         {
             $cek = TransOperational::where('casheer_id', $user->id)
                             ->where('tenant_id', $user->tenant_id)
+                            ->whereDay('start_date', '=', date('d'))
+                            ->whereMonth('start_date', '=', date('m'))
+                            ->whereYear('start_date', '=', date('Y'))
                             ->whereNull('end_date')
-                            ->first();
-            if($cek){
+                            ->get();
+
+            if($cek->count() > 0){
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Silahkan tutup kasir terlebih dahulu'
                 ], 422);
             }
 
+
+            $count_periode = TransOperational::where('casheer_id', $user->id)
+                            ->where('tenant_id', $user->tenant_id)
+                            ->whereDay('start_date', '=', date('d'))
+                            ->whereMonth('start_date', '=', date('m'))
+                            ->whereYear('start_date', '=', date('Y'))
+                            ->count() + 1;
+
             TransOperational::create([
                 'tenant_id' => $user->tenant_id,
                 'casheer_id' => $user->id,
+                'periode' => $count_periode,
                 'start_date' => Carbon::now(),
             ]);
 
@@ -125,7 +142,7 @@ class AuthController extends Controller
         ],422);
     }
 
-    public function closeCashier(PinRequest $request)
+    public function closeCashier(CloseCashierRequest $request)
     {
         $user = auth()->user();
         if (Hash::check($request->pin, $user->pin))
@@ -140,25 +157,72 @@ class AuthController extends Controller
                     'message' => 'Silahkan buka kasir terlebih dahulu'
                 ], 422);
             }
-            
-            $periode = TransOperational::where('tenant_id', $user->tenant_id)
-                            ->whereNotNull('end_date')
-                            ->where('start_date',Carbon::now()->format('Y-m-d'))
-                            ->count() + 1;
 
-            $end_date = Carbon::now();             
-            $data->periode = $periode;
-            $data->duration = $data->start_date->diffInSeconds($end_date);
-            $data->end_date = $end_date;
-            $data->save();
+            try {
+                //code...
+           
+                DB::beginTransaction();
 
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Close cashier successfully'
-            ]);
+                $end_date = Carbon::now();             
+                $data->duration = $data->start_date->diffInSeconds($end_date);
+                $data->end_date = $end_date;
+                $data->save();
+
+                $trans_cashbox = new TransCashbox();
+                $trans_cashbox->cashbox = $request->cashbox;
+                $trans_cashbox->pengeluaran_cashbox = $request->pengeluaran_cashbox;
+                $trans_cashbox->description = $request->description;
+
+                $data_all = TransOrder::where('status', TransOrder::DONE)
+                                            ->whereBetween('created_at', [$data->start_date, $data->end_date])
+                                            ->get();
+                $total_order = $data_all;
+                $total_order = $total_order->where('payment_method_id',6)->sum('total');
+                // 
+                $trans_cashbox->different_cashbox = ($request->cashbox + $request->pengeluaran_cashbox) - $total_order;
+                $trans_cashbox->input_cashbox_date = Carbon::now();
+
+                $rp_va_bri = $data_all;
+                $rp_va_bri->where('payment_method_id',6)->sum('total');
+                $trans_cashbox->rp_va_bri = $rp_va_bri;
+
+                $rp_dd_bri = $data_all;
+                $rp_dd_bri->where('payment_method_id',3)->sum('total');
+                $trans_cashbox->rp_dd_bri = $rp_dd_bri;
+
+                $rp_va_mandiri = $data_all;
+                $rp_va_mandiri->where('payment_method_id',1)->sum('total');
+                $trans_cashbox->rp_va_mandiri = $rp_va_mandiri;
+
+                $rp_va_bni = $data_all;
+                $rp_va_bni->where('payment_method_id',7)->sum('total');
+                $trans_cashbox->rp_va_bni = $rp_va_bni;
+
+                $rp_tav_qr = $data_all;
+                $rp_tav_qr->where('payment_method_id',5)->sum('total');
+                $trans_cashbox->rp_tav_qr = $rp_tav_qr;
+
+                $rp_link_aja = $data_all;
+                $rp_link_aja->where('payment_method_id',4)->sum('total');
+                $trans_cashbox->rp_link_aja = $rp_link_aja;  
+
+                $trans_cashbox->save();
+                
+                DB::commit();
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Close cashier successfully',
+                    'data' => TransCashbox::find($trans_cashbox->id)
+                ]);
+
+            } catch (\Throwable $th) {
+                DB::rollBack();
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Error '.$th->getMessage()
+                ]);
+            }
         }
-
-        
 
         return response()->json([
             'status' => 'error',
