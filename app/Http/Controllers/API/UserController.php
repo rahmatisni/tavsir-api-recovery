@@ -108,12 +108,11 @@ class UserController extends Controller
     {
         $user = User::findOrfail($id);
         if($user->reset_pin == User::WAITING_APPROVE){
-            $user->update([
-                'reset_pin' => User::APPROVED,
-            ]);
+            $user->reset_pin = User::APPROVED;
+            $user->save();
             return response()->json([
                 'status' => 'success',
-                'message' => 'Permintaan Reset PIN berhasil'
+                'message' => 'Permintaan Reset PIN berhasil disetujui'
             ]);
         }else{
             return response()->json([
