@@ -16,13 +16,14 @@ class CreateTransCashbox extends Migration
         Schema::create('trans_cashbox', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('trans_operational_id')->unsigned();
+            $table->integer('initial_cashbox')->unsigned();
             $table->integer('cashbox')->unsigned();
-            $table->integer('cashbox_old')->unsigned();
             $table->datetime('input_cashbox_date');
             $table->datetime('update_cashbox_date')->nullable();
             $table->integer('different_cashbox');
             $table->integer('pengeluaran_cashbox')->unsigned();
             $table->text('description')->nullable();
+            $table->integer('rp_cash');
             $table->integer('rp_va_bri');
             $table->integer('rp_dd_bri');
             $table->integer('rp_va_mandiri');

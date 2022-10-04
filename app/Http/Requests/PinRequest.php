@@ -25,6 +25,7 @@ class PinRequest extends FormRequest
     {
         return [
             'pin' => 'required|numeric|digits:6',
+            'cashbox' => 'required|numeric',
         ];
     }
 }

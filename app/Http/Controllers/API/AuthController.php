@@ -121,12 +121,16 @@ class AuthController extends Controller
                             ->whereYear('start_date', '=', date('Y'))
                             ->count() + 1;
 
-            TransOperational::create([
-                'tenant_id' => $user->tenant_id,
-                'casheer_id' => $user->id,
-                'periode' => $count_periode,
-                'start_date' => Carbon::now(),
-            ]);
+            $trans_op = new TransOperational();
+            $trans_cashbox = new TransCashbox();
+            $trans_cashbox->initial_cashbox = $request->cashbox;
+
+            $trans_op->tenant_id = $user->tenant_id;
+            $trans_op->casheer_id = $user->id;
+            $trans_op->periode = $count_periode;
+            $trans_op->start_date = Carbon::now();
+            $trans_op->save();
+            $trans_op->trans_cashbox()->save($trans_cashbox);
 
             return response()->json([
                 'status' => 'success',
@@ -168,16 +172,19 @@ class AuthController extends Controller
                 $data->end_date = $end_date;
                 $data->save();
 
-                $trans_cashbox = new TransCashbox();
+                $trans_cashbox = $data->trans_cashbox;
                 $trans_cashbox->cashbox = $request->cashbox;
                 $trans_cashbox->pengeluaran_cashbox = $request->pengeluaran_cashbox;
                 $trans_cashbox->description = $request->description;
 
                 $data_all = TransOrder::where('status', TransOrder::DONE)
+                                            ->where('tenant_id', $user->tenant_id)
+                                            ->where('casheer_id', $user->id)
                                             ->whereBetween('created_at', [$data->start_date, $data->end_date])
                                             ->get();
                 $total_order = $data_all;
                 $total_order = $total_order->where('payment_method_id',6)->sum('total');
+                $trans_cashbox->rp_cash = $total_order;
                 // 
                 $trans_cashbox->different_cashbox = ($request->cashbox + $request->pengeluaran_cashbox) - $total_order;
                 $trans_cashbox->input_cashbox_date = Carbon::now();
