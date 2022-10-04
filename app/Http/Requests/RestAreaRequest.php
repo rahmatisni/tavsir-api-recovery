@@ -24,7 +24,7 @@ class RestAreaRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|max:20|unique:ref_rest_area,name,'.(request()->rest_area ? request()->rest_area->id : null),
+            'name' => 'required|string|max:20|',
             'address' => 'required',
             'latitude' => 'required|numeric|between:-90,90',
             'longitude' => 'required|numeric|between:-180,180',
