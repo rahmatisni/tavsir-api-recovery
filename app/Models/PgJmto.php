@@ -76,6 +76,8 @@ class PgJmto extends Model
             'JMTO-LONGITUDE' => '-6.2927969',
             'Content-Type' => 'Application/json',
             'Authorization' => 'Bearer ' . $token['access_token'],
+            'JMTO-IP-CLIENT' => '172.0.0.1',
+            'JMTO-REQUEST-ID' => '123456789',
         ])
         ->withoutVerifying()
         ->post(env('PG_BASE_URL') . $path,$payload);
