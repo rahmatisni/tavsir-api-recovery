@@ -121,4 +121,22 @@ class UserController extends Controller
             ]);
         }
     }
+
+    public function rejectResetPin($id)
+    {
+        $user = User::findOrfail($id);
+        if($user->reset_pin == User::WAITING_APPROVE){
+            $user->reset_pin = User::REJECT;
+            $user->save();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Permintaan Reset PIN berhasil ditolak'
+            ]);
+        }else{
+            return response()->json([
+                'status' => 'error',
+                'message' => 'User tidak mempunyai permintaan reset PIN'
+            ]);
+        }
+    }
 }

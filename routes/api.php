@@ -36,6 +36,7 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('voucher', App\Http\Controllers\API\VoucherController::class);
     Route::apiResource('category', App\Http\Controllers\API\CategoryController::class);
     Route::post('/user/approve-reset-pin/{id}', [App\Http\Controllers\API\UserController::class,'approveResetPin']);
+    Route::post('/user/reject-reset-pin/{id}', [App\Http\Controllers\API\UserController::class,'rejectResetPin']);
     Route::apiResource('user', App\Http\Controllers\API\UserController::class);
     Route::apiResource('ruas', App\Http\Controllers\API\RuasController::class);
 

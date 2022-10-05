@@ -81,7 +81,7 @@ class AuthController extends Controller
         {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Atur ulang PIN belum di setujui'
+                'message' => 'Atur ulang PIN belum '.$user->reset_pin
             ], 422);
         }
         $user->pin = bcrypt($request->pin);

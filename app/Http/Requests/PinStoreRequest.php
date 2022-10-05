@@ -24,7 +24,7 @@ class PinStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'pin' => 'required|numeric|digits:6|confirmed',
+            'pin' => 'required|numeric|digits:4|confirmed',
         ];
     }
 }

@@ -20,6 +20,7 @@ class User extends Authenticatable
     public const CASHIER = 'CASHIER';
 
     public const WAITING_APPROVE = 'WAITING_APPROVE';
+    public const REJECT = 'REJECT';
     public const APPROVED = 'APPROVED';
 
     /**

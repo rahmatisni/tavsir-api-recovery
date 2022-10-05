@@ -24,7 +24,7 @@ class PinRequest extends FormRequest
     public function rules()
     {
         return [
-            'pin' => 'required|numeric|digits:6',
+            'pin' => 'required|numeric|digits:4',
             'cashbox' => 'required|numeric',
         ];
     }
