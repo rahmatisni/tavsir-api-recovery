@@ -32,6 +32,6 @@ class CreateTransOperational extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('trans_operasional');
+        Schema::dropIfExists('trans_operational');
     }
 }

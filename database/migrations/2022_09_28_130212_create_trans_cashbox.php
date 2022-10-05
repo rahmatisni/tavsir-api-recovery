@@ -41,6 +41,6 @@ class CreateTransCashbox extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('trans_chashbox');
+        Schema::dropIfExists('trans_cashbox');
     }
 }
