@@ -43,6 +43,7 @@ Route::middleware('auth:api')->group(function () {
 
     Route::prefix('tavsir')->group(function () {
         Route::get('/product', [App\Http\Controllers\API\TavsirController::class,'productList']);
+        Route::post('/send-notif', [App\Http\Controllers\API\TavsirController::class,'sendNotif']);
         Route::get('/product/{id}', [App\Http\Controllers\API\TavsirController::class,'productShow']);
         Route::post('/product', [App\Http\Controllers\API\TavsirController::class,'productStore']);
         Route::put('/product/{id}', [App\Http\Controllers\API\TavsirController::class,'productUpdate']);

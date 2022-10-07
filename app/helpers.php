@@ -12,6 +12,7 @@ function sendNotif($to, $title, $message, $payload=array()){
         $param['to']=$to;
     }
     $param['notification']=array('title'=>$title, 'body'=>$message);
+    if(count($payload)>0)
     $param['data']=$payload;
     $ch = curl_init();
     curl_setopt( $ch,CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send' );

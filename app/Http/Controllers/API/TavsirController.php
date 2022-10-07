@@ -442,7 +442,15 @@ class TavsirController extends Controller
 
         return response()->json($data);
     }
-
+    function sendNotif()
+    {
+        $hsl = sendNotif(
+            array('dNSReUXRRQmuwAjfzfRcAC:APA91bEn-1Y4TFgc33bWorTzlmzj-Tr7WA1oIikUEjQBEX9Pu1BC8szlQ-iUwrBap2O_QF6ifXgZ4SzgPcSoU2JCXBX-J-IyPI1hthuBBbxE8Tcy0Vml-m7ldVirvJC5cosD7Y5g95Zq','cjOx95mNQEaC4S1q-0wP9I:APA91bFqykwgULm2RvfmnhtuhshHSgRAw99lOsbKigdb1rUEFvPMdhFaXbZmxDoOJCw5dd_x6Qdgv0K8hLByTpI0WajOiDBo2R3ZByGxWmHrTheKGgvF9Afp2cer3Rhb9rttFNxtEA78'),
+            'testing',
+            'testing'
+        );
+        return response()->json(['result'=> $hsl]);
+    }
   
 
 }
