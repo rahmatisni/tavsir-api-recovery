@@ -21,6 +21,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/pin', [App\Http\Controllers\API\AuthController::class, 'pinStore']);
     Route::post('/reset-pin', [App\Http\Controllers\API\AuthController::class, 'resetPin']);
     Route::post('/open-cashier', [App\Http\Controllers\API\AuthController::class, 'openCashier']);
+    Route::post('/check-open-cashier', [App\Http\Controllers\API\AuthController::class, 'checkOpenCashier']);
     Route::post('/close-cashier', [App\Http\Controllers\API\AuthController::class, 'closeCashier']);
     Route::post('/dashboard', [App\Http\Controllers\API\DashboardController::class, 'index']);
 

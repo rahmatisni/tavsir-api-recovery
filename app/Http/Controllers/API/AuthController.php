@@ -92,7 +92,24 @@ class AuthController extends Controller
             'message' => 'Autut ulang PIN successfully'
         ]);
     }
+    public function checkOpenCashier()
+    {
+        $user = auth()->user();
+        $cek = TransOperational::where('casheer_id', $user->id)
+        ->where('tenant_id', $user->tenant_id)
+        ->whereDay('start_date', '=', date('d'))
+        ->whereMonth('start_date', '=', date('m'))
+        ->whereYear('start_date', '=', date('Y'))
+        ->whereNull('end_date')
+        ->get();
 
+        if($cek->count() > 0){
+            return response()->json([
+            'status' => 'success',
+            'message' => 'Status chasier is open'
+            ], 200);
+        }
+    }
     public function openCashier(PinRequest $request)
     {
         $user = auth()->user();
