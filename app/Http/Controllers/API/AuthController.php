@@ -93,7 +93,7 @@ class AuthController extends Controller
         $user->save();
         return response()->json([
             'status' => 'success',
-            'message' => 'Autut ulang PIN successfully'
+            'message' => 'Autur PIN successfully'
         ]);
     }
     public function checkOpenCashier()
@@ -205,6 +205,7 @@ class AuthController extends Controller
                                             ->get();
                 $total_order = $data_all;
                 $total_order = $total_order->where('payment_method_id',6)->sum('total');
+
                 $trans_cashbox->rp_cash = $total_order;
                 // 
                 $trans_cashbox->different_cashbox = ($request->cashbox + $request->pengeluaran_cashbox) - $total_order;
@@ -233,8 +234,8 @@ class AuthController extends Controller
                 $rp_link_aja = $data_all;
                 $rp_link_aja->where('payment_method_id',4)->sum('total');
                 $trans_cashbox->rp_link_aja = $rp_link_aja;  
-
                 $trans_cashbox->save();
+                dd($trans_cashbox);
                 
                 DB::commit();
                 return response()->json([

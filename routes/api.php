@@ -101,6 +101,12 @@ Route::post('chat/{chat}', [App\Http\Controllers\API\ChatController::class, 'rea
 
 Route::post('/send-email/{order}', [App\Http\Controllers\API\SendController::class, 'mail']);
 
+Route::post('payment-gateway/sof/list', [App\Http\Controllers\API\PaymentGatewayController::class, 'sofList']);
+Route::post('payment-gateway/va/create', [App\Http\Controllers\API\PaymentGatewayController::class, 'vaCreate']);
+Route::post('payment-gateway/va/cekstatus', [App\Http\Controllers\API\PaymentGatewayController::class, 'vaStatus']);
+Route::post('payment-gateway/va/delete', [App\Http\Controllers\API\PaymentGatewayController::class, 'vaDelete']);
+
+
 Route::get('/pg-cek', function(Request $request){
     if($request->sof_id && $request->payment_method_id )
     {
