@@ -90,8 +90,13 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        $product->delete();
-        return response()->json($product);
+        if(request()->ids){
+            $product->whereIn('id', request()->ids)->delete();
+            return response()->json($product);
+        }else{   
+            $product->delete();
+            return response()->json($product);
+        }
     }
 
     public function updateStatus()

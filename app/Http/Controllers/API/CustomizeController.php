@@ -67,7 +67,12 @@ class CustomizeController extends Controller
      */
     public function destroy(Customize $customize)
     {
-        $customize->delete();
-        return response()->json($customize);
+        if(request()->ids){
+            $customize->whereIn('id', request()->ids)->delete();
+            return response()->json($customize);
+        }else{   
+            $customize->delete();
+            return response()->json($customize);
+        }
     }
 }
