@@ -19,8 +19,8 @@ class TransOrderSeeder extends Seeder
      */
     public function run()
     {
-        $faker = Factory::create();;
-        TransOrder::factory()->count(1000)->create()->each(function ($transOrder) use($faker) {
+        $faker = Factory::create();
+        TransOrder::factory()->count(500)->create()->each(function ($transOrder) use($faker) {
             $product = Product::where('tenant_id', $transOrder->tenant_id)->get();
             $count = $product->count();
             $random_get = $faker->numberBetween(1, $count);

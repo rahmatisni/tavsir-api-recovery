@@ -143,16 +143,17 @@ class TavsirController extends Controller
             if($request->id == null or $request->id==""){
                 $data->order_type = TransOrder::ORDER_TAVSIR;
                 $data->order_id = 'TAV-' . date('YmdHis');
+                $data->status = TransOrder::CART;
+                
             }
             $data->rest_area_id = auth()->user()->tenant->rest_area_id ?? null;
             $data->tenant_id = auth()->user()->tenant_id;
             $data->business_id = auth()->user()->business_id;
             $data->detil()->delete();
             $order_detil_many = [];
-            $data->sub_total = 0;
-            $data->total = 0;
             $data->save();
 
+            $sub_total = 0;
             foreach ($request->product as $k => $v) {
                 $product = Product::find($v['product_id']);
 
@@ -186,16 +187,14 @@ class TavsirController extends Controller
                 $order_detil->total_price = $order_detil->price * $v['qty'];
                 $order_detil->note = $v['note'];
 
-                $data->sub_total += $order_detil->total_price;
+                $sub_total += $order_detil->total_price;
 
                 $order_detil_many[] = $order_detil;
             }
-            $data->fee = 0;
-            $data->service_fee = 0;
+
+            $data->sub_total = $sub_total;
             $data->total = $data->sub_total + $data->fee + $data->service_fee;
-            if($request->id == null or $request->id==""){
-                $data->status = TransOrder::CART;
-            }
+
             $data->save();
             $data->detil()->saveMany($order_detil_many);
             

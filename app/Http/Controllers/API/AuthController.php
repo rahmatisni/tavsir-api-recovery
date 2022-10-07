@@ -192,8 +192,7 @@ class AuthController extends Controller
                 $data->duration = $data->start_date->diffInSeconds($end_date);
                 $data->end_date = $end_date;
                 $data->save();
-
-                $trans_cashbox = $data->trans_cashbox;
+                $trans_cashbox = $data->trans_cashbox ? $data->trans_cashbox : new TransCashbox();
                 $trans_cashbox->cashbox = $request->cashbox;
                 $trans_cashbox->pengeluaran_cashbox = $request->pengeluaran_cashbox;
                 $trans_cashbox->description = $request->description;
@@ -212,30 +211,32 @@ class AuthController extends Controller
                 $trans_cashbox->input_cashbox_date = Carbon::now();
 
                 $rp_va_bri = $data_all;
-                $rp_va_bri->where('payment_method_id',6)->sum('total');
+                $rp_va_bri = $rp_va_bri->where('payment_method_id',6)->sum('total');
                 $trans_cashbox->rp_va_bri = $rp_va_bri;
 
                 $rp_dd_bri = $data_all;
-                $rp_dd_bri->where('payment_method_id',3)->sum('total');
+                $rp_vrp_dd_bria_bri = $rp_dd_bri->where('payment_method_id',3)->sum('total');
                 $trans_cashbox->rp_dd_bri = $rp_dd_bri;
 
                 $rp_va_mandiri = $data_all;
-                $rp_va_mandiri->where('payment_method_id',1)->sum('total');
+                $rp_va_mandiri = $rp_va_mandiri->where('payment_method_id',1)->sum('total');
                 $trans_cashbox->rp_va_mandiri = $rp_va_mandiri;
 
                 $rp_va_bni = $data_all;
-                $rp_va_bni->where('payment_method_id',7)->sum('total');
+                $rp_va_bni = $rp_va_bni->where('payment_method_id',7)->sum('total');
                 $trans_cashbox->rp_va_bni = $rp_va_bni;
 
                 $rp_tav_qr = $data_all;
-                $rp_tav_qr->where('payment_method_id',5)->sum('total');
+                $rp_tav_qr = $rp_tav_qr->where('payment_method_id',5)->sum('total');
                 $trans_cashbox->rp_tav_qr = $rp_tav_qr;
 
                 $rp_link_aja = $data_all;
                 $rp_link_aja->where('payment_method_id',4)->sum('total');
                 $trans_cashbox->rp_link_aja = $rp_link_aja;  
+
+                $trans_cashbox->rp_total = $data_all->sum('total');
+
                 $trans_cashbox->save();
-                dd($trans_cashbox);
                 
                 DB::commit();
                 return response()->json([

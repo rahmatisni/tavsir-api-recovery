@@ -22,4 +22,9 @@ class TransOperational extends BaseModel
     {
         return $this->hasOne(TransCashbox::class);
     }
+
+    public function cashier()
+    {
+        return $this->belongsTo(User::class, 'casheer_id');
+    }
 }

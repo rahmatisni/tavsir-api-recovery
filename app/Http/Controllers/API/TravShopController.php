@@ -97,6 +97,7 @@ class TravShopController extends Controller
             $order_detil_many = [];
             $data->save();
 
+            $sub_total = 0;
             foreach ($request->product as $k => $v) {
                 $product = Product::find($v['product_id']);
 
@@ -130,12 +131,13 @@ class TravShopController extends Controller
                 $order_detil->total_price = $order_detil->price * $v['qty'];
                 $order_detil->note = $v['note'];
 
-                $data->sub_total += $order_detil->total_price;
+                $sub_total += $order_detil->total_price;
 
                 $order_detil_many[] = $order_detil;
             }
+
             $data->fee = 2000;
-            $data->service_fee = 0;
+            $data->sub_total = $sub_total;
             $data->total = $data->sub_total + $data->fee + $data->service_fee;
             $data->status = TransOrder::WAITING_CONFIRMATION_TENANT;
             $data->save();

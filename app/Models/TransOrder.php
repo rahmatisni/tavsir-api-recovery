@@ -100,6 +100,17 @@ class TransOrder extends BaseModel
         return $query->groupBy('payment_method_id')->select('payment_method_id as method', DB::raw('COUNT(*) as total'));
     }
 
+    public function labelOrderType()
+    {
+        if($this->order_type == self::ORDER_TAKE_N_GO){
+            return 'Take N Go';
+        }else if($this->order_type == self::ORDER_TAVSIR){
+            return 'Tavsir';
+        }else{
+            return $this->order_type;
+        }
+    }
+
     // public function scopeRestAreaCount($query)
     // {
     //     return $query->tenant()->groupBy('rest_area_id')->select('rest_area_id as area', DB::raw('COUNT(*) as total'));

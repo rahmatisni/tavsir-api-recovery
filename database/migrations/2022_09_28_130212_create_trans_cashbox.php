@@ -30,6 +30,7 @@ class CreateTransCashbox extends Migration
             $table->integer('rp_va_bni');
             $table->integer('rp_tav_qr');
             $table->integer('rp_link_aja');
+            $table->integer('rp_total');
             $table->timestamps();
         });
     }
