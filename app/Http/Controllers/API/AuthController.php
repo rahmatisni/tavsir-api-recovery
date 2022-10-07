@@ -30,8 +30,12 @@ class AuthController extends Controller
         {
             return response(['errors'=>$validator->errors()->all()], 422);
         }
+
         $user = User::where('email', $request->email)->first();
         if ($user) {
+            if($request->fcm_token!='' && $request->fcm_token!=null){
+                User::where('id', $user->id)->update(['fcm_token'=>$request->fcm_token]);
+            }
             if (Hash::check($request->password, $user->password)) {
                 $tokenResult = $user->createToken('Personal');
                 $token = $tokenResult->accessToken;
