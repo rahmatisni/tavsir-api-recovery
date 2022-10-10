@@ -215,7 +215,7 @@ class AuthController extends Controller
                 $trans_cashbox->rp_va_bri = $rp_va_bri;
 
                 $rp_dd_bri = $data_all;
-                $rp_vrp_dd_bria_bri = $rp_dd_bri->where('payment_method_id',3)->sum('total');
+                $rp_dd_bri = $rp_dd_bri->where('payment_method_id',3)->sum('total');
                 $trans_cashbox->rp_dd_bri = $rp_dd_bri;
 
                 $rp_va_mandiri = $data_all;
