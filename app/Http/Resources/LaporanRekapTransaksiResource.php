@@ -16,8 +16,8 @@ class LaporanRekapTransaksiResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'start_date' => $this->start_date->format('Y-m-d H:i:s') ?? '',
-            'end_date' => $this->end_date,
+            'start_date' => (string) $this->start_date,
+            'end_date' => (string) $this->end_date,
             'periode' => $this->periode,
             'total_cash' => $this->trans_cashbox->rp_cash ?? 0,
         ];
