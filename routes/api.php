@@ -41,6 +41,8 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('user', App\Http\Controllers\API\UserController::class);
     Route::apiResource('ruas', App\Http\Controllers\API\RuasController::class);
     Route::get('/rekap-pendapatan', [App\Http\Controllers\API\RekapPendapatanController::class, 'index']);
+    Route::get('/laporan-rekap-transaksi', [App\Http\Controllers\API\LaporanRekapTransaksiController::class, 'index']);
+    Route::get('/laporan-rekap-transaksi/{id}', [App\Http\Controllers\API\LaporanRekapTransaksiController::class, 'show']);
 
     Route::prefix('tavsir')->group(function () {
         Route::get('/product', [App\Http\Controllers\API\TavsirController::class,'productList']);

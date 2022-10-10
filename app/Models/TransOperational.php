@@ -8,6 +8,7 @@ class TransOperational extends BaseModel
     protected $table = 'trans_operational';
     protected $casts = [
         'start_date' => 'datetime:Y-m-d H:i:s',
+        'end_date' => 'datetime:Y-m-d H:i:s',
     ];
     protected $fillable = [
         'tenant_id',
@@ -20,7 +21,7 @@ class TransOperational extends BaseModel
 
     public function trans_cashbox()
     {
-        return $this->hasOne(TransCashbox::class);
+        return $this->hasOne(TransCashbox::class,'trans_operational_id');
     }
 
     public function cashier()

@@ -23,7 +23,8 @@ class TransCashbox extends BaseModel
         'rp_va_mandiri',
         'rp_va_bni',
         'rp_tav_qr',
-        'rp_link_aja',
+        'rp_cash',
+        'rp_total',
     ];
 
     public function trans_operational()
