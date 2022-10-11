@@ -70,6 +70,7 @@ class LaporanRekapTransaksiController extends Controller
         $periode_berjalan = [
             'cashier_name' => $periode_berjalan->cashier->name ?? '',
             'start_date' => $periode_berjalan->start_date->format('Y-m-d H:i:s'),
+            'end_date' => $periode_berjalan->end_date->format('Y-m-d H:i:s'),
             'periode' => $periode_berjalan->periode,
             'total_cash' => $cash,
             'total_qr' => $qr,
