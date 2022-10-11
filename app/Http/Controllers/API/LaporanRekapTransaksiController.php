@@ -26,7 +26,12 @@ class LaporanRekapTransaksiController extends Controller
 
     public function show($id)
     {
-        $periode_berjalan = TransOperational::findOrfail($id);
+        $periode_berjalan = TransOperational::where('id',$id)->whereNotNull('end_date')->first();
+        if(!$periode_berjalan){
+            return response()->json([
+                'message' => 'Data Not Found'
+            ], 404);
+        }
 
         $data_all = TransOrder::done()
                             ->where('tenant_id', auth()->user()->tenant_id)
@@ -42,12 +47,24 @@ class LaporanRekapTransaksiController extends Controller
         $cash = $data_all;
         $qr = $data_all;
         $digital = $data_all;
+        $mandiri_va = $data_all;
+        $bri_va = $data_all;
+        $bri_dd = $data_all;
+        $link_aja = $data_all;
+        $bni_va = $data_all;
+        $digital = $data_all;
         $total_pendapatan = $data_all;
 
         $cash = $cash->where('payment_method_id', 6)->sum('total');
         $qr = $qr->where('payment_method_id', 5)->sum('total');
-        $digital = $digital->whereIn('payment_method_id', [1,2,3,4,7])->sum('total');
+        
+        $mandiri_va = $mandiri_va->where('payment_method_id', 1)->sum('total');
+        $bri_va = $bri_va->where('payment_method_id', 2)->sum('total');
+        $bri_dd = $bri_dd->where('payment_method_id', 3)->sum('total');
+        $link_aja = $link_aja->where('payment_method_id', 4)->sum('total');
+        $bni_va = $bni_va->where('payment_method_id', 7)->sum('total');
         $total_pendapatan = $total_pendapatan->sum('total');
+        $digital = $digital->whereIn('payment_method_id', [1,2,3,4,7])->sum('total');
         
         $periode_berjalan = $periode_berjalan;
         $periode_berjalan = [
@@ -56,6 +73,11 @@ class LaporanRekapTransaksiController extends Controller
             'periode' => $periode_berjalan->periode,
             'total_cash' => $cash,
             'total_qr' => $qr,
+            'total_mandiri_va' => $mandiri_va,
+            'total_bri_va' => $bri_va,
+            'total_bri_dd' => $bri_dd,
+            'total_link_aja' => $link_aja,
+            'total_bni_va' => $bni_va,
             'total_digital' => $digital,
             'total_pendapatan' => $total_pendapatan,
             'detil' => RekapTransOrderResource::collection($data_all)

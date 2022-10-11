@@ -16,11 +16,11 @@ class RekapTransOrderResource extends JsonResource
     {
         // return parent::toArray($request);
         return [
-            'created_at' => $this->created_at->format('d-m-Y H:i:s'),
+            'created_at' => (string) $this->created_at,
             'order_id' => $this->order_id,
             'total_product' => $this->detil->count(),
             'total' => $this->total,
-            'payment_method' => $this->payment_method->name,
+            'payment_method' => $this->payment_method->name ?? '',
             'order_type' => $this->order_type,
             'order_type_label' => $this->labelOrderType(),
         ];

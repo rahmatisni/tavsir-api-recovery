@@ -149,6 +149,7 @@ class TavsirController extends Controller
             $data->rest_area_id = auth()->user()->tenant->rest_area_id ?? null;
             $data->tenant_id = auth()->user()->tenant_id;
             $data->business_id = auth()->user()->business_id;
+            $data->casheer_id = auth()->user()->id;
             $data->detil()->delete();
             $order_detil_many = [];
             $data->save();
