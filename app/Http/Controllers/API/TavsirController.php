@@ -139,12 +139,12 @@ class TavsirController extends Controller
     {
         try {
             DB::beginTransaction();
-            $data = TransOrder::firstOrNew(['id' => $request->id]);
-            if($request->id == null or $request->id==""){
+            $data = TransOrder::find($request->id);
+            if(!$data){
+                $data = new TransOrder();
                 $data->order_type = TransOrder::ORDER_TAVSIR;
                 $data->order_id = 'TAV-' . date('YmdHis');
                 $data->status = TransOrder::CART;
-                
             }
             $data->rest_area_id = auth()->user()->tenant->rest_area_id ?? null;
             $data->tenant_id = auth()->user()->tenant_id;
