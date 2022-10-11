@@ -33,9 +33,9 @@ class Tenant extends BaseModel
 
     public function setPhotoUrlAttribute($value)
     {
-        $file = request()->file('photo');
+        $file = request()->file('photo_url');
         if(is_file($file)) {
-            $file = request()->file('photo')->store('images');
+            $file = request()->file('photo_url')->store('images');
         //     $imagebefore = $this->photo;
         //     $img = Image::make($file->getRealPath());
         //     $imgPath = 'images/product/'.Carbon::now()->format('Ymd').time().'.'.$file->getClientOriginalExtension();
