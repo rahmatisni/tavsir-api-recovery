@@ -66,8 +66,7 @@ class LaporanRekapTransaksiController extends Controller
         $total_pendapatan = $total_pendapatan->sum('total');
         $digital = $digital->whereIn('payment_method_id', [1,2,3,4,7])->sum('total');
         
-        $periode_berjalan = $periode_berjalan;
-        $periode_berjalan = [
+        $data = [
             'cashier_name' => $periode_berjalan->cashier->name ?? '',
             'start_date' => $periode_berjalan->start_date->format('Y-m-d H:i:s'),
             'end_date' => $periode_berjalan->end_date->format('Y-m-d H:i:s'),
@@ -81,11 +80,11 @@ class LaporanRekapTransaksiController extends Controller
             'total_bni_va' => $bni_va,
             'total_digital' => $digital,
             'total_pendapatan' => $total_pendapatan,
-            'different_cashbox' => $periode_berjalan->different_cashbox,
-            'initial_cashbox' => $periode_berjalan->initial_cashbox,
+            'different_cashbox' => $periode_berjalan->trans_cashbox->different_cashbox ?? 0,
+            'initial_cashbox' => $periode_berjalan->trans_cashbox->initial_cashbox ?? 0,
             'detil' => RekapTransOrderResource::collection($data_all)
         ];
 
-        return response()->json($periode_berjalan);                     
+        return response()->json($data);                     
     }
 }
