@@ -81,6 +81,8 @@ class LaporanRekapTransaksiController extends Controller
             'total_bni_va' => $bni_va,
             'total_digital' => $digital,
             'total_pendapatan' => $total_pendapatan,
+            'different_cashbox' => $periode_berjalan->different_cashbox,
+            'initial_cashbox' => $periode_berjalan->initial_cashbox,
             'detil' => RekapTransOrderResource::collection($data_all)
         ];
 
