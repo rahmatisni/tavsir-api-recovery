@@ -17,7 +17,6 @@ class CreateTransSaldo extends Migration
             $table->id();
             $table->integer('rest_area_id')->unsigned();
             $table->integer('tenant_id')->unsigned();
-            $table->integer('cashier_id')->unsigned();
             $table->integer('saldo')->unsigned();
             $table->timestamps();
         });

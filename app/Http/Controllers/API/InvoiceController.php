@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\InvoiceResource;
 use App\Models\TransInvoice;
 use App\Models\TransSaldo;
 use Carbon\Carbon;
@@ -14,10 +15,9 @@ class InvoiceController extends Controller
 {
     public function index()
     {
-        $data = TransSaldo::with('trans_invoice')->byCashier()->first();
+        $data = TransSaldo::with('trans_invoice')->ByTenant()->first();
         if(!$data){
             $data = TransSaldo::create([
-                'cashier_id' => auth()->user()->id,
                 'rest_area_id' => auth()->user()->rest_area_id,
                 'tenant_id' => auth()->user()->tenant_id,
                 'saldo' => 0,
@@ -33,7 +33,7 @@ class InvoiceController extends Controller
         try {
             DB::beginTransaction();
 
-            $data = TransSaldo::with('trans_invoice')->byCashier()->first();
+            $data = TransSaldo::with('trans_invoice')->ByTenant()->first();
             
             $invoice = new TransInvoice();
             $invoice->invoice_id = 'INV-'.Str::uuid();
@@ -57,12 +57,20 @@ class InvoiceController extends Controller
 
     public function paid(Request $request, $id)
     {
-        $data = TransInvoice::findOrfail($id);
+        $data = TransInvoice::ByTenant()->findOrfail($id);
         $data->status = TransInvoice::PAID;
+        $data->pay_station_id = $request->pay_station_id ?? auth()->user()->id;
         $data->paid_date = Carbon::now();
         $data->save();
 
         return response()->json($data);
+    }
+
+    public function show()
+    {
+        $data = TransInvoice::findOrfail(request()->id);
+        
+        return response()->json(new InvoiceResource($data));
     }
 
 }

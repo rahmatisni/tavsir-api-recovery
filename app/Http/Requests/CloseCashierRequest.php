@@ -27,7 +27,7 @@ class CloseCashierRequest extends FormRequest
             'pin' => 'required|numeric|digits:4',
             'cashbox' => 'required|numeric',
             'pengeluaran_cashbox' => 'required|numeric',
-            'description' => 'string',
+            'description' => 'max:255',
         ];
     }
 }

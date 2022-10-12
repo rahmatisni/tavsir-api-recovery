@@ -44,6 +44,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/laporan-rekap-transaksi', [App\Http\Controllers\API\LaporanRekapTransaksiController::class, 'index']);
     Route::get('/laporan-rekap-transaksi/rekap/{id}', [App\Http\Controllers\API\LaporanRekapTransaksiController::class, 'showRekap']);
     Route::post('/laporan-rekap-transaksi/transaksi/{id}', [App\Http\Controllers\API\LaporanRekapTransaksiController::class, 'showTransaksi']);
+    Route::get('/laporan-rekap-transaksi/download/{id}', [App\Http\Controllers\API\LaporanRekapTransaksiController::class, 'download']);
 
     Route::prefix('tavsir')->group(function () {
         Route::get('/product', [App\Http\Controllers\API\TavsirController::class,'productList']);
@@ -69,6 +70,7 @@ Route::middleware('auth:api')->group(function () {
         Route::apiResource('customize', App\Http\Controllers\API\CustomizeController::class);
         Route::post('/order-change-status/{id}', [App\Http\Controllers\API\TavsirController::class,'changeStatusOrder']);
         Route::get('/invoice', [App\Http\Controllers\API\InvoiceController::class,'index']);
+        Route::get('/invoice/{id}', [App\Http\Controllers\API\InvoiceController::class,'show']);
         Route::post('/invoice', [App\Http\Controllers\API\InvoiceController::class,'store']);
         Route::post('/invoice-paid/{id}', [App\Http\Controllers\API\InvoiceController::class,'paid']);
 

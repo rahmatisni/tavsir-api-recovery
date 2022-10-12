@@ -7,8 +7,7 @@ use App\Http\Resources\RekapResource;
 use App\Http\Resources\RekapTransOrderResource;
 use App\Models\TransOperational;
 use App\Models\TransOrder;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class LaporanRekapTransaksiController extends Controller
 {
@@ -17,8 +16,9 @@ class LaporanRekapTransaksiController extends Controller
         $data = TransOperational::with('trans_cashbox', 'cashier')
                                 ->where('tenant_id', auth()->user()->tenant_id)
                                 ->where('casheer_id', auth()->user()->id)
-                                ->when($tanggal = request('start_date'), function($q) use ($tanggal){
-                                    $q->whereDate('created_at', '>=', $tanggal);
+                                ->whereNotNull('end_date')
+                                ->when($tanggal = request('tanggal'), function($q) use ($tanggal){
+                                    $q->whereDate('created_at', $tanggal);
                                 })
                                 ->when($tanggal = request('end_date'), function($q) use ($tanggal){
                                     $q->whereDate('created_at', '<=', $tanggal);
@@ -71,5 +71,32 @@ class LaporanRekapTransaksiController extends Controller
         ];
 
         return response()->json($data);                     
+    }
+
+    public function download($id)
+    {
+        $data = TransOperational::where('id',$id)->whereNotNull('end_date')->first();
+        $order = TransOrder::done()
+                    ->where('tenant_id', auth()->user()->tenant_id)
+                    ->where('casheer_id', auth()->user()->id)
+                    ->whereBetween('created_at', [$data->start_date, $data->end_date])
+                    ->when($payment_method_id = request('payment_method_id'), function($q) use ($payment_method_id){
+                        $q->where('payment_method_id', $payment_method_id);
+                    })
+                    ->when($order_type = request('order_type'), function($q) use ($order_type){
+                        $q->where('order_type', $order_type);
+                    })
+                    ->get();
+        if(!$data){
+            return response()->json([
+                'message' => 'Data Not Found'
+            ], 404);
+        }
+
+        $pdf = Pdf::loadView('pdf.rekap', [
+            'record' => $data,
+            'order' => $order
+        ]);
+        return $pdf->download('invoice.pdf');
     }
 }

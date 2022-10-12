@@ -21,7 +21,7 @@ class CreateTransCashbox extends Migration
             $table->datetime('input_cashbox_date');
             $table->datetime('update_cashbox_date')->nullable();
             $table->integer('different_cashbox');
-            $table->integer('pengeluaran_cashbox')->unsigned();
+            $table->integer('pengeluaran_cashbox');
             $table->text('description')->nullable();
             $table->integer('rp_cash');
             $table->integer('rp_va_bri');

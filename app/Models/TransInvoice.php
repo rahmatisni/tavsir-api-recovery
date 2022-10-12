@@ -20,5 +20,15 @@ class TransInvoice extends BaseModel
     {
         return $this->belongsTo(TransSaldo::class,'trans_saldo_id');
     }
+
+    public function cashier()
+    {
+        return $this->belongsTo(User::class, 'cashier_id');
+    }
+
+    public function pay_station()
+    {
+        return $this->belongsTo(PayStation::class, 'pay_station_id');
+    }
     
 }

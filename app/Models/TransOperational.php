@@ -28,4 +28,9 @@ class TransOperational extends BaseModel
     {
         return $this->belongsTo(User::class, 'casheer_id');
     }
+
+    public function tenant()
+    {
+        return $this->belongsTo(Tenant::class, 'tenant_id');
+    }
 }
