@@ -30,7 +30,8 @@ class LaporanRekapTransaksiController extends Controller
 
     public function showRekap($id)
     {
-        $data = TransOperational::where('id',$id)->whereNotNull('end_date')->first();
+        // $data = TransOperational::where('id',$id)->whereNotNull('end_date')->first();
+        $data = TransOperational::where('id',$id)->first();
         if(!$data){
             return response()->json([
                 'message' => 'Data Not Found'
@@ -38,7 +39,6 @@ class LaporanRekapTransaksiController extends Controller
         }
 
         return response()->json(new RekapResource($data));
-
     }
 
     public function showTransaksi($id)

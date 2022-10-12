@@ -63,6 +63,7 @@ class RekapPendapatanController extends Controller
             'cashier_name' => $periode_berjalan->cashier->name ?? '',
             'start_date' => $periode_berjalan->start_date->format('Y-m-d H:i:s'),
             'periode' => $periode_berjalan->periode,
+            'id' => $periode_berjalan->id,
             'total_cash' => $cash,
             'total_qr' => $qr,
             'total_mandiri_va' => $mandiri_va,
