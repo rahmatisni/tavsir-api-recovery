@@ -17,9 +17,12 @@ class LaporanRekapTransaksiController extends Controller
         $data = TransOperational::with('trans_cashbox', 'cashier')
                                 ->where('tenant_id', auth()->user()->tenant_id)
                                 ->where('casheer_id', auth()->user()->id)
-                                ->when($tanggal = request('tanggal'), function($q) use ($tanggal){
-                                    $q->whereDate('created_at', $tanggal);
+                                ->when($tanggal = request('start_date'), function($q) use ($tanggal){
+                                    $q->whereDate('created_at', '>=', $tanggal);
                                 })
+                                ->when($tanggal = request('end_date'), function($q) use ($tanggal){
+                                    $q->whereDate('created_at', '<=', $tanggal);
+                                })                                
                                 ->get();
 
         return response()->json(LaporanRekapTransaksiResource::collection($data));                     
