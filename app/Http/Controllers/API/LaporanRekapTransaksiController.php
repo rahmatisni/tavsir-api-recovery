@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\LaporanRekapTransaksiResource;
+use App\Http\Resources\RekapResource;
 use App\Http\Resources\RekapTransOrderResource;
 use App\Models\TransOperational;
 use App\Models\TransOrder;
@@ -24,7 +25,20 @@ class LaporanRekapTransaksiController extends Controller
         return response()->json(LaporanRekapTransaksiResource::collection($data));                     
     }
 
-    public function show($id)
+    public function showRekap($id)
+    {
+        $data = TransOperational::where('id',$id)->whereNotNull('end_date')->first();
+        if(!$data){
+            return response()->json([
+                'message' => 'Data Not Found'
+            ], 404);
+        }
+
+        return response()->json(new RekapResource($data));
+
+    }
+
+    public function showTransaksi($id)
     {
         $periode_berjalan = TransOperational::where('id',$id)->whereNotNull('end_date')->first();
         if(!$periode_berjalan){
@@ -44,45 +58,12 @@ class LaporanRekapTransaksiController extends Controller
                                 $q->where('order_type', $order_type);
                             })
                             ->get();
-        $cash = $data_all;
-        $qr = $data_all;
-        $digital = $data_all;
-        $mandiri_va = $data_all;
-        $bri_va = $data_all;
-        $bri_dd = $data_all;
-        $link_aja = $data_all;
-        $bni_va = $data_all;
-        $digital = $data_all;
-        $total_pendapatan = $data_all;
-
-        $cash = $cash->where('payment_method_id', 6)->sum('total');
-        $qr = $qr->where('payment_method_id', 5)->sum('total');
-        
-        $mandiri_va = $mandiri_va->where('payment_method_id', 1)->sum('total');
-        $bri_va = $bri_va->where('payment_method_id', 2)->sum('total');
-        $bri_dd = $bri_dd->where('payment_method_id', 3)->sum('total');
-        $link_aja = $link_aja->where('payment_method_id', 4)->sum('total');
-        $bni_va = $bni_va->where('payment_method_id', 7)->sum('total');
-        $total_pendapatan = $total_pendapatan->sum('total');
-        $digital = $digital->whereIn('payment_method_id', [1,2,3,4,7])->sum('total');
+       
         
         $data = [
-            'cashier_name' => $periode_berjalan->cashier->name ?? '',
-            'start_date' => $periode_berjalan->start_date->format('Y-m-d H:i:s'),
-            'end_date' => $periode_berjalan->end_date->format('Y-m-d H:i:s'),
+            'start_date' => (string) $periode_berjalan->start_date,
+            'end_date' => (string) $periode_berjalan->end_date,
             'periode' => $periode_berjalan->periode,
-            'total_cash' => $cash,
-            'total_qr' => $qr,
-            'total_mandiri_va' => $mandiri_va,
-            'total_bri_va' => $bri_va,
-            'total_bri_dd' => $bri_dd,
-            'total_link_aja' => $link_aja,
-            'total_bni_va' => $bni_va,
-            'total_digital' => $digital,
-            'total_pendapatan' => $total_pendapatan,
-            'cashbox' => $periode_berjalan->trans_cashbox->cashbox ?? 0,
-            'different_cashbox' => $periode_berjalan->trans_cashbox->different_cashbox ?? 0,
-            'initial_cashbox' => $periode_berjalan->trans_cashbox->initial_cashbox ?? 0,
             'detil' => RekapTransOrderResource::collection($data_all)
         ];
 
