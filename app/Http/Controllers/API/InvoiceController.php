@@ -57,7 +57,7 @@ class InvoiceController extends Controller
 
     public function paid(Request $request, $id)
     {
-        $data = TransInvoice::ByTenant()->findOrfail($id);
+        $data = TransInvoice::findOrfail($id);
         $data->status = TransInvoice::PAID;
         $data->pay_station_id = $request->pay_station_id ?? auth()->user()->id;
         $data->paid_date = Carbon::now();
