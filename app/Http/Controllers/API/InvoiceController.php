@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\InvoiceResource;
+use App\Http\Resources\ListInvoiceResource;
 use App\Models\TransInvoice;
 use App\Models\TransSaldo;
 use Carbon\Carbon;
@@ -25,7 +26,7 @@ class InvoiceController extends Controller
             ]);
         }
 
-        return response()->json($data);
+        return response()->json(new ListInvoiceResource($data));
     } 
     
     public function store(Request $request)
