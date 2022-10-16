@@ -33,7 +33,7 @@ class TransCashbox extends BaseModel
         return $this->belongsTo(TransOperational::class, 'trans_operational_id');
     }
 
-    public function total_digital()
+    public function getTotalDigitalAttribute($value)
     {
         return $this->rp_va_bri + $this->rp_dd_bri + $this->rp_va_mandiri + $this->rp_va_bni + $this->rp_link_aja;
     }

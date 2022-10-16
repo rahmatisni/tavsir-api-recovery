@@ -45,6 +45,11 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/laporan-rekap-transaksi/rekap/{id}', [App\Http\Controllers\API\LaporanRekapTransaksiController::class, 'showRekap']);
     Route::post('/laporan-rekap-transaksi/transaksi/{id}', [App\Http\Controllers\API\LaporanRekapTransaksiController::class, 'showTransaksi']);
     Route::get('/laporan-rekap-transaksi/download/{id}', [App\Http\Controllers\API\LaporanRekapTransaksiController::class, 'download']);
+    Route::post('/laporan/penjualan', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanPenjualan']);
+    Route::post('/laporan/operational', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanOperational']);
+    Route::post('/laporan/penjualan-kategori', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanPenjualanKategori']);
+    Route::post('/laporan/metode-pembayaran', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanMetodePembayaran']);
+    Route::post('/laporan/invoice', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanInvoice']);
 
     Route::prefix('tavsir')->group(function () {
         Route::get('/product', [App\Http\Controllers\API\TavsirController::class,'productList']);

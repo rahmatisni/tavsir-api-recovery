@@ -111,8 +111,13 @@ class TransOrder extends BaseModel
         }
     }
 
-    // public function scopeRestAreaCount($query)
-    // {
-    //     return $query->tenant()->groupBy('rest_area_id')->select('rest_area_id as area', DB::raw('COUNT(*) as total'));
-    // }
+    public function scopeByRole($query)
+    {
+        return $query->when(auth()->user()->role == User::TENANT, function($q){
+                        $q->where('tenant_id', auth()->user()->tenant_id);
+                    })
+                    ->when(auth()->user()->role == User::CASHIER, function($q){
+                        $q->where('casheer_id', auth()->user()->id);
+                    });
+    }
 }

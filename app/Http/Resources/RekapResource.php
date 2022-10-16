@@ -28,7 +28,7 @@ class RekapResource extends JsonResource
             ],
             'metode_qr' => $this->trans_cashbox->rp_qr ?? 0,
             'metode_digital' => [
-                'total_digital' => $this->trans_cashbox->total_digital() ?? 0,
+                'total_digital' => $this->trans_cashbox->total_digital ?? 0,
                 'rp_va_bri' => $this->trans_cashbox->rp_va_bri ?? 0,
                 'rp_dd_bri' => $this->trans_cashbox->rp_dd_bri ?? 0,
                 'rp_va_mandiri' => $this->trans_cashbox->rp_va_mandiri ?? 0,

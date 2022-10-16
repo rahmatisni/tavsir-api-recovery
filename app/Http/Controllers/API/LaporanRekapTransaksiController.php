@@ -13,9 +13,7 @@ class LaporanRekapTransaksiController extends Controller
 {
     public function index()
     {
-        $data = TransOperational::with('trans_cashbox', 'cashier')
-                                ->where('tenant_id', auth()->user()->tenant_id)
-                                ->where('casheer_id', auth()->user()->id)
+        $data = TransOperational::with('trans_cashbox', 'cashier')->byRole()
                                 ->whereNotNull('end_date')
                                 ->when($tanggal = request('tanggal'), function($q) use ($tanggal){
                                     $q->whereDate('created_at', $tanggal);
@@ -30,8 +28,10 @@ class LaporanRekapTransaksiController extends Controller
 
     public function showRekap($id)
     {
-        // $data = TransOperational::where('id',$id)->whereNotNull('end_date')->first();
-        $data = TransOperational::where('id',$id)->first();
+        $data = TransOperational::byRole()
+                                ->where('id',$id)
+                                ->whereNotNull('end_date')
+                                ->first();
         if(!$data){
             return response()->json([
                 'message' => 'Data Not Found'
@@ -43,7 +43,10 @@ class LaporanRekapTransaksiController extends Controller
 
     public function showTransaksi($id)
     {
-        $periode_berjalan = TransOperational::where('id',$id)->whereNotNull('end_date')->first();
+        $periode_berjalan = TransOperational::byRole()
+                                            ->where('id',$id)
+                                            ->whereNotNull('end_date')
+                                            ->first();
         if(!$periode_berjalan){
             return response()->json([
                 'message' => 'Data Not Found'
@@ -51,8 +54,7 @@ class LaporanRekapTransaksiController extends Controller
         }
 
         $data_all = TransOrder::done()
-                            ->where('tenant_id', auth()->user()->tenant_id)
-                            ->where('casheer_id', auth()->user()->id)
+                            ->byRole()
                             ->whereBetween('created_at', [$periode_berjalan->start_date, $periode_berjalan->end_date])
                             ->when($payment_method_id = request('payment_method_id'), function($q) use ($payment_method_id){
                                 $q->where('payment_method_id', $payment_method_id);
@@ -75,10 +77,9 @@ class LaporanRekapTransaksiController extends Controller
 
     public function download($id)
     {
-        $data = TransOperational::where('id',$id)->whereNotNull('end_date')->first();
+        $data = TransOperational::byRole()->where('id',$id)->whereNotNull('end_date')->first();
         $order = TransOrder::done()
-                    ->where('tenant_id', auth()->user()->tenant_id)
-                    ->where('casheer_id', auth()->user()->id)
+                    ->byRole()
                     ->whereBetween('created_at', [$data->start_date, $data->end_date])
                     ->when($payment_method_id = request('payment_method_id'), function($q) use ($payment_method_id){
                         $q->where('payment_method_id', $payment_method_id);

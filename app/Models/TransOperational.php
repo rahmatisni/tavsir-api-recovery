@@ -33,4 +33,14 @@ class TransOperational extends BaseModel
     {
         return $this->belongsTo(Tenant::class, 'tenant_id');
     }
+
+    public function scopeByRole()
+    {
+        return $this->when(auth()->user()->role == User::TENANT, function($q){
+                        $q->where('tenant_id', auth()->user()->tenant_id);
+                    })
+                    ->when(auth()->user()->role == User::CASHIER, function($q){
+                        $q->where('casheer_id', auth()->user()->id);
+                    });
+    }
 }

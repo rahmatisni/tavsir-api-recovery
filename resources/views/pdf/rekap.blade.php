@@ -110,7 +110,7 @@
             </tr>
             <tr>
                 <td rowspan="3">Pembayaran Digital</td>
-                <td rowspan="3">@rp($record->trans_cashbox->total_digital())</td>
+                <td rowspan="3">@rp($record->trans_cashbox->total_digital)</td>
             </tr>
             <tr>
                 <td>BRI Virtual Account</td>
