@@ -4,18 +4,19 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Documents</title>
 </head>
 <body>
-    <h4>Laporan Operasional Petugas</h5>
+    
+    <h4>Laporan Operasional Petugas</h4>
     <br>
     <h4>Transaksi : Semua Transaksi</h4>
     <br>
     <h4>Metode Bayar : Semua Metode Bayar</h4>
     <br>
-    <h4>Tanggal Awal : 2022-10-20</h4>
+    <h4>Tanggal Awal : </h4>
     <br>
-    <h4>Tanggal Akhir : 2022-10-30</h4>
+    <h4>Tanggal Akhir : </h4>
     <table>
         <thead>
             <tr>
@@ -43,7 +44,7 @@
                 <td>{{ $value->periode  }}</td>
                 <td>{{ $value->start_date }}</td>
                 <td>{{ $value->end_date }}</td>
-                <td>{{ $value->created_at }}</td>
+                <td>{{ $value->end_date }}</td>
                 <td>{{ $value->cashier->name ?? '' }}</td>
                 <td>{{ $value->trans_cashbox->inital_cashbox ?? 0 }}</td>
                 <td>{{ $value->trans_cashbox->rp_qr ?? 0 }}</td>

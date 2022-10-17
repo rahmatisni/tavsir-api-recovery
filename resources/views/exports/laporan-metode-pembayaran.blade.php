@@ -9,21 +9,23 @@
 <body>
     <h5>Laporan Penjualan Kategori</h5>
     <br>
-    <h4>Tanggal Awal : 2022-10-20</h4>
+    <h4>Tanggal Awal : </h4>
     <br>
-    <h4>Tanggal Akhir : 2022-10-30</h4>
+    <h4>Tanggal Akhir : </h4>
     <br>
     <table>
         <thead>
             <tr>
-                <th>Kategori</th>
-                <th>Jumlah Terjual (pcs)</th>
-                <th>Pendapatan Kategori</th>
+                <th>No</th>
+                <th>Metode Pembayaran</th>
+                <th>Jumlah Transaksi</th>
+                <th>Total Transaksi</th>
             </tr>
         </thead>
         <tbody>
             @foreach($record as $key => $value)
             <tr>
+                <td>{{ $loop->iteration }}</td>
                 <td>{{ $key }}</td>
                 <td>{{ $value['qty'] }}</td>
                 <td>{{ $value['total'] }}</td>
@@ -32,7 +34,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td>Total</td>
+                <td colspan="2">Total</td>
                 <td>{{$record->sum('qty')}}</td>
                 <td>{{$record->sum('total')}}</td>
             </tr>

@@ -22,6 +22,7 @@ class CreateTransInvoice extends Migration
             $table->integer('nominal')->unsigned();
             $table->dateTime('claim_date');
             $table->dateTime('paid_date')->nullable();
+            $table->string('kwitansi_id')->nullable();
             $table->string('status')->default('UNPAID')->coment('UNPAID, PAID');
         });
     }

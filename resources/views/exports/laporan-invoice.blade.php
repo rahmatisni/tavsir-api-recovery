@@ -11,9 +11,9 @@
     <br>
     <h4>Stautus : Semua Status</h4>
     <br>
-    <h4>Tanggal Awal : 2022-10-20</h4>
+    <h4>Tanggal Awal : </h4>
     <br>
-    <h4>Tanggal Akhir : 2022-10-30</h4>
+    <h4>Tanggal Akhir : </h4>
     <br>
     <table>
         <thead>
