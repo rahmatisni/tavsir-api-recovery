@@ -64,6 +64,7 @@ class RekapPendapatanController extends Controller
             'start_date' => $periode_berjalan->start_date->format('Y-m-d H:i:s'),
             'periode' => $periode_berjalan->periode,
             'id' => $periode_berjalan->id,
+            'initial_cashbox' => $periode_berjalan->trans_cashbox->initial_cashbox ?? 0,
             'total_cash' => $cash,
             'total_qr' => $qr,
             'total_mandiri_va' => $mandiri_va,
