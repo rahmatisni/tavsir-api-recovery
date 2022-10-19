@@ -5,7 +5,7 @@ namespace App\Exports;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 
-class LaporanOperationalExport implements FromView
+class LaporanTransaksiExport implements FromView
 {
     public function __construct($data)
     {
@@ -14,6 +14,8 @@ class LaporanOperationalExport implements FromView
    
     public function view(): View
     {
-        return view('exports.laporan-operational', $this->data);
+        return view('exports.laporan-transaksi', [
+            'record' => $this->data
+        ]);
     }
 }

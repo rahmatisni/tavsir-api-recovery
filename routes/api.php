@@ -50,6 +50,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/laporan/penjualan-kategori', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanPenjualanKategori']);
     Route::post('/laporan/metode-pembayaran', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanMetodePembayaran']);
     Route::post('/laporan/invoice', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanInvoice']);
+    Route::post('/laporan/transaksi', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanTransaksi']);
 
     Route::prefix('tavsir')->group(function () {
         Route::get('/product', [App\Http\Controllers\API\TavsirController::class,'productList']);
