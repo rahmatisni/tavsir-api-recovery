@@ -280,10 +280,16 @@ class TravShopController extends Controller
                         $request->customer_name
                     );
                     if ($res['status'] == 'success') {
-                        $payment = new TransPayment();
-                        $payment->trans_order_id = $data->id;
-                        $payment->data = $res['responseData'];
-                        $data->payment()->save($payment);
+                        if ($data->payment === null)
+                        {
+                            $payment = new TransPayment();
+                            $payment->data = $res['responseData'];
+                            $data->payment()->save($payment);
+                        }
+                        else
+                        {
+                            $data->payment->update(['data' => $res['responseData']]);
+                        }
                         $data->service_fee = $payment->data->fee;
                         $data->total = $data->total + $data->service_fee;
                         $data->save();
@@ -316,10 +322,16 @@ class TravShopController extends Controller
                         $request->customer_name
                     );
                     if ($res['status'] == 'success') {
-                        $payment = new TransPayment();
-                        $payment->trans_order_id = $data->id;
-                        $payment->data = $res['responseData'];
-                        $data->payment()->save($payment);
+                        if ($data->payment === null)
+                        {
+                            $payment = new TransPayment();
+                            $payment->data = $res['responseData'];
+                            $data->payment()->save($payment);
+                        }
+                        else
+                        {
+                            $data->payment->update(['data' => $res['responseData']]);
+                        }
                         $data->service_fee = $payment->data->fee;
                         $data->total = $data->total + $data->service_fee;
                         $data->save();
@@ -352,10 +364,16 @@ class TravShopController extends Controller
                         $request->customer_name
                     );
                     if ($res['status'] == 'success') {
-                        $payment = new TransPayment();
-                        $payment->trans_order_id = $data->id;
-                        $payment->data = $res['responseData'];
-                        $data->payment()->save($payment);
+                        if ($data->payment === null)
+                        {
+                            $payment = new TransPayment();
+                            $payment->data = $res['responseData'];
+                            $data->payment()->save($payment);
+                        }
+                        else
+                        {
+                            $data->payment->update(['data' => $res['responseData']]);
+                        }
                         $data->service_fee = $payment->data->fee;
                         $data->total = $data->total + $data->service_fee;
                         $data->save();
