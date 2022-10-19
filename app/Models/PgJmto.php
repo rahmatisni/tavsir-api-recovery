@@ -97,7 +97,7 @@ class PgJmto extends Model
             "phone" =>  $phone,
             "email" =>  $email,
             "customer_name" =>  $customer_name,
-            "submerchant_id" => ""
+            "submerchant_id" => "254"
         ];
 
         if(env('PG_FROM_TRAVOY') === true){
