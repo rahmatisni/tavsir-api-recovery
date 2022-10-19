@@ -463,7 +463,7 @@ class TravShopController extends Controller
             $data_payment = $data->payment->data;
             $res = PgJmto::vaStatus(
                 $data_payment->sof_code,
-                $data_payment->bill,
+                $data_payment->bill_id,
                 $data_payment->va_number,
                 $data_payment->refnum,
                 $data_payment->phone,
