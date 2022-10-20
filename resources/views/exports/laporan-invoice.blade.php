@@ -7,13 +7,11 @@
     <title>Document</title>
 </head>
 <body>
-    <h5>Laporan Invoice</h5>
+    <h4>Laporan Invoice</h4>
     <br>
-    <h4>Stautus : Semua Status</h4>
-    <br>
-    <h4>Tanggal Awal : </h4>
-    <br>
-    <h4>Tanggal Akhir : </h4>
+    <h4>Status : {{ $status }}</h4>
+    <h4>Tanggal Awal: {{ $tanggal_awal }}</h4>
+    <h4>Tanggal Akhir: {{ $tanggal_akhir }}</h4>
     <br>
     <table>
         <thead>

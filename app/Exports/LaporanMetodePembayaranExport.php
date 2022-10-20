@@ -14,8 +14,6 @@ class LaporanMetodePembayaranExport implements FromView
    
     public function view(): View
     {
-        return view('exports.laporan-metode-pembayaran', [
-            'record' => $this->data
-        ]);
+        return view('exports.laporan-metode-pembayaran',$this->data);
     }
 }

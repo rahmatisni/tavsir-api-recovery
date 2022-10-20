@@ -14,8 +14,6 @@ class LaporanPenjualanKategoriExport implements FromView
    
     public function view(): View
     {
-        return view('exports.laporan-penjualan-kategori', [
-            'record' => $this->data
-        ]);
+        return view('exports.laporan-penjualan-kategori',$this->data);
     }
 }

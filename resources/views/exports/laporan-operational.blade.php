@@ -10,12 +10,10 @@
     <h4>Laporan Operasional Petugas</h4>
     <br>
     <h4>Transaksi : Semua Transaksi</h4>
-    <br>
     <h4>Metode Bayar : Semua Metode Bayar</h4>
+    <h4>Tanggal Awal : {{ $tanggal_awal }}</h4>
+    <h4>Tanggal Akhir : {{ $tanggal_akhir }}</h4>
     <br>
-    <h4>Tanggal Awal : {{$tanggal_awal}}</h4>
-    <br>
-    <h4>Tanggal Akhir : {{$tanggal_akhir}}</h4>
     <table>
         <thead>
             <tr>

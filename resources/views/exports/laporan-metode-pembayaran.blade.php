@@ -7,11 +7,10 @@
     <title>Document</title>
 </head>
 <body>
-    <h5>Laporan Penjualan Kategori</h5>
+    <h4>Laporan Penjualan Kategori</h4>
     <br>
-    <h4>Tanggal Awal : </h4>
-    <br>
-    <h4>Tanggal Akhir : </h4>
+    <h4>Tanggal Awal : {{ $tanggal_awal }}</h4>
+    <h4>Tanggal Akhir : {{ $tanggal_akhir }}</h4>
     <br>
     <table>
         <thead>
@@ -35,8 +34,8 @@
         <tfoot>
             <tr>
                 <td colspan="2">Total</td>
-                <td>{{$record->sum('qty')}}</td>
-                <td>{{$record->sum('total')}}</td>
+                <td>{{ $record->sum('qty') }}</td>
+                <td>{{ $record->sum('total') }}</td>
             </tr>
         </tfoot>
     </table>

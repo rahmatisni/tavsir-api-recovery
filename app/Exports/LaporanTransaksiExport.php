@@ -14,8 +14,6 @@ class LaporanTransaksiExport implements FromView
    
     public function view(): View
     {
-        return view('exports.laporan-transaksi', [
-            'record' => $this->data
-        ]);
+        return view('exports.laporan-transaksi',$this->data);
     }
 }
