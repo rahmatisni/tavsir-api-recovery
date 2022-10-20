@@ -18,6 +18,7 @@ class RestAreaFactory extends Factory
             'address' => $this->faker->address,
             'latitude' => $this->faker->latitude,
             'longitude' => $this->faker->longitude,
+            'ruas_id' => RuasFactory::new()->create()->id,
             'time_start' => '08:00',
             'time_end' => '20:00',
             'is_open' => $this->faker->boolean(50)

@@ -28,7 +28,7 @@ class TransInvoice extends BaseModel
 
     public function pay_station()
     {
-        return $this->belongsTo(PayStation::class, 'pay_station_id');
+        return $this->belongsTo(Paystation::class, 'pay_station_id');
     }
     
 }
