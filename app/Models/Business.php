@@ -18,4 +18,14 @@ class Business extends BaseModel
         'owner',
         'phone',
     ];
+
+    public function subscription()
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    public function tenant()
+    {
+        return $this->hasMany(Tenant::class);
+    }
 }

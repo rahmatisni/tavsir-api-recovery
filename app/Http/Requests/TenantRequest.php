@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Subscription;
+use App\Models\Tenant;
 use Illuminate\Foundation\Http\FormRequest;
 
 class TenantRequest extends FormRequest
@@ -24,7 +26,19 @@ class TenantRequest extends FormRequest
     public function rules()
     {
         return [
-            'business_id' => 'required|integer',
+            'business_id' => [
+                'required',
+                'integer',
+                'exists:ref_business,id',
+                function($attribute, $value, $fail) {
+                    $sub = Subscription::where('business_id',$value)->orderBy('id', 'desc')->first();
+                    if(!$sub) return true;
+                    $tenant_count = Tenant::where('business_id',$value)->count();
+                    if($tenant_count >= $sub->limit_tenant) {
+                        $fail('Tenant limit reached '.$sub->limit_tenant);
+                    }
+                },
+            ],
             'name' => 'required|string',
             'category' => 'required|string',
             'address' => 'nullable|string',

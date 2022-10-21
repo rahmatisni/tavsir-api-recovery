@@ -80,6 +80,9 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/invoice', [App\Http\Controllers\API\InvoiceController::class,'store']);
         Route::post('/invoice-paid/{id}', [App\Http\Controllers\API\InvoiceController::class,'paid']);
 
+        Route::post('/subscription/{id}', [App\Http\Controllers\API\SubscriptionController::class,'changeStatus']);
+        Route::apiResource('subscription', App\Http\Controllers\API\SubscriptionController::class);
+
     });
 
     Route::prefix('tavsir/tng')->group(function () {
