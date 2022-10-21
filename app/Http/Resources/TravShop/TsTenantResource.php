@@ -17,13 +17,13 @@ class TsTenantResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'photo' => $this->photo_url,
+            'photo' => $this->photo_url ? asset($this->photo_url) : null,
             'rating' => round($this->rating, 1),
             'total_rating' => $this->total_rating,
             'penilaian' => 200,
             'category' => $this->category,
             'sub_category' => 'Restaurant',
-            'is_open' => true,
+            'is_open' => $this->is_open == 1 ? true : false,
             'time_end' => $this->time_end,
         ];
     }
