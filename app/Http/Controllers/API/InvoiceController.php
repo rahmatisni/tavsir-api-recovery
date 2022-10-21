@@ -37,7 +37,7 @@ class InvoiceController extends Controller
             $data = TransSaldo::with('trans_invoice')->ByTenant()->first();
             
             $invoice = new TransInvoice();
-            $invoice->invoice_id = 'INV-'.Str::uuid();
+            $invoice->invoice_id = 'INV-'.strtolower(Str::random(16));
             $invoice->nominal = $request->nominal;
             $invoice->cashier_id = auth()->user()->id;
             $invoice->claim_date = Carbon::now();
@@ -62,6 +62,7 @@ class InvoiceController extends Controller
         $data->status = TransInvoice::PAID;
         $data->pay_station_id = $request->pay_station_id ?? auth()->user()->id;
         $data->paid_date = Carbon::now();
+        $data->kwitansi_id = strtolower(Str::random(16));
         $data->save();
 
         return response()->json($data);
