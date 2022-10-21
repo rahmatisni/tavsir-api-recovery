@@ -16,17 +16,15 @@ class InvoiceController extends Controller
 {
     public function index()
     {
-        $data = TransSaldo::with('trans_invoice')->ByTenant()->first();
-        if(!$data){
-            $data = TransSaldo::create([
-                'rest_area_id' => auth()->user()->rest_area_id,
-                'tenant_id' => auth()->user()->tenant_id,
-                'saldo' => 0,
-                'created_at' => Carbon::now(),
-            ]);
-        }
-
-        return response()->json(new ListInvoiceResource($data));
+        $data = TransSaldo::with('trans_invoice')->ByRole()
+        ->when($rest_area_id = request()->rest_area_id, function($query) use ($rest_area_id){
+            return $query->where('rest_area_id', $rest_area_id);
+        })
+        ->when($tenant_id = request()->tenant_id, function($query) use ($tenant_id){
+            return $query->where('tenant_id', $tenant_id);
+        })
+        ->get();
+        return response()->json(ListInvoiceResource::collection($data));
     } 
     
     public function store(Request $request)
@@ -35,6 +33,13 @@ class InvoiceController extends Controller
             DB::beginTransaction();
 
             $data = TransSaldo::with('trans_invoice')->ByTenant()->first();
+            if(!$data){
+                return response()->json(['message' => 'Saldo tidak ditemukan'], 404);
+            }
+            
+            if($data->saldo < $request->nominal){
+                return response()->json(['message' => 'Saldo tidak mencukupi'], 400);
+            }
             
             $invoice = new TransInvoice();
             $invoice->invoice_id = 'INV-'.strtolower(Str::random(16));

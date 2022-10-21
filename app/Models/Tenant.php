@@ -95,4 +95,9 @@ class Tenant extends BaseModel
     {
         return $query->groupBy('category')->select('category as kategori', DB::raw('COUNT(*) as tenant'));
     }
+
+    public function saldo()
+    {
+        return $this->hasOne(TransSaldo::class, 'tenant_id');
+    }
 }

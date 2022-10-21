@@ -84,6 +84,12 @@ class TenantSeeder extends Seeder
                     'updated_at' => now()->addDay(),
                 ],
             ]);
+            Tenant::all()->each(function($tenant) {
+                $tenant->saldo()->create([
+                    'saldo' => 0,
+                    'rest_area_id' => $tenant->rest_area_id,
+                ]);
+            });
         }
     }
 }

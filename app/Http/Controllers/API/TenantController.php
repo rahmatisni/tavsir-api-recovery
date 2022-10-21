@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\TenantRequest;
 use App\Http\Resources\TenantResource;
 use App\Models\Tenant;
+use App\Models\TransSaldo;
 
 class TenantController extends Controller
 {
@@ -30,6 +31,11 @@ class TenantController extends Controller
         $data = new Tenant();
         $data->fill($request->all());
         $data->save();
+
+        $saldo = new TransSaldo();
+        $saldo->rest_area_id = $data->rest_area_id;
+        $data->saldo()->save($saldo);
+
         return response()->json($data);
     }
 

@@ -14,6 +14,16 @@ class TransSaldo extends BaseModel
         'saldo',
     ];
 
+    public function scopeByRole($query)
+    {
+        $role = auth()->user()->role;
+        if($role == User::TENANT || $role == User::CASHIER){
+            return $query->where('tenant_id', auth()->user()->tenant_id);
+        }else{
+            return $query;
+        }
+    }
+
     public function scopeByTenant($query)
     {
         return $query->where('tenant_id', auth()->user()->tenant_id);
