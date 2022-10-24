@@ -64,6 +64,9 @@ class InvoiceController extends Controller
     public function paid(Request $request, $id)
     {
         $data = TransInvoice::findOrfail($id);
+        if($data->status == TransInvoice::PAID){
+            return response()->json(['message' => 'Invoice sudah dibayar'], 400);
+        }
         $data->status = TransInvoice::PAID;
         $data->pay_station_id = $request->pay_station_id ?? auth()->user()->id;
         $data->paid_date = Carbon::now();
