@@ -17,6 +17,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Tenant;
+use App\Http\Resources\TravShop\TsTenantResource;
 
 class AuthController extends Controller
 {
@@ -62,7 +64,7 @@ class AuthController extends Controller
     }
 
     public function profile()
-    {
+    {   
         return response()->json(new ProfileResource(auth()->user()));
     }
 
@@ -258,5 +260,12 @@ class AuthController extends Controller
             'status' => 'error',
             'message' => 'PIN verification failed'
         ],422);
+    }
+    public function getRating(){
+        $user = auth()->user();
+        $data = Tenant::when($id = $user->tenant_id, function ($q) use ($id) {
+            return $q->where('id', $id);
+        })->get();
+        return response()->json(TsTenantResource::collection($data));
     }
 }

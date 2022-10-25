@@ -23,6 +23,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/open-cashier', [App\Http\Controllers\API\AuthController::class, 'openCashier']);
     Route::post('/check-open-cashier', [App\Http\Controllers\API\AuthController::class, 'checkOpenCashier']);
     Route::post('/close-cashier', [App\Http\Controllers\API\AuthController::class, 'closeCashier']);
+    Route::get('/get-rating', [App\Http\Controllers\API\AuthController::class, 'getRating']);
     Route::post('/dashboard', [App\Http\Controllers\API\DashboardController::class, 'index']);
 
     Route::post('/logout', [App\Http\Controllers\API\AuthController::class,'logout']);
