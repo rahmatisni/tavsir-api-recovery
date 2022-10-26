@@ -2,10 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UserRequest extends FormRequest
+class JmrbRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,10 +24,10 @@ class UserRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255',
-            'password' => 'required|string|min:6',
-            'role' => 'required|string|in:' . User::ADMIN . ',' . User::USER . User::PAYSTATION . ',' . User::JMRB . ',' . User::TENANT . ',' . User::CASHIER,
+            'pic' => 'required|string|max:255',
+            'email' => 'required|email|string|max:255',
+            'hp' => 'required|string|max:255',
+            'phone' => 'required|string|max:255',
         ];
     }
 }

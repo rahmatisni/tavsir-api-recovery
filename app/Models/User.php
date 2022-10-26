@@ -23,6 +23,9 @@ class User extends Authenticatable
     public const REJECT = 'REJECT';
     public const APPROVED = 'APPROVED';
 
+    public const ACTIVE = 'ACTIVE';
+    public const INACTIVE = 'INACTIVE';
+
     /**
      * The attributes that are mass assignable.
      *

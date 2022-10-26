@@ -15,15 +15,15 @@ class TransSubscription extends Migration
     {
         Schema::create('trans_subscription', function (Blueprint $table) {
             $table->id();
-            $table->integer('business_id')->unsigned();
-            $table->integer('masa_aktif')->unsigned();
-            $table->integer('limit_tenant')->unsigned();
+            $table->string('id_activation');
+            $table->string('type');
+            $table->integer('super_merchant_id')->unsigned();
+            $table->integer('masa_aktif')->unsigned()->nullable();
             $table->integer('limit_cashier')->unsigned();
-            $table->string('status')->default('ACTIVE');
+            $table->string('file')->nullable();
 
             $table->timestamps();
         });
-        
     }
 
     /**

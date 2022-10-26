@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UserActivationRequest;
 use App\Models\User;
 use App\Http\Requests\UserRequest;
+use App\Models\Subscription;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -138,5 +140,51 @@ class UserController extends Controller
                 'message' => 'User tidak mempunyai permintaan reset PIN'
             ]);
         }
+    }
+
+    public function activationUserCashier($id)
+    {
+        $user = User::where('id', $id)
+                    ->where('role', User::CASHIER)
+                    ->first();
+        if (!$user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'User tidak ditemukan'
+            ]);
+        }
+        $tenant = $user->tenant;
+        $subscription = Subscription::where('super_merchant_id', $tenant->business_id)
+            ->where('type', Subscription::OWNER)
+            ->first();
+        if (!$subscription) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Tenant tidak memiliki subscription'
+            ]);
+        }
+        if ($subscription->status != Subscription::ACTIVE) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Subscription is not active'
+            ]);
+        }
+        $user_tenant_count = User::where('tenant_id', $user->tenant_id)
+            ->where('role', User::CASHIER)
+            ->where('status', User::ACTIVE)
+            ->count();
+        if ($user_tenant_count >= $subscription->limit_cashier) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Tenant user cashier limit ' . $subscription->limit_cashier . ' reached '
+            ]);
+        }
+
+        $user->status = User::ACTIVE;
+        $user->save();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'User berhasil diaktifkan'
+        ]);
     }
 }

@@ -24,6 +24,7 @@ class CreateRefBusiness extends Migration
             $table->decimal('longitude',11,8);
             $table->string('owner');
             $table->string('phone');
+            $table->string('file')->nullable();
             $table->integer('created_by')->nullable();
             $table->timestamps();
         });
