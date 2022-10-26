@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TenantRequest;
+use App\Http\Requests\BukaTutupTokoRequest;
 use App\Http\Resources\TenantResource;
 use App\Models\Tenant;
 use App\Models\TransSaldo;
@@ -63,7 +64,12 @@ class TenantController extends Controller
         $tenant->save();
         return response()->json($tenant);
     }
-
+    public function bukaTutupToko(BukaTutupTokoRequest $request)
+    {
+        $tenant = Tenant::find($request->id);
+        $tenant->update(['is_open'=>$request->is_open]);
+        return response()->json($tenant);
+    }
     /**
      * Remove the specified resource from storage.
      *
