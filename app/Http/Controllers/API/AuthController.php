@@ -154,6 +154,12 @@ class AuthController extends Controller
             $trans_op->start_date = Carbon::now();
             $trans_op->save();
             $trans_op->trans_cashbox()->save($trans_cashbox);
+            
+            // otomatis buka toko jika buka kasir
+            $tenant = Tenant::find($user->tenant_id);
+            if($tenant->is_open == 0)
+                $tenant->update(['is_open'=>1]);
+
 
             return response()->json([
                 'status' => 'success',
@@ -240,6 +246,21 @@ class AuthController extends Controller
 
                 $trans_cashbox->save();
                 
+                // cek jika sudah ada tidak ada kasir yang open selain user ini maka toko tenant di tutup
+                $cek = TransOperational::where('casheer_id', '!=', $user->id)
+                ->where('tenant_id', $user->tenant_id)
+                ->whereDay('start_date', '=', date('d'))
+                ->whereMonth('start_date', '=', date('m'))
+                ->whereYear('start_date', '=', date('Y'))
+                ->whereNull('end_date')
+                ->get();
+        
+                if($cek->count() <= 0){
+                    $tenant = Tenant::find($user->tenant_id);
+                    $tenant->update(['is_open'=>0]);
+                }
+
+
                 DB::commit();
                 return response()->json([
                     'status' => 'success',

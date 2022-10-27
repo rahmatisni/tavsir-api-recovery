@@ -32,6 +32,7 @@ class ProfileResource extends JsonResource
             'status' => $this->status,
             'have_pin' => $this->pin ? true : false,
             'reset_pin' => $this->reset_pin,
+            'fcm_token' => $this->fcm_token,
         ];
     }
 }
