@@ -40,6 +40,7 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('category', App\Http\Controllers\API\CategoryController::class);
     Route::post('/user/approve-reset-pin/{id}', [App\Http\Controllers\API\UserController::class,'approveResetPin']);
     Route::post('/user/reject-reset-pin/{id}', [App\Http\Controllers\API\UserController::class,'rejectResetPin']);
+    Route::post('/user/activation/{id}', [App\Http\Controllers\API\UserController::class,'activationUserCashier']);
     Route::apiResource('user', App\Http\Controllers\API\UserController::class);
     Route::apiResource('ruas', App\Http\Controllers\API\RuasController::class);
     Route::get('/rekap-pendapatan', [App\Http\Controllers\API\RekapPendapatanController::class, 'index']);
@@ -82,7 +83,6 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/invoice', [App\Http\Controllers\API\InvoiceController::class,'store']);
         Route::post('/invoice-paid/{id}', [App\Http\Controllers\API\InvoiceController::class,'paid']);
 
-        Route::post('/subscription/{id}', [App\Http\Controllers\API\SubscriptionController::class,'changeStatus']);
         Route::apiResource('subscription', App\Http\Controllers\API\SubscriptionController::class);
 
     });

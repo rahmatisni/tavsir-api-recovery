@@ -30,14 +30,6 @@ class TenantRequest extends FormRequest
                 'required',
                 'integer',
                 'exists:ref_business,id',
-                function($attribute, $value, $fail) {
-                    $sub = Subscription::where('business_id',$value)->orderBy('id', 'desc')->first();
-                    if(!$sub) return true;
-                    $tenant_count = Tenant::where('business_id',$value)->count();
-                    if($tenant_count >= $sub->limit_tenant) {
-                        $fail('Tenant limit reached '.$sub->limit_tenant);
-                    }
-                },
             ],
             'name' => 'required|string',
             'category' => 'required|string',
