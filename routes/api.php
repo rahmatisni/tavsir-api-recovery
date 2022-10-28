@@ -98,6 +98,8 @@ Route::post('/login', [App\Http\Controllers\API\AuthController::class,'login']);
 
 Route::prefix('travshop')->group(function () {
     Route::post('/rest-area', [App\Http\Controllers\API\TravShopController::class,'restArea']);
+    Route::get('/tenant/{id}', [App\Http\Controllers\API\TravShopController::class,'tenantById']);
+    Route::get('/tenant-category', [App\Http\Controllers\API\TravShopController::class,'tenantByCategory']);
     Route::post('/tenant', [App\Http\Controllers\API\TravShopController::class,'tenant']);
     Route::post('/product', [App\Http\Controllers\API\TravShopController::class,'product']);
     Route::get('/product/{id}', [App\Http\Controllers\API\TravShopController::class,'productById']);
