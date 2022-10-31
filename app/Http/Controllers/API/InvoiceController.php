@@ -73,6 +73,13 @@ class InvoiceController extends Controller
         {
             return response()->json(['message' => 'PIN salah'], 400);
         }
+
+        $cashier = $data->cashier;
+        if (!Hash::check($request->pin_cashier, $cashier->pin))
+        {
+            return response()->json(['message' => 'PIN cashier salah'], 400);
+        }
+
         $data->status = TransInvoice::PAID;
         $data->pay_station_id = $request->pay_station_id ?? auth()->user()->id;
         $data->paid_date = Carbon::now();
