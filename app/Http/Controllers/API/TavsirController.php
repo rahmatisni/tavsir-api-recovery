@@ -339,7 +339,7 @@ class TavsirController extends Controller
     {
         try {
             DB::beginTransaction();
-            $data = TransOrder::find($request->id);
+            $data = TransOrder::findOrFail($request->id);
             $payment_method = PaymentMethod::findOrFail($request->payment_method_id);
             switch ($payment_method->code_name) {
                 case 'cash':
