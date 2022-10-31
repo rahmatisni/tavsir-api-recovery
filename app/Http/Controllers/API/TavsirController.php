@@ -337,10 +337,10 @@ class TavsirController extends Controller
 
     function PaymentOrder(PaymentOrderRequest $request)
     {
+        $data = TransOrder::findOrFail($request->id);
+        $payment_method = PaymentMethod::findOrFail($request->payment_method_id);
         try {
             DB::beginTransaction();
-            $data = TransOrder::findOrFail($request->id);
-            $payment_method = PaymentMethod::findOrFail($request->payment_method_id);
             switch ($payment_method->code_name) {
                 case 'cash':
                     if ($data->total > $request->cash) {
