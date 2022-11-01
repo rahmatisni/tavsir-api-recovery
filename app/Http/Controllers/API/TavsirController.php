@@ -368,11 +368,11 @@ class TavsirController extends Controller
                         ->where('rest_area_id', $data->tenant->rest_area_id)
                         ->first();
                     if (!$voucher) {
-                        return response()->json(['error' => 'Voucher tidak ditemukan'], 500);
+                        return response()->json(['message' => 'Voucher tidak ditemukan'], 500);
                     }
 
                     if ($voucher->balance < $data->total) {
-                        return response()->json(['error' => 'Ballance tidak cukup'], 500);
+                        return response()->json(['message' => 'Ballance tidak cukup'], 500);
                     }
 
                     $balance_now = $voucher->balance;
@@ -428,7 +428,7 @@ class TavsirController extends Controller
                     break;
 
                 default:
-                    return response()->json(['error' => $payment_method->name . ' Coming Soon'], 500);
+                    return response()->json(['message' => $payment_method->name . ' Coming Soon'], 500);
                     break;
             }
             DB::commit();
