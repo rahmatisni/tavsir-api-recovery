@@ -9,6 +9,7 @@
 <body>
     <h4>Laporan Operasional Petugas</h4>
     <br>
+    <h4>Tenant : {{ $nama_tenant }}</h4>
     <h4>Transaksi : Semua Transaksi</h4>
     <h4>Metode Bayar : Semua Metode Bayar</h4>
     <h4>Tanggal Awal : {{ $tanggal_awal }}</h4>

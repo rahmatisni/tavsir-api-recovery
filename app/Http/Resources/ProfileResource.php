@@ -26,6 +26,7 @@ class ProfileResource extends JsonResource
             'tenant_id' => $this->tenant_id,
             'rest_area_id' => $this->rest_area_id,
             'paystation_id' => $this->paystation_id,
+            'paystation_name' => $this->paystation->name ?? '',
             'jabatan' => 'Karyawan',
             'role' => $this->role,
             'paystation_id' => $this->paystation_id,

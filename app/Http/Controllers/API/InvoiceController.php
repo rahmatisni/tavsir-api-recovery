@@ -10,6 +10,7 @@ use App\Models\TransSaldo;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class InvoiceController extends Controller
@@ -67,6 +68,18 @@ class InvoiceController extends Controller
         if($data->status == TransInvoice::PAID){
             return response()->json(['message' => 'Invoice sudah dibayar'], 400);
         }
+        $user = auth()->user();
+        if (!Hash::check($request->pin, $user->pin))
+        {
+            return response()->json(['message' => 'PIN salah'], 400);
+        }
+
+        $cashier = $data->cashier;
+        if (!Hash::check($request->pin_cashier, $cashier->pin))
+        {
+            return response()->json(['message' => 'PIN cashier salah'], 400);
+        }
+
         $data->status = TransInvoice::PAID;
         $data->pay_station_id = $request->pay_station_id ?? auth()->user()->id;
         $data->paid_date = Carbon::now();

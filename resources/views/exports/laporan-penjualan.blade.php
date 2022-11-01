@@ -9,6 +9,7 @@
 <body>
     <h4>Laporan Penjualan Product</h4>
     <br>
+    <h4>Tenant : {{ $nama_tenant }}</h4>
     <h4>Tanggal Awal : {{ $tanggal_awal }}</h4>
     <h4>Tanggal Akhir : {{ $tanggal_akhir }}</h4>
     <br>

@@ -10,6 +10,7 @@
     <h4>Laporan Invoice</h4>
     <br>
     <h4>Status : {{ $status }}</h4>
+    <h4>Tenant : {{ $nama_tenant }}</h4>
     <h4>Tanggal Awal: {{ $tanggal_awal }}</h4>
     <h4>Tanggal Akhir: {{ $tanggal_akhir }}</h4>
     <br>
@@ -32,7 +33,7 @@
                 <td>{{ $value->claim_date }}</td>
                 <td>{{ $value->invoice_id }}</td>
                 <td>{{ $value->paid_date }}</td>
-                <td>{{ $value->invoice_id }}</td>
+                <td>{{ $value->kwitansi_id }}</td>
                 <td>{{ $value->cashier->name ?? '' }}</td>
                 <td>{{ $value->status }}</td>
             </tr>

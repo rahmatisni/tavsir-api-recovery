@@ -10,21 +10,25 @@ use App\Exports\LaporanPenjualanExport;
 use App\Exports\LaporanPenjualanKategoriExport;
 use App\Exports\LaporanTransaksiExport;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\DownloadLaporanRequest;
+use App\Models\Tenant;
 use App\Models\TransInvoice;
 use App\Models\TransOperational;
 use App\Models\TransOrder;
 use App\Models\TransOrderDetil;
 use Carbon\Carbon;
 use Excel;
+use JetBrains\PhpStorm\Internal\TentativeType;
 
 class LaporanController extends Controller
 {
-    public function downloadLaporanPenjualan()
+    public function downloadLaporanPenjualan(DownloadLaporanRequest $request)
     {
-        $tanggal_awal = request()->tanggal_awal;
-        $tanggal_akhir = request()->tanggal_akhir;
+        $tanggal_awal = $request->tanggal_awal;
+        $tanggal_akhir = $request->tanggal_akhir;
+        $tenant_id = $request->tenant_id;
         
-        $data = TransOrderDetil::whereHas('trans_order', function($q) use ($tanggal_awal, $tanggal_akhir)
+        $data = TransOrderDetil::whereHas('trans_order', function($q) use ($tanggal_awal, $tanggal_akhir, $tenant_id)
                                                         {
                                                             return $q->where('status', TransOrder::DONE)
                                                                 ->when(($tanggal_awal && $tanggal_akhir), function ($qq) use ($tanggal_awal, $tanggal_akhir) {
@@ -35,21 +39,25 @@ class LaporanController extends Controller
                                                                             $tanggal_akhir.' 23:59:59'
                                                                         ]
                                                                     );
+                                                                })->when($tenant_id, function ($qq) use ($tenant_id) {
+                                                                    return $qq->where('tenant_id', $tenant_id);
                                                                 });
                                                         }
                                                     )->get();
         $record = [
+            'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
             'record' => $data,
-            'tanggal_awal' => $tanggal_awal,
-            'tanggal_akhir' => $tanggal_akhir,
+            'tanggal_awal' => $tanggal_awal ?? 'Semua Tanggal',
+            'tanggal_akhir' => $tanggal_akhir ?? 'Semua Tanggal',
         ];
         return Excel::download(new LaporanPenjualanExport($record), 'laporan_penjualan '.Carbon::now()->format('d-m-Y').'.xlsx');
     }
 
-    public function downloadLaporanOperational()
+    public function downloadLaporanOperational(DownloadLaporanRequest $request)
     {
-        $tanggal_awal = request()->tanggal_awal;
-        $tanggal_akhir = request()->tanggal_akhir;
+        $tanggal_awal = $request->tanggal_awal;
+        $tanggal_akhir = $request->tanggal_akhir;
+        $tenant_id = $request->tenant_id;
 
         $data = TransOperational::when(($tanggal_awal && $tanggal_akhir), function($q) use ($tanggal_awal, $tanggal_akhir){
                                     return $q->whereBetween('created_at', 
@@ -58,21 +66,30 @@ class LaporanController extends Controller
                                                 $tanggal_akhir.' 23:59:59'
                                             ]);
                                 })
+                                ->whereNotNull('end_date')
                                 ->get();
+        if($data->count() == 0)
+        {
+            return response()->json([
+                'message' => 'Data tidak ditemukan',
+            ], 404);
+        }
         $record = [
+            'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
             'record' => $data,
-            'tanggal_awal' => $tanggal_awal,
-            'tanggal_akhir' => $tanggal_akhir,
+            'tanggal_awal' => $tanggal_awal ?? 'Semua Tanggal',
+            'tanggal_akhir' => $tanggal_akhir ?? 'Semua Tanggal',
         ];
         return Excel::download(new LaporanOperationalExport($record), 'laporan_operational '.Carbon::now()->format('d-m-Y').'.xlsx');
     }
 
-    public function downloadLaporanPenjualanKategori()
+    public function downloadLaporanPenjualanKategori(DownloadLaporanRequest $request)
     {
-        $tanggal_awal = request()->tanggal_awal;
-        $tanggal_akhir = request()->tanggal_akhir;
+        $tanggal_awal = $request->tanggal_awal;
+        $tanggal_akhir = $request->tanggal_akhir;
+        $tenant_id = $request->tenant_id;
 
-        $data = TransOrderDetil::whereHas('trans_order', function($q) use ($tanggal_awal, $tanggal_akhir){
+        $data = TransOrderDetil::whereHas('trans_order', function($q) use ($tanggal_awal, $tanggal_akhir, $tenant_id){
             return $q->where('status', TransOrder::DONE)
                         ->when(($tanggal_awal && $tanggal_akhir), function($qq) use ($tanggal_awal, $tanggal_akhir){
                             return $qq->whereBetween('created_at', 
@@ -80,7 +97,9 @@ class LaporanController extends Controller
                                         $tanggal_awal, 
                                         $tanggal_akhir.' 23:59:59'
                                     ]);
-            });
+                        })->when($tenant_id, function ($qq) use ($tenant_id) {
+                            return $qq->where('tenant_id', $tenant_id);
+                        });
         })->with('product.category')->get()
         ->groupBy('product.category.name')
         ->map(function($item){
@@ -90,17 +109,19 @@ class LaporanController extends Controller
                 ];
         });
         $record = [
+            'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
             'record' => $data,
-            'tanggal_awal' => $tanggal_awal,
-            'tanggal_akhir' => $tanggal_akhir,
+            'tanggal_awal' => $tanggal_awal ?? 'Semua Tanggal',
+            'tanggal_akhir' => $tanggal_akhir ?? 'Semua Tanggal',
         ];
         return Excel::download(new LaporanPenjualanKategoriExport($record), 'laporan_penjualan_kategori '.Carbon::now()->format('d-m-Y').'.xlsx');
     }
 
-    public function downloadLaporanMetodePembayaran()
+    public function downloadLaporanMetodePembayaran(DownloadLaporanRequest $request)
     {
-        $tanggal_awal = request()->tanggal_awal;
-        $tanggal_akhir = request()->tanggal_akhir;
+        $tanggal_awal = $request->tanggal_awal;
+        $tanggal_akhir = $request->tanggal_akhir;
+        $tenant_id = $request->tenant_id;
 
         $data = TransOrder::Done()
                             ->when(($tanggal_awal && $tanggal_akhir), 
@@ -112,6 +133,9 @@ class LaporanController extends Controller
                                                     $tanggal_akhir.' 23:59:59'
                                                 ]);
                                     })
+                            ->when($tenant_id, function ($q) use ($tenant_id) {
+                                return $q->where('tenant_id', $tenant_id);
+                            })
                             ->with('payment_method')->get()
                             ->groupBy('payment_method.name')
                             ->map(function($item){
@@ -121,19 +145,25 @@ class LaporanController extends Controller
                                     ];
                             });
         $record = [
+            'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
             'record' => $data,
-            'tanggal_awal' => $tanggal_awal,
-            'tanggal_akhir' => $tanggal_akhir,
+            'tanggal_awal' => $tanggal_awal ?? 'Semua Tanggal',
+            'tanggal_akhir' => $tanggal_akhir ?? 'Semua Tanggal',
         ];
         return Excel::download(new LaporanMetodePembayaranExport($record), 'laporan_metode_pembayaran '.Carbon::now()->format('d-m-Y').'.xlsx');
     }
 
-    public function downloadLaporanInvoice()
+    public function downloadLaporanInvoice(DownloadLaporanRequest $request)
     {
-        $tanggal_awal = request()->tanggal_awal;
-        $tanggal_akhir = request()->tanggal_akhir;
-        $status = request()->status;
-        $data = TransInvoice::when(($tanggal_awal && $tanggal_akhir), 
+        $tanggal_awal = $request->tanggal_awal;
+        $tanggal_akhir = $request->tanggal_akhir;
+        $status = $request->status;
+        $tenant_id = $request->tenant_id;
+        $data = TransInvoice::whereHas('trans_saldo', function($q) use ($tenant_id){
+                    $q->when($tenant_id, function ($qq) use ($tenant_id) {
+                        return $qq->where('tenant_id', $tenant_id);
+                    });
+                })->when(($tanggal_awal && $tanggal_akhir), 
                 function($q) use ($tanggal_awal, $tanggal_akhir)
                 {
                     return $q->whereBetween('claim_date', 
@@ -149,19 +179,20 @@ class LaporanController extends Controller
                         })
                 ->get();
         $record = [
+            'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
             'record' => $data,
             'status' => $status,
-            'tanggal_awal' => $tanggal_awal,
-            'tanggal_akhir' => $tanggal_akhir,
+            'tanggal_awal' => $tanggal_awal ?? 'Semua Tanggal',
+            'tanggal_akhir' => $tanggal_akhir ?? 'Semua Tanggal',
         ];
         return Excel::download(new LaporanInvoiceExport($record), 'laporan_invoice '.Carbon::now()->format('d-m-Y').'.xlsx');
     }
 
-    public function downloadLaporanTransaksi()
+    public function downloadLaporanTransaksi(DownloadLaporanRequest $request)
     {
-        $tanggal_awal = request()->tanggal_awal;
-        $tanggal_akhir = request()->tanggal_akhir;
-        
+        $tanggal_awal = $request->tanggal_awal;
+        $tanggal_akhir = $request->tanggal_akhir;
+        $tenant_id = $request->tenant_id;
         $data = TransOrder::done()
                                 ->when(($tanggal_awal && $tanggal_akhir), 
                                     function($q) use ($tanggal_awal, $tanggal_akhir)
@@ -172,12 +203,17 @@ class LaporanController extends Controller
                                                     $tanggal_akhir.' 23:59:59'
                                                 ]);
                                     })
+                                    ->when($tenant_id, function ($q) use ($tenant_id) {
+                                        return $q->where('tenant_id', $tenant_id);
+                                    })
+                                    ->orderBy('created_at')
                                 ->get();
                               
         return Excel::download(new LaporanTransaksiExport([
+            'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
             'record' => $data,
-            'tanggal_awal' => $tanggal_awal,
-            'tanggal_akhir' => $tanggal_akhir,
+            'tanggal_awal' => $tanggal_awal ?? 'Semua Tanggal',
+            'tanggal_akhir' => $tanggal_akhir ?? 'Semua Tanggal',
         ]), 'laporan_transaksi '.Carbon::now()->format('d-m-Y').'.xlsx');
     }
 
