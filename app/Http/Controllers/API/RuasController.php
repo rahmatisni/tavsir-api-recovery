@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\RuasRequest;
 use App\Models\Ruas;
 use Illuminate\Http\Request;
 
@@ -25,10 +26,13 @@ class RuasController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(RuasRequest $request)
     {
-        $ruas = Ruas::create($request->all());
-        return response()->json($ruas);
+        $data = new Ruas();
+
+        $data->fill($request->all());
+        $data->save();
+        return response()->json($data);
     }
 
     /**
@@ -50,7 +54,7 @@ class RuasController extends Controller
      * @param  \App\Models\Ruas  $ruas
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request,$id)
+    public function update(RuasRequest $request,$id)
     {
         $ruas = Ruas::findOrFail($id);
         $ruas->update($request->all());

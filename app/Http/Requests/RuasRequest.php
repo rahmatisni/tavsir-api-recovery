@@ -23,8 +23,9 @@ class RuasRequest extends FormRequest
      */
     public function rules()
     {
+        $id =  $this->route()->rua ?? 0;
         return [
-            'name' => 'required|string|max:255|unoque:ref_ruas.name',
+            'name' => 'required|string|max:255|unique:ref_ruas,name,'.$id,
         ];
     }
 }
