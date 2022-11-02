@@ -17,14 +17,27 @@ class InvoiceController extends Controller
 {
     public function index()
     {
-        $data = TransSaldo::with('trans_invoice')->ByRole()
+        DB::enableQueryLog();
+
+        $data = TransSaldo::with(['trans_invoice'=> function($query) {
+            if(request('status')!=''){
+                $query->where('status', '=', 'PAID');
+            }
+            if(request('filter')!=''){
+                $filter = request('filter');
+                $query->where('invoice_id', 'like', "%".$filter."%");
+                $query->orWhere('claim_date', 'like', "%".$filter."%");
+                $query->orWhere('paid_date', 'like', "%".$filter."%");
+                $query->orWhere('nominal', 'like', "%".$filter."%");
+                $query->orWhere('status', 'like', "%".$filter."%");
+            }
+        }])->ByRole()       
         ->when($rest_area_id = request()->rest_area_id, function($query) use ($rest_area_id){
             return $query->where('rest_area_id', $rest_area_id);
         })
         ->when($tenant_id = request()->tenant_id, function($query) use ($tenant_id){
             return $query->where('tenant_id', $tenant_id);
-        })
-        ->get();
+        })->get();
         return response()->json(ListInvoiceResource::collection($data));
     } 
     

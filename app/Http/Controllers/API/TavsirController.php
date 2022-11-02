@@ -40,9 +40,17 @@ class TavsirController extends Controller
                 ->orwhere('sku', 'like', "%$filter%");
         })->when($category_id = $request->category_id, function ($q) use ($category_id) {
             return $q->where('category_id', $category_id);
-        })->when($is_active = request()->is_active, function ($q) use ($is_active) {
-            return $q->where('is_active', $is_active);
-        })->orderBy('updated_at', 'desc')->get();
+        });
+        // $data->when($is_active = $is_active, function ($q) use ($is_active) {
+        //     return $q->where('is_active', '=', 0);
+        // });
+        if($request->is_active == '0'){
+          $data =  $data->where('is_active', '=', '0');
+        }else
+        if($request->is_active == '1'){
+            $data =  $data->where('is_active', '=', '1');
+        }        
+        $data = $data->orderBy('updated_at', 'desc')->get();
         return response()->json(TrProductResource::collection($data));
     }
 
@@ -101,10 +109,11 @@ class TavsirController extends Controller
     }
 
 
-    function categoryList()
+    function categoryList(Request $request)
     {
-        $data = Category::byTenant()->orderBy('name')->get();
-
+        $data = Category::byTenant()->when($filter = $request->filter, function ($q) use ($filter) {
+                return $q->where('name', 'like', "%$filter%");
+        })->orderBy('name')->get();
         return response()->json(TrCategoryResource::collection($data));
     }
 
@@ -303,6 +312,12 @@ class TavsirController extends Controller
                 $q->where('status', $status);
             }
         })
+        ->when($start_date = $request->start_date, function ($q) use ($start_date) {
+            $q->where('created_at', '>=', date("Y-m-d", strtotime($start_date)));
+        })  
+        ->when($end_date = $request->end_date, function ($q) use ($end_date) {
+            $q->where('created_at', '<=', date("Y-m-d", strtotime($end_date)));
+        })               
             ->when($statusnot = request()->statusnot, function ($q) use ($statusnot) {
                 if (is_array($statusnot)) {
                     $q->whereNotIn('status', $statusnot);

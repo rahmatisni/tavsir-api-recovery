@@ -8,22 +8,34 @@ use App\Http\Resources\RekapTransOrderResource;
 use App\Models\TransOperational;
 use App\Models\TransOrder;
 use Barryvdh\DomPDF\Facade\Pdf;
-
+use DB;
 class LaporanRekapTransaksiController extends Controller
 {
     public function index()
     {
+        DB::enableQueryLog();
         $data = TransOperational::with('trans_cashbox', 'cashier')->byRole()
                                 ->whereNotNull('end_date')
-                                ->when($tanggal = request('tanggal'), function($q) use ($tanggal){
-                                    $q->whereDate('created_at', $tanggal);
-                                })
+                                ->when($tanggal = request('start_date'), function($q) use ($tanggal){
+                                    $q->whereDate('created_at', '>=', $tanggal);
+                                }) 
                                 ->when($tanggal = request('end_date'), function($q) use ($tanggal){
                                     $q->whereDate('created_at', '<=', $tanggal);
-                                })                                
-                                ->get();
+                                })
+                                ->when($filter = request('filter'), function($q) use ($filter){
+                                    return 
+                                    $q->where('start_date', 'like', "%$filter%")
+                                    ->orWhere('periode', 'like', "%$filter%")
+                                    ->orWhere('end_date', 'like', "%$filter%")
+                                    ->orWhereHas('trans_cashbox', function ($query) {
+                                        $query->where('rp_total', 'like', "%".request('filter')."%");
+                                    });
+                                });                                                                     
 
+        $data = $data->orderBy('created_at', 'desc')->get(); 
+        // dd(DB::getQueryLog());                  
         return response()->json(LaporanRekapTransaksiResource::collection($data));                     
+        // return response()->json([ 'data'=> LaporanRekapTransaksiResource::collection($data), 'query'=> DB::getQueryLog()]);                     
     }
 
     public function showRekap($id)
