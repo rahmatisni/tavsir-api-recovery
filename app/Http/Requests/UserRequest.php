@@ -28,7 +28,7 @@ class UserRequest extends FormRequest
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255',
             'password' => 'required|string|min:6',
-            'role' => 'required|string|in:' . User::ADMIN . ',' . User::USER . User::PAYSTATION . ',' . User::JMRB . ',' . User::TENANT . ',' . User::CASHIER . ',' . User::OWNER,
+            'role' => 'required|string|in:' . User::ADMIN . ',' . User::USER . User::PAYSTATION . ',' . User::JMRB . ',' . User::JMRBAREA . ',' . User::TENANT . ',' . User::CASHIER . ',' . User::OWNER,
         ];
     }
 }

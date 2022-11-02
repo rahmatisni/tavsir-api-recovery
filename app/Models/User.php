@@ -16,6 +16,7 @@ class User extends Authenticatable
     public const USER = 'USER';
     public const PAYSTATION = 'PAYSTATION';
     public const JMRB = 'JMRB';
+    public const JMRBAREA = 'JMRBAREA';
     public const TENANT = 'TENANT';
     public const CASHIER = 'CASHIER';
     public const OWNER = 'OWNER';
