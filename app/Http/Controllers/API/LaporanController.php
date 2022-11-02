@@ -53,7 +53,7 @@ class LaporanController extends Controller
         {
             return response()->json([
                 'message' => 'Data tidak ditemukan',
-            ], 404);
+            ], 400);
         }
         $record = [
             'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
@@ -93,7 +93,7 @@ class LaporanController extends Controller
         {
             return response()->json([
                 'message' => 'Data tidak ditemukan',
-            ], 404);
+            ], 400);
         }
         $record = [
             'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
@@ -140,7 +140,7 @@ class LaporanController extends Controller
         {
             return response()->json([
                 'message' => 'Data tidak ditemukan',
-            ], 404);
+            ], 400);
         }
         $record = [
             'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
@@ -188,7 +188,7 @@ class LaporanController extends Controller
         {
             return response()->json([
                 'message' => 'Data tidak ditemukan',
-            ], 404);
+            ], 400);
         }
         $record = [
             'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
@@ -237,7 +237,7 @@ class LaporanController extends Controller
         {
             return response()->json([
                 'message' => 'Data tidak ditemukan',
-            ], 404);
+            ], 400);
         }
         $record = [
             'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
@@ -280,7 +280,7 @@ class LaporanController extends Controller
         {
             return response()->json([
                 'message' => 'Data tidak ditemukan',
-            ], 404);
+            ], 400);
         }
                               
         return Excel::download(new LaporanTransaksiExport([
