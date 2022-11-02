@@ -17,7 +17,7 @@ use App\Models\TransOperational;
 use App\Models\TransOrder;
 use App\Models\TransOrderDetil;
 use Carbon\Carbon;
-use Maatwebsite\Excel\Excel;
+use Excel;
 
 class LaporanController extends Controller
 {
