@@ -49,6 +49,12 @@ class LaporanController extends Controller
                                                                 });
                                                         }
                                                     )->get();
+        if($data->count() == 0)
+        {
+            return response()->json([
+                'message' => 'Data tidak ditemukan',
+            ], 404);
+        }
         $record = [
             'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
             'record' => $data,
@@ -130,6 +136,12 @@ class LaporanController extends Controller
                     'total' => $item->sum('total_price')
                 ];
         });
+        if($data->count() == 0)
+        {
+            return response()->json([
+                'message' => 'Data tidak ditemukan',
+            ], 404);
+        }
         $record = [
             'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
             'record' => $data,
@@ -172,6 +184,12 @@ class LaporanController extends Controller
                                         'total' => $item->sum('total')
                                     ];
                             });
+        if($data->count() == 0)
+        {
+            return response()->json([
+                'message' => 'Data tidak ditemukan',
+            ], 404);
+        }
         $record = [
             'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
             'record' => $data,
@@ -215,6 +233,12 @@ class LaporanController extends Controller
                             return $q->where('status', $status);
                         })
                 ->get();
+        if($data->count() == 0)
+        {
+            return response()->json([
+                'message' => 'Data tidak ditemukan',
+            ], 404);
+        }
         $record = [
             'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
             'record' => $data,
@@ -252,6 +276,12 @@ class LaporanController extends Controller
                                     })
                                     ->orderBy('created_at')
                                 ->get();
+        if($data->count() == 0)
+        {
+            return response()->json([
+                'message' => 'Data tidak ditemukan',
+            ], 404);
+        }
                               
         return Excel::download(new LaporanTransaksiExport([
             'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
