@@ -24,18 +24,32 @@
                 <th>Jenis Transkasi</th>
             </tr>
         </thead>
+            @php
+                $item_count = 0;
+            @endphp
         <tbody>
             @foreach($record as $value)
+            @php
+                $count = $value->detil->count();
+                $item_count += $count;
+            @endphp
             <tr>
                 <td>{{$value->created_at}}</td>
                 <td>{{$value->order_id}}</td>
-                <td>{{$value->detil->count()}} item</td>
+                <td>{{$count}} item</td>
                 <td style="white-space: nowrap;">@rp($value->total)</td>
                 <td>{{$value->payment_method->name ?? ''}}</td>
                 <td>{{$value->labelOrderType()}}</td>
             </tr>
             @endforeach
         </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="2">Total</td>
+                <td>{{$item_count}} item</td>
+                <td>@rp($record->sum('total'))</td>
+            </tr>
+        </tfoot>
     </table>
 
 </body>
