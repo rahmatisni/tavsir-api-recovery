@@ -16,9 +16,13 @@ class CustomizeController extends Controller
      */
     public function index()
     {
-        $customizes = Customize::when($name = request()->name, function($q) use($name){
-                                    $q->where('name', 'like', '%'.$name.'%');
-                                })->get();
+        $customizes = Customize::when($name = request()->name, function ($q) use ($name) {
+                                    $q->where('name', 'like', '%' . $name . '%');
+                                })
+                                ->when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
+                                    $q->where('tenant_id', $tenant_id);
+                                })
+                                ->get();
         return response()->json($customizes);
     }
 
