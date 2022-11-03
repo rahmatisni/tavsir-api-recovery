@@ -21,7 +21,7 @@ class InvoiceController extends Controller
 
         $data = TransSaldo::with(['trans_invoice' => function ($query) {
             if (request('status') != '') {
-                $query->where('status', '=', 'PAID');
+                $query->where('status', '=',  request('status'));
             }
             if (request('filter') != '') {
                 $filter = request('filter');
