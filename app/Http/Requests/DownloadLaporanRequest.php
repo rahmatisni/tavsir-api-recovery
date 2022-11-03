@@ -27,8 +27,8 @@ class DownloadLaporanRequest extends FormRequest
             'tanggal_awal' => 'nullable|dateFormat:Y-m-d',
             'tanggal_akhir' => 'nullable|dateFormat:Y-m-d',
             'tenant_id' => 'nullable|exists:ref_tenant,id',
-            'rest_area_id' => 'nullable|exist:ref_rest_area,id',
-            'business_id' => 'nullable|exist:ref_business,id'
+            'rest_area_id' => 'nullable|exists:ref_rest_area,id',
+            'business_id' => 'nullable|exists:ref_business,id'
         ];
     }
 }
