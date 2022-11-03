@@ -15,7 +15,7 @@ class Category extends BaseModel
 
     public function tenant()
     {
-        return $this->belongsTo(Tenant::class,'tenant_id');
+        return $this->belongsTo(Tenant::class, 'tenant_id');
     }
 
     public function scopeByTenant($query)

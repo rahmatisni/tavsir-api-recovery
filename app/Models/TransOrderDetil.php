@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+
 use App\Models\BaseModel;
 
 class TransOrderDetil extends BaseModel
@@ -15,7 +16,7 @@ class TransOrderDetil extends BaseModel
         'price',
         'qty',
         'total_price',
-        
+
     ];
 
     public function trans_order()

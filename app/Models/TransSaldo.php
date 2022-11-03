@@ -17,9 +17,9 @@ class TransSaldo extends BaseModel
     public function scopeByRole($query)
     {
         $role = auth()->user()->role;
-        if($role == User::TENANT || $role == User::CASHIER){
+        if ($role == User::TENANT || $role == User::CASHIER) {
             return $query->where('tenant_id', auth()->user()->tenant_id);
-        }else{
+        } else {
             return $query;
         }
     }
@@ -31,7 +31,7 @@ class TransSaldo extends BaseModel
 
     public function trans_invoice()
     {
-        return $this->hasMany(TransInvoice::class,'trans_saldo_id');
+        return $this->hasMany(TransInvoice::class, 'trans_saldo_id');
     }
 
     public function tenant()

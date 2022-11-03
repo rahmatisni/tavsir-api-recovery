@@ -25,7 +25,7 @@ class RuasRequest extends FormRequest
     {
         $id =  $this->route()->rua ?? 0;
         return [
-            'name' => 'required|string|max:255|unique:ref_ruas,name,'.$id,
+            'name' => 'required|string|max:255|unique:ref_ruas,name,' . $id,
         ];
     }
 }

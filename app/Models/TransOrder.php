@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+
 use App\Models\BaseModel;
 use App\Models\Traits\Uuid;
 use Illuminate\Support\Facades\DB;
@@ -72,17 +73,17 @@ class TransOrder extends BaseModel
 
     public function scopeFromTakengo($query)
     {
-        return $query->where('order_type',self::ORDER_TAKE_N_GO);
+        return $query->where('order_type', self::ORDER_TAKE_N_GO);
     }
 
     public function scopeFromTavsir($query)
     {
-        return $query->where('order_type',self::ORDER_TAVSIR);
+        return $query->where('order_type', self::ORDER_TAVSIR);
     }
 
     public function scopeDone($query)
     {
-        return $query->where('status',self::DONE);
+        return $query->where('status', self::DONE);
     }
 
     public function casheer()
@@ -102,22 +103,22 @@ class TransOrder extends BaseModel
 
     public function labelOrderType()
     {
-        if($this->order_type == self::ORDER_TAKE_N_GO){
+        if ($this->order_type == self::ORDER_TAKE_N_GO) {
             return 'Take N Go';
-        }else if($this->order_type == self::ORDER_TAVSIR){
+        } elseif ($this->order_type == self::ORDER_TAVSIR) {
             return 'Tavsir';
-        }else{
+        } else {
             return $this->order_type;
         }
     }
 
     public function scopeByRole($query)
     {
-        return $query->when(auth()->user()->role == User::TENANT, function($q){
-                        $q->where('tenant_id', auth()->user()->tenant_id);
-                    })
-                    ->when(auth()->user()->role == User::CASHIER, function($q){
-                        $q->where('casheer_id', auth()->user()->id);
-                    });
+        return $query->when(auth()->user()->role == User::TENANT, function ($q) {
+            $q->where('tenant_id', auth()->user()->tenant_id);
+        })
+            ->when(auth()->user()->role == User::CASHIER, function ($q) {
+                $q->where('casheer_id', auth()->user()->id);
+            });
     }
 }

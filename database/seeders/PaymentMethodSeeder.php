@@ -15,7 +15,7 @@ class PaymentMethodSeeder extends Seeder
      */
     public function run()
     {
-        if(PaymentMethod::count() == 0){
+        if (PaymentMethod::count() == 0) {
             PaymentMethod::insert([
                 [
                     'name' => 'Mandiri Virtual Account',

@@ -19,7 +19,7 @@ class TnGOrderResource extends JsonResource
             'order_id' => $this->order_id,
             'order_date' => $this->created_at,
             'sub_total' => $this->sub_total,
-            'discount'=> $this->discount,
+            'discount' => $this->discount,
             'total' => $this->total,
             'status' => $this->status,
             'jumlah_menu' => $this->detil->count(),

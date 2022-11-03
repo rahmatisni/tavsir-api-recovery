@@ -30,8 +30,8 @@ class UserActivationRequest extends FormRequest
             'id' => [
                 function ($attribute, $value, $fail) {
                     $user = User::where('id', $value)
-                    ->where('role', User::CASHIER)
-                    ->first();
+                        ->where('role', User::CASHIER)
+                        ->first();
                     if (!$user) {
                         $fail('User cashier not found');
                     }

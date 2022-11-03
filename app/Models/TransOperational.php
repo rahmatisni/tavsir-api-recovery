@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+
 use App\Models\BaseModel;
 
 class TransOperational extends BaseModel
@@ -21,7 +22,7 @@ class TransOperational extends BaseModel
 
     public function trans_cashbox()
     {
-        return $this->hasOne(TransCashbox::class,'trans_operational_id');
+        return $this->hasOne(TransCashbox::class, 'trans_operational_id');
     }
 
     public function cashier()
@@ -36,11 +37,11 @@ class TransOperational extends BaseModel
 
     public function scopeByRole()
     {
-        return $this->when(auth()->user()->role == User::TENANT, function($q){
-                        $q->where('tenant_id', auth()->user()->tenant_id);
-                    })
-                    ->when(auth()->user()->role == User::CASHIER, function($q){
-                        $q->where('casheer_id', auth()->user()->id);
-                    });
+        return $this->when(auth()->user()->role == User::TENANT, function ($q) {
+            $q->where('tenant_id', auth()->user()->tenant_id);
+        })
+            ->when(auth()->user()->role == User::CASHIER, function ($q) {
+                $q->where('casheer_id', auth()->user()->id);
+            });
     }
 }

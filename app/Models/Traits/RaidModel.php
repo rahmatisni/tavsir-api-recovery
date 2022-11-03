@@ -1,8 +1,10 @@
 <?php
+
 namespace App\Models\Traits;
 
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Schema;
 
 trait RaidModel
 {
@@ -10,13 +12,13 @@ trait RaidModel
     {
         parent::boot();
         if (auth()->check()) {
-            if (\Schema::hasColumn(with(new static )->getTable(), 'updated_by')) {
+            if (Schema::hasColumn(with(new static())->getTable(), 'updated_by')) {
                 static::saving(function ($table) {
                     $table->updated_by = auth()->user()->id;
                 });
             }
 
-            if (\Schema::hasColumn(with(new static )->getTable(), 'created_by')) {
+            if (Schema::hasColumn(with(new static())->getTable(), 'created_by')) {
                 static::creating(function ($table) {
                     $table->created_by = auth()->user()->id;
                 });
@@ -24,7 +26,7 @@ trait RaidModel
         }
     }
 
-    
+
     /*-----------*/
     public function creator()
     {
@@ -56,7 +58,7 @@ trait RaidModel
         return $this->created_at->diffForHumans();
     }
 
-   
+
     /* save data */
     public static function saveData($request, $identifier = 'id')
     {
@@ -70,7 +72,7 @@ trait RaidModel
 
     public static function prepare($request, $identifier = 'id')
     {
-        $record = new static;
+        $record = new static();
 
         if ($request->has($identifier) && $request->get($identifier) != null && $request->get($identifier) != 0) {
             $record = static::find($request->get($identifier));
@@ -78,5 +80,4 @@ trait RaidModel
 
         return $record;
     }
-
 }

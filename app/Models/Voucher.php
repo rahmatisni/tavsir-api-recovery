@@ -32,6 +32,6 @@ class Voucher extends BaseModel
 
     public function rest_area()
     {
-        return $this->belongsTo(RestArea::class,'rest_area_id');
+        return $this->belongsTo(RestArea::class, 'rest_area_id');
     }
 }

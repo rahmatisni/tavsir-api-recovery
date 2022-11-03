@@ -6,9 +6,11 @@ use App\Models\Traits\RaidModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+
 class BaseModel extends Model
 {
-    use HasFactory, RaidModel;
+    use HasFactory;
+    use RaidModel;
 
     // public function getCreatedAtAttribute($date)
     // {

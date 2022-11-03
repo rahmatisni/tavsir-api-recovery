@@ -17,8 +17,7 @@ class TenantSeeder extends Seeder
      */
     public function run()
     {
-        if(Tenant::count() == 0)
-        {
+        if (Tenant::count() == 0) {
             Tenant::insert([
                 [
                     'name' => 'Rumah Talas',
@@ -84,7 +83,7 @@ class TenantSeeder extends Seeder
                     'updated_at' => now()->addDay(),
                 ],
             ]);
-            Tenant::all()->each(function($tenant) {
+            Tenant::all()->each(function ($tenant) {
                 $tenant->saldo()->create([
                     'saldo' => 0,
                     'rest_area_id' => $tenant->rest_area_id,

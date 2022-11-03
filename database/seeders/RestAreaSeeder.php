@@ -14,8 +14,7 @@ class RestAreaSeeder extends Seeder
      */
     public function run()
     {
-        if(RestArea::count() == 0)
-        {
+        if (RestArea::count() == 0) {
             RestArea::insert([
                 [
                     'name' => 'Rest Area KM 149 B',

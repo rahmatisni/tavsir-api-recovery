@@ -22,7 +22,7 @@ class TrCartSavedResource extends JsonResource
             'merchant_id' => $this->merchant_id,
             'sub_merchant_id' => $this->sub_merchant_id,
             'sub_total' => $this->sub_total,
-            'discount'=> $this->discount,
+            'discount' => $this->discount,
             'total' => $this->total,
             'product' => TrCartProductResource::collection($this->detil),
         ];

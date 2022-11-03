@@ -24,7 +24,7 @@ class TrCategoryRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|max:50|unique:ref_category,name,'.$this->id.',id,tenant_id,'.auth()->user()->tenant_id,
+            'name' => 'required|string|max:50|unique:ref_category,name,' . $this->id . ',id,tenant_id,' . auth()->user()->tenant_id,
         ];
     }
 }

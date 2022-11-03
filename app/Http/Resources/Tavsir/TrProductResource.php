@@ -1,7 +1,8 @@
 <?php
-namespace App\Http\Resources\Tavsir;
-use App\Http\Resources\CustomizeResource;
 
+namespace App\Http\Resources\Tavsir;
+
+use App\Http\Resources\CustomizeResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class TrProductResource extends JsonResource

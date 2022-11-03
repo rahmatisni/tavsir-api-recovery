@@ -25,7 +25,7 @@ class SaldoResource extends JsonResource
             'balance' => $this->balance,
             'qr_code_use' => $this->qr_code_use,
             'is_active' => $this->is_active,
-            'qr_code_image' => env('PAYSTATION_URL').'/storage/qrcode_pelanggan/'.$this->qr_code_image,
+            'qr_code_image' => env('PAYSTATION_URL') . '/storage/qrcode_pelanggan/' . $this->qr_code_image,
             'balance_history' => $this->balance_history,
         ];
     }

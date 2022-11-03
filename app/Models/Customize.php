@@ -11,7 +11,7 @@ class Customize extends Model
 
     protected $table = 'ref_customize';
     protected $fillable = ['tenant_id', 'name', 'pilihan'];
-    
+
     public function tenant()
     {
         return $this->belongsTo('App\Models\Tenant');
@@ -26,7 +26,7 @@ class Customize extends Model
     {
         $vv = array_map(function ($v, $k) {
             return [
-                "id" => $k+1,
+                "id" => $k + 1,
                 "name" => $v["name"],
                 "price" => $v["price"],
                 "is_available" => $v["is_available"],

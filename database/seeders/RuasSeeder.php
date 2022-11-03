@@ -14,8 +14,7 @@ class RuasSeeder extends Seeder
      */
     public function run()
     {
-        if(Ruas::count() == 0)
-        {
+        if (Ruas::count() == 0) {
             Ruas::insert([
                 [
                     'name' => 'Jakarta - Bogor - Ciawi ( Jagorawi )',

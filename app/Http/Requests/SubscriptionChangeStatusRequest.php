@@ -25,14 +25,14 @@ class SubscriptionChangeStatusRequest extends FormRequest
     public function rules()
     {
         return [
-            'status' => 'required|in:'.Subscription::ACTIVE.','.Subscription::INACTIVE,
+            'status' => 'required|in:' . Subscription::ACTIVE . ',' . Subscription::INACTIVE,
         ];
     }
 
     public function messages()
     {
         return [
-            'status.in' => 'Status must be '.Subscription::ACTIVE.' or '.Subscription::INACTIVE,
+            'status.in' => 'Status must be ' . Subscription::ACTIVE . ' or ' . Subscription::INACTIVE,
         ];
     }
 }

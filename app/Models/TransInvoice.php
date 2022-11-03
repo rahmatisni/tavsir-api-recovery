@@ -12,13 +12,11 @@ class TransInvoice extends BaseModel
     public const PAID = 'PAID';
     public const UNPAID = 'UNPAID';
 
-    protected $fillable = [
-
-    ];
+    protected $fillable = [];
 
     public function trans_saldo()
     {
-        return $this->belongsTo(TransSaldo::class,'trans_saldo_id');
+        return $this->belongsTo(TransSaldo::class, 'trans_saldo_id');
     }
 
     public function cashier()
@@ -30,5 +28,4 @@ class TransInvoice extends BaseModel
     {
         return $this->belongsTo(Paystation::class, 'pay_station_id');
     }
-    
 }

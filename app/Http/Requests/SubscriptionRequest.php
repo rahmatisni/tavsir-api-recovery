@@ -29,10 +29,10 @@ class SubscriptionRequest extends FormRequest
         $rule['aktif_awal'] = 'required|date_format:Y-m-d';
         $rule['file'] = 'required|max:5000';
         if ($this->type == Subscription::JMRB) {
-                $rule['pic'] = 'required|string|max:255';
-                $rule['hp'] = 'required|string|max:255';
-                $rule['phone'] = 'required|string|max:255';
-                $rule['email'] = 'required|email|max:255';
+            $rule['pic'] = 'required|string|max:255';
+            $rule['hp'] = 'required|string|max:255';
+            $rule['phone'] = 'required|string|max:255';
+            $rule['email'] = 'required|email|max:255';
         }
 
         if ($this->type == Subscription::OWNER) {

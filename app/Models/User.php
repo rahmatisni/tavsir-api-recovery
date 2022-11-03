@@ -10,7 +10,9 @@ use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
 
     public const ADMIN = 'ADMIN';
     public const USER = 'USER';
@@ -76,7 +78,7 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Tenant::class, 'tenant_id');
     }
-    
+
     public function paystation()
     {
         return $this->belongsTo(Paystation::class, 'paystation_id');

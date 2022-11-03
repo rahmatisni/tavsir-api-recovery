@@ -16,11 +16,11 @@ class RestAreaResource extends JsonResource
     public function toArray($request)
     {
         return [
-                ...parent::toArray($request),
-                'photo' => $this->photo ? asset($this->photo) : null,
-                'ruas_name' => $this->ruas->name ?? '',
-                'tenant_total' => $this->tenant->count(),
-                'detil_tenant' => $this->tenant()->categoryCount()->get()
+            ...parent::toArray($request),
+            'photo' => $this->photo ? asset($this->photo) : null,
+            'ruas_name' => $this->ruas->name ?? '',
+            'tenant_total' => $this->tenant->count(),
+            'detil_tenant' => $this->tenant()->categoryCount()->get()
         ];
     }
 }

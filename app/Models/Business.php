@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+
 use App\Models\BaseModel;
 
 class Business extends BaseModel

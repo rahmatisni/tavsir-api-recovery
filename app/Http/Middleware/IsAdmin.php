@@ -17,10 +17,9 @@ class IsAdmin
      */
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::user() &&  Auth::user()->is_admin == 1) 
-        {
+        if (Auth::user() &&  Auth::user()->is_admin == 1) {
             return $next($request);
         }
-        return response()->json('Access Denied You dont have permission to access',403);
+        return response()->json('Access Denied You dont have permission to access', 403);
     }
 }
