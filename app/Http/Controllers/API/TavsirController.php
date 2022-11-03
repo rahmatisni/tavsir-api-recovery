@@ -33,7 +33,7 @@ use Carbon\Carbon;
 
 class TavsirController extends Controller
 {
-    function productList(Request $request)
+    public function productList(Request $request)
     {
         $data = Product::byTenant()->when($filter = $request->filter, function ($q) use ($filter) {
             return $q->where('name', 'like', "%$filter%")
@@ -41,15 +41,9 @@ class TavsirController extends Controller
         })->when($category_id = $request->category_id, function ($q) use ($category_id) {
             return $q->where('category_id', $category_id);
         });
-        // $data->when($is_active = $is_active, function ($q) use ($is_active) {
-        //     return $q->where('is_active', '=', 0);
-        // });
-        if($request->is_active == '0'){
-          $data =  $data->where('is_active', '=', '0');
-        }else
-        if($request->is_active == '1'){
-            $data =  $data->where('is_active', '=', '1');
-        }        
+        $data->when($is_active = $request->is_active, function ($q) use ($is_active) {
+            return $q->where('is_active', '=', $is_active);
+        });
         $data = $data->orderBy('updated_at', 'desc')->get();
         return response()->json(TrProductResource::collection($data));
     }
@@ -75,12 +69,13 @@ class TavsirController extends Controller
     {
         return response()->json(new ProductResource($id));
     }
-    function productById($id)
+
+    public function productById($id)
     {
         $data = Product::findOrfail($id);
-        // return response()->json(new TsProducDetiltResource($data));
         return response()->json(new ProductResource($data));
     }
+
     public function productUpdate(TavsirProductRequest $request, Product $product)
     {
         try {
@@ -109,15 +104,15 @@ class TavsirController extends Controller
     }
 
 
-    function categoryList(Request $request)
+    public function categoryList(Request $request)
     {
         $data = Category::byTenant()->when($filter = $request->filter, function ($q) use ($filter) {
-                return $q->where('name', 'like', "%$filter%");
+            return $q->where('name', 'like', "%$filter%");
         })->orderBy('name')->get();
         return response()->json(TrCategoryResource::collection($data));
     }
 
-    function categoryStore(TrCategoryRequest $request)
+    public function categoryStore(TrCategoryRequest $request)
     {
         $data = new Category();
         $data->fill($request->all());
@@ -144,7 +139,7 @@ class TavsirController extends Controller
         return response()->json($category);
     }
 
-    function order(TrOrderRequest $request)
+    public function order(TrOrderRequest $request)
     {
         try {
             DB::beginTransaction();
@@ -217,7 +212,7 @@ class TavsirController extends Controller
     }
 
 
-    function CountNewTNG()
+    public function countNewTNG()
     {
         $data = TransOrder::where('tenant_id', '=', auth()->user()->tenant_id)
             ->count();
@@ -225,7 +220,7 @@ class TavsirController extends Controller
         return response()->json(['count' => $data]);
     }
 
-    function CountCarSaved()
+    public function countCarSaved()
     {
         $data = TransOrder::where('tenant_id', '=', auth()->user()->tenant_id)
             ->where('order_type', '=', TransOrder::ORDER_TAVSIR)
@@ -235,7 +230,7 @@ class TavsirController extends Controller
         return response()->json(['count' => $data]);
     }
 
-    function CartDelete(Request $request)
+    public function cartDelete(Request $request)
     {
         $data = TransOrder::whereIn('id', $request->id)
             ->where('tenant_id', '=', auth()->user()->tenant_id)
@@ -249,7 +244,7 @@ class TavsirController extends Controller
         return response()->json($data);
     }
 
-    function orderConfirm(TsOrderConfirmRequest $request, $id)
+    public function orderConfirm(TsOrderConfirmRequest $request, $id)
     {
         $data = TransOrder::findOrfail($id);
         if ($data->status != TransOrder::WAITING_CONFIRMATION_TENANT && $data->status != TransOrder::WAITING_OPEN) {
@@ -270,7 +265,7 @@ class TavsirController extends Controller
         return response()->json(new TsOrderResource($data));
     }
 
-    function PaymentMethod()
+    public function paymentMethod()
     {
         $paymentMethods = PaymentMethod::all();
         foreach ($paymentMethods as $value) {
@@ -301,7 +296,7 @@ class TavsirController extends Controller
         return response()->json($paymentMethods);
     }
 
-    function OrderList(Request $request)
+    public function orderList(Request $request)
     {
         DB::enableQueryLog();
         $json = array();
@@ -312,12 +307,12 @@ class TavsirController extends Controller
                 $q->where('status', $status);
             }
         })
-        ->when($start_date = $request->start_date, function ($q) use ($start_date) {
-            $q->where('created_at', '>=', date("Y-m-d", strtotime($start_date)));
-        })  
-        ->when($end_date = $request->end_date, function ($q) use ($end_date) {
-            $q->where('created_at', '<=', date("Y-m-d", strtotime($end_date)));
-        })               
+            ->when($start_date = $request->start_date, function ($q) use ($start_date) {
+                $q->where('created_at', '>=', date("Y-m-d", strtotime($start_date)));
+            })
+            ->when($end_date = $request->end_date, function ($q) use ($end_date) {
+                $q->where('created_at', '<=', date("Y-m-d", strtotime($end_date)));
+            })
             ->when($statusnot = request()->statusnot, function ($q) use ($statusnot) {
                 if (is_array($statusnot)) {
                     $q->whereNotIn('status', $statusnot);
@@ -344,13 +339,13 @@ class TavsirController extends Controller
         return response()->json(TrOrderResource::collection($data));
     }
 
-    function OrderById($id)
+    public function orderById($id)
     {
         $data = TransOrder::findOrfail($id);
         return response()->json(new TrOrderResource($data));
     }
 
-    function PaymentOrder(PaymentOrderRequest $request)
+    public function paymentOrder(PaymentOrderRequest $request)
     {
         $data = TransOrder::findOrFail($request->id);
         $payment_method = PaymentMethod::findOrFail($request->payment_method_id);
@@ -454,7 +449,7 @@ class TavsirController extends Controller
         }
     }
 
-    function changeStatusOrder($id, ChangeStatusOrderReqeust $request)
+    public function changeStatusOrder($id, ChangeStatusOrderReqeust $request)
     {
         $data = TransOrder::findOrFail($id);
 
@@ -464,15 +459,14 @@ class TavsirController extends Controller
 
         $data->status = $request->status;
         $data->code_verif = random_int(1000, 9999);
-        if ($request->status == TransOrder::CANCEL) 
-        { 
+        if ($request->status == TransOrder::CANCEL) {
             $data->canceled_by = TransOrder::CANCELED_BY_CASHEER;
             $data->canceled_name = auth()->user()->name;
             $data->reason_cancel = $request->reason_cancel;
         }
-        
+
         $data->save();
-    
+
         return response()->json($data);
     }
 }
