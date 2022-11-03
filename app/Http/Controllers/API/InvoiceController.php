@@ -19,44 +19,44 @@ class InvoiceController extends Controller
     {
         DB::enableQueryLog();
 
-        $data = TransSaldo::with(['trans_invoice'=> function($query) {
-            if(request('status')!=''){
+        $data = TransSaldo::with(['trans_invoice' => function ($query) {
+            if (request('status') != '') {
                 $query->where('status', '=', 'PAID');
             }
-            if(request('filter')!=''){
+            if (request('filter') != '') {
                 $filter = request('filter');
-                $query->where('invoice_id', 'like', "%".$filter."%");
-                $query->orWhere('claim_date', 'like', "%".$filter."%");
-                $query->orWhere('paid_date', 'like', "%".$filter."%");
-                $query->orWhere('nominal', 'like', "%".$filter."%");
-                $query->orWhere('status', 'like', "%".$filter."%");
+                $query->where('invoice_id', 'like', "%" . $filter . "%");
+                $query->orWhere('claim_date', 'like', "%" . $filter . "%");
+                $query->orWhere('paid_date', 'like', "%" . $filter . "%");
+                $query->orWhere('nominal', 'like', "%" . $filter . "%");
+                $query->orWhere('status', 'like', "%" . $filter . "%");
             }
-        }])->ByRole()       
-        ->when($rest_area_id = request()->rest_area_id, function($query) use ($rest_area_id){
-            return $query->where('rest_area_id', $rest_area_id);
-        })
-        ->when($tenant_id = request()->tenant_id, function($query) use ($tenant_id){
-            return $query->where('tenant_id', $tenant_id);
-        })->get();
+        }])->ByRole()
+            ->when($rest_area_id = request()->rest_area_id, function ($query) use ($rest_area_id) {
+                return $query->where('rest_area_id', $rest_area_id);
+            })
+            ->when($tenant_id = request()->tenant_id, function ($query) use ($tenant_id) {
+                return $query->where('tenant_id', $tenant_id);
+            })->get();
         return response()->json(ListInvoiceResource::collection($data));
-    } 
-    
+    }
+
     public function store(Request $request)
     {
         try {
             DB::beginTransaction();
 
             $data = TransSaldo::with('trans_invoice')->ByTenant()->first();
-            if(!$data){
+            if (!$data) {
                 return response()->json(['message' => 'Saldo tidak ditemukan'], 404);
             }
-            
-            if($data->saldo < $request->nominal){
+
+            if ($data->saldo < $request->nominal) {
                 return response()->json(['message' => 'Saldo tidak mencukupi'], 400);
             }
-            
+
             $invoice = new TransInvoice();
-            $invoice->invoice_id = 'INV-'.strtolower(Str::random(16));
+            $invoice->invoice_id = 'INV-' . strtolower(Str::random(16));
             $invoice->nominal = $request->nominal;
             $invoice->cashier_id = auth()->user()->id;
             $invoice->claim_date = Carbon::now();
@@ -66,30 +66,28 @@ class InvoiceController extends Controller
             $data->save();
 
             DB::commit();
-            
+
             return response()->json($invoice);
         } catch (\Throwable $th) {
             DB::rollback();
 
-            return response()->json($th->getMessage(),500);
+            return response()->json($th->getMessage(), 500);
         }
     }
 
     public function paid(Request $request, $id)
     {
         $data = TransInvoice::findOrfail($id);
-        if($data->status == TransInvoice::PAID){
+        if ($data->status == TransInvoice::PAID) {
             return response()->json(['message' => 'Invoice sudah dibayar'], 400);
         }
         $user = auth()->user();
-        if (!Hash::check($request->pin, $user->pin))
-        {
+        if (!Hash::check($request->pin, $user->pin)) {
             return response()->json(['message' => 'PIN salah'], 400);
         }
 
         $cashier = $data->cashier;
-        if (!Hash::check($request->pin_cashier, $cashier->pin))
-        {
+        if (!Hash::check($request->pin_cashier, $cashier->pin)) {
             return response()->json(['message' => 'PIN cashier salah'], 400);
         }
 
@@ -105,8 +103,7 @@ class InvoiceController extends Controller
     public function show()
     {
         $data = TransInvoice::findOrfail(request()->id);
-        
+
         return response()->json(new InvoiceResource($data));
     }
-
 }

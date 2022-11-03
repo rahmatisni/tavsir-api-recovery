@@ -18,26 +18,26 @@ class PaymentMethodController extends Controller
     {
         $paymentMethods = PaymentMethod::all();
         foreach ($paymentMethods as $value) {
-            if($value->code_name == 'pg_va_bri'){
+            if ($value->code_name == 'pg_va_bri') {
                 $fee = PgJmto::feeBriVa();
-                if($fee){
+                if ($fee) {
                     $value->fee = $fee;
                     $value->save();
                 }
             }
 
-            if($value->code_name == 'pg_va_mandiri'){
+            if ($value->code_name == 'pg_va_mandiri') {
                 $fee = PgJmto::feeMandiriVa();
-                if($fee){
+                if ($fee) {
                     $value->fee = $fee;
                     $value->save();
                 }
                 $value->save();
             }
 
-            if($value->code_name == 'pg_va_bni'){
+            if ($value->code_name == 'pg_va_bni') {
                 $fee = PgJmto::feeBniVa();
-                if($fee){
+                if ($fee) {
                     $value->fee = $fee;
                     $value->save();
                 }
@@ -69,31 +69,31 @@ class PaymentMethodController extends Controller
         switch ($$paymentMethod->code_name) {
             case 'pg_va_bri':
                 $fee = PgJmto::feeBriVa();
-                if($fee){
+                if ($fee) {
                     $paymentMethod->fee = $fee;
                     $paymentMethod->save();
                 }
-            break;
-            
+                break;
+
             case 'pg_va_mandiri':
-                    $fee = PgJmto::feeMandiriVa();
-                    if($fee){
-                        $paymentMethod->fee = $fee;
-                        $paymentMethod->save();
-                    }
-            break;
+                $fee = PgJmto::feeMandiriVa();
+                if ($fee) {
+                    $paymentMethod->fee = $fee;
+                    $paymentMethod->save();
+                }
+                break;
 
             case 'pg_va_bni':
-                    $fee = PgJmto::feeBniVa();
-                    if($fee){
-                        $paymentMethod->fee = $fee;
-                        $paymentMethod->save();
-                    }
-            break;
-            
+                $fee = PgJmto::feeBniVa();
+                if ($fee) {
+                    $paymentMethod->fee = $fee;
+                    $paymentMethod->save();
+                }
+                break;
+
             default:
                 # code...
-            break;
+                break;
         }
 
         return response()->json($paymentMethod);

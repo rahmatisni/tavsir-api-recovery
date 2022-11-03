@@ -17,20 +17,20 @@ class RestAreaController extends Controller
      */
     public function index()
     {
-        $data = RestArea::when($name = request()->name, function($q)use ($name){
+        $data = RestArea::when($name = request()->name, function ($q) use ($name) {
             return $q->where('name', 'like', "%$name%");
         });
         $data = $data->get();
 
-        if(request()->lat && request()->lon){
-            $data = $data->filter(function($item){
+        if (request()->lat && request()->lon) {
+            $data = $data->filter(function ($item) {
                 return $this->haversine($item->latitude, $item->longitude, request()->lat, request()->lon, request()->distance ?? 1);
             });
         }
         return response()->json(RestAreaResource::collection($data));
     }
 
-   
+
 
     /**
      * Store a newly created resource in storage.
@@ -85,8 +85,8 @@ class RestAreaController extends Controller
 
     public function updateStatus()
     {
-        $rest_area = RestArea::whereIn('id',request()->rest_area_id);
-        $rest_area->update(['is_open' => request()->is_open]);;
+        $rest_area = RestArea::whereIn('id', request()->rest_area_id);
+        $rest_area->update(['is_open' => request()->is_open]);
 
         return response()->json($rest_area->get());
     }

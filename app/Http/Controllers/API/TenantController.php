@@ -74,41 +74,41 @@ class TenantController extends Controller
 
         $tenant = Tenant::find($request->id);
 
-        if($request->is_open == '1'){
+        if ($request->is_open == '1') {
             $cek = TransOperational::where('tenant_id', $user->tenant_id)
-            ->whereDay('start_date', '=', date('d'))
-            ->whereMonth('start_date', '=', date('m'))
-            ->whereYear('start_date', '=', date('Y'))
-            ->whereNull('end_date')
-            ->get();
-    
-            if($cek->count() <= 0){
+                ->whereDay('start_date', '=', date('d'))
+                ->whereMonth('start_date', '=', date('m'))
+                ->whereYear('start_date', '=', date('Y'))
+                ->whereNull('end_date')
+                ->get();
+
+            if ($cek->count() <= 0) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Belum ada periode berjalan, silahkan buka kasir otomatis toko terbuka'
                 ], 422);
             }
-        }else
-        if($request->is_open == '0'){
-            $data = User::where([['id', '!=', $user->id],['tenant_id', $user->tenant_id]])->get();
+        } else
+        if ($request->is_open == '0') {
+            $data = User::where([['id', '!=', $user->id], ['tenant_id', $user->tenant_id]])->get();
             $ids = array();
-            foreach($data as $val){
-                if($val['fcm_token']!=null && $val['fcm_token']!='')
+            foreach ($data as $val) {
+                if ($val['fcm_token'] != null && $val['fcm_token'] != '')
                     array_push($ids, $val['fcm_token']);
             }
 
-            if($ids!=''){
-                $payload=array(
-                    'id'=> random_int(1000, 9999),
-                    'type'=>'action',
-                    'action'=>'refresh_buka_toko'
+            if ($ids != '') {
+                $payload = array(
+                    'id' => random_int(1000, 9999),
+                    'type' => 'action',
+                    'action' => 'refresh_buka_toko'
                 );
-                $result = sendNotif($ids, 'Pemberitahun Toko di Tutup', 'Pemberitahuan Toko anda di tutup sementara oleh '.$user->name, $payload);
-                $tenant->update(['is_open'=>$request->is_open]);                
+                $result = sendNotif($ids, 'Pemberitahun Toko di Tutup', 'Pemberitahuan Toko anda di tutup sementara oleh ' . $user->name, $payload);
+                $tenant->update(['is_open' => $request->is_open]);
                 return response()->json($result);
             }
         }
-        $tenant->update(['is_open'=>$request->is_open]);
+        $tenant->update(['is_open' => $request->is_open]);
         return response()->json($tenant);
     }
     /**

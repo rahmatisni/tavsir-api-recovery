@@ -18,17 +18,17 @@ class UserController extends Controller
      */
     public function index()
     {
-        $data = User::when($name = request()->name, function($q) use ($name){
-            $q->where('name', 'like', '%'.$name.'%');
-        })->when($email = request()->email, function($q) use ($email){
-            $q->where('email', 'like', '%'.$email.'%');
-        })->when($tenant_id = request()->tenant_id, function($q)use ($tenant_id){
+        $data = User::when($name = request()->name, function ($q) use ($name) {
+            $q->where('name', 'like', '%' . $name . '%');
+        })->when($email = request()->email, function ($q) use ($email) {
+            $q->where('email', 'like', '%' . $email . '%');
+        })->when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
             return $q->where('tenant_id', $tenant_id);
-        })->when($status = request()->status, function($q)use ($status){
+        })->when($status = request()->status, function ($q) use ($status) {
             return $q->where('status', $status);
-        })->when($reset_pin = request()->reset_pin, function($q)use ($reset_pin){
+        })->when($reset_pin = request()->reset_pin, function ($q) use ($reset_pin) {
             return $q->where('reset_pin', $reset_pin);
-        })->when($role = request()->role, function($q)use ($role){
+        })->when($role = request()->role, function ($q) use ($role) {
             return $q->where('role', $role);
         })->get();
 
@@ -44,18 +44,18 @@ class UserController extends Controller
     public function store(UserRequest $request)
     {
         $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => bcrypt($request->password),
-                'role' => $request->role,
-                'business_id' => $request->business_id,
-                'merchant_id' => $request->merchant_id,
-                'sub_merchant_id' => $request->sub_merchant_id,
-                'tenant_id' => $request->tenant_id,
-                'rest_area_id' => $request->rest_area_id,
-                'paystation_id' => $request->paystation_id,
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'role' => $request->role,
+            'business_id' => $request->business_id,
+            'merchant_id' => $request->merchant_id,
+            'sub_merchant_id' => $request->sub_merchant_id,
+            'tenant_id' => $request->tenant_id,
+            'rest_area_id' => $request->rest_area_id,
+            'paystation_id' => $request->paystation_id,
         ]);
-        return response()->json($user); 
+        return response()->json($user);
     }
 
     /**
@@ -109,14 +109,14 @@ class UserController extends Controller
     public function approveResetPin($id)
     {
         $user = User::findOrfail($id);
-        if($user->reset_pin == User::WAITING_APPROVE){
+        if ($user->reset_pin == User::WAITING_APPROVE) {
             $user->reset_pin = User::APPROVED;
             $user->save();
             return response()->json([
                 'status' => 'success',
                 'message' => 'Permintaan Reset PIN berhasil disetujui'
             ]);
-        }else{
+        } else {
             return response()->json([
                 'status' => 'error',
                 'message' => 'User tidak mempunyai permintaan reset PIN'
@@ -127,14 +127,14 @@ class UserController extends Controller
     public function rejectResetPin($id)
     {
         $user = User::findOrfail($id);
-        if($user->reset_pin == User::WAITING_APPROVE){
+        if ($user->reset_pin == User::WAITING_APPROVE) {
             $user->reset_pin = User::REJECT;
             $user->save();
             return response()->json([
                 'status' => 'success',
                 'message' => 'Permintaan Reset PIN berhasil ditolak'
             ]);
-        }else{
+        } else {
             return response()->json([
                 'status' => 'error',
                 'message' => 'User tidak mempunyai permintaan reset PIN'
@@ -145,8 +145,8 @@ class UserController extends Controller
     public function activationUserCashier($id)
     {
         $user = User::where('id', $id)
-                    ->where('role', User::CASHIER)
-                    ->first();
+            ->where('role', User::CASHIER)
+            ->first();
         if (!$user) {
             return response()->json([
                 'status' => 'error',

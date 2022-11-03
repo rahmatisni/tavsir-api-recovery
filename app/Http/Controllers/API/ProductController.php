@@ -17,11 +17,11 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $data = Product::when($name = request()->name, function($q) use ($name){
-            $q->where('name', 'like', '%'.$name.'%');
-        })->when($sku = request()->sku, function($q) use ($sku){
-            $q->where('sku', 'like', '%'.$sku.'%');
-        })->when($category_id = request()->category_id, function($q)use ($category_id){
+        $data = Product::when($name = request()->name, function ($q) use ($name) {
+            $q->where('name', 'like', '%' . $name . '%');
+        })->when($sku = request()->sku, function ($q) use ($sku) {
+            $q->where('sku', 'like', '%' . $sku . '%');
+        })->when($category_id = request()->category_id, function ($q) use ($category_id) {
             return $q->where('category_id', $category_id);
         })->get();
         return response()->json(ProductResource::collection($data));
@@ -90,10 +90,10 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        if(request()->ids){
+        if (request()->ids) {
             $product->whereIn('id', request()->ids)->delete();
             return response()->json($product);
-        }else{   
+        } else {
             $product->delete();
             return response()->json($product);
         }
@@ -101,8 +101,8 @@ class ProductController extends Controller
 
     public function updateStatus()
     {
-        $product = Product::whereIn('id',request()->product_id);
-        $product->update(['is_active' => request()->is_active]);;
+        $product = Product::whereIn('id', request()->product_id);
+        $product->update(['is_active' => request()->is_active]);
 
         return response()->json($product->get());
     }

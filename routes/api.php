@@ -85,10 +85,10 @@ Route::middleware('auth:api')->group(function () {
     });
 
     Route::prefix('tavsir/tng')->group(function () {
-        Route::post('/tenant-order', [App\Http\Controllers\API\TavsirTnGController::class, 'TenantOrder']);
-        Route::post('/tenant-order/{id}', [App\Http\Controllers\API\TavsirTnGController::class, 'TenantOrderDetail']);
-        Route::post('/order-ready/{id}', [App\Http\Controllers\API\TavsirTnGController::class, 'OrderReady']);
-        Route::post('/order-verif/{id}', [App\Http\Controllers\API\TavsirTnGController::class, 'OrderVerification']);
+        Route::post('/tenant-order', [App\Http\Controllers\API\TavsirTnGController::class, 'tenantOrder']);
+        Route::post('/tenant-order/{id}', [App\Http\Controllers\API\TavsirTnGController::class, 'tenantOrderDetail']);
+        Route::post('/order-ready/{id}', [App\Http\Controllers\API\TavsirTnGController::class, 'orderReady']);
+        Route::post('/order-verif/{id}', [App\Http\Controllers\API\TavsirTnGController::class, 'orderVerification']);
     });
 });
 Route::post('/login', [App\Http\Controllers\API\AuthController::class, 'login']);

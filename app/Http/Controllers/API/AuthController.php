@@ -28,15 +28,14 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:255',
             'password' => 'required|string|min:6',
         ]);
-        if ($validator->fails())
-        {
-            return response(['errors'=>$validator->errors()->all()], 422);
+        if ($validator->fails()) {
+            return response(['errors' => $validator->errors()->all()], 422);
         }
 
         $user = User::where('email', $request->email)->first();
         if ($user) {
-            if($request->fcm_token!='' && $request->fcm_token!=null){
-                User::where('id', $user->id)->update(['fcm_token'=>$request->fcm_token]);
+            if ($request->fcm_token != '' && $request->fcm_token != null) {
+                User::where('id', $user->id)->update(['fcm_token' => $request->fcm_token]);
             }
             if (Hash::check($request->password, $user->password)) {
                 $tokenResult = $user->createToken('Personal');
@@ -50,7 +49,7 @@ class AuthController extends Controller
                 return response($response, 422);
             }
         } else {
-            $response = ["message" =>'User does not exist'];
+            $response = ["message" => 'User does not exist'];
             return response($response, 422);
         }
     }
@@ -64,7 +63,7 @@ class AuthController extends Controller
     }
 
     public function profile()
-    {   
+    {
         return response()->json(new ProfileResource(auth()->user()));
     }
 
@@ -73,7 +72,7 @@ class AuthController extends Controller
         $user = auth()->user();
         $user->reset_pin = User::WAITING_APPROVE;
         $user->save();
-        
+
         return response()->json([
             'status' => 'success',
             'message' => 'Atur ulang PIN menunggu persetujuan'
@@ -83,11 +82,10 @@ class AuthController extends Controller
     public function pinStore(PinStoreRequest $request)
     {
         $user = auth()->user();
-        if($user->pin != null && $user->reset_pin != User::APPROVED)
-        {
+        if ($user->pin != null && $user->reset_pin != User::APPROVED) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Atur ulang PIN belum '.$user->reset_pin
+                'message' => 'Atur ulang PIN belum ' . $user->reset_pin
             ], 422);
         }
         $user->pin = bcrypt($request->pin);
@@ -102,34 +100,33 @@ class AuthController extends Controller
     {
         $user = auth()->user();
         $cek = TransOperational::where('casheer_id', $user->id)
-        ->where('tenant_id', $user->tenant_id)
-        ->whereDay('start_date', '=', date('d'))
-        ->whereMonth('start_date', '=', date('m'))
-        ->whereYear('start_date', '=', date('Y'))
-        ->whereNull('end_date')
-        ->get();
+            ->where('tenant_id', $user->tenant_id)
+            ->whereDay('start_date', '=', date('d'))
+            ->whereMonth('start_date', '=', date('m'))
+            ->whereYear('start_date', '=', date('Y'))
+            ->whereNull('end_date')
+            ->get();
 
-        if($cek->count() > 0){
+        if ($cek->count() > 0) {
             return response()->json([
-            'status' => 'success',
-            'message' => 'Status chasier is open'
+                'status' => 'success',
+                'message' => 'Status chasier is open'
             ], 200);
         }
     }
     public function openCashier(PinRequest $request)
     {
         $user = auth()->user();
-        if (Hash::check($request->pin, $user->pin))
-        {
+        if (Hash::check($request->pin, $user->pin)) {
             $cek = TransOperational::where('casheer_id', $user->id)
-                            ->where('tenant_id', $user->tenant_id)
-                            ->whereDay('start_date', '=', date('d'))
-                            ->whereMonth('start_date', '=', date('m'))
-                            ->whereYear('start_date', '=', date('Y'))
-                            ->whereNull('end_date')
-                            ->get();
+                ->where('tenant_id', $user->tenant_id)
+                ->whereDay('start_date', '=', date('d'))
+                ->whereMonth('start_date', '=', date('m'))
+                ->whereYear('start_date', '=', date('Y'))
+                ->whereNull('end_date')
+                ->get();
 
-            if($cek->count() > 0){
+            if ($cek->count() > 0) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Silahkan tutup kasir terlebih dahulu'
@@ -138,11 +135,11 @@ class AuthController extends Controller
 
 
             $count_periode = TransOperational::where('casheer_id', $user->id)
-                            ->where('tenant_id', $user->tenant_id)
-                            ->whereDay('start_date', '=', date('d'))
-                            ->whereMonth('start_date', '=', date('m'))
-                            ->whereYear('start_date', '=', date('Y'))
-                            ->count() + 1;
+                ->where('tenant_id', $user->tenant_id)
+                ->whereDay('start_date', '=', date('d'))
+                ->whereMonth('start_date', '=', date('m'))
+                ->whereYear('start_date', '=', date('Y'))
+                ->count() + 1;
 
             $trans_op = new TransOperational();
             $trans_cashbox = new TransCashbox();
@@ -154,11 +151,12 @@ class AuthController extends Controller
             $trans_op->start_date = Carbon::now();
             $trans_op->save();
             $trans_op->trans_cashbox()->save($trans_cashbox);
-            
+
             // otomatis buka toko jika buka kasir
             $tenant = Tenant::find($user->tenant_id);
-            if($tenant->is_open == 0)
-                $tenant->update(['is_open'=>1]);
+            if ($tenant->is_open == 0) {
+                $tenant->update(['is_open' => 1]);
+            }
 
 
             return response()->json([
@@ -167,24 +165,23 @@ class AuthController extends Controller
             ]);
         }
 
-        
+
 
         return response()->json([
             'status' => 'error',
             'message' => 'PIN verification failed'
-        ],422);
+        ], 422);
     }
 
     public function closeCashier(CloseCashierRequest $request)
     {
         $user = auth()->user();
-        if (Hash::check($request->pin, $user->pin))
-        {
+        if (Hash::check($request->pin, $user->pin)) {
             $data = TransOperational::where('casheer_id', $user->id)
-                            ->where('tenant_id', $user->tenant_id)
-                            ->whereNull('end_date')
-                            ->first();
-            if(!$data){
+                ->where('tenant_id', $user->tenant_id)
+                ->whereNull('end_date')
+                ->first();
+            if (!$data) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Silahkan buka kasir terlebih dahulu'
@@ -193,10 +190,10 @@ class AuthController extends Controller
 
             try {
                 //code...
-           
+
                 DB::beginTransaction();
 
-                $end_date = Carbon::now();             
+                $end_date = Carbon::now();
                 $data->duration = $data->start_date->diffInSeconds($end_date);
                 $data->end_date = $end_date;
                 $data->save();
@@ -206,58 +203,57 @@ class AuthController extends Controller
                 $trans_cashbox->description = $request->description;
 
                 $data_all = TransOrder::where('status', TransOrder::DONE)
-                                            ->where('tenant_id', $user->tenant_id)
-                                            ->where('casheer_id', $user->id)
-                                            ->whereBetween('created_at', [$data->start_date, $data->end_date])
-                                            ->get();
+                    ->where('tenant_id', $user->tenant_id)
+                    ->where('casheer_id', $user->id)
+                    ->whereBetween('created_at', [$data->start_date, $data->end_date])
+                    ->get();
                 $total_order = $data_all;
-                $total_order = $total_order->where('payment_method_id',6)->sum('total');
+                $total_order = $total_order->where('payment_method_id', 6)->sum('total');
 
                 $trans_cashbox->rp_cash = $total_order;
-                // 
                 $trans_cashbox->different_cashbox = ($request->cashbox + $request->pengeluaran_cashbox) - $total_order;
                 $trans_cashbox->input_cashbox_date = Carbon::now();
 
                 $rp_va_bri = $data_all;
-                $rp_va_bri = $rp_va_bri->where('payment_method_id',2)->sum('total');
+                $rp_va_bri = $rp_va_bri->where('payment_method_id', 2)->sum('total');
                 $trans_cashbox->rp_va_bri = $rp_va_bri;
 
                 $rp_dd_bri = $data_all;
-                $rp_dd_bri = $rp_dd_bri->where('payment_method_id',3)->sum('total');
+                $rp_dd_bri = $rp_dd_bri->where('payment_method_id', 3)->sum('total');
                 $trans_cashbox->rp_dd_bri = $rp_dd_bri;
 
                 $rp_va_mandiri = $data_all;
-                $rp_va_mandiri = $rp_va_mandiri->where('payment_method_id',1)->sum('total');
+                $rp_va_mandiri = $rp_va_mandiri->where('payment_method_id', 1)->sum('total');
                 $trans_cashbox->rp_va_mandiri = $rp_va_mandiri;
 
                 $rp_va_bni = $data_all;
-                $rp_va_bni = $rp_va_bni->where('payment_method_id',7)->sum('total');
+                $rp_va_bni = $rp_va_bni->where('payment_method_id', 7)->sum('total');
                 $trans_cashbox->rp_va_bni = $rp_va_bni;
 
                 $rp_tav_qr = $data_all;
-                $rp_tav_qr = $rp_tav_qr->where('payment_method_id',5)->sum('total');
+                $rp_tav_qr = $rp_tav_qr->where('payment_method_id', 5)->sum('total');
                 $trans_cashbox->rp_tav_qr = $rp_tav_qr;
 
                 $rp_link_aja = $data_all;
-                $rp_link_aja->where('payment_method_id',4)->sum('total');
-                $trans_cashbox->rp_link_aja = $rp_link_aja;  
+                $rp_link_aja->where('payment_method_id', 4)->sum('total');
+                $trans_cashbox->rp_link_aja = $rp_link_aja;
 
                 $trans_cashbox->rp_total = $data_all->sum('total');
 
                 $trans_cashbox->save();
-                
+
                 // cek jika sudah ada tidak ada kasir yang open selain user ini maka toko tenant di tutup
                 $cek = TransOperational::where('casheer_id', '!=', $user->id)
-                ->where('tenant_id', $user->tenant_id)
-                ->whereDay('start_date', '=', date('d'))
-                ->whereMonth('start_date', '=', date('m'))
-                ->whereYear('start_date', '=', date('Y'))
-                ->whereNull('end_date')
-                ->get();
-        
-                if($cek->count() <= 0){
+                    ->where('tenant_id', $user->tenant_id)
+                    ->whereDay('start_date', '=', date('d'))
+                    ->whereMonth('start_date', '=', date('m'))
+                    ->whereYear('start_date', '=', date('Y'))
+                    ->whereNull('end_date')
+                    ->get();
+
+                if ($cek->count() <= 0) {
                     $tenant = Tenant::find($user->tenant_id);
-                    $tenant->update(['is_open'=>0]);
+                    $tenant->update(['is_open' => 0]);
                 }
 
 
@@ -267,12 +263,11 @@ class AuthController extends Controller
                     'message' => 'Close cashier successfully',
                     'data' => TransCashbox::find($trans_cashbox->id)
                 ]);
-
             } catch (\Throwable $th) {
                 DB::rollBack();
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Error '.$th->getMessage()
+                    'message' => 'Error ' . $th->getMessage()
                 ]);
             }
         }
@@ -280,9 +275,10 @@ class AuthController extends Controller
         return response()->json([
             'status' => 'error',
             'message' => 'PIN verification failed'
-        ],422);
+        ], 422);
     }
-    public function getRating(){
+    public function getRating()
+    {
         $user = auth()->user();
         $data = Tenant::when($id = $user->tenant_id, function ($q) use ($id) {
             return $q->where('id', $id);

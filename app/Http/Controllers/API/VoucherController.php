@@ -28,7 +28,7 @@ class VoucherController extends Controller
     public function store(VoucherRequest $request)
     {
         $voucher = Voucher::create($request->all());
-        return response()->json($voucher); 
+        return response()->json($voucher);
     }
 
     /**
@@ -39,7 +39,7 @@ class VoucherController extends Controller
      */
     public function show(Voucher $voucher)
     {
-        return response()->json($voucher); 
+        return response()->json($voucher);
     }
 
     /**
@@ -52,7 +52,7 @@ class VoucherController extends Controller
     public function update(VoucherRequest $request, Voucher $voucher)
     {
         $voucher->update($request->all());
-        return response()->json($voucher); 
+        return response()->json($voucher);
     }
 
     /**

@@ -34,9 +34,9 @@ class ChatController extends Controller
     {
         $user = User::where('id', $request->user_id)->first();
         $file = request()->file('photo');
-        if(is_file($file)) {
+        if (is_file($file)) {
             $file = request()->file('photo')->store('images');
-        }else{
+        } else {
             $file = null;
         }
         $chat = [
@@ -47,7 +47,7 @@ class ChatController extends Controller
             'text'  => $request->text ?? '-',
             'date' => date('Y-m-d H:i:s'),
             'is_read' => false,
-            'file' => $file ? asset($file) : null ,
+            'file' => $file ? asset($file) : null,
         ];
 
         $order = Chat::where('trans_order_id', $request->trans_order_id)->first();
@@ -90,12 +90,10 @@ class ChatController extends Controller
     public function read(ReadChatRequest $request, TransOrder $chat)
     {
         $record = Chat::where('trans_order_id', $chat->id)->first();
-        if($record)
-        {
+        if ($record) {
             $update_chat = [];
             foreach ($record->chat as $key => $value) {
-                if($value->user_type != $request->user_type)
-                {
+                if ($value->user_type != $request->user_type) {
                     $value->is_read = true;
                 }
                 $update_chat[] = $value;

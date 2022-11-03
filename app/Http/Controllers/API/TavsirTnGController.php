@@ -18,30 +18,30 @@ use App\Models\TransOrderDetil;
 
 class TavsirTnGController extends Controller
 {
-    public function TenantOrder(Request $request) 
+    public function tenantOrder(Request $request)
     {
-        $data = TransOrder::with('detil')->when($order_id = $request->order_id, function($q)use ($order_id){
+        $data = TransOrder::with('detil')->when($order_id = $request->order_id, function ($q) use ($order_id) {
             return $q->where('order_id', 'like', "%$order_id%");
         });
-          
+
         $data = $data->where('tenant_id', '=', auth()->user()->tenant_id)
-                    ->where('order_type', '=', TransOrder::ORDER_TAKE_N_GO)
-                    ->whereIn('status',[TransOrder::PENDING, TransOrder::WAITING_CONFIRMATION_TENANT, 
-                        TransOrder::WAITING_PAYMENT, TransOrder::PREPARED, TransOrder::READY])  
-                    ->get();
+            ->where('order_type', '=', TransOrder::ORDER_TAKE_N_GO)
+            ->whereIn('status', [
+                TransOrder::PENDING, TransOrder::WAITING_CONFIRMATION_TENANT,
+                TransOrder::WAITING_PAYMENT, TransOrder::PREPARED, TransOrder::READY
+            ])
+            ->get();
 
         return response()->json(TnGOrderResource::collection($data));
-
     }
 
-    public function TenantOrderDetail($id) 
+    public function tenantOrderDetail($id)
     {
         $data = TransOrder::findOrfail($id);
         return response()->json(new TrOrderResource($data));
-
     }
 
-    function OrderReady($id)
+    public function orderReady($id)
     {
         $data = TransOrder::findOrfail($id);
         $data->status = TransOrder::READY;
@@ -50,25 +50,19 @@ class TavsirTnGController extends Controller
         //return response()->json(new TnGOrderResource($data));
     }
 
-    function OrderVerification(TnGOrderVerif $request, $id)
+    public function orderVerification(TnGOrderVerif $request, $id)
     {
         $data = TransOrder::findOrfail($id);
-        if($data->customer_id == $request->customer_id)
-        {
+        if ($data->customer_id == $request->customer_id) {
             if ($data->code_verif == $request->code_verif) {
                 $data->status = TransOrder::READY;
                 $data->save();
                 return response()->json(new TrOrderResource($data));
-            }
-            else {
+            } else {
                 return response()->json(['message' => "Wrong Code Verification"]);
             }
-
-        }
-        else {
+        } else {
             return response()->json(['message' => "Not Valid Customer"]);
         }
     }
-
-
 }

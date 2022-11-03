@@ -16,29 +16,29 @@ class DashboardController extends Controller
     public function index()
     {
         $order = TransOrder::Done()
-                            ->when($rest_area_id = request()->rest_area_id, function($q) use ($rest_area_id){
-                                $q->whereHas('tenant', function($qq) use ($rest_area_id){
-                                    $qq->where('rest_area_id', $rest_area_id);
-                                });
-                            })->when($tenant_id = request()->tenant_id, function($q) use ($tenant_id){
-                                $q->where('tenant_id', $tenant_id);
-                            })->when($business_id = request()->business_id, function($q) use ($business_id){
-                                $q->where('business_id', $business_id);
-                            })->when($tanggal = request()->tanggal, function($q) use ($tanggal){
-                                $q->whereDate('created_at', $tanggal);
-                            })->get();
+            ->when($rest_area_id = request()->rest_area_id, function ($q) use ($rest_area_id) {
+                $q->whereHas('tenant', function ($qq) use ($rest_area_id) {
+                    $qq->where('rest_area_id', $rest_area_id);
+                });
+            })->when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
+                $q->where('tenant_id', $tenant_id);
+            })->when($business_id = request()->business_id, function ($q) use ($business_id) {
+                $q->where('business_id', $business_id);
+            })->when($tanggal = request()->tanggal, function ($q) use ($tanggal) {
+                $q->whereDate('created_at', $tanggal);
+            })->get();
         $all1 = $order;
         $all2 = $order;
         $all3 = $order;
         $takengo_count = $all2->where('order_type', TransOrder::ORDER_TAKE_N_GO)->count();
         $tavsir = $all3->where('order_type', TransOrder::ORDER_TAVSIR)->count();
-       
+
         $rest_area = RestArea::get();
 
         $tenant = Tenant::all();
 
         $voucher = Voucher::get();
-        
+
         $total_pemasukan = $all1->sum('total');
         $total_transaksi_takengo = $takengo_count;
         $total_transaksi_tavsir = $tavsir;
@@ -50,9 +50,9 @@ class DashboardController extends Controller
 
         $ct = $order;
         $ct_group = $ct->sortBy('tenant.category')
-                        ->groupBy('tenant.category')->map(function ($item) {
-                            return $item->count();
-                        });
+            ->groupBy('tenant.category')->map(function ($item) {
+                return $item->count();
+            });
         $category_tenant = [
             'labels' => array_keys($ct_group->toArray()),
             'data' => array_values($ct_group->toArray())
@@ -65,9 +65,9 @@ class DashboardController extends Controller
 
         $pm = $order;
         $grouped = $pm->sortBy('payment_method.name')
-                        ->groupBy('payment_method.name')->map(function ($item) {
-                            return $item->count();
-                        });
+            ->groupBy('payment_method.name')->map(function ($item) {
+                return $item->count();
+            });
         $payment_method = [
             'labels' => array_keys($grouped->toArray()),
             'data' => array_values($grouped->toArray())
@@ -75,8 +75,8 @@ class DashboardController extends Controller
 
         $topRest = $order;
         $topRest = $topRest->groupBy('rest_area_id')->map(function ($item) {
-                return $item->count();
-            })->sortDesc();
+            return $item->count();
+        })->sortDesc();
         $top_rest_area = [];
         foreach ($topRest as $key => $value) {
             $restarea = RestArea::find($key);
@@ -107,8 +107,8 @@ class DashboardController extends Controller
 
         $topTenant = $order;
         $topTenant = $topTenant->groupBy('tenant_id')->map(function ($item) {
-                return $item->count();
-            })->sortDesc();
+            return $item->count();
+        })->sortDesc();
         $top_tenant = [];
         foreach ($topTenant as $key => $value) {
             $tenant = Tenant::find($key);
@@ -157,10 +157,10 @@ class DashboardController extends Controller
         // }
 
         $data = [
-            'total_pemasukan' => number_format($total_pemasukan,0,',','.'),
-            'total_transaksi_tavsir' => number_format($total_transaksi_tavsir,0,',','.'),
-            'total_transaksi_tng' => number_format($total_transaksi_takengo,0,',','.'),
-            'total_transaksi' => number_format($total_transaksi,0,',','.'),
+            'total_pemasukan' => number_format($total_pemasukan, 0, ',', '.'),
+            'total_transaksi_tavsir' => number_format($total_transaksi_tavsir, 0, ',', '.'),
+            'total_transaksi_tng' => number_format($total_transaksi_takengo, 0, ',', '.'),
+            'total_transaksi' => number_format($total_transaksi, 0, ',', '.'),
             'total_rest_area' => $total_rest_area,
             'total_merchat' => $total_merchat,
             'total_tenant' => $total_tenant,

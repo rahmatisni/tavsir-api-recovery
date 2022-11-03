@@ -194,9 +194,8 @@ class TravShopController extends Controller
     function orderConfirm($id)
     {
         $data = TransOrder::findOrfail($id);
-        if($data->status != TransOrder::WAITING_CONFIRMATION_USER)
-        {
-            return response()->json(['error' => 'Order '.$data->status], 500);
+        if ($data->status != TransOrder::WAITING_CONFIRMATION_USER) {
+            return response()->json(['error' => 'Order ' . $data->status], 500);
         }
 
         $data->status = TransOrder::WAITING_PAYMENT;
@@ -221,25 +220,25 @@ class TravShopController extends Controller
     {
         $paymentMethods = PaymentMethod::all();
         foreach ($paymentMethods as $value) {
-            if($value->code_name == 'pg_va_bri'){
+            if ($value->code_name == 'pg_va_bri') {
                 $fee = PgJmto::feeBriVa();
-                if($fee){
+                if ($fee) {
                     $value->fee = $fee;
                     $value->save();
                 }
             }
 
-            if($value->code_name == 'pg_va_mandiri'){
+            if ($value->code_name == 'pg_va_mandiri') {
                 $fee = PgJmto::feeMandiriVa();
-                if($fee){
+                if ($fee) {
                     $value->fee = $fee;
                     $value->save();
                 }
             }
 
-            if($value->code_name == 'pg_va_bni'){
+            if ($value->code_name == 'pg_va_bni') {
                 $fee = PgJmto::feeBniVa();
-                if($fee){
+                if ($fee) {
                     $value->fee = $fee;
                     $value->save();
                 }
@@ -256,15 +255,13 @@ class TravShopController extends Controller
 
             $data = TransOrder::findOrfail($id);
 
-            if(request()->order_from_qr == true)
-            {
-                if($data->status == TransOrder::CART || $data->status == TransOrder::PENDING || $data->status == null)
-                {
+            if (request()->order_from_qr == true) {
+                if ($data->status == TransOrder::CART || $data->status == TransOrder::PENDING || $data->status == null) {
                     $data->status = TransOrder::WAITING_PAYMENT;
                 }
             }
 
-            if($data->status != TransOrder::WAITING_PAYMENT){
+            if ($data->status != TransOrder::WAITING_PAYMENT) {
 
                 return response()->json(['info' => $data->status], 422);
             }
@@ -298,14 +295,11 @@ class TravShopController extends Controller
                         $request->customer_name
                     );
                     if ($res['status'] == 'success') {
-                        if ($data->payment === null)
-                        {
+                        if ($data->payment === null) {
                             $payment = new TransPayment();
                             $payment->data = $res['responseData'];
                             $data->payment()->save($payment);
-                        }
-                        else
-                        {
+                        } else {
                             $data->payment->update(['data' => $res['responseData']]);
                         }
                         $data->service_fee = $payment->data->fee;
@@ -314,7 +308,7 @@ class TravShopController extends Controller
                     } else {
                         return response()->json([$res], 500);
                     }
-                break;
+                    break;
                 case 'pg_va_bri':
                     $payment_payload = [
                         "sof_code" =>  $payment_method->code_sof,
@@ -340,14 +334,11 @@ class TravShopController extends Controller
                         $request->customer_name
                     );
                     if ($res['status'] == 'success') {
-                        if ($data->payment === null)
-                        {
+                        if ($data->payment === null) {
                             $payment = new TransPayment();
                             $payment->data = $res['responseData'];
                             $data->payment()->save($payment);
-                        }
-                        else
-                        {
+                        } else {
                             $data->payment->update(['data' => $res['responseData']]);
                         }
                         $data->service_fee = $payment->data->fee;
@@ -356,7 +347,7 @@ class TravShopController extends Controller
                     } else {
                         return response()->json([$res], 500);
                     }
-                break;
+                    break;
                 case 'pg_va_bni':
                     $payment_payload = [
                         "sof_code" =>  $payment_method->code_sof,
@@ -382,14 +373,11 @@ class TravShopController extends Controller
                         $request->customer_name
                     );
                     if ($res['status'] == 'success') {
-                        if ($data->payment === null)
-                        {
+                        if ($data->payment === null) {
                             $payment = new TransPayment();
                             $payment->data = $res['responseData'];
                             $data->payment()->save($payment);
-                        }
-                        else
-                        {
+                        } else {
                             $data->payment->update(['data' => $res['responseData']]);
                         }
                         $data->service_fee = $payment->data->fee;
@@ -398,35 +386,35 @@ class TravShopController extends Controller
                     } else {
                         return response()->json([$res], 500);
                     }
-                break;
+                    break;
                 case 'tav_qr':
                     $voucher = Voucher::where('hash', request()->voucher)
-                                        ->where('is_active', 1)
-                                        ->where('rest_area_id', $data->tenant->rest_area_id)
-                                        ->first();
-                    if(!$voucher){
+                        ->where('is_active', 1)
+                        ->where('rest_area_id', $data->tenant->rest_area_id)
+                        ->first();
+                    if (!$voucher) {
                         return response()->json(['error' => 'Voucher tidak ditemukan'], 500);
                     }
 
-                    if($voucher->balance < $data->total){
+                    if ($voucher->balance < $data->total) {
                         return response()->json(['error' => 'Ballance tidak cukup'], 500);
                     }
 
                     $balance_now = $voucher->balance;
                     $voucher->balance -= $data->total;
                     $ballaceHistory = [
-                                "trx_id" => $data->id,
-                                "trx_order_id" => $data->order_id,
-                                "trx_type" => 'Belanja',
-                                "trx_area" => $data->tenant ? ($data->tenant->rest_area ? $data->tenant->rest_area->name : ''): '',
-                                "trx_name" => $data->tenant ? $data->tenant->name : '',
-                                "trx_amount" => $data->total,
-                                "current_balance" => $voucher->balance,
-                                "last_balance" => $balance_now,
-                                "datetime" => Carbon::now()->toDateTimeString(),
+                        "trx_id" => $data->id,
+                        "trx_order_id" => $data->order_id,
+                        "trx_type" => 'Belanja',
+                        "trx_area" => $data->tenant ? ($data->tenant->rest_area ? $data->tenant->rest_area->name : '') : '',
+                        "trx_name" => $data->tenant ? $data->tenant->name : '',
+                        "trx_amount" => $data->total,
+                        "current_balance" => $voucher->balance,
+                        "last_balance" => $balance_now,
+                        "datetime" => Carbon::now()->toDateTimeString(),
                     ];
                     $dataHistori = $voucher->balance_history;
-                    $dataHistori['data'] = array_merge([$ballaceHistory],$voucher->balance_history['data']);
+                    $dataHistori['data'] = array_merge([$ballaceHistory], $voucher->balance_history['data']);
                     $dataHistori['current_balance'] = $voucher->balance;
                     $voucher->balance_history = $dataHistori;
                     $voucher->qr_code_use = $voucher->qr_code_use + 1;
@@ -452,18 +440,18 @@ class TravShopController extends Controller
                     $data->save();
                     $res = $data;
 
-                break;
+                    break;
 
                 default:
                     return response()->json(['error' => $payment_method->name . ' Coming Soon'], 500);
 
-                break;
+                    break;
             }
             DB::commit();
             return response()->json($res);
         } catch (\Throwable $th) {
             DB::rollback();
-            return response()->json(['error' => $th->getMessage(),$payment_payload], 500);
+            return response()->json(['error' => $th->getMessage(), $payment_payload], 500);
         }
     }
 
@@ -483,16 +471,16 @@ class TravShopController extends Controller
 
             $data = TransOrder::findOrfail($id);
 
-            if($data->status == TransOrder::PAYMENT_SUCCESS){
+            if ($data->status == TransOrder::PAYMENT_SUCCESS) {
 
-                return response()->json(['status' => $data->status ,'responseData' => $data->payment->data ?? '']);
+                return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '']);
             }
 
-            if($data->status != TransOrder::WAITING_PAYMENT){
+            if ($data->status != TransOrder::WAITING_PAYMENT) {
                 return response()->json(['status' => $data->status, 'responseData' => $data->payment ?? '']);
             }
 
-            if(!$data->payment){
+            if (!$data->payment) {
                 return response()->json(['status' => $data->status, 'responseData' => null]);
             }
 
@@ -506,17 +494,17 @@ class TravShopController extends Controller
                 $data_payment->email,
                 $data_payment->customer_name
             );
-            if($res['status'] == 'success'){
+            if ($res['status'] == 'success') {
                 $res_data = $res['responseData'];
                 $res_data['fee'] = $data_payment->fee;
                 $res_data['bill'] = $data_payment->bill;
-                if($res_data['pay_status'] == '1'){
+                if ($res_data['pay_status'] == '1') {
                     $data->status = TransOrder::PAYMENT_SUCCESS;
                     $data->save();
-                }else{
+                } else {
                     return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '']);
                 }
-                $data->payment()->update([ 'data' => $res_data]);
+                $data->payment()->update(['data' => $res_data]);
             }
             DB::commit();
             return response()->json($res);
@@ -528,35 +516,34 @@ class TravShopController extends Controller
 
     public function saldo()
     {
-        $data = Voucher::when($rest_area_id = request()->rest_area_id, function($q) use ($rest_area_id) {
-                            return $q->where('rest_area_id', $rest_area_id);
-                        })
-                        ->when($username = request()->username, function ($q) use ($username) {
-                            return $q->where('username', $username);
-                        })->when($customer_id = request()->customer_id, function ($q) use ($customer_id) {
-                            return $q->where('customer_id', $customer_id);
-                        })->when($phone = request()->phone, function ($q) use ($phone) {
-                            return $q->where('phone', $phone);
-                        })->get();
+        $data = Voucher::when($rest_area_id = request()->rest_area_id, function ($q) use ($rest_area_id) {
+            return $q->where('rest_area_id', $rest_area_id);
+        })
+            ->when($username = request()->username, function ($q) use ($username) {
+                return $q->where('username', $username);
+            })->when($customer_id = request()->customer_id, function ($q) use ($customer_id) {
+                return $q->where('customer_id', $customer_id);
+            })->when($phone = request()->phone, function ($q) use ($phone) {
+                return $q->where('phone', $phone);
+            })->get();
         return response()->json(SaldoResource::collection($data));
     }
 
     function verifikasiOrder($id, VerifikasiOrderReqeust $request)
     {
         $data = TransOrder::findOrFail($id);
-        if($data->code_verif == $request->code)
-        {
+        if ($data->code_verif == $request->code) {
             $data->status = TransOrder::DONE;
             $data->pickup_date = Carbon::now();
-        }else{
+        } else {
             return response()->json([
-                "message"=> "The given data was invalid.",
-                "errors"=> [
-                    "code"=> [
+                "message" => "The given data was invalid.",
+                "errors" => [
+                    "code" => [
                         "The code is invalid."
                     ]
                 ]
-            ],422);
+            ], 422);
         }
         $data->save();
 

@@ -19,7 +19,7 @@ class BusinessController extends Controller
      */
     public function index()
     {
-        $business = Business::when($name = request()->name, function($q)use ($name){
+        $business = Business::when($name = request()->name, function ($q) use ($name) {
             return $q->where('name', 'like', "%$name%");
         })->get();
 

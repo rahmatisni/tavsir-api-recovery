@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Http\Requests\SendRequest;
-use App\Models\User;
 use App\Models\TransOrder;
+use Illuminate\Support\Facades\Mail;
 
 class SendController extends Controller
 {
@@ -24,7 +23,7 @@ class SendController extends Controller
             'path_image' => $request->path_image,
             'order' => $order,
         ];
-        \Mail::to($request->user_email)->send(new \App\Mail\SendMail('Struk', 'struk', $data));
+        Mail::to($request->user_email)->send(new \App\Mail\SendMail('Struk', 'struk', $data));
 
         return response()->json(['status' => 'success'], 200);
     }
