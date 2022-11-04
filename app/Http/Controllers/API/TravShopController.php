@@ -137,7 +137,7 @@ class TravShopController extends Controller
                                 'customize_name' => $customize_y->name,
                                 'pilihan_id' => $pilihan->id,
                                 'pilihan_name' => $pilihan->name,
-                                'pilihan_price' => $pilihan->price,
+                                'pilihan_price' => (int)$pilihan->price,
                             ];
                             $customize_x[] = $customize_z;
                             $order_detil->price += $pilihan->price;
