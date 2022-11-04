@@ -147,7 +147,7 @@ Route::get('/pg-cek', function (Request $request) {
         "phone" => "6285156903693",
         "email" => "rony.cetzl@gmail.com",
         "customer_name" => "travoy customer test",
-        "submerchant_id" => "98"
+        "submerchant_id" => ""
     ];
     return PgJmto::vaCreate($payload['sof_code'], $payload['bill_id'], $payload['bill_name'], $payload['amount'], $payload['desc'], $payload['phone'], $payload['email'], $payload['customer_name']);
 });
