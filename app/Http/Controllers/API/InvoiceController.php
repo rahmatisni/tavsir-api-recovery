@@ -31,6 +31,12 @@ class InvoiceController extends Controller
                 $query->orWhere('nominal', 'like', "%" . $filter . "%");
                 $query->orWhere('status', 'like', "%" . $filter . "%");
             }
+            if(request('sort')){
+                $sort = explode('&', request('sort'));
+                $query->ordeyBy($sort[0], $sort[1]);
+            }else{
+                $query->ordeyBy('claim_date', 'desc');
+            }
         }])->ByRole()
             ->when($rest_area_id = request()->rest_area_id, function ($query) use ($rest_area_id) {
                 return $query->where('rest_area_id', $rest_area_id);
