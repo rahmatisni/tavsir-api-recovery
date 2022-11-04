@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Dto\BindingDto;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Redis;
 use ParagonIE\ConstantTime\Base64;
 use phpDocumentor\Reflection\DocBlock\Tags\Throws;
+use Illuminate\Support\Str;
 
 class PgJmto extends Model
 {
@@ -61,12 +64,19 @@ class PgJmto extends Model
 
     public static function service($path, $payload)
     {
-        $token = self::getToken();
+        $token = Redis::get('token_pg');
+        if (!$token) {
+            $token = self::getToken();
+            if ($token) {
+                Redis::set('token_pg', $token['access_token']);
+            }
+        }
+
         if (!$token) {
             throw new Exception("token not found");
         }
         $timestamp = Carbon::now()->format('c');
-        $signature = self::generateSignature($path, $token['access_token'], $timestamp, $payload);
+        $signature = self::generateSignature($path, $token, $timestamp, $payload);
         $response = Http::withHeaders([
             'JMTO-TIMESTAMP' => $timestamp,
             'JMTO-SIGNATURE' => $signature,
@@ -75,7 +85,7 @@ class PgJmto extends Model
             'JMTO-LATITUDE' => '106.8795316',
             'JMTO-LONGITUDE' => '-6.2927969',
             'Content-Type' => 'Application/json',
-            'Authorization' => 'Bearer ' . $token['access_token'],
+            'Authorization' => 'Bearer ' . $token,
             'JMTO-IP-CLIENT' => '172.0.0.1',
             'JMTO-REQUEST-ID' => '123456789',
         ])
@@ -241,5 +251,143 @@ class PgJmto extends Model
     public static function feeBniVa()
     {
         return PgJmto::tarifFee(4, 2, null);
+    }
+
+    public static function bindDD($payload)
+    {
+        if (env('PG_FAKE_RESPON') === true) {
+            //for fake
+            Http::fake([
+                env('PG_BASE_URL') . '/sof/bind' => function () use ($payload) {
+                    return Http::response([
+                        "status" => "success",
+                        "rc" => "0000",
+                        "msg" => "success",
+                        "responseData" => [
+                            "sof_code" => $payload['sof_code'],
+                            "card_no" => $payload['card_no'],
+                            "phone" => $payload['phone'],
+                            "email" => $payload['email'],
+                            "customer_name" => $payload['customer_name'],
+                            "refnum" => "BIND" . Str::lower(Str::random(13))
+                        ]
+                    ], 200);
+                },
+            ]);
+            //end fake
+        }
+        $res = self::service('/sof/bind', $payload);
+        return $res;
+    }
+
+    public static function bindValidateDD($payload)
+    {
+        if (env('PG_FAKE_RESPON') === true) {
+            //for fake
+            Http::fake([
+                env('PG_BASE_URL') . '/sof/bind-validate' => function () use ($payload) {
+                    return Http::response([
+                        "status" => "success",
+                        "rc" => "0000",
+                        "msg" => "success",
+                        "responseData" => [
+                            "otp" => $payload['otp'],
+                            "sof_code" => $payload['sof_code'],
+                            "card_no" => $payload['card_no'],
+                            "phone" => $payload['phone'],
+                            "email" => $payload['email'],
+                            "customer_name" => $payload['customer_name'],
+                            "refnum" => $payload['refnum'],
+                            "bind_id" => rand(1, 999)
+                        ]
+                    ], 200);
+                },
+            ]);
+            //end fake
+        }
+        $res = self::service('/sof/bind-validate', $payload);
+        return $res;
+    }
+
+    public static function unBindDD($payload)
+    {
+        if (env('PG_FAKE_RESPON') === true) {
+            //for fake
+            Http::fake([
+                env('PG_BASE_URL') . '/sof/unbind' => function () use ($payload) {
+                    return Http::response([
+                        "status" => "success",
+                        "rc" => "0000",
+                        "rcm" => "success",
+                        "responseData" => [
+                            "sof_code" => $payload['sof_code'],
+                            "card_no" => $payload['card_no'],
+                            "email" => $payload['email'],
+                            "phone" => $payload['phone'],
+                            "customer_name" => $payload['customer_name'],
+                        ],
+                        "requestData" => $payload
+                    ], 200);
+                },
+            ]);
+            //end fake
+        }
+        $res = self::service('/sof/unbind', $payload);
+        return $res;
+    }
+
+    public static function inquiryDD($payload)
+    {
+        if (env('PG_FAKE_RESPON') === true) {
+            //for fake
+            Http::fake([
+                env('PG_BASE_URL') . '/directdebit/inquiry' => function () use ($payload) {
+                    return Http::response([
+                        "status" => "success",
+                        "rc" => "0000",
+                        "rcm" => "success",
+                        "responseData" => [
+                            "sof_code" => $payload['sof_code'],
+                            "card_no" => $payload['card_no'],
+                            "bill" => $payload['bill'],
+                            "fee" => "0",
+                            "amount" => $payload['amount'],
+                            "trxid" => $payload['trxid'],
+                            "remarks" => $payload['remarks'],
+                            "refnum" => $payload['refnum'],
+                        ],
+                        "requestData" => $payload
+                    ], 200);
+                },
+            ]);
+            //end fake
+        }
+        return self::service('/directdebit/inquiry', $payload)->json();
+    }
+
+    public static function paymentDD($payload)
+    {
+        if (env('PG_FAKE_RESPON') === true) {
+            //for fake
+            Http::fake([
+                env('PG_BASE_URL') . '/directdebit/payment' => function () use ($payload) {
+                    return Http::response([
+                        "status" => "success",
+                        "rc" => "0000",
+                        "rcm" => "success",
+                        "responseData" => [
+                            "sof_code" => $payload['sof_code'],
+                            "card_no" => $payload['card_no'],
+                            "email" => $payload['email'],
+                            "phone" => $payload['phone'],
+                            "customer_name" => $payload['customer_name'],
+                        ],
+                        "requestData" => $payload
+                    ], 200);
+                },
+            ]);
+            //end fake
+        }
+        return self::service('/directdebit/inquiry', $payload)->json();
     }
 }

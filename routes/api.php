@@ -55,6 +55,11 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/laporan/invoice', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanInvoice']);
     Route::post('/laporan/transaksi', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanTransaksi']);
 
+    Route::get('/card', [App\Http\Controllers\API\CardController::class, 'index']);
+    Route::post('/card', [App\Http\Controllers\API\CardController::class, 'bind']);
+    Route::put('/card/{id}', [App\Http\Controllers\API\CardController::class, 'bindValidate']);
+    Route::delete('/card/{id}', [App\Http\Controllers\API\CardController::class, 'unBind']);
+
     Route::prefix('tavsir')->group(function () {
         Route::get('/product', [App\Http\Controllers\API\TavsirController::class, 'productList']);
         Route::post('/send-notif', [App\Http\Controllers\API\TavsirController::class, 'sendNotif']);

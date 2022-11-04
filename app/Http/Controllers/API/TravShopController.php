@@ -442,6 +442,28 @@ class TravShopController extends Controller
 
                     break;
 
+                case 'pg_dd_bri':
+                    // $payment_payload = [
+                    //     'order_id' => $data->order_id,
+                    //     'order_name' => 'Take N Go',
+                    //     'amount' => $data->total,
+                    //     'desc' => $data->tenant->name ?? '',
+                    //     'phone' => $request->customer_phone,
+                    //     'email' => $request->customer_email,
+                    //     'customer_name' => $request->customer_name,
+                    //     'voucher' => $voucher->id
+                    // ];
+                    // $payment = new TransPayment();
+                    // $payment->trans_order_id = $data->id;
+                    // $payment->data = $payment_payload;
+                    // $data->payment()->save($payment);
+                    // $data->total = $data->total + $data->service_fee;
+                    // $data->status = TransOrder::PAYMENT_SUCCESS;
+                    // $data->save();
+                    // $res = $data;
+
+                    break;
+
                 default:
                     return response()->json(['error' => $payment_method->name . ' Coming Soon'], 500);
 
