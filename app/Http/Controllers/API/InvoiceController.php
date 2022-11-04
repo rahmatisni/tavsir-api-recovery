@@ -33,9 +33,9 @@ class InvoiceController extends Controller
             }
             if(request('sort')){
                 $sort = explode('&', request('sort'));
-                $query->ordeyBy($sort[0], $sort[1]);
+                $query->orderBy($sort[0], $sort[1]);
             }else{
-                $query->ordeyBy('claim_date', 'desc');
+                $query->orderBy('claim_date', 'desc');
             }
         }])->ByRole()
             ->when($rest_area_id = request()->rest_area_id, function ($query) use ($rest_area_id) {
