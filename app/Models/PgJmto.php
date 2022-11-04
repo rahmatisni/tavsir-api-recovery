@@ -72,10 +72,12 @@ class PgJmto extends Model
         //     }
         // }
 
-        $token = self::getToken();
-        if (!$token) {
+        $data = self::getToken();
+        if (!$data) {
             throw new Exception("token not found");
         }
+
+        $token = $data['access_token'];
         $timestamp = Carbon::now()->format('c');
         $signature = self::generateSignature($path, $token, $timestamp, $payload);
         $response = Http::withHeaders([
