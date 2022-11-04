@@ -17,8 +17,8 @@ class PilihanResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'price' => $this->price,
-            'is_available' => $this->is_available,
+            'price' => (int) $this->price,
+            'is_available' => (int) $this->is_available,
         ];
     }
 }
