@@ -64,14 +64,15 @@ class PgJmto extends Model
 
     public static function service($path, $payload)
     {
-        $token = Redis::get('token_pg');
-        if (!$token) {
-            $token = self::getToken();
-            if ($token) {
-                Redis::set('token_pg', $token['access_token']);
-            }
-        }
+        // $token = Redis::get('token_pg');
+        // if (!$token) {
+        //     $token = self::getToken();
+        //     if ($token) {
+        //         Redis::set('token_pg', $token['access_token']);
+        //     }
+        // }
 
+        $token = self::getToken();
         if (!$token) {
             throw new Exception("token not found");
         }
@@ -256,21 +257,38 @@ class PgJmto extends Model
     public static function bindDD($payload)
     {
         if (env('PG_FAKE_RESPON') === true) {
+            $mandiri_page = `"landing_page_form": "<form name=\"frm_request\" id=\"frm_request\" action=\"https://dev.yokke.bankmandiri.co.id:9773/MTIDDPortal/registration\" method=\"post\">
+                <input type=\"hidden\" name=\"signature\" value=\"9aac4ee218d861f9dd220d5a98debdb680ec43fe82dc7ea2d3b1eae765e6cb55c84e95b28f01c1b67f11e8fd11d788a53f1e5d0dddac2345494cdbff5315eb9e\"/>
+                <input type=\"hidden\" name=\"merchantID\" value=\"000071000022169\"/>
+                <input type=\"hidden\" name=\"requestID\" value=\"1052479112\"/>
+                <input type=\"hidden\" name=\"jwt\" value=\"eyJraWQiOiJzc29zIiwiYWxnIjoiUlM1MTIifQ.eyJzdWIiOiJkOGExMmM4MS1iOWQ2LTQ3ZTctOTk3NC0yZjBiZTBiOWYwZGQiLCJhdWQiOm51bGwsIm5iZiI6MTY2NzUyNzY3OCwiaXNzIjoiSldUTVRJIiwiZXhwIjoxNjY3NTI4NTc4LCJpYXQiOjE2Njc1Mjc2Nzh9.jITAwxBvz3IAahi3CYJyGdEHwDTOrnj7we4aD3SD8fS26-3_XcrcACU3R_6rFKCFB-h6MUIBIflGH-fgWJfsdEdKyVJzbzc8KHXcrnkeDsJ0yathk4OkPWwcojq0PPDpiJGukH1afHxVQfCtlifvK2oUImqjY6pXgxMbHLxMnxizl4rbGKdCvBOl6ZoTmawqlMqadyco_7XFMe09Kv4Y-iLzFiSS5Puxb4HxcQjG6wIHq04610QpiUIm9GQSFImelBEvRAB4VM8LUDrZ2sJ90WbKYYmSWRu5QK0bUSZmOHvXVzLJKaKVuXG96KHwKdna-iuATQYNwDAGT0iJRPr77A\"/>
+                <input type=\"hidden\" name=\"language\" value=\"ID\"/>
+                <input type=\"hidden\" name=\"isBindAndPay\" value=\"N\"/>
+                <input type=\"hidden\" name=\"publicKey\" value=\"MIIBCQKCAQCUFOPYrm95cRxbEymJqLgtFWPsddKJIskOknNsdnVzVZdJJijnTliIU/Zw7ryVyTJgZkUv/NhK6qxfkm5Fv7UMMNFFDfWjfFkl2vydMbMD+3rec4C0pgTWFRe418LPPDF/RzZZ/bUG3WM1uyvCVpRMEmogXHCjru4P7LRBcOCMSsUl39j0rIDP9gX2/kjeLIWHYPi2+Dy2r4b0KoSidjRxxOX40+y6McCATBl5//eU6MxxKz2gFnkn3JKDcqvHEYimhWBL66TGjEfHCx8Z3NeaW3OYJ2BSb4svBwROnfD4xJ+UjW3Wm8uFYiGmokskuN4uFoyzFqSvtmy1f50xZ8AVAgMBAAE=\"/>
+                <input type=\"hidden\" name=\"terminalID\" value=\"73001308\"/>
+                <input type=\"hidden\" name=\"additionalData\" value=\"{&quot;userID&quot;:&quot;JASAMARGA&quot;}\"/>
+                <input type=\"hidden\" name=\"tokenRequestorID\" value=\"JASAMARGA\"/>
+                <input type=\"hidden\" name=\"journeyID\" value=\"BIND636473807eaeb\"/></form><script>window.onload = function(){document.forms['frm_request'].submit();}</script>"`;
             //for fake
             Http::fake([
-                env('PG_BASE_URL') . '/sof/bind' => function () use ($payload) {
+                env('PG_BASE_URL') . '/sof/bind' => function () use ($payload, $mandiri_page) {
+                    $responseData = [
+                        "sof_code" => $payload['sof_code'],
+                        "card_no" => $payload['card_no'],
+                        "phone" => $payload['phone'],
+                        "email" => $payload['email'],
+                        "customer_name" => $payload['customer_name'],
+                        "refnum" => "BIND" . Str::lower(Str::random(13))
+                    ];
+                    if ($payload['sof_code'] == 'MANDIRI') {
+                        $responseData['landing_page_form'] = $mandiri_page;
+                    }
                     return Http::response([
                         "status" => "success",
                         "rc" => "0000",
-                        "msg" => "success",
-                        "responseData" => [
-                            "sof_code" => $payload['sof_code'],
-                            "card_no" => $payload['card_no'],
-                            "phone" => $payload['phone'],
-                            "email" => $payload['email'],
-                            "customer_name" => $payload['customer_name'],
-                            "refnum" => "BIND" . Str::lower(Str::random(13))
-                        ]
+                        "rcm" => "success",
+                        "responseData" => $responseData,
+                        "requestData" => $payload
                     ], 200);
                 },
             ]);
