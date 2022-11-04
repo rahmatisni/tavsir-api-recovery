@@ -26,13 +26,15 @@ class CardController extends Controller
         try {
             $res = PgJmto::bindDD($request->validated());
             if ($res->successful()) {
+                $respon = $res->json();
                 $bind = new Bind();
-                $respon = $res['responseData'];
+                $respon = $respon['responseData'];
                 $respon['customer_id'] = $request['customer_id'];
                 $bind->fill($respon);
                 $bind->save();
                 return $bind;
             }
+            dd($res);
             return response()->json($res);
         } catch (\Throwable $th) {
             return response()->json($th);
@@ -54,6 +56,7 @@ class CardController extends Controller
             unset($payload['customer_id']);
             unset($payload['is_valid']);
             unset($payload['bind_id']);
+            unset($payload['refnum']);
             $res = PgJmto::bindValidateDD($payload);
 
             if ($res->successful()) {

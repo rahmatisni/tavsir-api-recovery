@@ -15,6 +15,7 @@ use App\Http\Resources\TravShop\TsProductResource;
 use App\Http\Resources\TravShop\TsTenantResource;
 use App\Http\Resources\TravShop\TsRestAreaResource;
 use App\Http\Resources\TsPaymentresource;
+use App\Models\Bind;
 use App\Models\PaymentMethod;
 use App\Models\PgJmto;
 use App\Models\Product;
@@ -30,7 +31,7 @@ use Illuminate\Support\Facades\Http;
 
 class TravShopController extends Controller
 {
-    function restArea(Request $request)
+    public function restArea(Request $request)
     {
         $data = RestArea::when($name = $request->name, function ($q) use ($name) {
             return $q->where('name', 'like', "%$name%");
@@ -46,7 +47,7 @@ class TravShopController extends Controller
         return response()->json(TsRestAreaResource::collection($data));
     }
 
-    function tenant(Request $request)
+    public function tenant(Request $request)
     {
         $data = Tenant::when($rest_area_id = $request->rest_area_id, function ($q) use ($rest_area_id) {
             return $q->where('rest_area_id', $rest_area_id);
@@ -63,14 +64,14 @@ class TravShopController extends Controller
         return response()->json(TsTenantResource::collection($data));
     }
 
-    function tenantById($id)
+    public function tenantById($id)
     {
         $data = Tenant::findOrFail($id);
 
         return response()->json(new TsTenantResource($data));
     }
 
-    function tenantByCategory()
+    public function tenantByCategory()
     {
         $data = Tenant::get()->groupBy('category')->map(function ($item, $key) {
             return TsTenantResource::collection($item);
@@ -78,7 +79,7 @@ class TravShopController extends Controller
         return response()->json($data);
     }
 
-    function product(Request $request)
+    public function product(Request $request)
     {
         $data = Product::when($name = $request->name, function ($q) use ($name) {
             return $q->where('name', 'like', "%$name%");
@@ -90,13 +91,13 @@ class TravShopController extends Controller
         return response()->json(TsProductResource::collection($data));
     }
 
-    function productById($id)
+    public function productById($id)
     {
         $data = Product::findOrfail($id);
         return response()->json(new TsProducDetiltResource($data));
     }
 
-    function order(TsOrderRequest $request)
+    public function order(TsOrderRequest $request)
     {
         try {
             DB::beginTransaction();
@@ -170,7 +171,7 @@ class TravShopController extends Controller
         }
     }
 
-    function orderCustomer($id)
+    public function orderCustomer($id)
     {
         $data = TransOrder::fromTakengo()->with('detil')->where('customer_id', $id)
             ->when($status = request()->status, function ($q) use ($status) {
@@ -185,13 +186,13 @@ class TravShopController extends Controller
         return response()->json(TsOrderResource::collection($data));
     }
 
-    function orderById($id)
+    public function orderById($id)
     {
         $data = TransOrder::findOrfail($id);
         return response()->json(new TsOrderResource($data));
     }
 
-    function orderConfirm($id)
+    public function orderConfirm($id)
     {
         $data = TransOrder::findOrfail($id);
         if ($data->status != TransOrder::WAITING_CONFIRMATION_USER) {
@@ -205,7 +206,7 @@ class TravShopController extends Controller
         return response()->json(new TsOrderResource($data));
     }
 
-    function orderCancel($id)
+    public function orderCancel($id)
     {
         $data = TransOrder::findOrfail($id);
         $data->status = TransOrder::CANCEL;
@@ -216,7 +217,7 @@ class TravShopController extends Controller
         return response()->json(new TsOrderResource($data));
     }
 
-    function paymentMethod()
+    public function paymentMethod()
     {
         $paymentMethods = PaymentMethod::all();
         foreach ($paymentMethods as $value) {
@@ -247,7 +248,7 @@ class TravShopController extends Controller
         return response()->json($paymentMethods);
     }
 
-    function createPayment(TsCreatePaymentRequest $request, $id)
+    public function createPayment(TsCreatePaymentRequest $request, $id)
     {
         $payment_payload = [];
         try {
@@ -443,25 +444,38 @@ class TravShopController extends Controller
                     break;
 
                 case 'pg_dd_bri':
-                    // $payment_payload = [
-                    //     'order_id' => $data->order_id,
-                    //     'order_name' => 'Take N Go',
-                    //     'amount' => $data->total,
-                    //     'desc' => $data->tenant->name ?? '',
-                    //     'phone' => $request->customer_phone,
-                    //     'email' => $request->customer_email,
-                    //     'customer_name' => $request->customer_name,
-                    //     'voucher' => $voucher->id
-                    // ];
-                    // $payment = new TransPayment();
-                    // $payment->trans_order_id = $data->id;
-                    // $payment->data = $payment_payload;
-                    // $data->payment()->save($payment);
-                    // $data->total = $data->total + $data->service_fee;
-                    // $data->status = TransOrder::PAYMENT_SUCCESS;
-                    // $data->save();
-                    // $res = $data;
-
+                    $bind = Bind::findOrFail($request->card_id);
+                    $payment_payload = [
+                        "sof_code" => $bind->sof_code,
+                        "bind_id" => $bind->bind_id,
+                        "refnum" => $bind->refnum,
+                        "card_no" => $bind->card_no,
+                        "amount" => (string) $data->total,
+                        "trxid" => $data->order_id,
+                        "remarks" => $data->tenant->name ?? '',
+                        "phone" => $bind->phone,
+                        "email" => $bind->email,
+                        "customer_name" => $bind->customer_name,
+                        "bill" => $data->sub_total,
+                        "fee" => $data->fee,
+                    ];
+                    $res = PgJmto::inquiryDD($payment_payload);
+                    if ($res->successful()) {
+                        $res = $res->json();
+                        $respon = $res['responseData'];
+                        if ($data->payment === null) {
+                            $payment = new TransPayment();
+                            $payment->data = $respon;
+                            $data->payment()->save($payment);
+                        } else {
+                            $tans_payment = TransPayment::where('trans_order_id', $data->id)->first();
+                            $tans_payment->data = $respon;
+                            $tans_payment->save();
+                        }
+                        $data->service_fee = $payment_method->fee;
+                        $data->total = $data->sub_total + $data->service_fee;
+                        $data->save();
+                    }
                     break;
 
                 default:
@@ -477,7 +491,7 @@ class TravShopController extends Controller
         }
     }
 
-    function paymentByOrderId($id)
+    public function paymentByOrderId($id)
     {
         $data = TransOrder::findOrfail($id);
         if (!$data->payment) {
@@ -486,7 +500,7 @@ class TravShopController extends Controller
         return response()->json(new TsPaymentresource($data->payment));
     }
 
-    function statusPayment($id)
+    public function statusPayment(Request $request, $id)
     {
         try {
             DB::beginTransaction();
@@ -507,6 +521,39 @@ class TravShopController extends Controller
             }
 
             $data_payment = $data->payment->data;
+            if ($data->payment_method_id == 3) {
+                if (!$request->otp) {
+                    return response()->json([
+                        "message" => "The given data was invalid.",
+                        "errors" => [
+                            "otp" => [
+                                "The otp field is required."
+                            ]
+                        ]
+                    ], 422);
+                }
+                $payload = $data_payment;
+                $payload['otp'] = $request->otp;
+                $res = PgJmto::paymentDD($payload);
+                if ($res->successful()) {
+                    $res = $res->json();
+                    $respon = $res['responseData'];
+                    if ($data->payment === null) {
+                        $payment = new TransPayment();
+                        $payment->data = $respon;
+                        $data->payment()->save($payment);
+                    } else {
+                        $pay = TransPayment::where('trans_order_id', $data->id)->first();
+                        $pay->data = $respon;
+                        $pay->save();
+                    }
+                    $data->status = TransOrder::PAYMENT_SUCCESS;
+                    $data->save();
+                    DB::commit();
+                    return $data;
+                }
+                return response()->json($res->json(), 400);
+            }
             $res = PgJmto::vaStatus(
                 $data_payment->sof_code,
                 $data_payment->bill_id,
@@ -551,7 +598,7 @@ class TravShopController extends Controller
         return response()->json(SaldoResource::collection($data));
     }
 
-    function verifikasiOrder($id, VerifikasiOrderReqeust $request)
+    public function verifikasiOrder($id, VerifikasiOrderReqeust $request)
     {
         $data = TransOrder::findOrFail($id);
         if ($data->code_verif == $request->code) {

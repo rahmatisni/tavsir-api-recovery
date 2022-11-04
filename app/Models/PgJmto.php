@@ -259,7 +259,7 @@ class PgJmto extends Model
     public static function bindDD($payload)
     {
         if (env('PG_FAKE_RESPON') === true) {
-            $mandiri_page = `"landing_page_form": "<form name=\"frm_request\" id=\"frm_request\" action=\"https://dev.yokke.bankmandiri.co.id:9773/MTIDDPortal/registration\" method=\"post\">
+            $mandiri_page = "<form name=\"frm_request\" id=\"frm_request\" action=\"https://dev.yokke.bankmandiri.co.id:9773/MTIDDPortal/registration\" method=\"post\">
                 <input type=\"hidden\" name=\"signature\" value=\"9aac4ee218d861f9dd220d5a98debdb680ec43fe82dc7ea2d3b1eae765e6cb55c84e95b28f01c1b67f11e8fd11d788a53f1e5d0dddac2345494cdbff5315eb9e\"/>
                 <input type=\"hidden\" name=\"merchantID\" value=\"000071000022169\"/>
                 <input type=\"hidden\" name=\"requestID\" value=\"1052479112\"/>
@@ -270,7 +270,7 @@ class PgJmto extends Model
                 <input type=\"hidden\" name=\"terminalID\" value=\"73001308\"/>
                 <input type=\"hidden\" name=\"additionalData\" value=\"{&quot;userID&quot;:&quot;JASAMARGA&quot;}\"/>
                 <input type=\"hidden\" name=\"tokenRequestorID\" value=\"JASAMARGA\"/>
-                <input type=\"hidden\" name=\"journeyID\" value=\"BIND636473807eaeb\"/></form><script>window.onload = function(){document.forms['frm_request'].submit();}</script>"`;
+                <input type=\"hidden\" name=\"journeyID\" value=\"BIND636473807eaeb\"/></form><script>window.onload = function(){document.forms['frm_request'].submit();}</script>";
             //for fake
             Http::fake([
                 env('PG_BASE_URL') . '/sof/bind' => function () use ($payload, $mandiri_page) {
@@ -309,17 +309,16 @@ class PgJmto extends Model
                     return Http::response([
                         "status" => "success",
                         "rc" => "0000",
-                        "msg" => "success",
+                        "rcm" => "binding success",
                         "responseData" => [
-                            "otp" => $payload['otp'],
                             "sof_code" => $payload['sof_code'],
                             "card_no" => $payload['card_no'],
                             "phone" => $payload['phone'],
                             "email" => $payload['email'],
                             "customer_name" => $payload['customer_name'],
-                            "refnum" => $payload['refnum'],
                             "bind_id" => rand(1, 999)
-                        ]
+                        ],
+                        "request" => $payload
                     ], 200);
                 },
             ]);
@@ -370,11 +369,14 @@ class PgJmto extends Model
                             "sof_code" => $payload['sof_code'],
                             "card_no" => $payload['card_no'],
                             "bill" => $payload['bill'],
-                            "fee" => "0",
-                            "amount" => $payload['amount'],
+                            "fee" => 2500,
+                            "amount" => $payload['bill'] + 2500,
                             "trxid" => $payload['trxid'],
                             "remarks" => $payload['remarks'],
                             "refnum" => $payload['refnum'],
+                            "email" => $payload['email'],
+                            "phone" => $payload['phone'],
+                            "customer_name" => $payload['customer_name'],
                         ],
                         "requestData" => $payload
                     ], 200);
@@ -382,7 +384,7 @@ class PgJmto extends Model
             ]);
             //end fake
         }
-        return self::service('/directdebit/inquiry', $payload)->json();
+        return self::service('/directdebit/inquiry', $payload);
     }
 
     public static function paymentDD($payload)
@@ -397,7 +399,13 @@ class PgJmto extends Model
                         "rcm" => "success",
                         "responseData" => [
                             "sof_code" => $payload['sof_code'],
-                            "card_no" => $payload['card_no'],
+                            "bill" => $payload['bill'],
+                            "fee" => $payload['fee'],
+                            "amount" => $payload['bill'] + 2500,
+                            "trxid" => $payload['trxid'],
+                            "remarks" => $payload['remarks'],
+                            "refnum" => $payload['refnum'],
+                            "pay_refnum" => "88888" . rand(1000000, 9999999),
                             "email" => $payload['email'],
                             "phone" => $payload['phone'],
                             "customer_name" => $payload['customer_name'],
@@ -408,6 +416,6 @@ class PgJmto extends Model
             ]);
             //end fake
         }
-        return self::service('/directdebit/inquiry', $payload)->json();
+        return self::service('/directdebit/payment', $payload);
     }
 }
