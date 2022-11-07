@@ -251,11 +251,10 @@ class TravShopController extends Controller
     public function createPayment(TsCreatePaymentRequest $request, $id)
     {
         $payment_payload = [];
+        $data = TransOrder::findOrfail($id);
+
         try {
             DB::beginTransaction();
-
-            $data = TransOrder::findOrfail($id);
-
             if (request()->order_from_qr == true) {
                 if ($data->status == TransOrder::CART || $data->status == TransOrder::PENDING || $data->status == null) {
                     $data->status = TransOrder::WAITING_PAYMENT;
@@ -465,17 +464,19 @@ class TravShopController extends Controller
                         "bill" => (string)$data->sub_total,
                         "fee" => (string)$data->fee,
                     ];
-                    $res = PgJmto::inquiryDD($payment_payload);
-                    if ($res->successful()) {
-                        $res = $res->json();
+                    $respon = PgJmto::inquiryDD($payment_payload);
+                    if ($respon->successful()) {
+                        $res = $respon->json();
                         if ($res['status'] == 'ERROR') {
                             return response()->json($res, 400);
                         }
+                        $res['responseData']['bind_id'] = $bind->bind_id;
                         $respon = $res['responseData'];
                         if ($data->payment === null) {
                             $payment = new TransPayment();
                             $payment->data = $respon;
-                            $data->payment()->save($payment);
+                            $payment->trans_order_id = $data->id;
+                            $payment->save();
                         } else {
                             $tans_payment = TransPayment::where('trans_order_id', $data->id)->first();
                             $tans_payment->data = $respon;
@@ -484,8 +485,10 @@ class TravShopController extends Controller
                         $data->service_fee = $payment_method->fee;
                         $data->total = $data->sub_total + $data->service_fee;
                         $data->save();
+                        DB::commit();
+                        return response()->json($res);
                     }
-                    return response()->json($res->json(), 400);
+                    return response()->json($respon->json(), 400);
                     break;
 
                 default:
