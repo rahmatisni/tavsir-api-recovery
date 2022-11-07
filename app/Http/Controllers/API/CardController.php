@@ -26,18 +26,20 @@ class CardController extends Controller
         try {
             $res = PgJmto::bindDD($request->validated());
             if ($res->successful()) {
-                $respon = $res->json();
+                $res = $res->json();
+                if ($res['status'] == 'ERROR') {
+                    return response()->json($res, 400);
+                }
                 $bind = new Bind();
-                $respon = $respon['responseData'];
-                $respon['customer_id'] = $request['customer_id'];
-                $bind->fill($respon);
+                $res = $res['responseData'];
+                $res['customer_id'] = $request['customer_id'];
+                $bind->fill($res);
                 $bind->save();
                 return $bind;
             }
-            dd($res);
-            return response()->json($res);
+            return response()->json($res->json(), 400);
         } catch (\Throwable $th) {
-            return response()->json($th);
+            return response()->json($th->getMessage(), 400);
         }
     }
 
@@ -60,6 +62,9 @@ class CardController extends Controller
 
             if ($res->successful()) {
                 $res = $res->json();
+                if ($res['status'] == 'ERROR') {
+                    return response()->json($res, 400);
+                }
                 $respon = $res['responseData'];
                 $bind->bind_id = $respon['bind_id'];
                 $bind->save();
@@ -87,6 +92,10 @@ class CardController extends Controller
             unset($payload['bind_id']);
             $res = PgJmto::unBindDD($payload);
             if ($res->successful()) {
+                $res = $res->json();
+                if ($res['status'] == 'ERROR') {
+                    return response()->json($res, 400);
+                }
                 $bind->delete();
                 return ['message' => 'Success unbind.'];
             }
