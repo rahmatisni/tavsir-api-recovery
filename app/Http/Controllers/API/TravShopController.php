@@ -269,7 +269,7 @@ class TravShopController extends Controller
             $data->payment_method_id = $request->payment_method_id;
 
             $res = 'Invalid';
-            $payment_method = PaymentMethod::findOrFail($request->payment_method_id);
+            $payment_method = PaymentMethod::find($request->payment_method_id);
             switch ($payment_method->code_name) {
                 case 'pg_va_mandiri':
                     $payment_payload = [
@@ -444,24 +444,33 @@ class TravShopController extends Controller
                     break;
 
                 case 'pg_dd_bri':
-                    $bind = Bind::findOrFail($request->card_id);
+                    $bind = Bind::where('id', $request->card_id)->first();
+                    if (!$bind) {
+                        return response()->json(['message' => 'Card Not Found'], 404);
+                    }
+                    if (!$bind->is_valid) {
+                        return response()->json(['message' => 'Card Not Valid'], 404);
+                    }
                     $payment_payload = [
                         "sof_code" => $bind->sof_code,
-                        "bind_id" => $bind->bind_id,
+                        "bind_id" => (string) $bind->bind_id,
                         "refnum" => $bind->refnum,
                         "card_no" => $bind->card_no,
                         "amount" => (string) $data->total,
                         "trxid" => $data->order_id,
-                        "remarks" => $data->tenant->name ?? '',
+                        "remarks" => $data->tenant->name ?? 'Travoy',
                         "phone" => $bind->phone,
                         "email" => $bind->email,
                         "customer_name" => $bind->customer_name,
-                        "bill" => $data->sub_total,
-                        "fee" => $data->fee,
+                        "bill" => (string)$data->sub_total,
+                        "fee" => (string)$data->fee,
                     ];
                     $res = PgJmto::inquiryDD($payment_payload);
                     if ($res->successful()) {
                         $res = $res->json();
+                        if ($res['status'] == 'ERROR') {
+                            return response()->json($res, 400);
+                        }
                         $respon = $res['responseData'];
                         if ($data->payment === null) {
                             $payment = new TransPayment();
@@ -476,6 +485,7 @@ class TravShopController extends Controller
                         $data->total = $data->sub_total + $data->service_fee;
                         $data->save();
                     }
+                    return response()->json($res->json(), 400);
                     break;
 
                 default:
