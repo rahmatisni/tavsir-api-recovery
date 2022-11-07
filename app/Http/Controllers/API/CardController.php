@@ -57,9 +57,10 @@ class CardController extends Controller
             unset($payload['is_valid']);
             unset($payload['bind_id']);
             unset($payload['refnum']);
-            $res = PgJmto::bindValidateDD($payload)->json();
+            $res = PgJmto::bindValidateDD($payload);
 
             if ($res->successful()) {
+                $res = $res->json();
                 $respon = $res['responseData'];
                 $bind->bind_id = $respon['bind_id'];
                 $bind->save();
