@@ -57,7 +57,7 @@ class CardController extends Controller
             unset($payload['is_valid']);
             unset($payload['bind_id']);
             unset($payload['refnum']);
-            $res = PgJmto::bindValidateDD($payload);
+            $res = PgJmto::bindValidateDD($payload)->json();
 
             if ($res->successful()) {
                 $respon = $res['responseData'];
@@ -67,7 +67,7 @@ class CardController extends Controller
             }
             return response()->json($res);
         } catch (\Throwable $th) {
-            return response()->json($th);
+            return response()->json($th->getMessage(), 400);
         }
     }
 

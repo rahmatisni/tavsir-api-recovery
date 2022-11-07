@@ -18,7 +18,7 @@ class CreateRefBindTable extends Migration
             $table->string('customer_id');
             $table->string('sof_code');
             $table->string('refnum');
-            $table->integer('bind_id')->unsigned();
+            $table->integer('bind_id')->unsigned()->nullable();
             $table->string('customer_name');
             $table->string('card_no');
             $table->string('phone');
