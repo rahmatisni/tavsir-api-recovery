@@ -74,7 +74,7 @@ class LaporanRekapTransaksiController extends Controller
             ->when($order_type = request('order_type'), function ($q) use ($order_type) {
                 $q->where('order_type', $order_type);
             })
-            ->get();
+            ->orderBy('created_at', 'desc')->get();
 
 
         $data = [
