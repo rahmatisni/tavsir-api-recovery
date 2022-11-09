@@ -7,6 +7,7 @@ use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\ListInvoiceResource;
 use App\Models\TransInvoice;
 use App\Models\TransSaldo;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -21,16 +22,22 @@ class InvoiceController extends Controller
 
         $data = TransSaldo::with(['trans_invoice' => function ($query) {
             if (request('status') != '') {
-                $query->where('status', '=',  request('status'));
-            }
+                $query->where('trans_invoice.status', '=',  request('status'));
+            }   
             if (request('filter') != '') {
+                $query->select('trans_invoice.*');
+                $query->addSelect('users.name');
+                $query->join('users', 'trans_invoice.cashier_id', '=', 'users.id');
                 $filter = request('filter');
                 $query->where('invoice_id', 'like', "%" . $filter . "%");
                 $query->orWhere('claim_date', 'like', "%" . $filter . "%");
                 $query->orWhere('paid_date', 'like', "%" . $filter . "%");
                 $query->orWhere('nominal', 'like', "%" . $filter . "%");
-                $query->orWhere('status', 'like', "%" . $filter . "%");
+                $query->orWhere('trans_invoice.status', 'like', "%" . $filter . "%");
+                $query->orWhere('name', 'like', "%" . $filter . "%");
+                     
             }
+         
             if(request('sort')){
                 $sort = explode('&', request('sort'));
                 $query->orderBy($sort[0], $sort[1]);
@@ -44,6 +51,8 @@ class InvoiceController extends Controller
             ->when($tenant_id = request()->tenant_id, function ($query) use ($tenant_id) {
                 return $query->where('tenant_id', $tenant_id);
             })->get();
+        // dd( DB::getQueryLog());             
+
         return response()->json(ListInvoiceResource::collection($data));
     }
 

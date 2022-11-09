@@ -41,9 +41,14 @@ class TavsirController extends Controller
         })->when($category_id = $request->category_id, function ($q) use ($category_id) {
             return $q->where('category_id', $category_id);
         });
-        $data->when($is_active = $request->is_active, function ($q) use ($is_active) {
-            return $q->where('is_active', '=', $is_active);
-        });
+        if($request->is_active == '0'){
+            $data->where('is_active', '0');
+        }else if($request->is_active == '1'){
+            $data->where('is_active', '1');
+        }
+        // $data->when($is_active = $request->is_active, function ($q) use ($is_active) {
+        //     return $q->where('is_active', '=', $is_active);
+        // });
         $data = $data->orderBy('updated_at', 'desc')->get();
         return response()->json(TrProductResource::collection($data));
     }
@@ -306,12 +311,12 @@ class TavsirController extends Controller
             } else {
                 $q->where('status', $status);
             }
-        })
+            })
             ->when($start_date = $request->start_date, function ($q) use ($start_date) {
-                $q->where('created_at', '>=', date("Y-m-d", strtotime($start_date)));
+                $q->whereDate('created_at', '>=', date("Y-m-d", strtotime($start_date)));
             })
             ->when($end_date = $request->end_date, function ($q) use ($end_date) {
-                $q->where('created_at', '<=', date("Y-m-d", strtotime($end_date)));
+                $q->whereDate('created_at', '<=', date("Y-m-d", strtotime($end_date)));
             })
             ->when($statusnot = request()->statusnot, function ($q) use ($statusnot) {
                 if (is_array($statusnot)) {
@@ -333,8 +338,11 @@ class TavsirController extends Controller
                         $q->orderBy($jsonx[0], $jsonx[1]);
                     }
                 }
-            })
-            ->get();
+            });
+        if(!request()->sort){
+            $data = $data->orderBy('created_at', 'desc');
+        }
+        $data = $data->get();
         // return response()->json([DB::getQueryLog(), $request->order, $json]);
         return response()->json(TrOrderResource::collection($data));
     }
