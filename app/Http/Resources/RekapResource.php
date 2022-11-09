@@ -26,7 +26,7 @@ class RekapResource extends JsonResource
                 'nominal_koreksi' => $this->trans_cashbox->pengeluaran_cashbox ?? 0,
                 'keterangan' => $this->trans_cashbox->description ?? '',
             ],
-            'metode_qr' => $this->trans_cashbox->rp_qr ?? 0,
+            'metode_qr' => $this->trans_cashbox->rp_tav_qr ?? 0,
             'metode_digital' => [
                 'total_digital' => $this->trans_cashbox->total_digital ?? 0,
                 'rp_va_bri' => $this->trans_cashbox->rp_va_bri ?? 0,
