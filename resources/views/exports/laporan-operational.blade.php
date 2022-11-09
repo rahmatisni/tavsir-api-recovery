@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Documents</title>
 </head>
+
 <body>
     <h4>Laporan Operasional Petugas</h4>
     <br>
@@ -45,7 +47,7 @@
                 <td>{{ $value->end_date }}</td>
                 <td>{{ $value->cashier->name ?? '' }}</td>
                 <td>{{ $value->trans_cashbox->inital_cashbox ?? 0 }}</td>
-                <td>{{ $value->trans_cashbox->rp_qr ?? 0 }}</td>
+                <td>{{ $value->trans_cashbox->rp_tav_qr ?? 0 }}</td>
                 <td>{{ $value->trans_cashbox->total_digital ?? 0 }}</td>
                 <td>{{ $value->trans_cashbox->rp_cash ?? 0 }}</td>
                 <td>{{ $value->trans_cashbox->cashbox ?? 0 }}</td>
@@ -59,11 +61,11 @@
         <tfoot>
             <tr>
                 <td colspan="7">Total</td>
-                <td>{{ $record->sum('trans_cashbox.rp_qr')}}</td>
+                <td>{{ $record->sum('trans_cashbox.rp_tav_qr')}}</td>
                 <td>{{ $record->sum('trans_cashbox.total_digital')}}</td>
                 <td>{{ $record->sum('trans_cashbox.rp_cash')}}</td>
                 <td>{{ $record->sum('trans_cashbox.cashbox')}}</td>
-                <td>{{ $record->sum('trans_cashbox.rp_qr')}}</td>
+                <td>{{ $record->sum('trans_cashbox.rp_tav_qr')}}</td>
                 <td></td>
                 <td></td>
                 <td>{{ $record->sum('trans_cashbox.rp_total')}}</td>
@@ -71,4 +73,5 @@
         </tfoot>
     </table>
 </body>
+
 </html>
