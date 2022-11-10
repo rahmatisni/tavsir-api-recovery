@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Exports\LaporanInvoiceExport;
+use App\Exports\LaporanJenisTransaksiExport;
 use App\Exports\LaporanMetodePembayaranExport;
 use App\Exports\LaporanOperationalExport;
 use App\Exports\LaporanPenjualanExport;
@@ -341,5 +342,54 @@ class LaporanController extends Controller
             'tanggal_akhir' => $tanggal_akhir ?? 'Semua Tanggal',
         ];
         return Excel::download(new LaporanProductFavoritExport($record), 'laporan_product_favorit ' . Carbon::now()->format('d-m-Y') . '.xlsx');
+    }
+
+    public function downloadLaporanJenisTransaksi(DownloadLaporanRequest $request)
+    {
+        $tanggal_awal = $request->tanggal_awal;
+        $tanggal_akhir = $request->tanggal_akhir;
+        $tenant_id = $request->tenant_id;
+        $rest_area_id = $request->rest_area_id;
+        $business_id = $request->business_id;
+
+        $data = TransOrder::done()
+            ->when(($tanggal_awal && $tanggal_akhir),
+                function ($q) use ($tanggal_awal, $tanggal_akhir) {
+                    return $q->whereBetween(
+                        'created_at',
+                        [
+                            $tanggal_awal,
+                            $tanggal_akhir . ' 23:59:59'
+                        ]
+                    );
+                }
+            )
+            ->when($tenant_id, function ($q) use ($tenant_id) {
+                return $q->where('tenant_id', $tenant_id);
+            })->when($rest_area_id, function ($qq) use ($rest_area_id) {
+                return $qq->where('rest_area_id', $rest_area_id);
+            })->when($business_id, function ($qq) use ($business_id) {
+                return $qq->where('business_id', $business_id);
+            })
+            ->get()
+            ->groupBy('order_type')
+            ->map(function ($item) {
+                return [
+                    'jumlah' => $item->count(),
+                    'total' => $item->sum('total')
+                ];
+            });
+        if ($data->count() == 0) {
+            return response()->json([
+                'message' => 'Data tidak ditemukan',
+            ], 400);
+        }
+
+        return Excel::download(new LaporanJenisTransaksiExport([
+            'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
+            'record' => $data,
+            'tanggal_awal' => $tanggal_awal ?? 'Semua Tanggal',
+            'tanggal_akhir' => $tanggal_akhir ?? 'Semua Tanggal',
+        ]), 'laporan_transaksi ' . Carbon::now()->format('d-m-Y') . '.xlsx');
     }
 }

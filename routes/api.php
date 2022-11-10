@@ -55,11 +55,8 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/laporan/invoice', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanInvoice']);
     Route::post('/laporan/transaksi', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanTransaksi']);
     Route::post('/laporan/product-favorit', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanProductFavorit']);
+    Route::post('/laporan/jenis-transaksi', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanJenisTransaksi']);
 
-    Route::get('/card', [App\Http\Controllers\API\CardController::class, 'index']);
-    Route::post('/card', [App\Http\Controllers\API\CardController::class, 'bind']);
-    Route::put('/card/{id}', [App\Http\Controllers\API\CardController::class, 'bindValidate']);
-    Route::delete('/card/{id}', [App\Http\Controllers\API\CardController::class, 'unBind']);
 
     Route::prefix('tavsir')->group(function () {
         Route::get('/product', [App\Http\Controllers\API\TavsirController::class, 'productList']);
@@ -120,6 +117,12 @@ Route::prefix('travshop')->group(function () {
     Route::post('/rating/{id}', [App\Http\Controllers\API\RatingController::class, 'store']);
     Route::post('/order-verification/{id}', [App\Http\Controllers\API\TravShopController::class, 'verifikasiOrder']);
 });
+
+Route::get('/card', [App\Http\Controllers\API\CardController::class, 'index']);
+Route::post('/card', [App\Http\Controllers\API\CardController::class, 'bind']);
+Route::put('/card/{id}', [App\Http\Controllers\API\CardController::class, 'bindValidate']);
+Route::delete('/card/{id}', [App\Http\Controllers\API\CardController::class, 'unBind']);
+
 Route::get('chat', [App\Http\Controllers\API\ChatController::class, 'index']);
 Route::get('chat/{chat}', [App\Http\Controllers\API\ChatController::class, 'show']);
 Route::post('chat', [App\Http\Controllers\API\ChatController::class, 'store']);
