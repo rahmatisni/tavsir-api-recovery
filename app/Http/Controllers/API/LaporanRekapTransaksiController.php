@@ -81,6 +81,7 @@ class LaporanRekapTransaksiController extends Controller
             'start_date' => (string) $periode_berjalan->start_date,
             'end_date' => (string) $periode_berjalan->end_date,
             'periode' => $periode_berjalan->periode,
+            'total' => $data_all->sum('total'),
             'detil' => RekapTransOrderResource::collection($data_all)
         ];
 
