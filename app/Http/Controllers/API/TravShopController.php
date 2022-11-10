@@ -376,14 +376,17 @@ class TravShopController extends Controller
                         $request->customer_name
                     );
                     if ($res['status'] == 'success') {
+                        $pay = null;
                         if ($data->payment === null) {
-                            $payment = new TransPayment();
-                            $payment->data = $res['responseData'];
-                            $data->payment()->save($payment);
+                            $pay = new TransPayment();
+                            $pay->data = $res['responseData'];
+                            $data->payment()->save($pay);
                         } else {
-                            $data->payment->update(['data' => $res['responseData']]);
+                            $pay = $data->payment;
+                            $pay->data = $res['responseData'];
+                            $pay->save();
                         }
-                        $data->service_fee = $payment->data->fee;
+                        $data->service_fee = $pay->data['fee'];
                         $data->total = $data->total + $data->service_fee;
                         $data->save();
                     } else {
