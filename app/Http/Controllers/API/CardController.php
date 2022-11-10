@@ -5,10 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BindRequest;
 use App\Http\Requests\BindValidateRequest;
-use App\Models\Voucher;
-use App\Http\Requests\VoucherRequest;
 use App\Models\Bind;
-use App\Models\Dto\BindingDto;
 use App\Models\PgJmto;
 
 class CardController extends Controller
