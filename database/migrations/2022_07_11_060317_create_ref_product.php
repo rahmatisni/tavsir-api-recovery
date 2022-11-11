@@ -25,6 +25,7 @@ class CreateRefProduct extends Migration
             $table->boolean('is_active')->default(1);
             $table->string('description')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

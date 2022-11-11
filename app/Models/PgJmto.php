@@ -127,7 +127,7 @@ class PgJmto extends Model
                 "rc" => "0000",
                 "rcm" => "success",
                 "responseData" => [
-                    "sof_code" => "BRI",
+                    "sof_code" => $sof_code,
                     "va_number" => "7777700100299999",
                     "bill" => $payload['amount'],
                     "fee" => "1000",
