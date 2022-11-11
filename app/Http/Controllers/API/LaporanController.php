@@ -9,9 +9,12 @@ use App\Exports\LaporanOperationalExport;
 use App\Exports\LaporanPenjualanExport;
 use App\Exports\LaporanPenjualanKategoriExport;
 use App\Exports\LaporanProductFavoritExport;
+use App\Exports\LaporanRestAreaExport;
+use App\Exports\LaporanTenantExport;
 use App\Exports\LaporanTransaksiExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DownloadLaporanRequest;
+use App\Models\RestArea;
 use App\Models\Tenant;
 use App\Models\TransInvoice;
 use App\Models\TransOperational;
@@ -394,5 +397,65 @@ class LaporanController extends Controller
             'tanggal_awal' => $tanggal_awal ?? 'Semua Tanggal',
             'tanggal_akhir' => $tanggal_akhir ?? 'Semua Tanggal',
         ]), 'laporan_transaksi ' . Carbon::now()->format('d-m-Y') . '.xlsx');
+    }
+
+    public function downloadLaporanRestArea(DownloadLaporanRequest $request)
+    {
+        $tanggal_awal = $request->tanggal_awal;
+        $tanggal_akhir = $request->tanggal_akhir;
+
+        $data = RestArea::when(($tanggal_awal && $tanggal_akhir),
+            function ($q) use ($tanggal_awal, $tanggal_akhir) {
+                return $q->whereBetween(
+                    'created_at',
+                    [
+                        $tanggal_awal,
+                        $tanggal_akhir . ' 23:59:59'
+                    ]
+                );
+            }
+        )
+            ->get();
+        if ($data->count() == 0) {
+            return response()->json([
+                'message' => 'Data tidak ditemukan',
+            ], 400);
+        }
+
+        return Excel::download(new LaporanRestAreaExport([
+            'record' => $data,
+            'tanggal_awal' => $tanggal_awal ?? 'Semua Tanggal',
+            'tanggal_akhir' => $tanggal_akhir ?? 'Semua Tanggal',
+        ]), 'laporan_rest_area ' . Carbon::now()->format('d-m-Y') . '.xlsx');
+    }
+
+    public function downloadLaporanTenant(DownloadLaporanRequest $request)
+    {
+        $tanggal_awal = $request->tanggal_awal;
+        $tanggal_akhir = $request->tanggal_akhir;
+
+        $data = Tenant::when(($tanggal_awal && $tanggal_akhir),
+            function ($q) use ($tanggal_awal, $tanggal_akhir) {
+                return $q->whereBetween(
+                    'created_at',
+                    [
+                        $tanggal_awal,
+                        $tanggal_akhir . ' 23:59:59'
+                    ]
+                );
+            }
+        )
+            ->get();
+        if ($data->count() == 0) {
+            return response()->json([
+                'message' => 'Data tidak ditemukan',
+            ], 400);
+        }
+
+        return Excel::download(new LaporanTenantExport([
+            'record' => $data,
+            'tanggal_awal' => $tanggal_awal ?? 'Semua Tanggal',
+            'tanggal_akhir' => $tanggal_akhir ?? 'Semua Tanggal',
+        ]), 'laporan_tenant' . Carbon::now()->format('d-m-Y') . '.xlsx');
     }
 }

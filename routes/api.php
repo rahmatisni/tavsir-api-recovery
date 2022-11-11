@@ -56,6 +56,8 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/laporan/transaksi', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanTransaksi']);
     Route::post('/laporan/product-favorit', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanProductFavorit']);
     Route::post('/laporan/jenis-transaksi', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanJenisTransaksi']);
+    Route::post('/laporan/rest-area', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanRestArea']);
+    Route::post('/laporan/tenant', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanTenant']);
 
 
     Route::prefix('tavsir')->group(function () {
