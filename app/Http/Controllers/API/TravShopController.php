@@ -524,10 +524,10 @@ class TravShopController extends Controller
 
     public function statusPayment(Request $request, $id)
     {
+        $data = TransOrder::findOrfail($id);
         try {
             DB::beginTransaction();
 
-            $data = TransOrder::findOrfail($id);
 
             if ($data->status == TransOrder::PAYMENT_SUCCESS) {
 
