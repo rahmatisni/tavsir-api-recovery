@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use ParagonIE\ConstantTime\Base64;
 use phpDocumentor\Reflection\DocBlock\Tags\Throws;
@@ -297,6 +298,7 @@ class PgJmto extends Model
             //end fake
         }
         $res = self::service('/sof/bind', $payload);
+        Log::info('DD bind', $res->json());
         return $res;
     }
 
@@ -325,6 +327,7 @@ class PgJmto extends Model
             //end fake
         }
         $res = self::service('/sof/bind-validate', $payload);
+        Log::info('DD bind validate', $res->json());
         return $res;
     }
 
@@ -352,6 +355,7 @@ class PgJmto extends Model
             //end fake
         }
         $res = self::service('/sof/unbind', $payload);
+        Log::info('DD unbind', $res->json());
         return $res;
     }
 
@@ -384,7 +388,9 @@ class PgJmto extends Model
             ]);
             //end fake
         }
-        return self::service('/directdebit/inquiry', $payload);
+        $res = self::service('/directdebit/inquiry', $payload);
+        Log::info('DD inquiry', $res->json());
+        return $res;
     }
 
     public static function paymentDD($payload)
@@ -416,6 +422,8 @@ class PgJmto extends Model
             ]);
             //end fake
         }
-        return self::service('/directdebit/payment', $payload);
+        $res = self::service('/directdebit/payment', $payload);
+        Log::info('DD payment', $res->json());
+        return $res;
     }
 }
