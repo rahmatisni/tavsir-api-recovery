@@ -303,6 +303,14 @@ class PgJmto extends Model
             ]);
             //end fake
         }
+        $payload = [
+            "sof_code" => $payload['sof_code'],
+            "card_no" => $payload['card_no'],
+            "phone" => $payload['phone'],
+            "email" => $payload['email'],
+            "customer_name" => $payload['customer_name'],
+            "submerchant_id" => null
+        ];
         $res = self::service('/sof/bind', $payload);
         Log::info('DD bind', $res->json());
         return $res;
