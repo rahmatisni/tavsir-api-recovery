@@ -576,19 +576,20 @@ class TravShopController extends Controller
                 }
                 return response()->json($res->json(), 400);
             }
+
             $res = PgJmto::vaStatus(
-                $data_payment->sof_code,
-                $data_payment->bill_id,
-                $data_payment->va_number,
-                $data_payment->refnum,
-                $data_payment->phone,
-                $data_payment->email,
-                $data_payment->customer_name
+                $data_payment['sof_code'],
+                $data_payment['bill_id'],
+                $data_payment['va_number'],
+                $data_payment['refnum'],
+                $data_payment['phone'],
+                $data_payment['email'],
+                $data_payment['customer_name']
             );
             if ($res['status'] == 'success') {
                 $res_data = $res['responseData'];
-                $res_data['fee'] = $data_payment->fee;
-                $res_data['bill'] = $data_payment->bill;
+                $res_data['fee'] = $data_payment['fee'];
+                $res_data['bill'] = $data_payment['bill'];
                 if ($res_data['pay_status'] == '1') {
                     $data->status = TransOrder::PAYMENT_SUCCESS;
                     $data->save();
