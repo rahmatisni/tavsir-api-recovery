@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Exports\LaporanCustomerTavqrExport;
+use App\Exports\LaporanCustomerTravoyExport;
 use App\Exports\LaporanInvoiceExport;
 use App\Exports\LaporanJenisTransaksiExport;
 use App\Exports\LaporanMetodePembayaranExport;
@@ -20,6 +22,7 @@ use App\Models\TransInvoice;
 use App\Models\TransOperational;
 use App\Models\TransOrder;
 use App\Models\TransOrderDetil;
+use App\Models\Voucher;
 use Carbon\Carbon;
 use Excel;
 
@@ -457,5 +460,103 @@ class LaporanController extends Controller
             'tanggal_awal' => $tanggal_awal ?? 'Semua Tanggal',
             'tanggal_akhir' => $tanggal_akhir ?? 'Semua Tanggal',
         ]), 'laporan_tenant' . Carbon::now()->format('d-m-Y') . '.xlsx');
+    }
+
+
+    public function downloadLaporanCustomerTravoy(DownloadLaporanRequest $request)
+    {
+        $tanggal_awal = $request->tanggal_awal;
+        $tanggal_akhir = $request->tanggal_akhir;
+        $tenant_id = $request->tenant_id;
+        $rest_area_id = $request->rest_area_id;
+        $business_id = $request->business_id;
+
+        $data = TransOrder::done()
+            ->when(($tanggal_awal && $tanggal_akhir),
+                function ($q) use ($tanggal_awal, $tanggal_akhir) {
+                    return $q->whereBetween(
+                        'created_at',
+                        [
+                            $tanggal_awal,
+                            $tanggal_akhir . ' 23:59:59'
+                        ]
+                    );
+                }
+            )
+            ->when($tenant_id, function ($q) use ($tenant_id) {
+                return $q->where('tenant_id', $tenant_id);
+            })->when($rest_area_id, function ($qq) use ($rest_area_id) {
+                return $qq->where('rest_area_id', $rest_area_id);
+            })->when($business_id, function ($qq) use ($business_id) {
+                return $qq->where('business_id', $business_id);
+            })
+            ->orderBy('customer_id')
+            ->get()
+            ->groupBy('customer_id')
+            ->map(function ($item, $key) {
+                return [
+                    'customer_id' => $key,
+                    'customer_name' => $item->first()->customer_name,
+                    'customer_phone' => $item->first()->customer_phone,
+                    'total' => $item->count()
+                ];
+            });
+        if ($data->count() == 0) {
+            return response()->json([
+                'message' => 'Data tidak ditemukan',
+            ], 400);
+        }
+
+
+        return Excel::download(new LaporanCustomerTravoyExport([
+            'record' => $data,
+            'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
+            'tanggal_awal' => $tanggal_awal ?? 'Semua Tanggal',
+            'tanggal_akhir' => $tanggal_akhir ?? 'Semua Tanggal',
+        ]), 'laporan_cutomer_travoy ' . Carbon::now()->format('d-m-Y') . '.xlsx');
+    }
+
+    public function downloadLaporanCustomerTavqr(DownloadLaporanRequest $request)
+    {
+        $tanggal_awal = $request->tanggal_awal;
+        $tanggal_akhir = $request->tanggal_akhir;
+        $rest_area_id = $request->rest_area_id;
+
+        $data = Voucher::when(($tanggal_awal && $tanggal_akhir),
+            function ($q) use ($tanggal_awal, $tanggal_akhir) {
+                return $q->whereBetween(
+                    'created_at',
+                    [
+                        $tanggal_awal,
+                        $tanggal_akhir . ' 23:59:59'
+                    ]
+                );
+            }
+        )
+            ->when($rest_area_id, function ($qq) use ($rest_area_id) {
+                return $qq->where('rest_area_id', $rest_area_id);
+            })
+            ->orderBy('customer_id')
+            ->get()
+            ->map(function ($item, $key) {
+                return [
+                    'customer_id' => $item->customer_id,
+                    'customer_name' => $item->nama_lengkap,
+                    'customer_phone' => $item->phone,
+                ];
+            });
+        if ($data->count() == 0) {
+            return response()->json([
+                'message' => 'Data tidak ditemukan',
+            ], 400);
+        }
+
+
+        return Excel::download(new LaporanCustomerTavqrExport([
+            'record' => $data,
+            'rest_area' => RestArea::where('id', $rest_area_id)->first()->name ?? 'Semua Rest Area',
+            'tanggal_awal' => $tanggal_awal ?? 'Semua Tanggal',
+            'tanggal_akhir' => $tanggal_akhir ?? 'Semua Tanggal',
+        ]), 'laporan_cutomer_tavqr ' . Carbon::now()->format('d-m-Y') . '.xlsx');
     }
 }
