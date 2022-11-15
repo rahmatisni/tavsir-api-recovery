@@ -154,6 +154,7 @@ class PgJmto extends Model
         }
 
         $res = self::service('/va/create', $payload);
+        Log::info('Va create', $res->json());
         return $res->json();
     }
 
@@ -209,6 +210,7 @@ class PgJmto extends Model
         }
 
         $res = self::service('/va/cekstatus', $payload);
+        Log::info('Va status', $res->json());
         return $res->json();
     }
 
@@ -224,6 +226,8 @@ class PgJmto extends Model
             "customer_name" =>  $customer_name,
         ];
         $res = self::service('/va/delete', $payload);
+        Log::info('Va delete', $res->json());
+
         return $res->json();
     }
 
@@ -235,6 +239,8 @@ class PgJmto extends Model
             "sub_merchant_id" =>  $sub_merchant_id,
         ];
         $res = self::service('/sof/tariffee', $payload);
+        Log::info('PG tarif fee', $res->json());
+
         if ($res->successful()) {
             return $res->json()['responseData']['value'];
         }
