@@ -30,6 +30,7 @@ class TsOrderResource extends JsonResource
             'service_fee' => $this->service_fee,
             'total' => $this->total,
             'status' => $this->status,
+            'status_label' => $this->statusLabel(),
             'canceled_by' => $this->canceled_by,
             'canceled_name' => $this->canceled_name,
             'reason_cancel' => $this->reason_cancel,

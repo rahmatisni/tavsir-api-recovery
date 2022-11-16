@@ -121,4 +121,9 @@ class TransOrder extends BaseModel
                 $q->where('casheer_id', auth()->user()->id);
             });
     }
+
+    public function statusLabel()
+    {
+        return str_replace("_", " ", $this->status);
+    }
 }
