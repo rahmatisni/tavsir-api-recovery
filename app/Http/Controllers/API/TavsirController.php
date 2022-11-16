@@ -41,9 +41,9 @@ class TavsirController extends Controller
         })->when($category_id = $request->category_id, function ($q) use ($category_id) {
             return $q->where('category_id', $category_id);
         });
-        if($request->is_active == '0'){
+        if ($request->is_active == '0') {
             $data->where('is_active', '0');
-        }else if($request->is_active == '1'){
+        } else if ($request->is_active == '1') {
             $data->where('is_active', '1');
         }
         // $data->when($is_active = $request->is_active, function ($q) use ($is_active) {
@@ -154,6 +154,9 @@ class TavsirController extends Controller
                 $data->order_type = TransOrder::ORDER_TAVSIR;
                 $data->order_id = 'TAV-' . date('YmdHis');
                 $data->status = TransOrder::CART;
+            }
+            if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::DONE) {
+                return response()->json('Status ' . $data->status, 400);
             }
             $data->rest_area_id = auth()->user()->tenant->rest_area_id ?? null;
             $data->tenant_id = auth()->user()->tenant_id;
@@ -311,7 +314,7 @@ class TavsirController extends Controller
             } else {
                 $q->where('status', $status);
             }
-            })
+        })
             ->when($start_date = $request->start_date, function ($q) use ($start_date) {
                 $q->whereDate('created_at', '>=', date("Y-m-d", strtotime($start_date)));
             })
@@ -339,7 +342,7 @@ class TavsirController extends Controller
                     }
                 }
             });
-        if(!request()->sort){
+        if (!request()->sort) {
             $data = $data->orderBy('created_at', 'desc');
         }
         $data = $data->get();
