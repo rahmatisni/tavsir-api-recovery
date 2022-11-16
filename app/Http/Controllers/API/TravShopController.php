@@ -258,6 +258,7 @@ class TravShopController extends Controller
             if (request()->order_from_qr == true) {
                 if ($data->status == TransOrder::CART || $data->status == TransOrder::PENDING || $data->status == null) {
                     $data->status = TransOrder::WAITING_PAYMENT;
+                    $data->customer_id = $request->customer_id;
                 }
             }
 
