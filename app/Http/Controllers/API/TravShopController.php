@@ -173,7 +173,7 @@ class TravShopController extends Controller
 
     public function orderCustomer($id)
     {
-        $data = TransOrder::fromTakengo()->with('detil')->where('customer_id', $id)
+        $data = TransOrder::with('detil')->where('customer_id', $id)
             ->when($status = request()->status, function ($q) use ($status) {
                 return $q->where('status', $status);
             })->when($order_id = request()->order_id, function ($q) use ($order_id) {
