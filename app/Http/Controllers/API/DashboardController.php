@@ -81,7 +81,7 @@ class DashboardController extends Controller
         foreach ($topRest as $key => $value) {
             $restarea = RestArea::find($key);
             $top_rest_area[] = [
-                'name' => $restarea->name,
+                'name' => $restarea->name ?? '',
                 'photo' => $restarea->photo ? asset($restarea->photo) : null,
                 'total_transaksi' => $value,
             ];
