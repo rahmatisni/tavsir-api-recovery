@@ -359,6 +359,9 @@ class TavsirController extends Controller
     public function paymentOrder(PaymentOrderRequest $request)
     {
         $data = TransOrder::findOrFail($request->id);
+        if ($data->status == TransOrder::DONE || $data->status == TransOrder::CANCEL) {
+            return response()->json('Order Status ' . $this->status, 400);
+        }
         $payment_method = PaymentMethod::findOrFail($request->payment_method_id);
         try {
             DB::beginTransaction();
