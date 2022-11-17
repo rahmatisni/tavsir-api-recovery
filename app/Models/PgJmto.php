@@ -239,7 +239,7 @@ class PgJmto extends Model
             "sub_merchant_id" =>  $sub_merchant_id,
         ];
         $res = self::service('/sof/tariffee', $payload);
-        Log::info('PG tarif fee', $res->json());
+        // Log::info('PG tarif fee', $res->json());
 
         if ($res->successful()) {
             return $res->json()['responseData']['value'];

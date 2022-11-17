@@ -4,10 +4,14 @@ namespace App\Models;
 
 use App\Models\BaseModel;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Tenant extends BaseModel
 {
+    use SoftDeletes;
+
     protected $table = 'ref_tenant';
+    protected $dates = ['deleted_at'];
 
     protected $fillable = [
         'business_id',

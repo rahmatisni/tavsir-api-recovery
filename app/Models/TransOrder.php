@@ -58,7 +58,7 @@ class TransOrder extends BaseModel
 
     public function tenant()
     {
-        return $this->belongsTo(Tenant::class, 'tenant_id');
+        return $this->belongsTo(Tenant::class, 'tenant_id')->withTrashed();
     }
 
     public function payment_method()

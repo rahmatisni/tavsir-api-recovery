@@ -20,8 +20,8 @@ class CreateRefTenant extends Migration
             $table->string('name');
             $table->string('category');
             $table->string('address')->nullable();
-            $table->decimal('latitude',10,8);
-            $table->decimal('longitude',11,8);
+            $table->decimal('latitude', 10, 8);
+            $table->decimal('longitude', 11, 8);
             $table->integer('rest_area_id')->unsigned();
             $table->string('time_start');
             $table->string('time_end');
@@ -34,6 +34,7 @@ class CreateRefTenant extends Migration
 
             $table->integer('created_by')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
