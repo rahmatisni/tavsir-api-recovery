@@ -21,6 +21,7 @@ use App\Models\PgJmto;
 use App\Models\Product;
 use App\Models\RestArea;
 use App\Models\Tenant;
+use App\Models\User;
 use App\Models\TransOrder;
 use App\Models\TransOrderDetil;
 use App\Models\TransPayment;
@@ -161,9 +162,26 @@ class TravShopController extends Controller
             $data->status = TransOrder::WAITING_CONFIRMATION_TENANT;
             $data->save();
             $data->detil()->saveMany($order_detil_many);
+            
 
             DB::commit();
             $data = TransOrder::findOrfail($data->id);
+
+            $fcm_token = User::where([ ['tenant_id', $request->tenant_id]])->get();
+            $ids = array();
+            foreach ($fcm_token as $val) {
+                if ($val['fcm_token'] != null && $val['fcm_token'] != '')
+                    array_push($ids, $val['fcm_token']);
+            }
+            if ($ids != '') {
+                $payload = array(
+                    'id' => random_int(1000, 9999),
+                    'type' => 'action',
+                    'action' => 'new_order_tng'
+                );
+                $result = sendNotif($ids, 'Info', 'Pemberitahuan order baru TAKE N GO ' . $data->order_id, $payload);
+            }
+
             return response()->json(new TsOrderResource($data));
         } catch (\Throwable $th) {
             DB::rollback();
