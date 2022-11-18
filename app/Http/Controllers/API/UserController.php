@@ -31,9 +31,7 @@ class UserController extends Controller
         })->when($role = request()->role, function ($q) use ($role) {
             return $q->where('role', $role);
         })->when($rest_area_id = request()->rest_area_id, function ($q) use ($rest_area_id) {
-            return $q->whereHas('tenant', function ($q) use ($rest_area_id) {
-                return $q->where('rest_area_id', $rest_area_id);
-            });
+            return $q->where('rest_area_id', $rest_area_id);
         })->get();
 
         return response()->json($data);
