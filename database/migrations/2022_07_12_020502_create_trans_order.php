@@ -46,11 +46,12 @@ class CreateTransOrder extends Migration
             $table->string('reason_cancel')->nullable();
             $table->integer('voucher_id')->nullable();
             $table->integer('id_ops')->nullable();
-            
+            $table->integer('saldo_qr')->unisgned()->nullable();
+
             $table->timestamps();
         });
 
-        Schema::create('trans_order_detil', function(Blueprint $table){
+        Schema::create('trans_order_detil', function (Blueprint $table) {
             $table->increments('id');
             $table->string('trans_order_id');
             $table->integer('product_id')->unsigned();

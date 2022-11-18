@@ -433,6 +433,7 @@ class TavsirController extends Controller
                     $data->payment_method_id = $request->payment_method_id;
                     $data->payment_id = $payment->id;
                     $data->total = $data->total + $data->service_fee;
+                    $data->saldo_qr = $voucher->balance;
                     $data->status = TransOrder::DONE;
 
                     $trans_saldo = TransSaldo::with('trans_invoice')->ByTenant()->first();

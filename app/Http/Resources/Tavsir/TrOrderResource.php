@@ -37,6 +37,7 @@ class TrOrderResource extends JsonResource
             'sub_total' => $this->sub_total,
             'discount' => $this->discount,
             'total' => $this->total,
+            'saldo_qr' => $this->saldo_qr,
             'pay_amount' => $this->pay_amount,
             'casheer_name' => $this->casheer->name ?? '',
             'fee' => $this->fee,
