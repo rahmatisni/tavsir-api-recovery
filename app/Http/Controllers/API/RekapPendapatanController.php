@@ -37,9 +37,9 @@ class RekapPendapatanController extends Controller
             ->when($sort = request('sort'), function ($q) use ($sort) {
                 if(request('sort')){
                     $sort = explode('&', request('sort'));
-                    $query->orderBy($sort[0], $sort[1]);
+                    $q->orderBy($sort[0], $sort[1]);
                 }else{
-                    $query->orderBy('created_at', 'desc');
+                    $q->orderBy('created_at', 'desc');
                 }
             })            
             ->get();
