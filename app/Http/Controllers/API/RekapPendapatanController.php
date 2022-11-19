@@ -34,6 +34,14 @@ class RekapPendapatanController extends Controller
             ->when($order_type = request('order_type'), function ($q) use ($order_type) {
                 $q->where('order_type', $order_type);
             })
+            ->when($sort = request('sort'), function ($q) use ($sort) {
+                if(request('sort')){
+                    $sort = explode('&', request('sort'));
+                    $query->orderBy($sort[0], $sort[1]);
+                }else{
+                    $query->orderBy('created_at', 'desc');
+                }
+            })            
             ->get();
         $cash = $data_all;
         $qr = $data_all;
