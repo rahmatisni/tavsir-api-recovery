@@ -19,6 +19,7 @@ class ListTransInvoiceResource extends JsonResource
             'invoice_id' => $this->invoice_id,
             'cashier_name' => $this->cashier->name ?? '',
             'pay_station_name' => $this->pay_station->name ?? '',
+            'pay_petugas_name' => $this->pay_petugas->name ?? '',
             'claim_date' => $this->claim_date,
             'paid_date' => $this->paid_date,
             'nominal' => $this->nominal,
