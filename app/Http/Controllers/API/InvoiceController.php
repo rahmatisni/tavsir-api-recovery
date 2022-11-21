@@ -107,6 +107,7 @@ class InvoiceController extends Controller
 
         $data->status = TransInvoice::PAID;
         $data->pay_station_id = $request->pay_station_id ?? auth()->user()->paystation_id;
+        $data->pay_petugas_id = auth()->user()->id;
         $data->paid_date = Carbon::now();
         $data->kwitansi_id = strtolower(Str::random(16));
         $data->save();

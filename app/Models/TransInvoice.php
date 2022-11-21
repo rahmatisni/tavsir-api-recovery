@@ -28,4 +28,9 @@ class TransInvoice extends BaseModel
     {
         return $this->belongsTo(Paystation::class, 'pay_station_id');
     }
+
+    public function pay_petugas()
+    {
+        return $this->belongsTo(User::class, 'pay_petugas_id');
+    }
 }

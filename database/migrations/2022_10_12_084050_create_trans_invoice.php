@@ -19,6 +19,7 @@ class CreateTransInvoice extends Migration
             $table->string('invoice_id');
             $table->integer('cashier_id')->unsigned();
             $table->integer('pay_station_id')->unsigned();
+            $table->integer('pay_petugas_id')->unsigned();
             $table->integer('nominal')->unsigned();
             $table->dateTime('claim_date');
             $table->dateTime('paid_date')->nullable();

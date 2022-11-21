@@ -26,6 +26,7 @@ class InvoiceResource extends JsonResource
             'no_kwitansi' => $this->kwitansi_id,
             'saldo_tersimpan' => $this->trans_saldo->saldo ?? 0,
             'pay_station_name' => $this->pay_station->name ?? '',
+            'pay_petugas_name' => $this->pay_petugas->name ?? '',
         ];
     }
 }
