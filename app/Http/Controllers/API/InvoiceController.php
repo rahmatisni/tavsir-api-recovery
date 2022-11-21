@@ -23,7 +23,7 @@ class InvoiceController extends Controller
         $data = TransSaldo::with(['trans_invoice' => function ($query) {
             if (request('status') != '') {
                 $query->where('trans_invoice.status', '=',  request('status'));
-            }   
+            }
             if (request('filter') != '') {
                 $query->select('trans_invoice.*');
                 $query->addSelect('users.name');
@@ -35,13 +35,12 @@ class InvoiceController extends Controller
                 $query->orWhere('nominal', 'like', "%" . $filter . "%");
                 $query->orWhere('trans_invoice.status', 'like', "%" . $filter . "%");
                 $query->orWhere('name', 'like', "%" . $filter . "%");
-                     
             }
-         
-            if(request('sort')){
+
+            if (request('sort')) {
                 $sort = explode('&', request('sort'));
                 $query->orderBy($sort[0], $sort[1]);
-            }else{
+            } else {
                 $query->orderBy('claim_date', 'desc');
             }
         }])->ByRole()
@@ -107,7 +106,7 @@ class InvoiceController extends Controller
         }
 
         $data->status = TransInvoice::PAID;
-        $data->pay_station_id = $request->pay_station_id ?? auth()->user()->id;
+        $data->pay_station_id = $request->pay_station_id ?? auth()->user()->paystation_id;
         $data->paid_date = Carbon::now();
         $data->kwitansi_id = strtolower(Str::random(16));
         $data->save();
