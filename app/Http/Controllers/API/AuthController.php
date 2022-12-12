@@ -116,61 +116,63 @@ class AuthController extends Controller
     }
     public function openCashier(PinRequest $request)
     {
+        DB::beginTransaction();
         $user = auth()->user();
-        if (Hash::check($request->pin, $user->pin)) {
-            $cek = TransOperational::where('casheer_id', $user->id)
-                ->where('tenant_id', $user->tenant_id)
-                ->whereDay('start_date', '=', date('d'))
-                ->whereMonth('start_date', '=', date('m'))
-                ->whereYear('start_date', '=', date('Y'))
-                ->whereNull('end_date')
-                ->get();
+        $tenant = Tenant::findOrFail($user->tenant_id);
+        try {
+            if (Hash::check($request->pin, $user->pin)) {
+                $cek = TransOperational::where('casheer_id', $user->id)
+                    ->where('tenant_id', $user->tenant_id)
+                    ->whereDay('start_date', '=', date('d'))
+                    ->whereMonth('start_date', '=', date('m'))
+                    ->whereYear('start_date', '=', date('Y'))
+                    ->whereNull('end_date')
+                    ->get();
 
-            if ($cek->count() > 0) {
+                if ($cek->count() > 0) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Silahkan tutup kasir terlebih dahulu'
+                    ], 422);
+                }
+
+                $count_periode = TransOperational::where('casheer_id', $user->id)
+                    ->where('tenant_id', $user->tenant_id)
+                    ->whereDay('start_date', '=', date('d'))
+                    ->whereMonth('start_date', '=', date('m'))
+                    ->whereYear('start_date', '=', date('Y'))
+                    ->count() + 1;
+
+                $trans_op = new TransOperational();
+                $trans_cashbox = new TransCashbox();
+                $trans_cashbox->initial_cashbox = $request->cashbox;
+
+                $trans_op->tenant_id = $user->tenant_id;
+                $trans_op->casheer_id = $user->id;
+                $trans_op->periode = $count_periode;
+                $trans_op->start_date = Carbon::now();
+                $trans_op->save();
+                $trans_op->trans_cashbox()->save($trans_cashbox);
+
+                // otomatis buka toko jika buka kasir
+                if ($tenant->is_open == 0) {
+                    $tenant->update(['is_open' => 1]);
+                }
+                DB::commit();
                 return response()->json([
-                    'status' => 'error',
-                    'message' => 'Silahkan tutup kasir terlebih dahulu'
-                ], 422);
+                    'status' => 'success',
+                    'message' => 'Open cashier successfully'
+                ]);
             }
-
-
-            $count_periode = TransOperational::where('casheer_id', $user->id)
-                ->where('tenant_id', $user->tenant_id)
-                ->whereDay('start_date', '=', date('d'))
-                ->whereMonth('start_date', '=', date('m'))
-                ->whereYear('start_date', '=', date('Y'))
-                ->count() + 1;
-
-            $trans_op = new TransOperational();
-            $trans_cashbox = new TransCashbox();
-            $trans_cashbox->initial_cashbox = $request->cashbox;
-
-            $trans_op->tenant_id = $user->tenant_id;
-            $trans_op->casheer_id = $user->id;
-            $trans_op->periode = $count_periode;
-            $trans_op->start_date = Carbon::now();
-            $trans_op->save();
-            $trans_op->trans_cashbox()->save($trans_cashbox);
-
-            // otomatis buka toko jika buka kasir
-            $tenant = Tenant::find($user->tenant_id);
-            if (@$tenant->is_open == 0) {
-                $tenant->update(['is_open' => 1]);
-            }
-
 
             return response()->json([
-                'status' => 'success',
-                'message' => 'Open cashier successfully'
-            ]);
+                'status' => 'error',
+                'message' => 'PIN verification failed'
+            ], 422);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json($th->getMessage(), 500);
         }
-
-
-
-        return response()->json([
-            'status' => 'error',
-            'message' => 'PIN verification failed'
-        ], 422);
     }
 
     public function closeCashier(CloseCashierRequest $request)
