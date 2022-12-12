@@ -154,7 +154,7 @@ class AuthController extends Controller
 
             // otomatis buka toko jika buka kasir
             $tenant = Tenant::find($user->tenant_id);
-            if ($tenant->is_open == 0) {
+            if (@$tenant->is_open == 0) {
                 $tenant->update(['is_open' => 1]);
             }
 
