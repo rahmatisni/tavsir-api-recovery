@@ -123,7 +123,7 @@ class AuthController extends Controller
         if (!$tenant) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Tenant ID ' . $user->tenant_id . ' invalid'
+                'message' => 'User Tenant ID ' . $user->tenant_id . ' invalid'
             ], 400);
         }
         try {
