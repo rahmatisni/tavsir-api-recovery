@@ -30,6 +30,7 @@ use App\Models\TransPayment;
 use App\Models\TransSaldo;
 use App\Models\Voucher;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class TavsirController extends Controller
 {
@@ -215,6 +216,7 @@ class TavsirController extends Controller
             return response()->json(TransOrder::with('detil')->find($data->id));
         } catch (\Throwable $th) {
             DB::rollback();
+            Log::error($th);
             return response()->json(['error' => $th->getMessage()], 500);
         }
     }
@@ -460,6 +462,7 @@ class TavsirController extends Controller
             return response()->json(new TrOrderResource($data));
         } catch (\Throwable $th) {
             DB::rollback();
+            Log::error($th);
             return response()->json(['error' => $th->getMessage()], 500);
         }
     }
