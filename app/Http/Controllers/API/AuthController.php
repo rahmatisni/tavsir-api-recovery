@@ -118,7 +118,13 @@ class AuthController extends Controller
     {
         DB::beginTransaction();
         $user = auth()->user();
-        $tenant = Tenant::findOrFail($user->tenant_id);
+        $tenant = Tenant::find($user->tenant_id);
+        if (!$tenant) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Tenant ID ' . $user->tenant_id . ' invalid'
+            ], 400);
+        }
         try {
             if (Hash::check($request->pin, $user->pin)) {
                 $cek = TransOperational::where('casheer_id', $user->id)
