@@ -24,7 +24,7 @@ class ChangeStatusOrderReqeust extends FormRequest
     public function rules()
     {
         return [
-            'status' => 'required|string|in:WAITING_OPEN,WAITING_CONFIRMATION,WAITING_PAYMENT,PAYMENT_SUCCESS,PREPARED,READY,DONE,CANCEL'
+            'status' => 'required|string|in:WAITING_OPEN,WAITING_CONFIRMATION_USER,WAITING_CONFIRMATION_TENANT,WAITING_PAYMENT,PAYMENT_SUCCESS,PREPARED,READY,DONE,CANCEL'
         ];
     }
 }
