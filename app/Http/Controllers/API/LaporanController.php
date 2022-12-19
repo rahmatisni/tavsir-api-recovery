@@ -16,6 +16,7 @@ use App\Exports\LaporanTenantExport;
 use App\Exports\LaporanTransaksiExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DownloadLaporanRequest;
+use App\Http\Resources\LaporanPenjualanKategoriResource;
 use App\Models\RestArea;
 use App\Models\Tenant;
 use App\Models\TransInvoice;
@@ -23,11 +24,17 @@ use App\Models\TransOperational;
 use App\Models\TransOrder;
 use App\Models\TransOrderDetil;
 use App\Models\Voucher;
+use App\Services\LaporanServices;
 use Carbon\Carbon;
 use Excel;
 
 class LaporanController extends Controller
 {
+    public $services;
+    public function __construct(LaporanServices $services)
+    {
+        $this->services = $services;
+    }
     public function downloadLaporanPenjualan(DownloadLaporanRequest $request)
     {
         $tanggal_awal = $request->tanggal_awal;
@@ -114,49 +121,14 @@ class LaporanController extends Controller
 
     public function downloadLaporanPenjualanKategori(DownloadLaporanRequest $request)
     {
-        $tanggal_awal = $request->tanggal_awal;
-        $tanggal_akhir = $request->tanggal_akhir;
-        $tenant_id = $request->tenant_id;
-        $rest_area_id = $request->rest_area_id;
-        $business_id = $request->business_id;
-
-        $data = TransOrderDetil::whereHas('trans_order', function ($q) use ($tanggal_awal, $tanggal_akhir, $tenant_id, $rest_area_id, $business_id) {
-            return $q->where('status', TransOrder::DONE)
-                ->when(($tanggal_awal && $tanggal_akhir), function ($qq) use ($tanggal_awal, $tanggal_akhir) {
-                    return $qq->whereBetween(
-                        'created_at',
-                        [
-                            $tanggal_awal,
-                            $tanggal_akhir . ' 23:59:59'
-                        ]
-                    );
-                })->when($tenant_id, function ($qq) use ($tenant_id) {
-                    return $qq->where('tenant_id', $tenant_id);
-                })->when($rest_area_id, function ($qq) use ($rest_area_id) {
-                    return $qq->where('rest_area_id', $rest_area_id);
-                })->when($business_id, function ($qq) use ($business_id) {
-                    return $qq->where('business_id', $business_id);
-                });
-        })->with('product.category')->get()
-            ->groupBy('product.category.name')
-            ->map(function ($item) {
-                return [
-                    'qty' => $item->sum('qty'),
-                    'total' => $item->sum('total_price')
-                ];
-            });
-        if ($data->count() == 0) {
-            return response()->json([
-                'message' => 'Data tidak ditemukan',
-            ], 400);
-        }
-        $record = [
-            'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
-            'record' => $data,
-            'tanggal_awal' => $tanggal_awal ?? 'Semua Tanggal',
-            'tanggal_akhir' => $tanggal_akhir ?? 'Semua Tanggal',
-        ];
+        $record = $this->services->penjualanKategori($request);
         return Excel::download(new LaporanPenjualanKategoriExport($record), 'laporan_penjualan_kategori ' . Carbon::now()->format('d-m-Y') . '.xlsx');
+    }
+
+    public function laporanPenjualanKategori(DownloadLaporanRequest $request)
+    {
+        $record = $this->services->penjualanKategori($request);
+        return response()->json(new LaporanPenjualanKategoriResource($record));
     }
 
     public function downloadLaporanMetodePembayaran(DownloadLaporanRequest $request)
