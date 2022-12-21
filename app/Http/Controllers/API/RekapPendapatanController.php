@@ -35,13 +35,13 @@ class RekapPendapatanController extends Controller
                 $q->where('order_type', $order_type);
             })
             ->when($sort = request('sort'), function ($q) use ($sort) {
-                if(request('sort')){
+                if (request('sort')) {
                     $sort = explode('&', request('sort'));
                     $q->orderBy($sort[0], $sort[1]);
-                }else{
+                } else {
                     $q->orderBy('created_at', 'desc');
                 }
-            })            
+            })
             ->get();
         $cash = $data_all;
         $qr = $data_all;

@@ -15,14 +15,21 @@ class LaporanRekapTransaksiController extends Controller
 {
     public function index()
     {
+        $tanggal_awal = request()->tanggal_awal;
+        $tanggal_akhir = request()->tanggal_akhir;
+
         DB::enableQueryLog();
         $data = TransOperational::with('trans_cashbox', 'cashier')->byRole()
             ->whereNotNull('end_date')
-            ->when($tanggal = request('start_date'), function ($q) use ($tanggal) {
-                $q->whereDate('created_at', '>=', $tanggal);
-            })
-            ->when($tanggal = request('end_date'), function ($q) use ($tanggal) {
-                $q->whereDate('created_at', '<=', $tanggal);
+            ->when(($tanggal_awal && $tanggal_akhir), function ($q) use ($tanggal_awal, $tanggal_akhir) {
+
+                return $q->whereBetween(
+                    'created_at',
+                    [
+                        $tanggal_awal,
+                        $tanggal_akhir . ' 23:59:59'
+                    ]
+                );
             })
             ->when($filter = request('filter'), function ($q) use ($filter) {
                 return

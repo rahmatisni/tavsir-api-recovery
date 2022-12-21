@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\DashboardRequest;
 use App\Models\Product;
 use App\Models\RestArea;
 use App\Models\Tenant;
@@ -13,19 +14,29 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(DashboardRequest $request)
     {
+        $tanggal_awal = $request->tanggal_awal;
+        $tanggal_akhir = $request->tanggal_akhir;
+
         $order = TransOrder::Done()
-            ->when($rest_area_id = request()->rest_area_id, function ($q) use ($rest_area_id) {
+            ->when($rest_area_id = $request->rest_area_id, function ($q) use ($rest_area_id) {
                 $q->whereHas('tenant', function ($qq) use ($rest_area_id) {
                     $qq->where('rest_area_id', $rest_area_id);
                 });
-            })->when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
+            })->when($tenant_id = $request->tenant_id, function ($q) use ($tenant_id) {
                 $q->where('tenant_id', $tenant_id);
-            })->when($business_id = request()->business_id, function ($q) use ($business_id) {
+            })->when($business_id = $request->business_id, function ($q) use ($business_id) {
                 $q->where('business_id', $business_id);
-            })->when($tanggal = request()->tanggal, function ($q) use ($tanggal) {
-                $q->whereDate('created_at', $tanggal);
+            })->when(($tanggal_awal && $tanggal_akhir), function ($q) use ($tanggal_awal, $tanggal_akhir) {
+
+                return $q->whereBetween(
+                    'created_at',
+                    [
+                        $tanggal_awal,
+                        $tanggal_akhir . ' 23:59:59'
+                    ]
+                );
             })->get();
         $all1 = $order;
         $all2 = $order;
