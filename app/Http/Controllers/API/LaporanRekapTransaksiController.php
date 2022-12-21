@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\DateRangeRequest;
 use App\Http\Resources\LaporanRekapTransaksiResource;
 use App\Http\Resources\RekapResource;
 use App\Http\Resources\RekapTransOrderResource;
@@ -13,10 +14,10 @@ use DB;
 
 class LaporanRekapTransaksiController extends Controller
 {
-    public function index()
+    public function index(DateRangeRequest $request)
     {
-        $tanggal_awal = request()->tanggal_awal;
-        $tanggal_akhir = request()->tanggal_akhir;
+        $tanggal_awal = $request->tanggal_awal;
+        $tanggal_akhir = $request->tanggal_akhir;
 
         DB::enableQueryLog();
         $data = TransOperational::with('trans_cashbox', 'cashier')->byRole()
