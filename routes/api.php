@@ -48,7 +48,9 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/laporan-rekap-transaksi/rekap/{id}', [App\Http\Controllers\API\LaporanRekapTransaksiController::class, 'showRekap']);
     Route::post('/laporan-rekap-transaksi/transaksi/{id}', [App\Http\Controllers\API\LaporanRekapTransaksiController::class, 'showTransaksi']);
     Route::get('/laporan-rekap-transaksi/download/{id}', [App\Http\Controllers\API\LaporanRekapTransaksiController::class, 'download']);
+
     Route::post('/laporan/penjualan', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanPenjualan']);
+    Route::post('/penjualan', [App\Http\Controllers\API\LaporanController::class, 'laporanPenjualan']);
 
     Route::post('/laporan/operational', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanOperational']);
     Route::post('/operational', [App\Http\Controllers\API\LaporanController::class, 'laporanOperational']);

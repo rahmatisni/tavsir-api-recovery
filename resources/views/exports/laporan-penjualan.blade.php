@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+
 <body>
     <h4>Laporan Penjualan Product</h4>
     <br>
@@ -27,26 +29,24 @@
         <tbody>
             @foreach($record as $value)
             <tr>
-                <td>{{ $value->product->sku ?? '' }}</td>
-                <td>{{ $value->product->name ?? '' }}
-                    @foreach($value->customize as $v)
-                    {!! $v->customize_name.': '.$v->pilihan_name !!}
-                    @endforeach</td>
-                <td>{{ $value->product->category->name ?? '' }}</td>
-                <td>{{ $value->qty }}</td>
-                <td>{{ $value->base_price }}</td>
-                <td>{{ $value->total_price }}</td>
+                <td>{{ $value->sku }}</td>
+                <td>{{ $value->nama_product }}</td>
+                <td>{{ $value->kategori}}</td>
+                <td>{{ $value->jumlah }}</td>
+                <td>{{ $value->harga }}</td>
+                <td>{{ $value->pendapatan }}</td>
             </tr>
             @endforeach
         </tbody>
         <tfoot>
             <tr>
                 <td colspan="3">Total</td>
-                <td>{{ $record->sum('qty')}}</td>
+                <td>{{ $total_jumlah }}</td>
                 <td></td>
-                <td>{{ $record->sum('total_price')}}</td>
+                <td>{{ $total_pendapatan }}</td>
             </tr>
         </tfoot>
     </table>
 </body>
+
 </html>

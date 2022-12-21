@@ -36,47 +36,17 @@ class LaporanController extends Controller
     {
         $this->services = $services;
     }
+
     public function downloadLaporanPenjualan(DownloadLaporanRequest $request)
     {
-        $tanggal_awal = $request->tanggal_awal;
-        $tanggal_akhir = $request->tanggal_akhir;
-        $tenant_id = $request->tenant_id;
-        $rest_area_id = $request->rest_area_id;
-        $business_id = $request->business_id;
-
-        $data = TransOrderDetil::whereHas(
-            'trans_order',
-            function ($q) use ($tanggal_awal, $tanggal_akhir, $tenant_id, $rest_area_id, $business_id) {
-                return $q->where('status', TransOrder::DONE)
-                    ->when(($tanggal_awal && $tanggal_akhir), function ($qq) use ($tanggal_awal, $tanggal_akhir) {
-                        return $qq->whereBetween(
-                            'created_at',
-                            [
-                                $tanggal_awal,
-                                $tanggal_akhir . ' 23:59:59'
-                            ]
-                        );
-                    })->when($tenant_id, function ($qq) use ($tenant_id) {
-                        return $qq->where('tenant_id', $tenant_id);
-                    })->when($rest_area_id, function ($qq) use ($rest_area_id) {
-                        return $qq->where('rest_area_id', $rest_area_id);
-                    })->when($business_id, function ($qq) use ($business_id) {
-                        return $qq->where('business_id', $business_id);
-                    });
-            }
-        )->get();
-        if ($data->count() == 0) {
-            return response()->json([
-                'message' => 'Data tidak ditemukan',
-            ], 400);
-        }
-        $record = [
-            'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
-            'record' => $data,
-            'tanggal_awal' => $tanggal_awal ?? 'Semua Tanggal',
-            'tanggal_akhir' => $tanggal_akhir ?? 'Semua Tanggal',
-        ];
+        $record = $this->services->penjualan($request);
         return Excel::download(new LaporanPenjualanExport($record), 'laporan_penjualan ' . Carbon::now()->format('d-m-Y') . '.xlsx');
+    }
+
+    public function laporanPenjualan(DownloadLaporanRequest $request)
+    {
+        $record = $this->services->penjualan($request);
+        return response()->json($record);
     }
 
     public function downloadLaporanOperational(DownloadLaporanRequest $request)

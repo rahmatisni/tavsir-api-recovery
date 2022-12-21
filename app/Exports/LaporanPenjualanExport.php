@@ -4,7 +4,6 @@ namespace App\Exports;
 
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class LaporanPenjualanExport implements FromView
 {
@@ -12,9 +11,9 @@ class LaporanPenjualanExport implements FromView
     {
         $this->data = $data;
     }
-   
+
     public function view(): View
     {
-        return view('exports.laporan-penjualan',$this->data);
+        return view('exports.laporan-penjualan', $this->data);
     }
 }
