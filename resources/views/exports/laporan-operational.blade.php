@@ -42,33 +42,33 @@
             <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $value->periode  }}</td>
-                <td>{{ $value->start_date }}</td>
-                <td>{{ $value->end_date }}</td>
-                <td>{{ $value->end_date }}</td>
-                <td>{{ $value->cashier->name ?? '' }}</td>
-                <td>{{ $value->trans_cashbox->inital_cashbox ?? 0 }}</td>
-                <td>{{ $value->trans_cashbox->rp_tav_qr ?? 0 }}</td>
-                <td>{{ $value->trans_cashbox->total_digital ?? 0 }}</td>
-                <td>{{ $value->trans_cashbox->rp_cash ?? 0 }}</td>
-                <td>{{ $value->trans_cashbox->cashbox ?? 0 }}</td>
-                <td>{{ $value->trans_cashbox->pengeluaran_cashbox ?? 0 }}</td>
-                <td>{{ $value->trans_cashbox->different_cashbox ?? 0 }}</td>
-                <td>{{ $value->trans_cashbox->description ?? '' }}</td>
-                <td>{{ $value->trans_cashbox->rp_total ?? '' }}</td>
+                <td>{{ $value->waktu_buka }}</td>
+                <td>{{ $value->waktu_tutup }}</td>
+                <td>{{ $value->waktu_rekap }}</td>
+                <td>{{ $value->kasir }}</td>
+                <td>{{ $value->uang_kembalian }}</td>
+                <td>{{ $value->qr }}</td>
+                <td>{{ $value->digital }}</td>
+                <td>{{ $value->tunai }}</td>
+                <td>{{ $value->nominal_tunai}}</td>
+                <td>{{ $value->koreksi }}</td>
+                <td>{{ $value->selisih}}</td>
+                <td>{{ $value->keterangan_koreksi }}</td>
+                <td>{{ $value->total_rekap }}</td>
             </tr>
             @endforeach
         </tbody>
         <tfoot>
             <tr>
                 <td colspan="7">Total</td>
-                <td>{{ $record->sum('trans_cashbox.rp_tav_qr')}}</td>
-                <td>{{ $record->sum('trans_cashbox.total_digital')}}</td>
-                <td>{{ $record->sum('trans_cashbox.rp_cash')}}</td>
-                <td>{{ $record->sum('trans_cashbox.cashbox')}}</td>
-                <td>{{ $record->sum('trans_cashbox.rp_tav_qr')}}</td>
+                <td>{{ $total_qr }}</td>
+                <td>{{ $total_digital }}</td>
+                <td>{{ $total_tunai }}</td>
+                <td>{{ $total_nominal_tunai }}</td>
+                <td>{{ $total_koreksi }}</td>
                 <td></td>
                 <td></td>
-                <td>{{ $record->sum('trans_cashbox.rp_total')}}</td>
+                <td>{{ $total }}</td>
             </tr>
         </tfoot>
     </table>

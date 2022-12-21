@@ -16,6 +16,7 @@ use App\Exports\LaporanTenantExport;
 use App\Exports\LaporanTransaksiExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DownloadLaporanRequest;
+use App\Http\Resources\BaseResource;
 use App\Http\Resources\LaporanPenjualanKategoriResource;
 use App\Models\RestArea;
 use App\Models\Tenant;
@@ -80,43 +81,14 @@ class LaporanController extends Controller
 
     public function downloadLaporanOperational(DownloadLaporanRequest $request)
     {
-        $tanggal_awal = $request->tanggal_awal;
-        $tanggal_akhir = $request->tanggal_akhir;
-        $tenant_id = $request->tenant_id;
-        $rest_area_id = $request->rest_area_id;
-        $business_id = $request->business_id;
-
-        $data = TransOperational::when(($tanggal_awal && $tanggal_akhir), function ($q) use ($tanggal_awal, $tanggal_akhir) {
-            return $q->whereBetween(
-                'created_at',
-                [
-                    $tanggal_awal,
-                    $tanggal_akhir . ' 23:59:59'
-                ]
-            );
-        })->whereHas('tenant', function ($qq) use ($tenant_id, $rest_area_id, $business_id) {
-            return $qq->when($tenant_id, function ($qq) use ($tenant_id) {
-                return $qq->where('tenant_id', $tenant_id);
-            })->when($rest_area_id, function ($qq) use ($rest_area_id) {
-                return $qq->where('rest_area_id', $rest_area_id);
-            })->when($business_id, function ($qq) use ($business_id) {
-                return $qq->where('business_id', $business_id);
-            });
-        })
-            ->whereNotNull('end_date')
-            ->get();
-        if ($data->count() == 0) {
-            return response()->json([
-                'message' => 'Data tidak ditemukan',
-            ], 400);
-        }
-        $record = [
-            'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
-            'record' => $data,
-            'tanggal_awal' => $tanggal_awal ?? 'Semua Tanggal',
-            'tanggal_akhir' => $tanggal_akhir ?? 'Semua Tanggal',
-        ];
+        $record = $this->services->operational($request);
         return Excel::download(new LaporanOperationalExport($record), 'laporan_operational ' . Carbon::now()->format('d-m-Y') . '.xlsx');
+    }
+
+    public function laporanOperational(DownloadLaporanRequest $request)
+    {
+        $record = $this->services->operational($request);
+        return response()->json($record);
     }
 
     public function downloadLaporanPenjualanKategori(DownloadLaporanRequest $request)
