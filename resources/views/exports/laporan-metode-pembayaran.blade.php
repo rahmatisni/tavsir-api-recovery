@@ -28,17 +28,17 @@
             @foreach($record as $key => $value)
             <tr>
                 <td>{{ $loop->iteration }}</td>
-                <td>{{ $key }}</td>
-                <td>{{ $value['qty'] }}</td>
-                <td>{{ $value['total'] }}</td>
+                <td>{{ $value['metode'] }}</td>
+                <td>{{ $value['jumlah_transaksi'] }}</td>
+                <td>{{ $value['total_transaksi'] }}</td>
             </tr>
             @endforeach
         </tbody>
         <tfoot>
             <tr>
                 <td colspan="2">Total</td>
-                <td>{{ $record->sum('qty') }}</td>
-                <td>{{ $record->sum('total') }}</td>
+                <td>{{ $sum_jumlah_transaksi }}</td>
+                <td>{{ $sum_total_transaksi }}</td>
             </tr>
         </tfoot>
     </table>

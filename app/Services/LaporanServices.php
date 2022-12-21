@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Http\Requests\DownloadLaporanRequest;
+use App\Http\Resources\LaporanMetodePembayaranResource;
 use App\Http\Resources\LaporanOperationalResource;
 use App\Http\Resources\LaporanPenjualanResource;
 use App\Models\Tenant;
@@ -144,6 +145,66 @@ class LaporanServices
             'total_pendapatan' => $data->sum('total_price'),
             'record' => $res
         ];
+        return $record;
+    }
+
+    public function metodePembayaran(DownloadLaporanRequest $request)
+    {
+        $tanggal_awal = $request->tanggal_awal;
+        $tanggal_akhir = $request->tanggal_akhir;
+        $tenant_id = $request->tenant_id;
+        $rest_area_id = $request->rest_area_id;
+        $business_id = $request->business_id;
+
+        $data = TransOrder::Done()->when(($tanggal_awal && $tanggal_akhir),
+            function ($q) use ($tanggal_awal, $tanggal_akhir) {
+                return $q->whereBetween(
+                    'created_at',
+                    [
+                        $tanggal_awal,
+                        $tanggal_akhir . ' 23:59:59'
+                    ]
+                );
+            }
+        )
+            ->when($tenant_id, function ($q) use ($tenant_id) {
+                return $q->where('tenant_id', $tenant_id);
+            })->when($rest_area_id, function ($qq) use ($rest_area_id) {
+                return $qq->where('rest_area_id', $rest_area_id);
+            })->when($business_id, function ($qq) use ($business_id) {
+                return $qq->where('business_id', $business_id);
+            })
+            ->with('payment_method')->get()
+            ->groupBy('payment_method.name');
+
+        $hasil = [];
+        $sum_total_transaksi = 0;
+        $sum_jumlah_transaksi = 0;
+        foreach ($data as $k => $i) {
+            $jumlah_transaksi = $i->count();
+            $total_transaksi = $i->sum('total');
+
+            $sum_jumlah_transaksi += $jumlah_transaksi;
+            $sum_total_transaksi += $total_transaksi;
+
+            array_push($hasil, [
+                'metode' => $k,
+                'jumlah_transaksi' => $jumlah_transaksi,
+                'total_transaksi' => $total_transaksi
+            ]);
+        }
+        if ($data->count() == 0) {
+            abort(404);
+        }
+        $record = [
+            'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
+            'tanggal_awal' => $tanggal_awal ?? 'Semua Tanggal',
+            'tanggal_akhir' => $tanggal_akhir ?? 'Semua Tanggal',
+            'sum_jumlah_transaksi' => $sum_jumlah_transaksi,
+            'sum_total_transaksi' => $sum_total_transaksi,
+            'record' => $hasil,
+        ];
+
         return $record;
     }
 }
