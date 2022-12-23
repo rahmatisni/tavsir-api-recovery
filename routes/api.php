@@ -59,10 +59,13 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/penjualan-kategori', [App\Http\Controllers\API\LaporanController::class, 'laporanPenjualanKategori']);
 
     Route::post('/laporan/metode-pembayaran', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanMetodePembayaran']);
-    Route::post('/metode-pembayaran', [App\Http\Controllers\API\LaporanController::class, 'laporanMetodePembayaran']);
+    Route::post('/metode-pembayaran', [App\Http\Controllers\API\LaporanController::class, 'laporanTransaksi']);
 
     Route::post('/laporan/invoice', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanInvoice']);
+
     Route::post('/laporan/transaksi', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanTransaksi']);
+    Route::post('/transaksi', [App\Http\Controllers\API\LaporanController::class, 'laporanTransaksi']);
+
     Route::post('/laporan/product-favorit', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanProductFavorit']);
     Route::post('/laporan/jenis-transaksi', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanJenisTransaksi']);
     Route::post('/laporan/rest-area', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanRestArea']);

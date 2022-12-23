@@ -2,14 +2,17 @@
 
 namespace App\Services;
 
+use App\Exports\LaporanTransaksiExport;
 use App\Http\Requests\DownloadLaporanRequest;
 use App\Http\Resources\LaporanMetodePembayaranResource;
 use App\Http\Resources\LaporanOperationalResource;
 use App\Http\Resources\LaporanPenjualanResource;
+use App\Http\Resources\LaporanTransaksiResource;
 use App\Models\Tenant;
 use App\Models\TransOperational;
 use App\Models\TransOrder;
 use App\Models\TransOrderDetil;
+use Carbon\Carbon;
 
 class LaporanServices
 {
@@ -220,5 +223,70 @@ class LaporanServices
         ];
 
         return $record;
+    }
+
+    public function transaksi(DownloadLaporanRequest $request)
+    {
+        $tanggal_awal = $request->tanggal_awal;
+        $tanggal_akhir = $request->tanggal_akhir;
+        $tenant_id = $request->tenant_id;
+        $rest_area_id = $request->rest_area_id;
+        $business_id = $request->business_id;
+
+        $data = TransOrder::done()
+            ->when(($tanggal_awal && $tanggal_akhir),
+                function ($q) use ($tanggal_awal, $tanggal_akhir) {
+                    return $q->whereBetween(
+                        'created_at',
+                        [
+                            $tanggal_awal,
+                            $tanggal_akhir . ' 23:59:59'
+                        ]
+                    );
+                }
+            )
+            ->when($tenant_id, function ($q) use ($tenant_id) {
+                return $q->where('tenant_id', $tenant_id);
+            })->when($rest_area_id, function ($qq) use ($rest_area_id) {
+                return $qq->where('rest_area_id', $rest_area_id);
+            })->when($business_id, function ($qq) use ($business_id) {
+                return $qq->where('business_id', $business_id);
+            })
+            ->orderBy('created_at')
+            ->get();
+        if ($data->count() == 0) {
+            return response()->json([
+                'message' => 'Data tidak ditemukan',
+            ], 400);
+        }
+
+        $item_count = 0;
+        $hasil = [];
+
+        foreach ($data as $value) {
+            $count = $value->detil->count();
+            $item_count += $count;
+
+            array_push($hasil, [
+                'waktu_transaksi' => (string) $value->created_at,
+                'id_transaksi' => $value->order_id,
+                'total_product' => $count,
+                'total' => $value->total,
+                'metode_pembayaran' => $value->payment_method->name ?? '',
+                'jenis_transaksi' => $value->labelOrderType()
+            ]);
+        }
+
+        $data = [
+            'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
+            'tanggal_awal' => $tanggal_awal ?? 'Semua Tanggal',
+            'tanggal_akhir' => $tanggal_akhir ?? 'Semua Tanggal',
+            'total_product' => $item_count,
+            'total_total' => $data->sum('total'),
+            'record' => $hasil,
+
+        ];
+
+        return $data;
     }
 }
