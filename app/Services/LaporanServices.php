@@ -39,13 +39,25 @@ class LaporanServices
                     return $qq->where('business_id', $business_id);
                 });
         })->with('product.category')->get()
-            ->groupBy('product.category.name')
-            ->map(function ($item) {
-                return [
-                    'qty' => $item->sum('qty'),
-                    'total' => $item->sum('total_price')
-                ];
-            });
+            ->groupBy('product.category.name');
+
+        $hasil = [];
+        $sum_total_transaksi = 0;
+        $sum_jumlah_transaksi = 0;
+        foreach ($data as $k => $i) {
+            $jumlah_transaksi = $i->sum('qty');
+            $total_transaksi = $i->sum('total_price');
+
+            $sum_jumlah_transaksi += $jumlah_transaksi;
+            $sum_total_transaksi += $total_transaksi;
+
+            array_push($hasil, [
+                'kategori' => $k,
+                'jumlah_terjual' => $jumlah_transaksi,
+                'pendapatan_kategori' => $total_transaksi,
+            ]);
+        }
+
         if ($data->count() == 0) {
             abort(404);
         }
@@ -53,7 +65,9 @@ class LaporanServices
             'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
             'tanggal_awal' => $tanggal_awal ?? 'Semua Tanggal',
             'tanggal_akhir' => $tanggal_akhir ?? 'Semua Tanggal',
-            'data' => $data,
+            'sum_jumlah_transaksi' => $sum_jumlah_transaksi,
+            'sum_total_transaksi' => $sum_total_transaksi,
+            'data' => $hasil,
         ];
         return $record;
     }

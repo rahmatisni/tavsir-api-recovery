@@ -26,17 +26,17 @@
         <tbody>
             @foreach($data as $key => $value)
             <tr>
-                <td>{{ $key }}</td>
-                <td>{{ $value['qty'] }}</td>
-                <td>{{ $value['total'] }}</td>
+                <td>{{ $value['kategori'] }}</td>
+                <td>{{ $value['jumlah_terjual'] }}</td>
+                <td>{{ $value['pendapatan_kategori'] }}</td>
             </tr>
             @endforeach
         </tbody>
         <tfoot>
             <tr>
                 <td>Total</td>
-                <td>{{ $data->sum('qty') }}</td>
-                <td>{{ $data->sum('total') }}</td>
+                <td>{{ $sum_jumlah_transaksi }}</td>
+                <td>{{ $sum_total_transaksi }}</td>
             </tr>
         </tfoot>
     </table>
