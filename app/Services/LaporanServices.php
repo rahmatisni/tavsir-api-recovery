@@ -232,6 +232,8 @@ class LaporanServices
         $tenant_id = $request->tenant_id;
         $rest_area_id = $request->rest_area_id;
         $business_id = $request->business_id;
+        $order_type = $request->order_type;
+        $payment_method_id = $request->payment_method_id;
 
         $data = TransOrder::done()
             ->when(($tanggal_awal && $tanggal_akhir),
@@ -251,6 +253,10 @@ class LaporanServices
                 return $qq->where('rest_area_id', $rest_area_id);
             })->when($business_id, function ($qq) use ($business_id) {
                 return $qq->where('business_id', $business_id);
+            })->when($order_type, function ($qq) use ($order_type) {
+                return $qq->where('order_type', $order_type);
+            })->when($payment_method_id, function ($qq) use ($payment_method_id) {
+                return $qq->where('payment_method_id', $payment_method_id);
             })
             ->orderBy('created_at')
             ->get();
