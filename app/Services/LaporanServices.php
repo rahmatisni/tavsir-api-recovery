@@ -255,9 +255,7 @@ class LaporanServices
             ->orderBy('created_at')
             ->get();
         if ($data->count() == 0) {
-            return response()->json([
-                'message' => 'Data tidak ditemukan',
-            ], 400);
+            abort(404);
         }
 
         $item_count = 0;
