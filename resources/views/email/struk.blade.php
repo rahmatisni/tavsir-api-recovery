@@ -4,7 +4,7 @@
 <p>Halo kak {{ $user_name }} &#128522</p>
 <p>
     <b>
-        Selamat, Pembayaran dengan ID Transaksi {{ $order->order_id }} di {{ $order->tenant->name }} - {{ $order->tenant->rest_area->name }} berhasil!
+        Selamat, Pembayaran dengan ID Transaksi {{ $order->order_id }} di {{ $order->tenant->name ?? 'Tenant' }} - {{ $order->tenant->rest_area->name ?? 'Rest area' }} berhasil!
     </b>
 </p>
 <p>Terima kasih telah berbelanja di toko kami. Semoga harimu selalu menyenangkan ya! Berikut struk digital kamu.</p>
