@@ -105,7 +105,7 @@ class TenantController extends Controller
                 );
                 $result = sendNotif($ids, 'Pemberitahun Toko di Tutup', 'Pemberitahuan Toko anda di tutup sementara oleh ' . $user->name, $payload);
                 $tenant->update(['is_open' => $request->is_open]);
-                return response()->json($result);
+                return response()->json($tenant);
             }
         }
         $tenant->update(['is_open' => $request->is_open]);
