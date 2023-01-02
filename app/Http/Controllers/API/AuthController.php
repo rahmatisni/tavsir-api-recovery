@@ -35,12 +35,24 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
         if ($user) {
-            if ($request->fcm_token != '' && $request->fcm_token != null) {
-                User::where('id', $user->id)->update(['fcm_token' => $request->fcm_token]);
-            }
             if (Hash::check($request->password, $user->password)) {
+                if ($request->check) {
+                    $count = $user->accessTokens()->count();
+                    return response()->json([
+                        'is_login_other_device' => $count > 0 ? true : false,
+                        'login_count' => $count
+                    ], 200);
+                }
+                if ($user->role == User::TENANT) {
+                    $user->accessTokens()->delete();
+                }
                 $tokenResult = $user->createToken('Personal');
                 $token = $tokenResult->accessToken;
+
+                if ($request->fcm_token != '' && $request->fcm_token != null) {
+                    User::where('id', $user->id)->update(['fcm_token' => $request->fcm_token]);
+                }
+
                 $response = [
                     'access_token' => $token,
                 ];

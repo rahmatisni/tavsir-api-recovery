@@ -83,4 +83,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Paystation::class, 'paystation_id');
     }
+
+    public function accessTokens()
+    {
+        return $this->hasMany('App\OauthAccessToken');
+    }
 }
