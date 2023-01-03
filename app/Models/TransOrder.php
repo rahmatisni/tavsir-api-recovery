@@ -26,12 +26,17 @@ class TransOrder extends BaseModel
     public const ORDER_TAKE_N_GO = 'TAKE_N_GO';
     public const ORDER_TAVSIR = 'ORDER_TAVSIR';
 
+    public const DINE_IN = 'dine_in';
+    public const TAKE_AWAY = 'take_away';
+
     public const CANCELED_BY_CASHEER = 'CASHEER';
     public const CANCELED_BY_CUSTOMER = 'CUSTOMER';
 
 
     protected $fillable = [
         'order_type',
+        'cosume_type',
+        'nomor_name',
         'sub_total',
         'fee',
         'total',
@@ -125,5 +130,16 @@ class TransOrder extends BaseModel
     public function statusLabel()
     {
         return str_replace("_", " ", $this->status);
+    }
+
+    public function consumeTypeLabel()
+    {
+        if ($this->consume_type == self::DINE_IN) {
+            return 'Dine In';
+        } elseif ($this->consume_type == self::TAKE_AWAY) {
+            return 'Take Away';
+        } else {
+            return $this->consume_type;
+        }
     }
 }

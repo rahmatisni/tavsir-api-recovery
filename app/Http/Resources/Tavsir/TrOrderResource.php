@@ -17,6 +17,9 @@ class TrOrderResource extends JsonResource
         return [
             'id' => $this->id,
             'order_id' => $this->order_id,
+            'consume_type' => $this->consume_type,
+            'consume_type_label' => $this->consumeTypeLabel(),
+            'nomor_name' => $this->nomor_name,
             'tenant_id' => $this->tenant_id,
             'tenant_name' => $this->tenant->name ?? null,
             'business_id' => $this->business_id,

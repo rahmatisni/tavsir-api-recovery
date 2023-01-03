@@ -157,7 +157,7 @@ class TavsirController extends Controller
                 $data->status = TransOrder::CART;
             }
             if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::DONE) {
-                return response()->json('Status ' . $data->status, 400);
+                return response()->json(['message' => 'Order status ' . $data->statusLabel()], 400);
             }
             $data->rest_area_id = auth()->user()->tenant->rest_area_id ?? null;
             $data->tenant_id = auth()->user()->tenant_id;
@@ -258,7 +258,7 @@ class TavsirController extends Controller
     {
         $data = TransOrder::findOrfail($id);
         if ($data->status != TransOrder::WAITING_CONFIRMATION_TENANT && $data->status != TransOrder::WAITING_OPEN) {
-            return response()->json(['error' => 'Order ' . $data->status], 500);
+            return response()->json(['message' => 'Order status' . $data->statusLabel()], 400);
         }
 
         $data->detil->whereNotIn('id', $request->detil_id)->each(function ($item) {
@@ -362,11 +362,13 @@ class TavsirController extends Controller
     {
         $data = TransOrder::findOrFail($request->id);
         if ($data->status == TransOrder::DONE || $data->status == TransOrder::CANCEL) {
-            return response()->json('Order Status ' . $this->status, 400);
+            return response()->json(['message' => 'Order Status ' . $data->statusLabel()], 400);
         }
         $payment_method = PaymentMethod::findOrFail($request->payment_method_id);
         try {
             DB::beginTransaction();
+            $data->consume_type = $request->consume_type;
+            $data->nomor_name = $request->nomor_name;
             switch ($payment_method->code_name) {
                 case 'cash':
                     if ($data->total > $request->cash) {
@@ -472,7 +474,7 @@ class TavsirController extends Controller
         $data = TransOrder::findOrFail($id);
 
         if ($data->status == TransOrder::DONE || $data->status == TransOrder::CANCEL) {
-            return response()->json(['error' => 'Order Sudah ' . $data->status], 400);
+            return response()->json(['message' => 'Order status ' . $data->statusLabel()], 400);
         }
 
         $data->status = $request->status;
