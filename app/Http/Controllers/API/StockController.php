@@ -123,4 +123,12 @@ class StockController extends Controller
             return response()->json(['message' => $th->getMessage()], 500);
         }
     }
+
+    public function changeStatus($id)
+    {
+        $data = Product::findOrfail($id);
+        $data->is_active = $data->is_active == 1 ? 0 : 1;
+        $data->save();
+        return response()->json(['message' => 'Change status success', 'is_active' => $data->is_active]);
+    }
 }

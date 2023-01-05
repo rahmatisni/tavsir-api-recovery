@@ -111,6 +111,8 @@ Route::middleware('auth:api')->group(function () {
 
             Route::get('/keluar', [App\Http\Controllers\API\StockController::class, 'indexKeluar']);
             Route::post('/keluar', [App\Http\Controllers\API\StockController::class, 'storeKeluar']);
+
+            Route::post('/change-status/{id}', [App\Http\Controllers\API\StockController::class, 'changeStatus']);
         });
     });
 
