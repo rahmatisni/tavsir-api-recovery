@@ -26,12 +26,20 @@ use App\Models\TransOrder;
 use App\Models\TransOrderDetil;
 use App\Models\TransPayment;
 use App\Models\Voucher;
+use App\Services\StockServices;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 
 class TravShopController extends Controller
 {
+    protected $stock_service;
+
+    public function __construct(StockServices $stock_service)
+    {
+        $this->stock_service = $stock_service;
+    }
+
     public function restArea(Request $request)
     {
         $data = RestArea::when($name = $request->name, function ($q) use ($name) {
@@ -162,12 +170,12 @@ class TravShopController extends Controller
             $data->status = TransOrder::WAITING_CONFIRMATION_TENANT;
             $data->save();
             $data->detil()->saveMany($order_detil_many);
-            
+
 
             DB::commit();
             $data = TransOrder::findOrfail($data->id);
 
-            $fcm_token = User::where([ ['tenant_id', $request->tenant_id]])->get();
+            $fcm_token = User::where([['tenant_id', $request->tenant_id]])->get();
             $ids = array();
             foreach ($fcm_token as $val) {
                 if ($val['fcm_token'] != null && $val['fcm_token'] != '')
@@ -466,6 +474,9 @@ class TravShopController extends Controller
                     $data->total = $data->total + $data->service_fee;
                     $data->status = TransOrder::PAYMENT_SUCCESS;
                     $data->save();
+                    foreach ($data->detil as $key => $value) {
+                        $this->stock_service->updateStockProduct($value);
+                    }
                     $res = $data;
 
                     break;
@@ -593,6 +604,9 @@ class TravShopController extends Controller
                         $data->status = TransOrder::DONE;
                     }
                     $data->save();
+                    foreach ($data->detil as $key => $value) {
+                        $this->stock_service->updateStockProduct($value);
+                    }
                     DB::commit();
                     return $data;
                 }
@@ -618,6 +632,9 @@ class TravShopController extends Controller
                         $data->status = TransOrder::DONE;
                     }
                     $data->save();
+                    foreach ($data->detil as $key => $value) {
+                        $this->stock_service->updateStockProduct($value);
+                    }
                 } else {
                     return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '']);
                 }

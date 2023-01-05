@@ -28,12 +28,21 @@ use App\Models\RestArea;
 use App\Models\Tenant;
 use App\Models\TransPayment;
 use App\Models\TransSaldo;
+use App\Models\TransStock;
 use App\Models\Voucher;
+use App\Services\StockServices;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class TavsirController extends Controller
 {
+    protected $stock_service;
+
+    public function __construct(StockServices $stock_service)
+    {
+        $this->stock_service = $stock_service;
+    }
+
     public function productList(Request $request)
     {
         $data = Product::byTenant()->when($filter = $request->filter, function ($q) use ($filter) {
@@ -62,6 +71,12 @@ class TavsirController extends Controller
             $data->tenant_id = auth()->user()->tenant_id;
             $data->fill($request->all());
             $data->save();
+            $data->trans_stock()->create([
+                'stock_type' => TransStock::INIT,
+                'recent_stock' => 0,
+                'stock_amount' => $data->stock,
+                'created_by' => auth()->user()->id,
+            ]);
             $data->customize()->sync($request->customize);
             DB::commit();
             return response()->json($data);
@@ -388,6 +403,9 @@ class TavsirController extends Controller
                     $data->total = $data->total;
                     $data->status = TransOrder::DONE;
                     $data->save();
+                    foreach ($data->detil as $key => $value) {
+                        $this->stock_service->updateStockProduct($value);
+                    }
                     break;
 
                 case 'tav_qr':
@@ -439,6 +457,10 @@ class TavsirController extends Controller
                     $data->total = $data->total + $data->service_fee;
                     $data->saldo_qr = $voucher->balance;
                     $data->status = TransOrder::DONE;
+
+                    foreach ($data->detil as $key => $value) {
+                        $this->stock_service->updateStockProduct($value);
+                    }
 
                     $trans_saldo = TransSaldo::with('trans_invoice')->ByTenant()->first();
                     if (!$trans_saldo) {

@@ -21,6 +21,7 @@ class TsProducDetiltResource extends JsonResource
             'category' => $this->category->name ?? '',
             'photo' => $this->photo ? asset($this->photo) : null,
             "price" => $this->price,
+            "stock" => $this->stock,
             "customize" => CustomizeResource::collection($this->customize),
         ];
     }
