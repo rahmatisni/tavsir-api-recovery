@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Resources\TravShop;
+namespace App\Http\Resources;
 
-use App\Http\Resources\CustomizeResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class TsProductResource extends JsonResource
+class KartuStockResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,13 +16,13 @@ class TsProductResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
             'photo' => $this->photo ? asset($this->photo) : null,
-            "price" => $this->price,
-            "stock" => $this->stock,
-            "is_active" => $this->is_active,
-            "category" => $this->category->name ?? '',
-            "customize" => CustomizeResource::collection($this->customize),
+            'name' => $this->name,
+            'stock' => $this->stock,
+            'last_update' => (string) $this->last_stock->last()?->created_at ?? '',
+            'last_action' => $this->last_stock->last()?->stockTypeLabel() ?? '',
+            'category_name' => $this->category->name ?? '',
+            'is_active' => $this->is_active,
         ];
     }
 }

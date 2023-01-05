@@ -24,6 +24,7 @@ class ProductResource extends JsonResource
             'category_name' => $this->category->name ?? '',
             'photo' => $this->photo ? asset($this->photo) : null,
             'price' => $this->price,
+            'stock' => $this->stock,
             'is_active' => $this->is_active,
             'description' => $this->description,
             'customize' => CustomizeResource::collection($this->customize),

@@ -24,6 +24,7 @@ class TrProductResource extends JsonResource
             'photo' => $this->photo ? asset($this->photo) : null,
             'discount' => $this->discount,
             'price' => $this->price,
+            'stock' => $this->stock,
             'is_active' => $this->is_active,
             'description' => $this->description,
             'customize' => CustomizeResource::collection($this->customize),

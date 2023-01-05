@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use App\Models\TransStock;
 use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
@@ -40,6 +41,12 @@ class ProductController extends Controller
             $data = new Product();
             $data->fill($request->all());
             $data->save();
+            $data->trans_stock()->create([
+                'stock_type' => TransStock::INIT,
+                'recent_stock' => 0,
+                'stock_amount' => $data->stock,
+                'created_by' => auth()->user()->id,
+            ]);
             $data->customize()->sync($request->customize);
             DB::commit();
             return response()->json($data);

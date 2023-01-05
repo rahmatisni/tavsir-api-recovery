@@ -102,6 +102,16 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/invoice', [App\Http\Controllers\API\InvoiceController::class, 'store']);
         Route::post('/invoice-paid/{id}', [App\Http\Controllers\API\InvoiceController::class, 'paid']);
         Route::apiResource('subscription', App\Http\Controllers\API\SubscriptionController::class);
+        Route::prefix('stock')->group(function () {
+            Route::get('/kartu-stock', [App\Http\Controllers\API\StockController::class, 'indexKartu']);
+            Route::get('/kartu-stock/{id}', [App\Http\Controllers\API\StockController::class, 'kartuShow']);
+
+            Route::get('/masuk', [App\Http\Controllers\API\StockController::class, 'indexMasuk']);
+            Route::post('/masuk', [App\Http\Controllers\API\StockController::class, 'storeMasuk']);
+
+            Route::get('/keluar', [App\Http\Controllers\API\StockController::class, 'indexKeluar']);
+            Route::post('/keluar', [App\Http\Controllers\API\StockController::class, 'storeKeluar']);
+        });
     });
 
     Route::prefix('tavsir/tng')->group(function () {

@@ -21,6 +21,7 @@ class Product extends BaseModel
         'name',
         'photo',
         'price',
+        'stock',
         'is_active',
         'description'
     ];
@@ -63,5 +64,15 @@ class Product extends BaseModel
     public function category()
     {
         return $this->belongsTo(Category::class, 'category_id');
+    }
+
+    public function trans_stock()
+    {
+        return $this->hasMany(TransStock::class, 'product_id');
+    }
+
+    public function last_stock()
+    {
+        return $this->trans_stock();
     }
 }
