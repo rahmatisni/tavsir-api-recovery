@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Exports\TemplateStockExport;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ImportStockRequest;
 use App\Http\Requests\TransStockRequest;
 use App\Http\Resources\KartuStockDetilResource;
 use App\Http\Resources\KartuStockResource;
@@ -10,9 +12,12 @@ use App\Http\Resources\ProductResource;
 use App\Http\Resources\StockKeluarResource;
 use App\Http\Resources\StockMasukResource;
 use App\Http\Resources\TransStockResource;
+use App\Imports\StockImport;
 use App\Models\Product;
 use App\Models\TransStock;
+use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class StockController extends Controller
 {
@@ -116,36 +121,23 @@ class StockController extends Controller
         }
     }
 
-
-
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\TransStockRequest  $request
-     * @param  \App\Models\TransStock  $product
-     * @return \Illuminate\Http\Response
-     */
-    public function update(TransStockRequest $request, TransStock $product)
-    {
-        try {
-            DB::beginTransaction();
-            $product->fill($request->all());
-            $product->save();
-            $product->customize()->sync($request->customize);
-            DB::commit();
-            return response()->json($product);
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            return response()->json(['message' => $th->getMessage()], 500);
-        }
-    }
-
     public function changeStatus($id)
     {
         $data = Product::findOrfail($id);
         $data->is_active = $data->is_active == 1 ? 0 : 1;
         $data->save();
         return response()->json(['message' => 'Change status success', 'is_active' => $data->is_active]);
+    }
+
+    public function downloadTemplateImport()
+    {
+        return Excel::download(new TemplateStockExport(), 'template import stock.xlsx');
+    }
+
+    public function importStock(ImportStockRequest $request)
+    {
+        $stock = new StockImport($request->type);
+        Excel::import($stock, $request->file('file'));
+        return response()->json($stock->gethasil(), $stock->gethasil()['status'] ? 200 : 400);
     }
 }

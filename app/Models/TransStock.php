@@ -45,10 +45,10 @@ class TransStock extends BaseModel
     public function getLatesStockAttribute()
     {
         if ($this->stock_type == self::OUT) {
-            return  $this->recent_stock - $this->stock_amount;
+            return  max($this->recent_stock - $this->stock_amount, 0);
         }
 
-        return $this->recent_stock + $this->stock_amount;
+        return max($this->recent_stock + $this->stock_amount, 0);
     }
 
     public function stockTypeLabel()

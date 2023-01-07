@@ -113,6 +113,8 @@ Route::middleware('auth:api')->group(function () {
             Route::post('/keluar', [App\Http\Controllers\API\StockController::class, 'storeKeluar']);
 
             Route::post('/change-status/{id}', [App\Http\Controllers\API\StockController::class, 'changeStatus']);
+            Route::post('/download-template', [App\Http\Controllers\API\StockController::class, 'downloadTemplateImport']);
+            Route::post('/import', [App\Http\Controllers\API\StockController::class, 'importStock']);
         });
     });
 
