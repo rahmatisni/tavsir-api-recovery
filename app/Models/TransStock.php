@@ -30,6 +30,13 @@ class TransStock extends BaseModel
         return $this->belongsTo(Product::class, 'product_id');
     }
 
+    public function scopeByTenant($query)
+    {
+        $query->whereHas('product', function ($q) {
+            $q->byTenant();
+        }, 1);
+    }
+
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
