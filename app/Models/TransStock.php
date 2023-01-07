@@ -64,6 +64,6 @@ class TransStock extends BaseModel
 
     public function scopeKeluar($query)
     {
-        return $query->where('stock_type', [self::INIT, self::OUT]);
+        return $query->whereIn('stock_type', [self::INIT, self::OUT]);
     }
 }
