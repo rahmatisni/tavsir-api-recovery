@@ -25,14 +25,16 @@ class StockController extends Controller
     {
         $data = Product::byTenant()->when($name = request()->name, function ($q) use ($name) {
             $q->where('name', 'like', '%' . $name . '%');
-        })->when($status = request()->status, function ($q) use ($status) {
-            $q->where('status', $status);
         })->when($category_id = request()->category_id, function ($q) use ($category_id) {
             return $q->where('category_id', $category_id);
-        })
-            ->latest()
-            ->get();
-        return response()->json(KartuStockResource::collection($data));
+        });
+        if (request()->is_active == '0') {
+            $data->where('is_active', '0');
+        } else if (request()->is_active == '1') {
+            $data->where('is_active', '1');
+        }
+        $data->latest();
+        return response()->json(KartuStockResource::collection($data->get()));
     }
 
     public function indexMasuk()
@@ -49,10 +51,19 @@ class StockController extends Controller
             $q->whereHas('product', function ($qq) use ($category_id) {
                 $qq->where('category_id', $category_id);
             });
-        })
-            ->latest()
-            ->get();
-        return response()->json(StockMasukResource::collection($data));
+        });
+        if (request()->is_active == '0') {
+            $data->whereHas('product', function ($qq) {
+                $qq->where('is_active', '0');
+            });
+            $data->where('is_active', '0');
+        } else if (request()->is_active == '1') {
+            $data->whereHas('product', function ($qq) {
+                $qq->where('is_active', '1');
+            });
+        }
+        $data->latest();
+        return response()->json(StockMasukResource::collection($data->get()));
     }
 
     public function indexKeluar()
