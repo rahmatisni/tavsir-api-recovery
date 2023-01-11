@@ -25,5 +25,3 @@ function sendNotif($to, $title, $message, $payload=array()){
     curl_close( $ch );
     return $result;
 }
-
-?>

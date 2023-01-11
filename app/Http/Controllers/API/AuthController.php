@@ -36,14 +36,19 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
         if ($user) {
             if (Hash::check($request->password, $user->password)) {
+                $count = $user->accessTokens()->count();
                 if ($request->check) {
-                    $count = $user->accessTokens()->count();
                     return response()->json([
                         'is_login_other_device' => $count > 0 ? true : false,
                         'login_count' => $count
                     ], 200);
                 }
-                if ($user->role == User::TENANT) {
+                if ($user->role == User::TENANT || $user->role == User::CASHIER) {
+                    if ($count > 0) {
+                        if ($user->fcm_token) {
+                            sendNotif($user->fcm_token, 'Login di perangkat lain', []);
+                        }
+                    }
                     $user->accessTokens()->delete();
                 }
                 $tokenResult = $user->createToken('Personal');

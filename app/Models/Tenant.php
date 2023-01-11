@@ -15,6 +15,7 @@ class Tenant extends BaseModel
 
     protected $fillable = [
         'business_id',
+        'is_supertenant',
         'ruas_id',
         'name',
         'category',
@@ -103,5 +104,20 @@ class Tenant extends BaseModel
     public function saldo()
     {
         return $this->hasOne(TransSaldo::class, 'tenant_id');
+    }
+
+    public function sharing()
+    {
+        return $this->hasOne(Sharing::class, 'tenant_id');
+    }
+
+    public function member_tenant()
+    {
+        return $this->hasMany(Tenant::class, 'parent_id');
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(Tenant::class, 'parent_id');
     }
 }

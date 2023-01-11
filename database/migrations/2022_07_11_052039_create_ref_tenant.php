@@ -15,6 +15,8 @@ class CreateRefTenant extends Migration
     {
         Schema::create('ref_tenant', function (Blueprint $table) {
             $table->increments('id');
+            $table->boolean('is_supertenant')->default(0);
+            $table->integer('parent_id')->unsigned()->nullable();
             $table->integer('business_id')->unsigned();
             $table->integer('ruas_id')->unsigned();
             $table->string('name');

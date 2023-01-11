@@ -75,6 +75,7 @@ Route::middleware('auth:api')->group(function () {
 
 
     Route::prefix('tavsir')->group(function () {
+        Route::post('/product/change-status', [App\Http\Controllers\API\TavsirController::class, 'updateStatusProduct']);
         Route::get('/product', [App\Http\Controllers\API\TavsirController::class, 'productList']);
         Route::post('/send-notif', [App\Http\Controllers\API\TavsirController::class, 'sendNotif']);
         Route::get('/product/{id}', [App\Http\Controllers\API\TavsirController::class, 'productShow']);
@@ -164,6 +165,17 @@ Route::post('payment-gateway/sof/list', [App\Http\Controllers\API\PaymentGateway
 Route::post('payment-gateway/va/create', [App\Http\Controllers\API\PaymentGatewayController::class, 'vaCreate']);
 Route::post('payment-gateway/va/cekstatus', [App\Http\Controllers\API\PaymentGatewayController::class, 'vaStatus']);
 Route::post('payment-gateway/va/delete', [App\Http\Controllers\API\PaymentGatewayController::class, 'vaDelete']);
+
+Route::get('sharing', [App\Http\Controllers\API\SharingController::class, 'index']);
+Route::post('sharing', [App\Http\Controllers\API\SharingController::class, 'store']);
+Route::get('/sharing/{id}', [App\Http\Controllers\API\SharingController::class, 'show']);
+Route::post('/sharing/{id}', [App\Http\Controllers\API\SharingController::class, 'update']);
+Route::delete('/sharing/{id}', [App\Http\Controllers\API\SharingController::class, 'destroy']);
+Route::delete('/sharing/{id}', [App\Http\Controllers\API\SharingController::class, 'destroy']);
+
+Route::get('trans-sharing', [App\Http\Controllers\API\TransSharingController::class, 'index']);
+Route::get('trans-sharing/{id}', [App\Http\Controllers\API\TransSharingController::class, 'show']);
+
 
 
 Route::get('/pg-cek', function (Request $request) {

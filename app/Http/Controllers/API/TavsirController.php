@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Tavsir\TrOrderRequest;
 use App\Http\Requests\Tavsir\TrCategoryRequest;
+use App\Http\Requests\TavsirChangeStatusProductRequest;
 use App\Http\Requests\TsOrderConfirmRequest;
 use App\Http\Requests\VerifikasiOrderReqeust;
 use App\Http\Resources\ProductResource;
@@ -28,19 +29,23 @@ use App\Models\RestArea;
 use App\Models\Tenant;
 use App\Models\TransPayment;
 use App\Models\TransSaldo;
+use App\Models\TransSharing;
 use App\Models\TransStock;
 use App\Models\Voucher;
 use App\Services\StockServices;
+use App\Services\TransSharingServices;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class TavsirController extends Controller
 {
     protected $stock_service;
+    protected $trans_sharing_service;
 
-    public function __construct(StockServices $stock_service)
+    public function __construct(StockServices $stock_service, TransSharingServices $trans_sharing_service)
     {
         $this->stock_service = $stock_service;
+        $this->trans_sharing_service = $trans_sharing_service;
     }
 
     public function productList(Request $request)
@@ -89,6 +94,17 @@ class TavsirController extends Controller
     public function productShow(Product $id)
     {
         return response()->json(new ProductResource($id));
+    }
+
+    public function updateStatusProduct(TavsirChangeStatusProductRequest $request)
+    {
+        $product = Product::byTenant()->whereIn('id', $request->product_id);
+        if ($product->count() == 0) {
+            return response()->json(['message' => 'Not Found.'], 404);
+        }
+        $product->update(['is_active' => $request->is_active]);
+
+        return response()->json($product->get());
     }
 
     public function productById($id)
@@ -406,6 +422,7 @@ class TavsirController extends Controller
                     foreach ($data->detil as $key => $value) {
                         $this->stock_service->updateStockProduct($value);
                     }
+                    $this->trans_sharing_service->calculateSharing($data);
                     break;
 
                 case 'tav_qr':
@@ -461,6 +478,9 @@ class TavsirController extends Controller
                     foreach ($data->detil as $key => $value) {
                         $this->stock_service->updateStockProduct($value);
                     }
+
+                    $this->trans_sharing_service->calculateSharing($data);
+
 
                     $trans_saldo = TransSaldo::with('trans_invoice')->ByTenant()->first();
                     if (!$trans_saldo) {

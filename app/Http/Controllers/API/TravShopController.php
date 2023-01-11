@@ -27,6 +27,7 @@ use App\Models\TransOrderDetil;
 use App\Models\TransPayment;
 use App\Models\Voucher;
 use App\Services\StockServices;
+use App\Services\TransSharingServices;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
@@ -34,10 +35,12 @@ use Illuminate\Support\Facades\Http;
 class TravShopController extends Controller
 {
     protected $stock_service;
+    protected $trans_sharing_service;
 
-    public function __construct(StockServices $stock_service)
+    public function __construct(StockServices $stock_service, TransSharingServices $trans_sharing_service)
     {
         $this->stock_service = $stock_service;
+        $this->trans_sharing_service = $trans_sharing_service;
     }
 
     public function restArea(Request $request)
@@ -477,6 +480,7 @@ class TravShopController extends Controller
                     foreach ($data->detil as $key => $value) {
                         $this->stock_service->updateStockProduct($value);
                     }
+                    $this->trans_sharing_service->calculateSharing($data);
                     $res = $data;
 
                     break;
@@ -607,6 +611,7 @@ class TravShopController extends Controller
                     foreach ($data->detil as $key => $value) {
                         $this->stock_service->updateStockProduct($value);
                     }
+                    $this->trans_sharing_service->calculateSharing($data);
                     DB::commit();
                     return $data;
                 }
