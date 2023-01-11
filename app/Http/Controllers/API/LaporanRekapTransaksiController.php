@@ -99,6 +99,11 @@ class LaporanRekapTransaksiController extends Controller
     public function download($id)
     {
         $data = TransOperational::byRole()->where('id', $id)->whereNotNull('end_date')->first();
+        if (!$data) {
+            return response()->json([
+                'message' => 'Data Not Found'
+            ], 404);
+        }
         $order = TransOrder::done()
             ->byRole()
             ->whereBetween('created_at', [$data->start_date, $data->end_date])
@@ -109,11 +114,6 @@ class LaporanRekapTransaksiController extends Controller
                 $q->where('order_type', $order_type);
             })
             ->get();
-        if (!$data) {
-            return response()->json([
-                'message' => 'Data Not Found'
-            ], 404);
-        }
 
         $pdf = Pdf::loadView('pdf.rekap', [
             'record' => $data,
