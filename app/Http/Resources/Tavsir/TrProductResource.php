@@ -19,6 +19,7 @@ class TrProductResource extends JsonResource
             'id' => $this->id,
             'sku' => $this->sku,
             'name' => $this->name,
+            'tenant_name' => $this->tenant?->name,
             'category_id' => $this->category_id,
             'category_name' => $this->category->name ?? '',
             'photo' => $this->photo ? asset($this->photo) : null,
