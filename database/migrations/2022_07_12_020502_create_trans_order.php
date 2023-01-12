@@ -16,6 +16,7 @@ class CreateTransOrder extends Migration
         Schema::create('trans_order', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('order_id');
+            $table->string('order_type');
             $table->string('consume_type')->comment('dine_in or take_away')->nullable();
             $table->string('nomor_name')->comment('nomor meja atau nama customer')->nullable();
             $table->integer('sub_total')->unsigned();
