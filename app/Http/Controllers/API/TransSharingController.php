@@ -13,7 +13,7 @@ class TransSharingController extends Controller
         $tanggal_awal = request()->tanggal_awal;
         $tanggal_akhir = request()->tanggal_akhir;
 
-        $data = TransSharing::when($pengelola_id = request()->pengelola_id, function ($q) use ($pengelola_id) {
+        $data = TransSharing::byRole()->when($pengelola_id = request()->pengelola_id, function ($q) use ($pengelola_id) {
             return $q->where('pengelola_id', $pengelola_id);
         })->when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
             return $q->where('tenant_id', $tenant_id);
@@ -35,7 +35,7 @@ class TransSharingController extends Controller
 
     public function show($id)
     {
-        $sharing = TransSharing::findOrFail($id);
+        $sharing = TransSharing::byRole()->findOrFail($id);
         return response()->json(new BaseResource($sharing));
     }
 }

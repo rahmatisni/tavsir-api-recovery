@@ -42,9 +42,9 @@ class PaymentMethodSeeder extends Seeder
                     'fee' => 1000
                 ],
                 [
-                    'name' => 'QR',
+                    'name' => 'TAVQR',
                     'code_name' => 'tav_qr',
-                    'code_sof' => 'QR',
+                    'code_sof' => 'TAVQR',
                     'fee' => 0
                 ],
                 [

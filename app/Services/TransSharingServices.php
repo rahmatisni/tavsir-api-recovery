@@ -21,6 +21,10 @@ class TransSharingServices
         if ($sharing_rule) {
             $trans_shairng = TransSharing::create([
                 'trans_order_id' => $order->id,
+                'order_id' => $order->order_id,
+                'order_type' => $order->labelOrderType(),
+                'payment_method_id' => $order->payment_method_id,
+                'payment_method_name' => $order->payment_method->name,
                 'sub_total' => $order->sub_total,
 
                 'pengelola_id' => $sharing_rule->pengelola_id,

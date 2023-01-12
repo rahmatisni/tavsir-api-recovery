@@ -10,6 +10,10 @@ class TransSharing extends BaseModel
 
     protected $fillable = [
         'trans_order_id',
+        'order_id',
+        'order_type',
+        'payment_method_id',
+        'payment_method_name',
         'sub_total',
 
         'pengelola_id',
@@ -24,4 +28,19 @@ class TransSharing extends BaseModel
         'persentase_tenant',
         'total_tenant',
     ];
+
+    public function scopeByRole($query)
+    {
+        $user = auth()->user();
+        $role = $user->role;
+        if ($role == User::TENANT || $role == User::CASHIER) {
+            $query->where('tenant_id', $user->tenant_id);
+        }
+
+        if ($role == User::SUPERTENANT) {
+            $query->where('supertenant_id', $user->tenant_id);
+        }
+
+        return $query;
+    }
 }

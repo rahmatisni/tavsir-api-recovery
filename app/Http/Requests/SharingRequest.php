@@ -26,7 +26,7 @@ class SharingRequest extends FormRequest
         return [
             'nama_pks' => 'required',
             'nomor_pks' => 'required',
-            'pengelola_id' => 'required',
+            'pengelola_id' => 'required|exists:ref_business',
             'tenant_id' => 'required|exists:ref_tenant,id',
             'persentase_pengelola' => 'required',
             'persentase_supertenant' => 'required',

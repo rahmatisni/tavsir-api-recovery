@@ -16,6 +16,9 @@ class CreateTransSharing extends Migration
         Schema::create('trans_sharing', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('trans_order_id');
+            $table->string('order_type');
+            $table->string('order_id');
+            $table->string('payment_method');
             $table->unsignedInteger('sub_total');
 
             $table->unsignedInteger('pengelola_id');

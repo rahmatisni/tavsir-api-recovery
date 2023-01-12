@@ -73,6 +73,15 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/laporan/customer-travoy', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanCustomerTravoy']);
     Route::post('/laporan/customer-tavqr', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanCustomerTavqr']);
 
+    Route::get('sharing', [App\Http\Controllers\API\SharingController::class, 'index']);
+    Route::post('sharing', [App\Http\Controllers\API\SharingController::class, 'store']);
+    Route::get('/sharing/{id}', [App\Http\Controllers\API\SharingController::class, 'show']);
+    Route::post('/sharing/{id}', [App\Http\Controllers\API\SharingController::class, 'update']);
+    Route::delete('/sharing/{id}', [App\Http\Controllers\API\SharingController::class, 'destroy']);
+    Route::delete('/sharing/{id}', [App\Http\Controllers\API\SharingController::class, 'destroy']);
+
+    Route::get('trans-sharing', [App\Http\Controllers\API\TransSharingController::class, 'index']);
+    Route::get('trans-sharing/{id}', [App\Http\Controllers\API\TransSharingController::class, 'show']);
 
     Route::prefix('tavsir')->group(function () {
         Route::post('/product/change-status', [App\Http\Controllers\API\TavsirController::class, 'updateStatusProduct']);
@@ -165,16 +174,6 @@ Route::post('payment-gateway/sof/list', [App\Http\Controllers\API\PaymentGateway
 Route::post('payment-gateway/va/create', [App\Http\Controllers\API\PaymentGatewayController::class, 'vaCreate']);
 Route::post('payment-gateway/va/cekstatus', [App\Http\Controllers\API\PaymentGatewayController::class, 'vaStatus']);
 Route::post('payment-gateway/va/delete', [App\Http\Controllers\API\PaymentGatewayController::class, 'vaDelete']);
-
-Route::get('sharing', [App\Http\Controllers\API\SharingController::class, 'index']);
-Route::post('sharing', [App\Http\Controllers\API\SharingController::class, 'store']);
-Route::get('/sharing/{id}', [App\Http\Controllers\API\SharingController::class, 'show']);
-Route::post('/sharing/{id}', [App\Http\Controllers\API\SharingController::class, 'update']);
-Route::delete('/sharing/{id}', [App\Http\Controllers\API\SharingController::class, 'destroy']);
-Route::delete('/sharing/{id}', [App\Http\Controllers\API\SharingController::class, 'destroy']);
-
-Route::get('trans-sharing', [App\Http\Controllers\API\TransSharingController::class, 'index']);
-Route::get('trans-sharing/{id}', [App\Http\Controllers\API\TransSharingController::class, 'show']);
 
 
 
