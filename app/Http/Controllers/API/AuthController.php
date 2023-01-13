@@ -147,9 +147,6 @@ class AuthController extends Controller
             if (Hash::check($request->pin, $user->pin)) {
                 $cek = TransOperational::where('casheer_id', $user->id)
                     ->where('tenant_id', $user->tenant_id)
-                    ->whereDay('start_date', '=', date('d'))
-                    ->whereMonth('start_date', '=', date('m'))
-                    ->whereYear('start_date', '=', date('Y'))
                     ->whereNull('end_date')
                     ->get();
 
@@ -162,10 +159,13 @@ class AuthController extends Controller
 
                 $count_periode = TransOperational::where('casheer_id', $user->id)
                     ->where('tenant_id', $user->tenant_id)
-                    ->whereDay('start_date', '=', date('d'))
-                    ->whereMonth('start_date', '=', date('m'))
-                    ->whereYear('start_date', '=', date('Y'))
-                    ->count() + 1;
+                    ->whereDate('start_date', '=', date('Y-m-d'))
+                    ->latest()->first();
+                if ($count_periode) {
+                    $count_periode = $count_periode->periode + 1;
+                } else {
+                    $count_periode = 1;
+                }
 
                 $trans_op = new TransOperational();
                 $trans_cashbox = new TransCashbox();
