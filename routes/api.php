@@ -207,3 +207,19 @@ Route::get('/pg-tarif', function () {
         'bni_va' => $bni_va
     ];
 });
+
+
+Route::get('test-notif', function () {
+    $token = request()->token;
+    $title = request()->title ?? 'Test';
+    $message = request()->message ?? 'Testing Notig';
+    $result = sendNotif($token, $title, $message, []);
+    return response()->json([
+        'data' => [
+            'token' => $token,
+            'title' => $title,
+            'message' => $message,
+        ],
+        'status' => json_decode($result)
+    ]);
+});
