@@ -142,4 +142,9 @@ class TransOrder extends BaseModel
             return $this->consume_type;
         }
     }
+
+    public function trans_edc()
+    {
+        return $this->hasOne(TransEdc::class, 'trans_order_id');
+    }
 }

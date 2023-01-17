@@ -27,6 +27,7 @@ use App\Models\PaymentMethod;
 use App\Models\PgJmto;
 use App\Models\RestArea;
 use App\Models\Tenant;
+use App\Models\TransEdc;
 use App\Models\TransPayment;
 use App\Models\TransSaldo;
 use App\Models\TransSharing;
@@ -498,6 +499,22 @@ class TavsirController extends Controller
 
                     $data->save();
                     break;
+
+                    case 'edc':
+                        $data->payment_method_id = $request->payment_method_id;
+                        $edc = new TransEdc();
+                        $edc->trans_order_id = $data->id;
+                        $edc->bank_id = $request->bank_id;
+                        $edc->card_nomor = $request->card_nomor;
+                        $edc->ref_nomor = $request->ref_nomor;
+                        $data->trans_edc()->save($edc);
+                        $data->status = TransOrder::DONE;
+                        $data->save();
+                        foreach ($data->detil as $key => $value) {
+                            $this->stock_service->updateStockProduct($value);
+                        }
+                        $this->trans_sharing_service->calculateSharing($data);
+                        break;
 
                 default:
                     return response()->json(['message' => $payment_method->name . ' Coming Soon'], 500);
