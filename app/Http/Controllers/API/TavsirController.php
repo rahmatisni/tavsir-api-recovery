@@ -19,6 +19,7 @@ use App\Http\Resources\Tavsir\TrCartSavedResource;
 use App\Http\Resources\Tavsir\TrOrderResource;
 use App\Http\Resources\TravShop\TsOrderResource;
 use App\Http\Resources\Tavsir\TrCategoryResource;
+use App\Models\Bank;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\TransOrder;
@@ -306,6 +307,11 @@ class TavsirController extends Controller
 
         $data = TransOrder::findOrfail($id);
         return response()->json(new TsOrderResource($data));
+    }
+
+    public function bank()
+    {
+        return response()->json(Bank::all());
     }
 
     public function paymentMethod()

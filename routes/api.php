@@ -104,6 +104,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/order', [App\Http\Controllers\API\TavsirController::class, 'order']);
         Route::post('/order-confirmation/{id}', [App\Http\Controllers\API\TavsirController::class, 'orderConfirm']);
         Route::get('/payment-method', [App\Http\Controllers\API\TavsirController::class, 'paymentMethod']);
+        Route::get('/bank', [App\Http\Controllers\API\TavsirController::class, 'bank']);
         Route::post('/payment-order', [App\Http\Controllers\API\TavsirController::class, 'paymentOrder']);
         Route::apiResource('customize', App\Http\Controllers\API\CustomizeController::class);
         Route::post('/order-change-status/{id}', [App\Http\Controllers\API\TavsirController::class, 'changeStatusOrder']);
