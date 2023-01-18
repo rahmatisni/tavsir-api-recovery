@@ -50,6 +50,16 @@ class TavsirController extends Controller
         $this->trans_sharing_service = $trans_sharing_service;
     }
 
+    public function productSupertenantList()
+    {
+        //TODO by role supertenant
+    }
+
+    public function orderListSupertenant()
+    {
+        //TODO by role supertenant
+    }
+
     public function productList(Request $request)
     {
         $data = Product::byTenant()->with('tenant')->when($filter = $request->filter, function ($q) use ($filter) {

@@ -88,6 +88,18 @@ class UserSeeder extends Seeder
                 'tenant_id' => 0,
                 'rest_area_id' => 0,
                 'paystation_id' => 0,
+            ],
+            [
+                'name' => 'Supertenant',
+                'email' => 'supertenant@email.com',
+                'role' => User::SUPERTENANT,
+                'password' => bcrypt('password'),
+                'business_id' => 1,
+                'merchant_id' => 0,
+                'sub_merchant_id' => 0,
+                'tenant_id' => 1,
+                'rest_area_id' => 1,
+                'paystation_id' => 0,
             ]
         ]);
         Artisan::call('passport:install');
