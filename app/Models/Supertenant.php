@@ -6,16 +6,15 @@ use App\Models\BaseModel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Tenant extends BaseModel
+class Supertenant extends BaseModel
 {
     use SoftDeletes;
 
-    protected $table = 'ref_tenant';
+    protected $table = 'ref_supertenant';
     protected $dates = ['deleted_at'];
 
     protected $fillable = [
         'business_id',
-        'is_supertenant',
         'ruas_id',
         'name',
         'category',
@@ -61,11 +60,6 @@ class Tenant extends BaseModel
         return $this->hasMany(Category::class, 'tenant_id');
     }
 
-    public function product()
-    {
-        return $this->hasMany(Product::class, 'tenant_id');
-    }
-
     public function rest_area()
     {
         return $this->belongsTo(RestArea::class, 'rest_area_id');
@@ -81,38 +75,8 @@ class Tenant extends BaseModel
         return $this->belongsTo(Business::class, 'business_id');
     }
 
-    public function order()
+    public function tenant()
     {
-        return $this->hasMany(TransOrder::class, 'tenant_id');
-    }
-
-    public function getRatingAttribute()
-    {
-        return $this->order() ? $this->order()->average('rating') : 0;
-    }
-
-    public function getTotalRatingAttribute()
-    {
-        return $this->order() ? $this->order()->where('rating', '>', 0)->count() : 0;
-    }
-
-    public function scopeCategoryCount($query)
-    {
-        return $query->groupBy('category')->select('category as kategori', DB::raw('COUNT(*) as tenant'));
-    }
-
-    public function saldo()
-    {
-        return $this->hasOne(TransSaldo::class, 'tenant_id');
-    }
-
-    public function sharing()
-    {
-        return $this->hasOne(Sharing::class, 'tenant_id');
-    }
-
-    public function supertenant()
-    {
-        return $this->belongsTo(Supertenant::class, 'supertenant_id');
+        return $this->hasMany(Tenant::class, 'supertenant_id');
     }
 }

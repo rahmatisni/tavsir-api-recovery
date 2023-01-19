@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Supertenant;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -89,18 +90,19 @@ class UserSeeder extends Seeder
                 'rest_area_id' => 0,
                 'paystation_id' => 0,
             ],
-            [
-                'name' => 'Supertenant',
-                'email' => 'supertenant@email.com',
-                'role' => User::SUPERTENANT,
-                'password' => bcrypt('password'),
-                'business_id' => 1,
-                'merchant_id' => 0,
-                'sub_merchant_id' => 0,
-                'tenant_id' => 1,
-                'rest_area_id' => 1,
-                'paystation_id' => 0,
-            ]
+        ]);
+
+        User::create([
+            'name' => 'Supertenant',
+            'email' => 'supertenant@email.com',
+            'role' => User::SUPERTENANT,
+            'password' => bcrypt('password'),
+            'business_id' => 1,
+            'merchant_id' => 0,
+            'sub_merchant_id' => 0,
+            'supertenant_id' => Supertenant::first()->id,
+            'rest_area_id' => 1,
+            'paystation_id' => 0,
         ]);
         Artisan::call('passport:install');
         Artisan::call('storage:link');

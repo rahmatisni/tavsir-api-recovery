@@ -45,6 +45,7 @@ class User extends Authenticatable
         'merchant_id',
         'sub_merchant_id',
         'tenant_id',
+        'supertenant_id',
         'rest_area_id',
         'paystation_id',
         'status',
@@ -78,6 +79,11 @@ class User extends Authenticatable
     public function tenant()
     {
         return $this->belongsTo(Tenant::class, 'tenant_id');
+    }
+
+    public function supertenant()
+    {
+        return $this->belongsTo(Supertenant::class, 'supertenant_id');
     }
 
     public function paystation()

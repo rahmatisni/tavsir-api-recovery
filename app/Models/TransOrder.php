@@ -147,4 +147,10 @@ class TransOrder extends BaseModel
     {
         return $this->hasOne(TransEdc::class, 'trans_order_id');
     }
+
+    public function scopeBySupertenant($query)
+    {
+        $tenant = Tenant::where('supertenant_id',auth()->user()->supertenant_id)->pluck('id');
+        return $query->whereIn('tenant_id', $tenant);
+    }
 }

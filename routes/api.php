@@ -84,6 +84,14 @@ Route::middleware('auth:api')->group(function () {
     Route::get('trans-sharing/{id}', [App\Http\Controllers\API\TransSharingController::class, 'show']);
 
     Route::prefix('tavsir')->group(function () {
+        #Supertenant
+        Route::get('/tenant-supertenant', [App\Http\Controllers\API\TavsirController::class, 'tenantSupertenantList']);
+        Route::post('/tenant-supertenant-close', [App\Http\Controllers\API\TavsirController::class, 'closeTenantSupertenant']);
+        Route::get('/tenant-supertenant-product', [App\Http\Controllers\API\TavsirController::class, 'productSupertenantList']);
+        Route::get('/tenant-supertenant-order', [App\Http\Controllers\API\TavsirController::class, 'orderListSupertenant']);
+        
+        #EndSupertenant
+        
         Route::post('/product/change-status', [App\Http\Controllers\API\TavsirController::class, 'updateStatusProduct']);
         Route::get('/product', [App\Http\Controllers\API\TavsirController::class, 'productList']);
         Route::post('/send-notif', [App\Http\Controllers\API\TavsirController::class, 'sendNotif']);

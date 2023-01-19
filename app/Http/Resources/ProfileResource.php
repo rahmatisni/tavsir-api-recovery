@@ -20,6 +20,7 @@ class ProfileResource extends JsonResource
             'email' => $this->email,
             'is_admin' => $this->is_admin,
             'tenant_name' => $this->tenant->name ?? '',
+            'supertenant_name' => $this->supertenant->name ?? '',
             'business_id' => $this->business_id,
             'merchant_id' => $this->merchant_id,
             'sub_merchant_id' => $this->sub_merchant_id,

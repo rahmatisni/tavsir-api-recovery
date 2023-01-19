@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRefTenant extends Migration
+class CreateRefSupertenant extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,8 @@ class CreateRefTenant extends Migration
      */
     public function up()
     {
-        Schema::create('ref_tenant', function (Blueprint $table) {
+        Schema::create('ref_supertenant', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('supertenant_id')->unsigned()->nullable();
             $table->integer('business_id')->unsigned();
             $table->integer('ruas_id')->unsigned();
             $table->string('name');
@@ -46,6 +45,6 @@ class CreateRefTenant extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ref_tenant');
+        Schema::dropIfExists('ref_supertenant');
     }
 }

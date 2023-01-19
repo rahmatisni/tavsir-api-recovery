@@ -6,6 +6,10 @@ use App\Models\BaseModel;
 
 class TransOrderDetil extends BaseModel
 {
+    public const STATUS_WAITING = 'WAITING';
+    public const STATUS_DONE = 'DONE';
+    public const STATUS_CANCEL = 'CANCEL';
+
     protected $table = 'trans_order_detil';
     public $timestamps = false;
     protected $filable = [

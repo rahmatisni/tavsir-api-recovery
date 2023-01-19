@@ -64,6 +64,7 @@ class CreateTransOrder extends Migration
             $table->tinyInteger('qty')->unsigned();
             $table->integer('total_price')->unsigned();
             $table->string('note')->nullable();
+            $table->string('status')->nullable();
         });
     }
 

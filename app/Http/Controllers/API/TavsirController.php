@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ChangeStatusOrderReqeust;
+use App\Http\Requests\CloseTenantSupertenantRequest;
 use App\Http\Requests\PaymentOrderRequest;
 use App\Http\Requests\TavsirProductRequest;
 use Illuminate\Http\Request;
@@ -13,7 +14,9 @@ use App\Http\Requests\Tavsir\TrCategoryRequest;
 use App\Http\Requests\TavsirChangeStatusProductRequest;
 use App\Http\Requests\TsOrderConfirmRequest;
 use App\Http\Requests\VerifikasiOrderReqeust;
+use App\Http\Resources\BaseResource;
 use App\Http\Resources\ProductResource;
+use App\Http\Resources\Tavsir\ProductSupertenantResource;
 use App\Http\Resources\Tavsir\TrProductResource;
 use App\Http\Resources\Tavsir\TrCartSavedResource;
 use App\Http\Resources\Tavsir\TrOrderResource;
@@ -50,15 +53,97 @@ class TavsirController extends Controller
         $this->trans_sharing_service = $trans_sharing_service;
     }
 
-    public function productSupertenantList()
+    public function tenantSupertenantList(Request $request)
     {
-        //TODO by role supertenant
+        $data = auth()->user()->supertenant?->tenant;
+        return response()->json(BaseResource::collection($data));
     }
 
-    public function orderListSupertenant()
+    public function closeTenantSupertenant(CloseTenantSupertenantRequest $request)
     {
-        //TODO by role supertenant
+        $data = auth()->user()->supertenant?->tenant;
+        if(count($data) > 0){
+            if($request->tenant_id != 'all'){
+                $data = $data->where('id',$request->tenant_id);
+            }
+            $data->each(function($item){
+                $item->is_open = 0;
+                $item->save();
+                //SEND NOTIF
+            });
+        }
+
+        return response()->json(BaseResource::collection($data));
     }
+
+    public function productSupertenantList(Request $request)
+    {
+        $data = Product::bySupertenant()->with('tenant')->when($filter = $request->filter, function ($q) use ($filter) {
+            return $q->where('name', 'like', "%$filter%")
+                ->orwhere('sku', 'like', "%$filter%");
+        })->when($category_id = $request->category_id, function ($q) use ($category_id) {
+            return $q->where('category_id', $category_id);
+        })->when($tenant_id = $request->tenant_id, function ($q) use ($tenant_id) {
+            return $q->where('tenant_id', $tenant_id);
+        });
+        if ($request->is_active == '0') {
+            $data->where('is_active', '0');
+        } else if ($request->is_active == '1') {
+            $data->where('is_active', '1');
+        }
+        $data = $data->orderBy('updated_at', 'desc')->get();
+        return response()->json(ProductSupertenantResource::collection($data));
+    }
+
+    public function orderListSupertenant(Request $request)
+    {
+        $data = TransOrder::bySupertenant()->when($status = request()->status, function ($q) use ($status) {
+            if (is_array($status)) {
+                $q->whereIn('status', $status);
+            } else {
+                $q->where('status', $status);
+            }
+        })
+            ->when($start_date = $request->start_date, function ($q) use ($start_date) {
+                $q->whereDate('created_at', '>=', date("Y-m-d", strtotime($start_date)));
+            })
+            ->when($end_date = $request->end_date, function ($q) use ($end_date) {
+                $q->whereDate('created_at', '<=', date("Y-m-d", strtotime($end_date)));
+            })
+            ->when($statusnot = request()->statusnot, function ($q) use ($statusnot) {
+                if (is_array($statusnot)) {
+                    $q->whereNotIn('status', $statusnot);
+                } else {
+                    $q->whereNotIn('status', $statusnot);
+                }
+            })
+            ->when($filter = request()->filter, function ($q) use ($filter) {
+                return $q->where('order_id', 'like', "%$filter%");
+            })->when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
+                $q->where('tenant_id', $tenant_id);
+            })->when($order_type = request()->order_type, function ($q) use ($order_type) {
+                $q->where('order_type', $order_type);
+            })->when($sort = request()->sort, function ($q) use ($sort) {
+                if (is_array($sort)) {
+                    foreach ($sort as $val) {
+                        $jsonx = explode("&", $val);
+                        $q->orderBy($jsonx[0], $jsonx[1]);
+                    }
+                }
+            });
+        if (!request()->sort) {
+            $data = $data->orderBy('created_at', 'desc');
+        }
+        $data = $data->get();
+        return response()->json(TrOrderResource::collection($data));
+    }
+
+    //order by id
+    //Order
+    //Confirm order member tenant
+    //Update order
+    //Payment
+    //Change Status DONE
 
     public function productList(Request $request)
     {
@@ -73,9 +158,6 @@ class TavsirController extends Controller
         } else if ($request->is_active == '1') {
             $data->where('is_active', '1');
         }
-        // $data->when($is_active = $request->is_active, function ($q) use ($is_active) {
-        //     return $q->where('is_active', '=', $is_active);
-        // });
         $data = $data->orderBy('updated_at', 'desc')->get();
         return response()->json(TrProductResource::collection($data));
     }
@@ -151,7 +233,6 @@ class TavsirController extends Controller
             return response()->json($product);
         }
     }
-
 
     public function categoryList(Request $request)
     {
@@ -264,7 +345,6 @@ class TavsirController extends Controller
         }
     }
 
-
     public function countNewTNG()
     {
         $data = TransOrder::where('tenant_id', '=', auth()->user()->tenant_id)
@@ -326,6 +406,8 @@ class TavsirController extends Controller
 
     public function paymentMethod()
     {
+        return PgJmto::feeBriVa();
+
         $paymentMethods = PaymentMethod::all();
         foreach ($paymentMethods as $value) {
             if ($value->code_name == 'pg_va_bri') {

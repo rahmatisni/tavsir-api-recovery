@@ -5,11 +5,11 @@ namespace Database\Seeders;
 use App\Models\Business;
 use App\Models\Ruas;
 use App\Models\RestArea;
-use App\Models\Supertenant;
 use App\Models\Tenant;
+use App\Models\Supertenant;
 use Illuminate\Database\Seeder;
 
-class TenantSeeder extends Seeder
+class SupertenantSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -18,10 +18,10 @@ class TenantSeeder extends Seeder
      */
     public function run()
     {
-        if (Tenant::count() == 0) {
-            Tenant::insert([
+        if (Supertenant::count() == 0) {
+            Supertenant::insert([
                 [
-                    'name' => 'Rumah Talas',
+                    'name' => 'Super Tenant 00',
                     'business_id' => Business::all()->random()->id,
                     'ruas_id' => Ruas::all()->random()->id,
                     'category' => 'Food',
@@ -42,7 +42,28 @@ class TenantSeeder extends Seeder
                     'updated_at' => now()->addDay(),
                 ],
                 [
-                    'name' => 'Drink Sweet',
+                    'name' => 'Super Tenant 88',
+                    'business_id' => Business::all()->random()->id,
+                    'ruas_id' => Ruas::all()->random()->id,
+                    'category' => 'Food',
+                    'address' => 'Jl. Raya Jawa Timur',
+                    'latitude' => -6.91436,
+                    'longitude' => 107.60981,
+                    'rest_area_id' => RestArea::all()->random()->id,
+                    'time_start' => '08:00',
+                    'time_end' => '22:00',
+                    'phone' => '+6281234567890',
+                    'manager' => 'John Doe',
+                    'photo_url' => 'https://picsum.photos/id/1/200/300',
+                    'merchant_id' => 1,
+                    'sub_merchant_id' => 1,
+                    'is_open' => true,
+                    'created_by' => 1,
+                    'created_at' => now(),
+                    'updated_at' => now()->addDay(),
+                ],
+                [
+                    'name' => 'Super Tenant 99',
                     'business_id' => Business::all()->random()->id,
                     'ruas_id' => Ruas::all()->random()->id,
                     'category' => 'Drink',
@@ -62,57 +83,7 @@ class TenantSeeder extends Seeder
                     'created_at' => now(),
                     'updated_at' => now()->addDay(),
                 ],
-                [
-                    'name' => 'Pecel Sedap',
-                    'business_id' => Business::all()->random()->id,
-                    'ruas_id' => Ruas::all()->random()->id,
-                    'category' => 'Food',
-                    'address' => 'Jl. Raya Bandung',
-                    'latitude' => 35.47488000,
-                    'longitude' => 60.51634100,
-                    'rest_area_id' => RestArea::all()->random()->id,
-                    'time_start' => '08:00',
-                    'time_end' => '22:00',
-                    'phone' => '+6281234567890',
-                    'manager' => 'Jak Doe',
-                    'photo_url' => 'https://picsum.photos/id/1/200/300',
-                    'merchant_id' => 1,
-                    'sub_merchant_id' => 1,
-                    'is_open' => true,
-                    'created_by' => 1,
-                    'created_at' => now(),
-                    'updated_at' => now()->addDay(),
-                ],
             ]);
-            Tenant::insert([
-                [
-                    'name' => 'Member Tenant',
-                    'supertenant_id' => Supertenant::first()->id,
-                    'business_id' => Business::all()->random()->id,
-                    'ruas_id' => Ruas::all()->random()->id,
-                    'category' => 'Food',
-                    'address' => 'Jl. Raya Jawa Timur',
-                    'latitude' => -6.91436,
-                    'longitude' => 107.60981,
-                    'rest_area_id' => RestArea::all()->random()->id,
-                    'time_start' => '08:00',
-                    'time_end' => '22:00',
-                    'phone' => '+6281234567890',
-                    'manager' => 'John Doe',
-                    'photo_url' => 'https://picsum.photos/id/1/200/300',
-                    'merchant_id' => 1,
-                    'sub_merchant_id' => 1,
-                    'is_open' => true,
-                    'created_by' => 1,
-                    'created_at' => now(),
-                    'updated_at' => now()->addDay(),
-                ]]);
-            Tenant::all()->each(function ($tenant) {
-                $tenant->saldo()->create([
-                    'saldo' => 0,
-                    'rest_area_id' => $tenant->rest_area_id,
-                ]);
-            });
         }
     }
 }
