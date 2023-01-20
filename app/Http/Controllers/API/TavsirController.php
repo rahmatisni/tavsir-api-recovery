@@ -406,8 +406,6 @@ class TavsirController extends Controller
 
     public function paymentMethod()
     {
-        return PgJmto::feeBriVa();
-
         $paymentMethods = PaymentMethod::all();
         foreach ($paymentMethods as $value) {
             if ($value->code_name == 'pg_va_bri') {
