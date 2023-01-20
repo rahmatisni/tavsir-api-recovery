@@ -66,7 +66,7 @@ class PaymentMethodController extends Controller
      */
     public function show(PaymentMethod $paymentMethod)
     {
-        switch ($$paymentMethod->code_name) {
+        switch ($paymentMethod->code_name) {
             case 'pg_va_bri':
                 $fee = PgJmto::feeBriVa();
                 if ($fee) {
