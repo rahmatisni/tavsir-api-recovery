@@ -255,7 +255,7 @@ class PgJmto extends Model
 
     public static function feeBriVa()
     {
-        return PgJmto::tarifFee(1, 2, null);
+        return PgJmto::tarifFee(254, 2, null);
     }
 
     public static function feeMandiriVa()
