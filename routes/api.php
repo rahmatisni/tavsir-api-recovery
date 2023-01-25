@@ -59,7 +59,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/penjualan-kategori', [App\Http\Controllers\API\LaporanController::class, 'laporanPenjualanKategori']);
 
     Route::post('/laporan/metode-pembayaran', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanMetodePembayaran']);
-    Route::post('/metode-pembayaran', [App\Http\Controllers\API\LaporanController::class, 'laporanTransaksi']);
+    Route::post('/metode-pembayaran', [App\Http\Controllers\API\LaporanController::class, 'laporanMetodePembayaran']);
 
     Route::post('/laporan/invoice', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanInvoice']);
 
@@ -89,6 +89,10 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/tenant-supertenant-close', [App\Http\Controllers\API\TavsirController::class, 'closeTenantSupertenant']);
         Route::get('/tenant-supertenant-product', [App\Http\Controllers\API\TavsirController::class, 'productSupertenantList']);
         Route::get('/tenant-supertenant-order', [App\Http\Controllers\API\TavsirController::class, 'orderListSupertenant']);
+        Route::post('/tenant-supertenant-order', [App\Http\Controllers\API\TavsirController::class, 'orderSuperTenant']);
+        Route::get('/tenant-supertenant-order/{id}', [App\Http\Controllers\API\TavsirController::class, 'orderByIdSupertenant']);
+        Route::get('/tenant-supertenant-order-member', [App\Http\Controllers\API\TavsirController::class, 'orderListMemberSupertenant']);
+        Route::post('/tenant-supertenant-order-confirm', [App\Http\Controllers\API\TavsirController::class, 'confirmOrderMemberSupertenant']);
         
         #EndSupertenant
         
