@@ -201,7 +201,7 @@ class DashboardController extends Controller
             'payment_method' => $payment_method,
             'top_rest_area' => $top_rest_area,
             'top_tenant' => $top_tenant,
-            'total_merchant' => $total_merchant,
+            'total_merchat' => $total_merchant,
             // 'top_product' => $top_product,
         ];
 
