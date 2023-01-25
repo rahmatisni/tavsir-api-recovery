@@ -54,14 +54,16 @@ class DashboardController extends Controller
             $q->where('id', $tenant_id);
         })->get();
 
-        $voucher = Voucher::get();
+        $voucher = Voucher::when($rest_area_id = $request->rest_area_id, function ($q) use ($rest_area_id) {
+            $q->where('rest_area_id', $rest_area_id);
+        })->get();
 
         $total_pemasukan = $all1->sum('total');
         $total_transaksi_takengo = $takengo_count;
         $total_transaksi_tavsir = $tavsir;
         $total_transaksi = $total_transaksi_tavsir + $total_transaksi_takengo;
         $total_rest_area = $rest_area->count();
-        $total_merchat = 100;
+        $total_merchat = 0;
         $total_tenant = $tenant->count();
         $total_customer = $voucher->count();
 
@@ -185,6 +187,7 @@ class DashboardController extends Controller
             'payment_method' => $payment_method,
             'top_rest_area' => $top_rest_area,
             'top_tenant' => $top_tenant,
+            'total_merchat' => $total_merchat,
             // 'top_product' => $top_product,
         ];
 
