@@ -199,7 +199,7 @@ class LaporanServices
         $sum_jumlah_transaksi = 0;
         foreach ($data as $k => $i) {
             $jumlah_transaksi = $i->count();
-            $total_transaksi = $i->sum('total');
+            $total_transaksi = $i->sum('sub_total');
 
             $sum_jumlah_transaksi += $jumlah_transaksi;
             $sum_total_transaksi += $total_transaksi;
