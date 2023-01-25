@@ -42,7 +42,7 @@
             <tr>
                 <td colspan="2">Total</td>
                 <td>{{$total_product}} item</td>
-                <td>@rp($total_total)</td>
+                <td>{{$total_total}}</td>
             </tr>
         </tfoot>
     </table>
