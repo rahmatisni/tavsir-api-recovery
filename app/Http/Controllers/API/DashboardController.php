@@ -77,7 +77,7 @@ class DashboardController extends Controller
         $total_transaksi_tavsir = $tavsir;
         $total_transaksi = $total_transaksi_tavsir + $total_transaksi_takengo;
         $total_rest_area = $rest_area->count();
-        $total_merchat = 0;
+        $total_merchant = 0;
         $total_tenant = $tenant->count();
         $total_customer = $customer_count;
 
@@ -201,7 +201,7 @@ class DashboardController extends Controller
             'payment_method' => $payment_method,
             'top_rest_area' => $top_rest_area,
             'top_tenant' => $top_tenant,
-            'total_merchat' => $total_merchat,
+            'total_merchant' => $total_merchant,
             // 'top_product' => $top_product,
         ];
 
