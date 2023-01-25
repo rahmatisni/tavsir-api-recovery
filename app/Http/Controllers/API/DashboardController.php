@@ -65,7 +65,7 @@ class DashboardController extends Controller
 
         if(auth()->user()->role == User::TENANT)
         {
-            $customer_count = $order->select('customer_id')->distinct()->count();
+            $customer_count = $order->unique('customer_id')->count();
         }
        
 
