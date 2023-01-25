@@ -56,14 +56,14 @@ class DashboardController extends Controller
         })->get();
 
         $customer_count = 0;
-        if(auth()->user->role == User::JMRBAREA)
+        if(auth()->user()->role == User::JMRBAREA)
         {
             $customer_count = Voucher::when($rest_area_id = $request->rest_area_id, function ($q) use ($rest_area_id) {
                         $q->where('rest_area_id', $rest_area_id);
                     })->count();
         }
 
-        if(auth()->user->role == User::TENANT)
+        if(auth()->user()->role == User::TENANT)
         {
             $customer_count = $order->distinct('customer_id')->count();
         }
