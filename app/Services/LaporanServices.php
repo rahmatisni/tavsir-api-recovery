@@ -286,7 +286,7 @@ class LaporanServices
             'tanggal_awal' => $tanggal_awal ?? 'Semua Tanggal',
             'tanggal_akhir' => $tanggal_akhir ?? 'Semua Tanggal',
             'total_product' => $item_count,
-            'total_total' => $data->sum('total'),
+            'total_total' => $data->sum('sub_total'),
             'record' => $hasil,
 
         ];
