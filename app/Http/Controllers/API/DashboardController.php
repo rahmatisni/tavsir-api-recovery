@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\RestArea;
 use App\Models\Tenant;
 use App\Models\TransOrder;
+use App\Models\User;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -54,9 +55,22 @@ class DashboardController extends Controller
             $q->where('id', $tenant_id);
         })->get();
 
-        $voucher = Voucher::when($rest_area_id = $request->rest_area_id, function ($q) use ($rest_area_id) {
-            $q->where('rest_area_id', $rest_area_id);
-        })->get();
+        $customer_count = 0;
+        if(auth()->user->role == User::JMRBAREA)
+        {
+            $customer_count = Voucher::when($rest_area_id = $request->rest_area_id, function ($q) use ($rest_area_id) {
+                        $q->where('rest_area_id', $rest_area_id);
+                    })->count();
+        }
+
+        if(auth()->user->role == User::TENANT)
+        {
+            $customer_count = $order->distinct('customer_id')->count();
+        }
+       
+
+
+       
 
         $total_pemasukan = $all1->sum('total');
         $total_transaksi_takengo = $takengo_count;
@@ -65,7 +79,7 @@ class DashboardController extends Controller
         $total_rest_area = $rest_area->count();
         $total_merchat = 0;
         $total_tenant = $tenant->count();
-        $total_customer = $voucher->count();
+        $total_customer = $customer_count;
 
         $ct = $order;
         $ct_group = $ct->sortBy('tenant.category')
