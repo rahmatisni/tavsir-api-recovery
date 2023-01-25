@@ -179,7 +179,6 @@ class DashboardController extends Controller
             'total_transaksi_tng' => number_format($total_transaksi_takengo, 0, ',', '.'),
             'total_transaksi' => number_format($total_transaksi, 0, ',', '.'),
             'total_rest_area' => $total_rest_area,
-            'total_merchat' => $total_merchat,
             'total_tenant' => $total_tenant,
             'total_customer' => $total_customer,
             'category_tenant' => $category_tenant,
