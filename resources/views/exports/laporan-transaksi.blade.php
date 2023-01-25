@@ -32,7 +32,7 @@
                 <td>{{$value['waktu_transaksi']}}</td>
                 <td>{{$value['id_transaksi']}}</td>
                 <td>{{$value['total_product']}} item</td>
-                <td style="white-space: nowrap;">@rp($value['total'])</td>
+                <td style="white-space: nowrap;">{{ $value['total'] }}</td>
                 <td>{{$value['metode_pembayaran']}}</td>
                 <td>{{$value['jenis_transaksi']}}</td>
             </tr>
