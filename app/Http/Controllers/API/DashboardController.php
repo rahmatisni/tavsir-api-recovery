@@ -44,9 +44,13 @@ class DashboardController extends Controller
         $takengo_count = $all2->where('order_type', TransOrder::ORDER_TAKE_N_GO)->count();
         $tavsir = $all3->where('order_type', TransOrder::ORDER_TAVSIR)->count();
 
-        $rest_area = RestArea::get();
+        $rest_area = RestArea::when($rest_area_id = $request->rest_area_id, function ($q) use ($rest_area_id) {
+            $q->where('id', $rest_area_id);
+        })->get();
 
-        $tenant = Tenant::all();
+        $tenant = Tenant::when($tenant_id = $request->tenant_id, function ($q) use ($tenant_id) {
+            $q->where('id', $tenant_id);
+        })->get();
 
         $voucher = Voucher::get();
 
