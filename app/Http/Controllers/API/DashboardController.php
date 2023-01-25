@@ -72,7 +72,7 @@ class DashboardController extends Controller
 
        
 
-        $total_pemasukan = $all1->sum('total');
+        $total_pemasukan = $all1->sum('sub_total');
         $total_transaksi_takengo = $takengo_count;
         $total_transaksi_tavsir = $tavsir;
         $total_transaksi = $total_transaksi_tavsir + $total_transaksi_takengo;
