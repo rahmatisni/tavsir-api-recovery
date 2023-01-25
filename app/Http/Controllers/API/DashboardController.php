@@ -48,7 +48,9 @@ class DashboardController extends Controller
             $q->where('id', $rest_area_id);
         })->get();
 
-        $tenant = Tenant::when($tenant_id = $request->tenant_id, function ($q) use ($tenant_id) {
+        $tenant = Tenant::when($rest_area_id = $request->rest_area_id, function ($q) use ($rest_area_id) {
+            $q->where('rest_area_id', $rest_area_id);
+        })->when($tenant_id = $request->tenant_id, function ($q) use ($tenant_id) {
             $q->where('id', $tenant_id);
         })->get();
 
