@@ -119,7 +119,7 @@ class TravShopController extends Controller
             $data->order_id = 'TNG-' . date('YmdHis');
             $data->rest_area_id = $tenant->rest_area_id;
             $data->tenant_id = $request->tenant_id;
-            $data->business_id = $request->business_id;
+            $data->business_id = $tenant->business_id;
             $data->customer_id = $request->customer_id;
             $data->customer_name = $request->customer_name;
             $data->customer_phone = $request->customer_phone;
