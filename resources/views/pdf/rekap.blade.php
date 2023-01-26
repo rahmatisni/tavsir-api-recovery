@@ -155,7 +155,7 @@
                 <td>{{$value->created_at}}</td>
                 <td>{{$value->order_id}}</td>
                 <td>{{$value->detil->count()}} item</td>
-                <td style="white-space: nowrap;">@rp($value->total)</td>
+                <td style="white-space: nowrap;">@rp($value->sub_total)</td>
                 <td>{{$value->payment_method->name ?? ''}}</td>
                 <td>{{$value->labelOrderType()}}</td>
             </tr>
