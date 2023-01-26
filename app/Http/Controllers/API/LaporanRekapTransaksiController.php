@@ -99,27 +99,57 @@ class LaporanRekapTransaksiController extends Controller
 
     public function download($id)
     {
-        $data = TransOperational::byRole()->where('id', $id)->whereNotNull('end_date')->first();
+        $data = TransOperational::with('cashier','tenant.rest_area','trans_cashbox')->byRole()->where('id', $id)->whereNotNull('end_date')->first();
         if (!$data) {
             return response()->json([
                 'message' => 'Data Not Found'
             ], 404);
         }
-        $order = TransOrder::done()
+        $payment_method_id = request('payment_method_id');
+        $order_type = request('order_type');
+
+        $order = TransOrder::with(['detil','payment_method'])->done()
             ->byRole()
             ->whereBetween('created_at', [$data->start_date, $data->end_date])
-            ->when($payment_method_id = request('payment_method_id'), function ($q) use ($payment_method_id) {
+            ->when($payment_method_id, function ($q) use ($payment_method_id) {
                 $q->where('payment_method_id', $payment_method_id);
             })
-            ->when($order_type = request('order_type'), function ($q) use ($order_type) {
+            ->when($order_type, function ($q) use ($order_type) {
                 $q->where('order_type', $order_type);
             })
             ->get();
+            $datas = [
+                'periode' => $data->periode,
+                'nama_kasir' => $data->cashier?->name,
+                'nama_tenant' => $data->tenant?->name,
+                'waktu_buka' => $data->start_date->toDateTimeString(),
+                'waktu_tutup' => $data->end_date->toDateTimeString(),
+                'rest_area_name' => $data->tenant?->rest_area?->name,
+                'pembayaran_tunai' => $data->trans_cashbox?->rp_cash,
+                'uang_kembalian' => $data->trans_cashbox?->initial_cashbox,
+                'uang_tunai' => $data->trans_cashbox?->cashbox,
+                'selisih_tunai' => $data->trans_cashbox?->different_cashbox,
+                'nominal_koreski' => $data->trans_cashbox?->pengeluaran_cashbox,
+                'keterangan' => $data->trans_cashbox?->description,
+                'pembayaran_qr' => $data->trans_cashbox?->rp_tav_qr,
+                'pembayaran_digital' => $data->trans_cashbox?->total_digital,
+                'bri_va' => $data->trans_cashbox?->rp_va_bri,
+                'mandiri_va' => $data->trans_cashbox?->mandiri_va,
+                // 'record' => $data,
+                'order' => $order->map(function($value){
+                    return [
+                        'waktu_transaksi' => $value->created_at->toDateString(),
+                        'id_transaksi' => $value->order_id,
+                        'total_product' => $value->detil->count(),
+                        'total' => $value->sub_total,
+                        'metode_pembayaran' => $value->payment_method?->name,
+                        'jenis_transaksi' => $value->labelOrderType(),
+                    ];
+                })
+            ];
 
-        $pdf = Pdf::loadView('pdf.rekap', [
-            'record' => $data,
-            'order' => $order
-        ]);
+        $pdf = Pdf::loadView('pdf.rekap', $datas);
+
         return $pdf->download('invoice.pdf');
     }
 }

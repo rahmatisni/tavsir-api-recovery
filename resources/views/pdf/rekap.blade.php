@@ -8,66 +8,68 @@
 </head>
 <style>
     .page_break { page-break-before: always; }
+    .table table, .table td, .table th {
+        border: 1px solid;
+        padding: 0.3em;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .nowrap{
+        white-space: nowrap;
+    }
+
+    .text-center{
+        text-align: center;
+    }
+    .text-right{
+        text-align: right;
+    }
 </style>
 <body>
     <table>
-        <tbody>
+        <tbody style="font-weight: bold;">
             <tr>
                 <td>
-                    <img style="width: 200px;" src="{{ asset('/img/tavsir-logo.png') }}" alt="logo">
-                </td>
-                <td>Perode : {{$record->periode}}</td>
-            </tr>
-            <tr>
-                <td colspan="2">Rekap Pendapatan</td>
-            </tr>
-            <tr>
-                <td>
-                    Kasir
-                </td>
-                <td>
-                    Tenant
+                    <img style="width: 200px;" src="{{ public_path().'/img/tavsir-logo.png' }}" alt="logo">
                 </td>
             </tr>
+            <br>
             <tr>
-                <td>{{$record->cashier->name ?? ''}}</td>
-                <td>{{$record->tenant->name ?? ''}}</td>
+                <td>Rekap Pendapatan</td>
+                <td>Periode : {{$periode}}</td>
             </tr>
             <tr>
                 <td>
-                    Waktu Buka
+                    Kasir: {{$nama_kasir}}
                 </td>
                 <td>
-                    Waktu Tutup
+                    Tenant: {{$nama_tenant}}
                 </td>
             </tr>
             <tr>
                 <td>
-                    {{$record->start_date}}
+                    Waktu Buka: {{$waktu_buka}}
                 </td>
                 <td>
-                    {{$record->end_date}}
+                    Waktu Tutup: {{$waktu_tutup}}
                 </td>
             </tr>
             <tr>
                 <td>
-                    Rest Area
+                    Rest Area: {{$rest_area_name}}
                 </td>
                 <td>
                     <!-- No. Invoice -->
                 </td>
             </tr>
-            <tr>
-                <td>
-                    {{$record->tenant->rest_area->name ?? ''}}
-                </td>
-                <td>
-                    <!-- INV-XXXX -->
-                </td>
-            </tr>
         </tbody>
     </table>
-    <table style="width: 100%;">
+    <br>
+    <table class="table">
         <thead>
             <tr>
                 <th>Metode Pembayaran</th>
@@ -78,31 +80,31 @@
         <tbody>
             <tr>
                 <td rowspan="6">Pembayaran Tunai</td>
-                <td rowspan="6">@rp($record->trans_cashbox->rp_cash)</td>
+                <td rowspan="6">@rp($pembayaran_tunai)</td>
             </tr>
             <tr>
                 <td>Modal Uang Kembalian</td>
-                <td>@rp($record->trans_cashbox->initial_cashbox)</td>
+                <td>@rp($uang_kembalian)</td>
             </tr>
             <tr>
                 <td>Nominal Uang Tunai</td>
-                <td>@rp($record->trans_cashbox->cashbox)</td>
+                <td>@rp($uang_tunai)</td>
             </tr>
             <tr>
                 <td>Selisih Tunai</td>
-                <td>@rp($record->trans_cashbox->different_cashbox)</td>
+                <td>@rp($selisih_tunai)</td>
             </tr>
             <tr>
                 <td>Nominal Koreksi</td>
-                <td>@rp($record->trans_cashbox->pengeluaran_cashbox)</td>
+                <td>@rp($nominal_koreski)</td>
             </tr>
             <tr>
                 <td>Keterangan</td>
-                <td>{{$record->trans_cashbox->description}}</td>
+                <td>{{$keterangan}}</td>
             </tr>
             <tr>
                 <td rowspan="2">Pembayaran QR</td>
-                <td rowspan="2">@rp($record->trans_cashbox->rp_tav_qr)</td>
+                <td rowspan="2">@rp($pembayaran_qr)</td>
             </tr>
             <tr>
                 <td>Saldo tersimpan</td>
@@ -110,15 +112,15 @@
             </tr>
             <tr>
                 <td rowspan="3">Pembayaran Digital</td>
-                <td rowspan="3">@rp($record->trans_cashbox->total_digital)</td>
+                <td rowspan="3">@rp($pembayaran_digital)</td>
             </tr>
             <tr>
                 <td>BRI Virtual Account</td>
-                <td>@rp($record->trans_cashbox->rp_va_bri)</td>
+                <td>@rp($bri_va)</td>
             </tr>
             <tr>
                 <td>Mandiri Virtual Account</td>
-                <td>@rp($record->trans_cashbox->rp_va_mandiri)</td>
+                <td>@rp($mandiri_va)</td>
             </tr>
         </tbody>
     </table>
@@ -129,21 +131,22 @@
         <tbody>
             <tr>
                 <td>
-                    <img style="width: 200px;" src="{{ asset('/img/tavsir-logo.png') }}" alt="logo">
+                    <img style="width: 200px;" src="{{ public_path().'/img/tavsir-logo.png' }}" alt="logo">
                 </td>
             </tr>
             <tr>
-                <td >Detail Transaksi</td>
+                <td style="font-weight: bold;">Detail Transaksi</td>
             </tr>
         </tbody>
     </table>
 
-    <table>
+    <table class="table">
         <thead>
             <tr>
+                <th>No.</th>
                 <th>Waktu Transaksi</th>
                 <th>ID Transaksi</th>
-                <th>Total Product</th>
+                <th>Qty</th>
                 <th>Total</th>
                 <th>Metode Pembayaran</th>
                 <th>Jenis Transkasi</th>
@@ -151,13 +154,14 @@
         </thead>
         <tbody>
             @foreach($order as $value)
-            <tr>
-                <td>{{$value->created_at}}</td>
-                <td>{{$value->order_id}}</td>
-                <td>{{$value->detil->count()}} item</td>
-                <td style="white-space: nowrap;">@rp($value->sub_total)</td>
-                <td>{{$value->payment_method->name ?? ''}}</td>
-                <td>{{$value->labelOrderType()}}</td>
+            <tr class="nowrap">
+                <td>{{$loop->iteration}}</td>
+                <td>{{$value['waktu_transaksi']}}</td>
+                <td>{{$value['id_transaksi']}}</td>
+                <td class="text-center">{{$value['total_product']}} item</td>
+                <td class="text-right">@rp($value['total'])</td>
+                <td>{{$value['metode_pembayaran']}}</td>
+                <td>{{$value['jenis_transaksi']}}</td>
             </tr>
             @endforeach
         </tbody>
