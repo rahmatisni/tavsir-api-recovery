@@ -78,11 +78,10 @@ class CardController extends Controller
 
     public function unBind($id)
     {
-        $bind = Bind::findOrFail($id);
         try {
-            if (!$bind->bin_id) {
-                $bind->delete();
-                return response()->json(['message' => 'Deleted.']);
+            $bind = Bind::whereNotNull('bind_id')->where('id', $id)->first();
+            if (!$bind) {
+                return response()->json(['message' => 'Not Found.'], 404);
             }
             $payload = $bind->toArray();
             unset($payload['created_at']);
@@ -94,13 +93,13 @@ class CardController extends Controller
             $res = PgJmto::unBindDD($payload);
             if ($res->successful()) {
                 $res = $res->json();
-                $message = ['message' => 'Success unbind.'];
                 if ($res['status'] == 'ERROR') {
-                    $message =  ['message' => 'Force unbind.'];
+                    return response()->json($res, 400);
                 }
+                $bind->delete();
+                return ['message' => 'Success unbind.'];
             }
-            $bind->delete();
-            return response()->json($message);
+            return response()->json($res->json(), 400);
         } catch (\Throwable $th) {
             return response()->json($th->getMessage(), 400);
         }
