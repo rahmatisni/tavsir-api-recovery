@@ -272,12 +272,13 @@ class TavsirController extends Controller
     public function order(TrOrderRequest $request)
     {
         try {
-            DB::beginTransaction();
             $data = TransOrder::find($request->id);
+
+            DB::beginTransaction();
             if (!$data) {
                 $data = new TransOrder();
                 $data->order_type = TransOrder::ORDER_TAVSIR;
-                $data->order_id = 'TAV-' . date('YmdHis');
+                $data->order_id = auth()->user()->tenant->rest_area_id ?? '0'.'-'. auth()->user()->tenant_id ?? '0'.'-TAV-' . date('YmdHis');
                 $data->status = TransOrder::CART;
             }
             if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::DONE) {
