@@ -70,7 +70,7 @@ class InvoiceController extends Controller
             }
 
             $invoice = new TransInvoice();
-            $invoice->invoice_id = $data->rest_area_id ?? '0'.'-'.$data->tenant_id ?? '0'.'-INV-' . date('YmdHis');
+            $invoice->invoice_id = ($data->rest_area_id ?? '0').'-'.($data->tenant_id ?? '0').'-INV-' . date('YmdHis');
             $invoice->nominal = $request->nominal;
             $invoice->cashier_id = auth()->user()->id;
             $invoice->claim_date = Carbon::now();
@@ -109,7 +109,7 @@ class InvoiceController extends Controller
         $data->pay_station_id = $request->pay_station_id ?? auth()->user()->paystation_id;
         $data->pay_petugas_id = auth()->user()->id;
         $data->paid_date = Carbon::now();
-        $data->kwitansi_id = $data->trans_saldo?->rest_area_id ?? '0'.'-'.$data->trans_saldo?->tenant_id ?? '0'.'-'.$data->pay_petugas_id ?? '0'.'-RCP-'. date('YmdHis'); ;
+        $data->kwitansi_id = ($data->trans_saldo?->rest_area_id ?? '0').'-'.($data->trans_saldo?->tenant_id ?? '0').'-'.($data->pay_petugas_id ?? '0').'-RCP-'. date('YmdHis'); ;
         $data->save();
 
         return response()->json($data);

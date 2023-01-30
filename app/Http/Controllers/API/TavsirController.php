@@ -278,7 +278,8 @@ class TavsirController extends Controller
             if (!$data) {
                 $data = new TransOrder();
                 $data->order_type = TransOrder::ORDER_TAVSIR;
-                $data->order_id = auth()->user()->tenant->rest_area_id ?? '0'.'-'. auth()->user()->tenant_id ?? '0'.'-TAV-' . date('YmdHis');
+                $data->order_id = (auth()->user()->tenant->rest_area_id ?? '0').'-'. (auth()->user()->tenant_id ?? '0').'-TAV-' . date('YmdHis');
+                dd($data->order_id);
                 $data->status = TransOrder::CART;
             }
             if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::DONE) {
