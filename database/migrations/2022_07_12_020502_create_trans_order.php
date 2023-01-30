@@ -29,7 +29,8 @@ class CreateTransOrder extends Migration
             $table->string('rating_comment')->nullable();
             $table->integer('business_id')->unsigned()->nullable();
             $table->integer('rest_area_id')->unsigned()->nullable();
-            $table->integer('tenant_id')->unsigned();
+            $table->integer('tenant_id')->unsigned()->nullable();
+            $table->integer('supertenant_id')->unsigned()->nullable();
             $table->integer('merchant_id')->unsigned()->nullable();
             $table->integer('sub_merchant_id')->unsigned()->nullable();
             $table->string('paystation_id')->nullable();

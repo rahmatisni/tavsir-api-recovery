@@ -20,7 +20,6 @@ class TransOrderDetil extends BaseModel
         'price',
         'qty',
         'total_price',
-
     ];
 
     public function trans_order()

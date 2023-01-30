@@ -42,6 +42,7 @@ class TransOrder extends BaseModel
         'total',
         'business_id',
         'tenant_id',
+        'supertenant_id',
         'customer_id',
         'voucher_id',
         'payment_method_id',
@@ -64,6 +65,11 @@ class TransOrder extends BaseModel
     public function tenant()
     {
         return $this->belongsTo(Tenant::class, 'tenant_id')->withTrashed();
+    }
+
+    public function supertenant()
+    {
+        return $this->belongsTo(Supertenant::class, 'supertenant_id')->withTrashed();
     }
 
     public function payment_method()
