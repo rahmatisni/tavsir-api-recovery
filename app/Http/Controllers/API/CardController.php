@@ -50,6 +50,23 @@ class CardController extends Controller
             if (!$bind) {
                 return response()->json(['message' => 'Not Found.'], 404);
             }
+
+            if($bind->sof_code == 'MANDIRI')
+            {
+                $res = PgJmto::cardList([]);
+                if ($res['status'] == 'ERROR') {
+                    return response()->json($res, 400);
+                }
+                $respon = collect($res['responseData']);
+                $respon = $respon->where('sof_code','MANDIRI')->where('card_number',$bind->card_no)->first();
+                if(!$respon){
+                    return response()->json(['message' => 'Unvalidate'], 400);
+                }
+                $bind->bind_id = $respon['id'];
+                $bind->save();
+                return $bind;
+            }
+
             $payload = $bind->toArray();
             $payload['otp'] = $request->otp;
             unset($payload['created_at']);

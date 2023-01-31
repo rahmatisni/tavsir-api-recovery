@@ -445,4 +445,11 @@ class PgJmto extends Model
         Log::info('DD payment', $res->json());
         return $res;
     }
+
+    public static function cardList($payload)
+    {
+        $res = self::service('/sof/cardlist', $payload);
+        Log::info('Card list', $res->json());
+        return $res;
+    }
 }
