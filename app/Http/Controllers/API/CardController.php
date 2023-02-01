@@ -53,7 +53,7 @@ class CardController extends Controller
 
             if($bind->sof_code == 'MANDIRI')
             {
-                $res = PgJmto::cardList([]);
+                $res = PgJmto::cardList(['sof_id' => '']);
                 if ($res['status'] == 'ERROR') {
                     return response()->json($res, 400);
                 }
@@ -96,9 +96,13 @@ class CardController extends Controller
     public function unBind($id)
     {
         try {
-            $bind = Bind::whereNotNull('bind_id')->where('id', $id)->first();
+            $bind = Bind::where('id', $id)->first();
             if (!$bind) {
                 return response()->json(['message' => 'Not Found.'], 404);
+            }
+            if(!$bind->bind_id){
+                $bind->delete();
+                return ['message' => 'Success delete.'];
             }
             $payload = $bind->toArray();
             unset($payload['created_at']);
