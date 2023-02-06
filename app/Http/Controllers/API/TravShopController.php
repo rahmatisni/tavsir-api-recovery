@@ -186,9 +186,9 @@ class TravShopController extends Controller
             }
             if ($ids != '') {
                 $payload = array(
-                    'id' => random_int(1000, 9999),
-                    'type' => 'action',
-                    'action' => 'new_order_tng'
+                    'id' => $data->id,
+                    'type' => 'click',
+                    'action' => 'tavsir_order'
                 );
                 $result = sendNotif($ids, 'Info', 'Pemberitahuan order baru TAKE N GO ' . $data->order_id, $payload);
             }
