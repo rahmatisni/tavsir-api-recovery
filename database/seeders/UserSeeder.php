@@ -92,16 +92,45 @@ class UserSeeder extends Seeder
             ],
         ]);
 
+        $super = Supertenant::first();
+        $member = $super->tenant->first();
+
         User::create([
             'name' => 'Supertenant',
             'email' => 'supertenant@email.com',
             'role' => User::SUPERTENANT,
             'password' => bcrypt('password'),
+            'business_id' => $super->business_id,
+            'merchant_id' => 0,
+            'sub_merchant_id' => 0,
+            'supertenant_id' => $super->id,
+            'rest_area_id' => $super->rest_area_id,
+            'paystation_id' => 0,
+        ]);
+
+        User::create([
+            'name' => 'Member 1',
+            'email' => 'member_1@email.com',
+            'role' => User::TENANT,
+            'password' => bcrypt('password'),
             'business_id' => 1,
             'merchant_id' => 0,
             'sub_merchant_id' => 0,
-            'supertenant_id' => Supertenant::first()->id,
-            'rest_area_id' => 1,
+            'tenant_id' => $member->id,
+            'rest_area_id' => $member->rest_area_id,
+            'paystation_id' => 0,
+        ]);
+
+        User::create([
+            'name' => 'Member 2',
+            'email' => 'member_2@email.com',
+            'role' => User::TENANT,
+            'password' => bcrypt('password'),
+            'business_id' => 1,
+            'merchant_id' => 0,
+            'sub_merchant_id' => 0,
+            'tenant_id' => $member->id,
+            'rest_area_id' => $member->rest_area_id,
             'paystation_id' => 0,
         ]);
         Artisan::call('passport:install');

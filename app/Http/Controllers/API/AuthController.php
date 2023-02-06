@@ -82,6 +82,7 @@ class AuthController extends Controller
 
     public function profile()
     {
+        // dd(auth()->user());
         return response()->json(new ProfileResource(auth()->user()));
     }
 

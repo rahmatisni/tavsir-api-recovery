@@ -126,11 +126,14 @@ class TransOrder extends BaseModel
     public function scopeByRole($query)
     {
         return $query->when(auth()->user()->role == User::TENANT, function ($q) {
-            $q->where('tenant_id', auth()->user()->tenant_id);
-        })
+                $q->where('tenant_id', auth()->user()->tenant_id);
+            })
             ->when(auth()->user()->role == User::CASHIER, function ($q) {
                 $q->where('casheer_id', auth()->user()->id);
-            });
+            })
+            ->when(auth()->user()->role == User::SUPERTENANT, function ($q) {
+                $q->where('supertenant_id', auth()->user()->supertenant_id);
+            });;
     }
 
     public function statusLabel()

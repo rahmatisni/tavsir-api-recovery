@@ -16,12 +16,14 @@ use App\Http\Requests\TsOrderConfirmRequest;
 use App\Http\Requests\VerifikasiOrderReqeust;
 use App\Http\Resources\BaseResource;
 use App\Http\Resources\ProductResource;
+use App\Http\Resources\Tavsir\OrderSupertenantResource;
 use App\Http\Resources\Tavsir\ProductSupertenantResource;
 use App\Http\Resources\Tavsir\TrProductResource;
 use App\Http\Resources\Tavsir\TrCartSavedResource;
 use App\Http\Resources\Tavsir\TrOrderResource;
 use App\Http\Resources\TravShop\TsOrderResource;
 use App\Http\Resources\Tavsir\TrCategoryResource;
+use App\Http\Resources\Tavsir\TrOrderSupertenantResource;
 use App\Models\Bank;
 use App\Models\Product;
 use App\Models\Category;
@@ -95,9 +97,86 @@ class TavsirController extends Controller
         return response()->json(ProductSupertenantResource::collection($data));
     }
 
+    public function orderSuperTenant(TrOrderRequest $request)
+    {
+        try {
+            $data = TransOrder::find($request->id);
+
+            DB::beginTransaction();
+            if (!$data) {
+                $data = new TransOrder();
+                $data->order_type = TransOrder::ORDER_TAVSIR;
+                $data->order_id = (auth()->user()->supertenant?->rest_area_id ?? '0').'-'. (auth()->user()->supertenant_id ?? '0').'-STAV-' . date('YmdHis');
+                $data->status = TransOrder::WAITING_PAYMENT;
+            }
+            if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::DONE) {
+                return response()->json(['message' => 'Order status ' . $data->statusLabel()], 400);
+            }
+            $data->rest_area_id = auth()->user()->supertenant?->rest_area_id ?? null;
+            $data->supertenant_id = auth()->user()->supertenant_id;
+            $data->business_id = auth()->user()->business_id;
+            $data->casheer_id = auth()->user()->id;
+            $data->detil()->delete();
+            $order_detil_many = [];
+            $data->save();
+
+            $sub_total = 0;
+            foreach ($request->product as $k => $v) {
+                $product = Product::find($v['product_id']);
+
+                $order_detil = new TransOrderDetil();
+                $order_detil->trans_order_id = $data->id;
+                $order_detil->product_id = $product->id;
+                $order_detil->product_name = $product->name;
+                $order_detil->base_price = $product->price;
+                $order_detil->price = $product->price;
+                $customize_x = array();
+                foreach ($v['customize'] as $key => $value) {
+                    $customize_y = collect($product->customize)->where('id', $value)->first();
+                    if ($customize_y) {
+                        $pilihan = collect($customize_y->pilihan);
+                        $pilihan = $pilihan->where('id', $v['pilihan'][$key])->first();
+                        if ($pilihan) {
+                            $customize_z = [
+                                'customize_id' => $customize_y->id,
+                                'customize_name' => $customize_y->name,
+                                'pilihan_id' => $pilihan->id,
+                                'pilihan_name' => $pilihan->name,
+                                'pilihan_price' => $pilihan->price,
+                            ];
+                            $customize_x[] = $customize_z;
+                            $order_detil->price += $pilihan->price;
+                        }
+                    }
+                }
+                $order_detil->customize = json_encode($customize_x);
+                $order_detil->qty = $v['qty'];
+                $order_detil->total_price = $order_detil->price * $v['qty'];
+                $order_detil->note = $v['note'];
+
+                $sub_total += $order_detil->total_price;
+
+                $order_detil_many[] = $order_detil;
+            }
+
+            $data->sub_total = $sub_total;
+            $data->total = $data->sub_total + $data->fee + $data->service_fee;
+
+            $data->save();
+            $data->detil()->saveMany($order_detil_many);
+
+            DB::commit();
+            return response()->json(TransOrder::with('detil')->find($data->id));
+        } catch (\Throwable $th) {
+            DB::rollback();
+            Log::error($th);
+            return response()->json(['error' => $th->getMessage()], 500);
+        }
+    }
+
     public function orderListSupertenant(Request $request)
     {
-        $data = TransOrder::bySupertenant()->when($status = request()->status, function ($q) use ($status) {
+        $data = TransOrder::byRole()->when($status = request()->status, function ($q) use ($status) {
             if (is_array($status)) {
                 $q->whereIn('status', $status);
             } else {
@@ -135,8 +214,49 @@ class TavsirController extends Controller
             $data = $data->orderBy('created_at', 'desc');
         }
         $data = $data->get();
-        return response()->json(TrOrderResource::collection($data));
+        return response()->json(OrderSupertenantResource::collection($data));
     }
+
+    public function orderByIdSupertenant($id)
+    {
+        $data = TransOrder::byRole()->findOrfail($id);
+        return response()->json(new OrderSupertenantResource($data));
+    }
+
+    public function orderListMemberSupertenant(Request $request)
+    {
+        $tenant_user = auth()->user()->tenant;
+        $data = TransOrder::with('detil.product.tenant')
+        ->where('supertenant_id', $tenant_user->supertenant_id ?? 0)
+        ->whereHas('detil', function($q) use ($tenant_user){
+            $q->whereHas('product', function($qq) use ($tenant_user){
+                $qq->where('tenant_id', $tenant_user->id ?? 0);
+            });
+        })
+        ->get();
+        return response()->json(TrOrderSupertenantResource::collection($data));
+    }
+
+    public function orderByIdtMemberSupertenant($id)
+    {
+        $tenant_user = auth()->user()->tenant;
+        $data = TransOrder::with('detil.product.tenant')
+        ->where('supertenant_id', $tenant_user->supertenant_id ?? 0)
+        ->whereHas('detil', function($q) use ($tenant_user){
+            $q->whereHas('product', function($qq) use ($tenant_user){
+                $qq->where('tenant_id', $tenant_user->id ?? 0);
+            });
+        })
+        ->findOrfail($id);
+        return response()->json(new TrOrderSupertenantResource($data));
+    }
+
+    public function confirmOrderMemberSupertenant()
+    {
+        
+    }
+
+   
 
     //order by id
     //Order
