@@ -26,7 +26,7 @@ class ConfirmOrderMemberSupertenantRequest extends FormRequest
     {
         return [
             'detil_id' => 'required|exists:trans_order_detil,id',
-            'status' => 'required|in:'.TransOrderDetil::STATUS_CANCEL.','.TransOrderDetil::STATUS_DONE
+            'status' => 'required|in:'.TransOrderDetil::STATUS_CANCEL.','.TransOrderDetil::STATUS_DONE.','.TransOrderDetil::STATUS_WAITING
         ];
     }
 }

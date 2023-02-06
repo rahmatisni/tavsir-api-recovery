@@ -14,9 +14,15 @@ class TransSharingServices
     public function calculateSharing(TransOrder $order)
     {
         $tenant = $order->tenant;
-        $id = $tenant->parent_id ?? $tenant->id;
+        $supertenant = $order->supertenant;
 
-        $sharing_rule = Sharing::where('tenant_id', $id)->latest()->first();
+        if($tenant)
+        {
+            $sharing_rule =  Sharing::where('tenant_id', $tenant->id)->latest()->first();;
+        }
+        
+        $sharing_rule = Sharing::where('supertenant_id', $supertenant->id)->latest()->first();
+
 
         if ($sharing_rule) {
             $trans_shairng = TransSharing::create([

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ChangeStatusOrderReqeust;
 use App\Http\Requests\CloseTenantSupertenantRequest;
+use App\Http\Requests\ConfirmOrderMemberSupertenantRequest;
 use App\Http\Requests\PaymentOrderRequest;
 use App\Http\Requests\TavsirProductRequest;
 use Illuminate\Http\Request;
@@ -251,17 +252,37 @@ class TavsirController extends Controller
         return response()->json(new TrOrderSupertenantResource($data));
     }
 
-    public function confirmOrderMemberSupertenant()
+    public function confirmOrderMemberSupertenant(ConfirmOrderMemberSupertenantRequest $request)
     {
-        
+        $tenant_user = auth()->user()->tenant;
+        $data = TransOrderDetil::whereHas('product', function($qq) use ($tenant_user){
+            $qq->where('tenant_id', $tenant_user->id ?? 0);
+        })->where('id',$request->detil_id)->first();
+        if(!$data){
+            return response()->json(404,[
+                'message' => 'Data Not Found'
+            ]);
+        }
+        if($data->trans_order->status == TransOrder::DONE)
+        {
+            return response()->json(400,[
+                'message' => 'Status order '.$data->status
+            ]);
+        }
+        $data->status = $request->status;
+        $data->save();
+        return response()->json([
+            'message' => 'Succes confirm '.$data->status
+        ]);
     }
-
    
 
     //order by id
     //Order
-    //Confirm order member tenant
     //Update order
+    //order by member
+    //order by id member
+    //Confirm order member tenant
     //Payment
     //Change Status DONE
 
@@ -647,7 +668,7 @@ class TavsirController extends Controller
                 case 'tav_qr':
                     $voucher = Voucher::where('hash', request()->voucher)
                         ->where('is_active', 1)
-                        ->where('rest_area_id', $data->tenant->rest_area_id)
+                        ->where('rest_area_id', $data->tenant?->rest_area_id)
                         ->first();
                     if (!$voucher) {
                         return response()->json(['message' => 'Voucher tidak ditemukan'], 500);
@@ -742,6 +763,7 @@ class TavsirController extends Controller
         } catch (\Throwable $th) {
             DB::rollback();
             Log::error($th);
+            dd($th);
             return response()->json(['error' => $th->getMessage()], 500);
         }
     }

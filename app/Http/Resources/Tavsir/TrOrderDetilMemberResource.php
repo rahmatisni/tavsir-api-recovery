@@ -25,6 +25,7 @@ class TrOrderDetilMemberResource extends JsonResource
             'base_price' => $this->base_price,
             'price' => $this->price,
             'total_price' => $this->total_price,
+            'status' => $this->status,
             'customize' => $this->customize,
         ];
     }

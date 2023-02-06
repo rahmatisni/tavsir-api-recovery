@@ -31,8 +31,8 @@ class PaymentOrderRequest extends FormRequest
             'consume_type' => 'required|in:' . TransOrder::DINE_IN . ',' . TransOrder::TAKE_AWAY,
             'nomor_name' => 'required',
             'bank_id' => 'required_if:payment_method_id,8|exists:ref_bank,id',
-            'card_nomor' => 'required_if:payment_method_id,8|size:16',
-            'ref_nomor' => 'required_if:payment_method_id,8|max:255',
+            'card_nomor' => 'required_if:payment_method_id,8',
+            'ref_nomor' => 'required_if:payment_method_id,8',
         ];
     }
 
