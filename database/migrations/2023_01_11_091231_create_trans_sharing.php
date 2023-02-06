@@ -18,18 +18,19 @@ class CreateTransSharing extends Migration
             $table->unsignedInteger('trans_order_id');
             $table->string('order_type');
             $table->string('order_id');
-            $table->string('payment_method');
+            $table->unsignedInteger('payment_method_id');
+            $table->string('payment_method_name');
             $table->unsignedInteger('sub_total');
 
             $table->unsignedInteger('pengelola_id');
             $table->unsignedInteger('persentase_pengelola');
             $table->unsignedInteger('total_pengelola');
 
-            $table->unsignedInteger('supertenant_id');
+            $table->unsignedInteger('supertenant_id')->nullable();
             $table->unsignedInteger('persentase_supertenant');
             $table->unsignedInteger('total_supertenant');
 
-            $table->unsignedInteger('tenant_id');
+            $table->unsignedInteger('tenant_id')->nullable();
             $table->unsignedInteger('persentase_tenant');
             $table->unsignedInteger('total_tenant');
 

@@ -27,6 +27,7 @@ class SharingRequest extends FormRequest
             'nama_pks' => 'required',
             'nomor_pks' => 'required',
             'pengelola_id' => 'required|exists:ref_business,id',
+            'supertenant_id' => 'required|exists:ref_supertenant,id',
             'tenant_id' => 'required|exists:ref_tenant,id',
             'persentase_pengelola' => 'required',
             'persentase_supertenant' => 'required',
@@ -43,6 +44,7 @@ class SharingRequest extends FormRequest
         return [
             'nama_pks' => 'Nama PKS',
             'nomor_pks' => 'Nomor PKS',
+            'supertenant_id' => 'Super Tenant',
             'tenant_id' => 'Tenant',
             'pengelola_id' => 'Pengelola',
             'persentase_pengelola' => 'Persentase Pengelola',

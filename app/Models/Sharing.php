@@ -13,6 +13,7 @@ class Sharing extends BaseModel
         'nomor_pks',
         'pengelola_id',
         'tenant_id',
+        'supertenant_id',
         'persentase_pengelola',
         'persentase_supertenant',
         'persentase_tenant',
@@ -37,5 +38,15 @@ class Sharing extends BaseModel
     public function tenant()
     {
         return $this->belongsTo(Tenant::class, 'tenant_id');
+    }
+
+    public function supertenant()
+    {
+        return $this->belongsTo(Supertenant::class, 'supertenant_id');
+    }
+
+    public function scopeStatusActive($query)
+    {
+        return $query->where('status',1);
     }
 }

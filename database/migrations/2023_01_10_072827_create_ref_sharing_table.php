@@ -18,6 +18,7 @@ class CreateRefSharingTable extends Migration
             $table->string('nama_pks');
             $table->string('nomor_pks');
             $table->unsignedInteger('pengelola_id');
+            $table->unsignedInteger('supertenant_id');
             $table->unsignedInteger('tenant_id');
             $table->unsignedInteger('persentase_pengelola');
             $table->unsignedInteger('persentase_supertenant');
