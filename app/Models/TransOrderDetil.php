@@ -7,8 +7,9 @@ use App\Models\BaseModel;
 class TransOrderDetil extends BaseModel
 {
     public const STATUS_WAITING = 'WAITING';
-    public const STATUS_DONE = 'DONE';
+    public const STATUS_READY = 'READY';
     public const STATUS_CANCEL = 'CANCEL';
+    public const STATUS_DONE = 'DONE';
 
     protected $table = 'trans_order_detil';
     public $timestamps = false;

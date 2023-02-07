@@ -94,6 +94,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/tenant-supertenant-order-member', [App\Http\Controllers\API\TavsirController::class, 'orderListMemberSupertenant']);
         Route::get('/tenant-supertenant-order-member/{id}', [App\Http\Controllers\API\TavsirController::class, 'orderByIdtMemberSupertenant']);
         Route::post('/tenant-supertenant-order-confirm', [App\Http\Controllers\API\TavsirController::class, 'confirmOrderMemberSupertenant']);
+        Route::post('/tenant-supertenant-order-done/{id}', [App\Http\Controllers\API\TavsirController::class, 'doneOrderMemberSupertenant']);
         
         #EndSupertenant
         

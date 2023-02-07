@@ -127,6 +127,7 @@ class TavsirController extends Controller
 
                 $order_detil = new TransOrderDetil();
                 $order_detil->trans_order_id = $data->id;
+                $order_detil->status = TransOrderDetil::STATUS_WAITING;
                 $order_detil->product_id = $product->id;
                 $order_detil->product_name = $product->name;
                 $order_detil->base_price = $product->price;
@@ -228,6 +229,7 @@ class TavsirController extends Controller
     {
         $tenant_user = auth()->user()->tenant;
         $data = TransOrder::with('detil.product.tenant')
+        ->whereIn('status', [TransOrder::PAYMENT_SUCCESS, TransOrder::DONE])
         ->where('supertenant_id', $tenant_user->supertenant_id ?? 0)
         ->whereHas('detil', function($q) use ($tenant_user){
             $q->whereHas('product', function($qq) use ($tenant_user){
@@ -242,6 +244,7 @@ class TavsirController extends Controller
     {
         $tenant_user = auth()->user()->tenant;
         $data = TransOrder::with('detil.product.tenant')
+        ->whereIn('status', [TransOrder::PAYMENT_SUCCESS, TransOrder::DONE])
         ->where('supertenant_id', $tenant_user->supertenant_id ?? 0)
         ->whereHas('detil', function($q) use ($tenant_user){
             $q->whereHas('product', function($qq) use ($tenant_user){
@@ -263,16 +266,40 @@ class TavsirController extends Controller
                 'message' => 'Data Not Found'
             ]);
         }
-        if($data->trans_order->status == TransOrder::DONE)
+        if($data->status != TransOrderDetil::STATUS_WAITING)
         {
-            return response()->json(400,[
-                'message' => 'Status order '.$data->status
-            ]);
+            return response()->json([
+                'message' => 'Cant change Status order not '.TransOrderDetil::STATUS_WAITING
+            ],400);
         }
         $data->status = $request->status;
         $data->save();
         return response()->json([
             'message' => 'Succes confirm '.$data->status
+        ]);
+    }
+
+    public function doneOrderMemberSupertenant($id)
+    {
+        $tenant_user = auth()->user()->tenant;
+        $data = TransOrderDetil::whereHas('product', function($qq) use ($tenant_user){
+            $qq->where('tenant_id', $tenant_user->id ?? 0);
+        })->where('id',$id)->first();
+        if(!$data){
+            return response()->json(404,[
+                'message' => 'Data Not Found'
+            ]);
+        }
+        if($data->status != TransOrderDetil::STATUS_READY)
+        {
+            return response()->json([
+                'message' => 'Cant change Status order not '.TransOrderDetil::STATUS_READY
+            ],400);
+        }
+        $data->status = TransOrderDetil::STATUS_DONE;
+        $data->save();
+        return response()->json([
+            'message' => 'Succes order '.$data->status
         ]);
     }
    
