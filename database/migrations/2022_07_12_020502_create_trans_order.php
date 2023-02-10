@@ -44,6 +44,7 @@ class CreateTransOrder extends Migration
             $table->integer('pay_amount')->unsigned()->nullable();
             $table->string('code_verif')->nullable();
             $table->string('status')->default('PENDING');
+            $table->boolean('is_refund')->default(0);
             $table->string('canceled_by')->nullable();
             $table->string('canceled_name')->nullable();
             $table->string('reason_cancel')->nullable();

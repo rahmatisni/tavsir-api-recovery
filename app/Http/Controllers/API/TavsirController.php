@@ -17,6 +17,7 @@ use App\Http\Requests\TsOrderConfirmRequest;
 use App\Http\Requests\VerifikasiOrderReqeust;
 use App\Http\Resources\BaseResource;
 use App\Http\Resources\ProductResource;
+use App\Http\Resources\Tavsir\OrderSupertenantRefundResource;
 use App\Http\Resources\Tavsir\OrderSupertenantResource;
 use App\Http\Resources\Tavsir\ProductSupertenantResource;
 use App\Http\Resources\Tavsir\TrProductResource;
@@ -240,7 +241,7 @@ class TavsirController extends Controller
         return response()->json(TrOrderSupertenantResource::collection($data));
     }
 
-    public function orderByIdtMemberSupertenant($id)
+    public function orderByIdMemberSupertenant($id)
     {
         $tenant_user = auth()->user()->tenant;
         $data = TransOrder::with('detil.product.tenant')
@@ -262,9 +263,9 @@ class TavsirController extends Controller
             $qq->where('tenant_id', $tenant_user->id ?? 0);
         })->where('id',$request->detil_id)->first();
         if(!$data){
-            return response()->json(404,[
+            return response()->json([
                 'message' => 'Data Not Found'
-            ]);
+            ],404);
         }
         if($data->status != TransOrderDetil::STATUS_WAITING)
         {
@@ -274,6 +275,7 @@ class TavsirController extends Controller
         }
         $data->status = $request->status;
         $data->save();
+
         return response()->json([
             'message' => 'Succes confirm '.$data->status
         ]);
@@ -300,6 +302,50 @@ class TavsirController extends Controller
         $data->save();
         return response()->json([
             'message' => 'Succes order '.$data->status
+        ]);
+    }
+
+    public function orderRefund($id)
+    {
+        $data = TransOrder::byRole()->findOrfail($id);
+        if($data->is_refund)
+        {
+            return response()->json([
+                'message' => 'Order sudah di refund'
+            ],400);
+        }
+        $status = $data->detil->pluck('status')->toArray();
+        $result = array_intersect($status,[null,TransOrderDetil::STATUS_WAITING]);
+        if(!empty($result)){
+            return response()->json([
+                'message' => 'Terdapat order yang belum dikonfirmasi tenant'
+            ],400);
+        }
+        $total_refund = 0;
+        $order_refund = $data->detil->where('status',TransOrderDetil::STATUS_CANCEL);
+        if($order_refund->count() == 0)
+        {
+            return response()->json([
+                'message' => 'Tidak ada order yang di Cancel'
+            ],400);
+        }
+        foreach($order_refund as $v)
+        {
+            $total_refund += $v->total_price;
+        }
+        $data->sub_total =  $data->sub_total - $total_refund;
+        $data->total = $data->sub_total + $data->fee;
+        $data->is_refund = 1;
+        $data->save();
+        $data->payment->data = [
+            'cash' => $data->pay_amount,
+            'total' => $data->total,
+            'kembalian' => $data->pay_amount - $data->total
+        ];
+        $data->payment->save();
+        
+        return response()->json([
+            'message' => 'Refund sebesar '.$total_refund
         ]);
     }
    

@@ -21,6 +21,7 @@ class TransOrderDetil extends BaseModel
         'price',
         'qty',
         'total_price',
+        'status',
     ];
 
     public function trans_order()
@@ -36,5 +37,25 @@ class TransOrderDetil extends BaseModel
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id')->withTrashed();
+    }
+
+    public function isRefund()
+    {
+        return $this->status == TransOrderDetil::STATUS_CANCEL || $this->status == '';
+    }
+
+    public function priceRefund()
+    {
+        return $this->isRefund() ? (0 - $this->price) : $this->price; 
+    }
+
+    public function basePriceRefund()
+    {
+        return $this->isRefund() ? (0 - $this->base_price) : $this->base_price; 
+    }
+
+    public function totalPriceRefund()
+    {
+        return $this->isRefund() ? (0 - $this->total_price) : $this->total_price; 
     }
 }

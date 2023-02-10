@@ -2,10 +2,9 @@
 
 namespace App\Http\Resources\Tavsir;
 
-use App\Models\TransOrderDetil;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class OrderDetilSupertenantResource extends JsonResource
+class OrderDetilSupertenantRefundResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,7 +14,6 @@ class OrderDetilSupertenantResource extends JsonResource
      */
     public function toArray($request)
     {
-        $is_refund = $this->trans_order->is_refund;
         return [
             'id' => $this->id,
             'product_id' => $this->product_id,
@@ -23,9 +21,10 @@ class OrderDetilSupertenantResource extends JsonResource
             'product_photo' => $this->product ? ($this->product->photo ?  asset($this->product->photo) : null) : null,
             'product_qty' => $this->qty,
             'product_note' => $this->note,
-            'base_price' => $is_refund ? $this->basePriceRefund() : $this->base_price ,
-            'price' => $is_refund ? $this->priceRefund() : $this->price,
-            'total_price' => $is_refund ? $this->totalPriceRefund() : $this->total_price,
+         
+            'base_price' => $this->basePriceRefund(),
+            'price' => $this->priceRefund(),
+            'total_price' => $this->totalPriceRefund(),
             'status' => $this->status,
             'customize' => $this->customize,
         ];

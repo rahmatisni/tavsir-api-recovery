@@ -2,9 +2,10 @@
 
 namespace App\Http\Resources\Tavsir;
 
+use App\Models\TransOrderDetil;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class TrOrderSupertenantResource extends JsonResource
+class OrderSupertenantRefundResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -14,8 +15,7 @@ class TrOrderSupertenantResource extends JsonResource
      */
     public function toArray($request)
     {
-        $product_member = auth()->user()->tenant?->product?->pluck('id') ?? [];
-        $detil_tenant = $this->detil->whereIn('product_id', $product_member);
+       
         return [
             'id' => $this->id,
             'order_id' => $this->order_id,
@@ -24,6 +24,8 @@ class TrOrderSupertenantResource extends JsonResource
             'nomor_name' => $this->nomor_name,
             'tenant_id' => $this->tenant_id,
             'tenant_name' => $this->tenant->name ?? null,
+            'supertenant_id' => $this->supertenant_id,
+            'supertenant_name' => $this->supertenant->name ?? null,
             'business_id' => $this->business_id,
             'merchant_id' => $this->merchant_id,
             'rest_area_id' => $this->tenant->rest_area_id ?? null,
@@ -40,6 +42,7 @@ class TrOrderSupertenantResource extends JsonResource
             "voucher_id" => $this->voucher_id,
             'casheer_id' => $this->casheer_id,
             'sub_total' => $this->sub_total,
+            'sub_total_refund' => $total_refund,
             'discount' => $this->discount,
             'total' => $this->total,
             'saldo_qr' => $this->saldo_qr ?? 0,
@@ -53,9 +56,7 @@ class TrOrderSupertenantResource extends JsonResource
             'canceled_name' => $this->canceled_name,
             'reason_cancel' => $this->reason_cancel,
             'payment' => $this->payment,
-            'code_verif' => $this->code_verif,
-            'rating' => $this->rating,
-            'detil' => TrOrderDetilMemberResource::collection($detil_tenant),
+            'detil' => OrderDetilSupertenantRefundResource::collection($this->detil)->collection->groupBy('product.tenant.name')->toArray()
         ];
     }
 }

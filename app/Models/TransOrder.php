@@ -162,4 +162,9 @@ class TransOrder extends BaseModel
         $tenant = Tenant::where('supertenant_id',auth()->user()->supertenant_id)->pluck('id');
         return $query->whereIn('tenant_id', $tenant);
     }
+
+    public function isHaveOrderCancel()
+    {
+        
+    }
 }
