@@ -15,10 +15,13 @@ class CreateRefPaymentMethod extends Migration
     {
         Schema::create('ref_payment_method', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
             $table->string('code_name');
-            $table->integer('fee')->unsigned();
-            $table->string('code_sof')->nullable();
+            $table->unsignedInteger('sof_id')->nullable();
+            $table->string('code')->nullable();
+            $table->string('name');
+            $table->string('description')->nullable();
+            $table->unsignedInteger('payment_method_id')->nullable();
+            $table->string('payment_method_code')->nullable();
             $table->timestamps();
         });
     }

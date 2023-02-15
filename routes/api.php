@@ -195,7 +195,7 @@ Route::post('payment-gateway/va/delete', [App\Http\Controllers\API\PaymentGatewa
 
 Route::get('/pg-cek', function (Request $request) {
     if ($request->sof_id && $request->payment_method_id) {
-        return PgJmto::tarifFee($request->sof_id, $request->payment_method_id, $request->sub_merchant_id);
+        return PgJmto::tarifFee($request->sof_id, $request->payment_method_id, $request->sub_merchant_id, 1);
     }
     $payload = [
         "sof_code" => "BRI",

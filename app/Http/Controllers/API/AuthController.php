@@ -226,40 +226,40 @@ class AuthController extends Controller
                 $trans_cashbox->pengeluaran_cashbox = $request->pengeluaran_cashbox;
                 $trans_cashbox->description = $request->description;
 
-                $data_all = TransOrder::where('status', TransOrder::DONE)
+                $data_all = TransOrder::with('payment_method')->where('status', TransOrder::DONE)
                     ->where('tenant_id', $user->tenant_id)
                     ->where('casheer_id', $user->id)
                     ->whereBetween('created_at', [$data->start_date, $data->end_date])
                     ->get();
                 $total_order = $data_all;
-                $total_order = $total_order->where('payment_method_id', 6)->sum('sub_total');
+                $total_order = $total_order->where('payment_method.code_name', 'cash')->sum('sub_total');
 
                 $trans_cashbox->rp_cash = $total_order;
                 $trans_cashbox->different_cashbox = ($request->cashbox + $request->pengeluaran_cashbox) - $total_order;
                 $trans_cashbox->input_cashbox_date = Carbon::now();
 
                 $rp_va_bri = $data_all;
-                $rp_va_bri = $rp_va_bri->where('payment_method_id', 2)->sum('sub_total');
+                $rp_va_bri = $rp_va_bri->where('payment_method.code_name', 'pg_va_bri')->sum('sub_total');
                 $trans_cashbox->rp_va_bri = $rp_va_bri;
 
                 $rp_dd_bri = $data_all;
-                $rp_dd_bri = $rp_dd_bri->where('payment_method_id', 3)->sum('sub_total');
+                $rp_dd_bri = $rp_dd_bri->where('payment_method.code_name', 'pg_dd_bri')->sum('sub_total');
                 $trans_cashbox->rp_dd_bri = $rp_dd_bri;
 
                 $rp_va_mandiri = $data_all;
-                $rp_va_mandiri = $rp_va_mandiri->where('payment_method_id', 1)->sum('sub_total');
+                $rp_va_mandiri = $rp_va_mandiri->where('payment_method.code_name', 'pg_va_mandiri')->sum('sub_total');
                 $trans_cashbox->rp_va_mandiri = $rp_va_mandiri;
 
                 $rp_va_bni = $data_all;
-                $rp_va_bni = $rp_va_bni->where('payment_method_id', 7)->sum('sub_total');
+                $rp_va_bni = $rp_va_bni->where('payment_method.code_name', 'pg_va_bni')->sum('sub_total');
                 $trans_cashbox->rp_va_bni = $rp_va_bni;
 
                 $rp_tav_qr = $data_all;
-                $rp_tav_qr = $rp_tav_qr->where('payment_method_id', 5)->sum('sub_total');
+                $rp_tav_qr = $rp_tav_qr->where('payment_method.code_name', 'tav_qr')->sum('sub_total');
                 $trans_cashbox->rp_tav_qr = $rp_tav_qr;
 
                 $rp_link_aja = $data_all;
-                $rp_link_aja->where('payment_method_id', 4)->sum('sub_total');
+                $rp_link_aja->where('payment_method.code_name', 'pg_link_aja')->sum('sub_total');
                 $trans_cashbox->rp_link_aja = $rp_link_aja;
 
                 $trans_cashbox->rp_total = $data_all->sum('sub_total');

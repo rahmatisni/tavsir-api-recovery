@@ -246,34 +246,49 @@ class TravShopController extends Controller
         return response()->json(new TsOrderResource($data));
     }
 
-    public function paymentMethod()
+    public function paymentMethod(Request $request)
     {
         $paymentMethods = PaymentMethod::all();
-        foreach ($paymentMethods as $value) {
-            if ($value->code_name == 'pg_va_bri') {
-                $fee = PgJmto::feeBriVa();
-                if ($fee) {
-                    $value->fee = $fee;
-                    $value->save();
+        $removes = [];
+
+        if($request->trans_order_id)
+        {
+            $trans_order = TransOrder::with('tenant')->findOrfail($request->trans_order_id);
+            $tenant_is_verified = $trans_order->tenant->is_verified;
+        $tenant_is_verified = false;
+
+            if($tenant_is_verified == false)
+            {
+                $merchant = PgJmto::listSubMerchant();
+                if($merchant->successful())
+                {
+                    $merchant = $merchant->json();
+                    if($merchant['status'] == 'success'){
+                        $merchant = $merchant['responseData'];
+                        foreach ($merchant as $key => $value) {
+                            dd($value);
+                            //cek
+                        }
+                    }
                 }
             }
 
-            if ($value->code_name == 'pg_va_mandiri') {
-                $fee = PgJmto::feeMandiriVa();
-                if ($fee) {
-                    $value->fee = $fee;
-                    $value->save();
-                }
-            }
-
-            if ($value->code_name == 'pg_va_bni') {
-                $fee = PgJmto::feeBniVa();
-                if ($fee) {
-                    $value->fee = $fee;
-                    $value->save();
+            foreach ($paymentMethods as $value) 
+            {
+                if($value->sof_id)
+                {
+                    if($tenant_is_verified)
+                    {
+                        $data = PgJmto::tarifFee($value->sof_id,$value->payment_method_id, $value->sub_merchant_id,$trans_order->sub_total);
+                        $value->fee = $data;
+                    }else{
+                        $removes[] = $value->id;
+                    }
                 }
             }
         }
+
+        $paymentMethods = $paymentMethods->whereNotIn('id',$removes);
         return response()->json($paymentMethods);
     }
 
@@ -558,7 +573,7 @@ class TravShopController extends Controller
 
     public function statusPayment(Request $request, $id)
     {
-        $data = TransOrder::findOrfail($id);
+        $data = TransOrder::with('payment_method')->findOrfail($id);
         try {
             DB::beginTransaction();
 
@@ -577,7 +592,7 @@ class TravShopController extends Controller
             }
 
             $data_payment = $data->payment->data;
-            if ($data->payment_method_id == 3) {
+            if ($data->payment_method->code_name == 'pg_dd_bri') {
                 if (!$request->otp) {
                     return response()->json([
                         "message" => "The given data was invalid.",

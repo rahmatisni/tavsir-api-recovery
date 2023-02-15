@@ -31,6 +31,8 @@ class Tenant extends BaseModel
         'merchant_id',
         'sub_merchant_id',
         'is_open',
+        'is_verified',
+        'in_takengo',
         'created_by',
         'created_at',
         'updated_at'

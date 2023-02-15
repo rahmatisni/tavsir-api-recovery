@@ -43,36 +43,28 @@ class PgJmto extends Model
         return $response->json();
     }
 
-    public static function generateSignature($path, $token, $timestamp, $request_body)
+    public static function generateSignature($method ,$path, $token, $timestamp, $request_body)
     {
-        //data you want to sign
-        if (empty($request_body)) {
-            $request_body = ['dumy' => 'abc'];
-        } else {
-            $request_body = json_encode($request_body);
-        }
+        $request_body = json_encode($request_body);
 
-        $data = 'POST' . ':' . $path . ':' . 'Bearer ' . $token . ':' . hash('sha256', $request_body) . ':' . $timestamp;
+        if($method == 'GET')
+        {
+            $request_body = '';
+        }
+        $has_body = hash('sha256', $request_body);
+
+        $data = $method . ':' . $path . ':' . 'Bearer ' . $token . ':' . $has_body . ':' . $timestamp;
 
         $privateKey = env('PG_PRIVATE_KEY');
         $publicKey = env('PG_PUBLIC_KEY');
         openssl_sign($data, $signature, $privateKey, 'sha256WithRSAEncryption');
         $sign = Base64::encode($signature);
         $verify = openssl_verify($data, $signature, $publicKey, 'sha256WithRSAEncryption');
-        // dd($verify);
         return $sign;
     }
 
-    public static function service($path, $payload)
+    public static function service($method, $path, $payload)
     {
-        // $token = Redis::get('token_pg');
-        // if (!$token) {
-        //     $token = self::getToken();
-        //     if ($token) {
-        //         Redis::set('token_pg', $token['access_token']);
-        //     }
-        // }
-
         $data = self::getToken();
         if (!$data) {
             throw new Exception("token not found");
@@ -80,23 +72,49 @@ class PgJmto extends Model
 
         $token = $data['access_token'];
         $timestamp = Carbon::now()->format('c');
-        $signature = self::generateSignature($path, $token, $timestamp, $payload);
-        $response = Http::withHeaders([
-            'JMTO-TIMESTAMP' => $timestamp,
-            'JMTO-SIGNATURE' => $signature,
-            'JMTO-DEVICE-ID' => env('PG_DEVICE_ID', '123456789'),
-            'CHANNEL-ID' => 'PC',
-            'JMTO-LATITUDE' => '106.8795316',
-            'JMTO-LONGITUDE' => '-6.2927969',
-            'Content-Type' => 'Application/json',
-            'Authorization' => 'Bearer ' . $token,
-            'JMTO-IP-CLIENT' => '172.0.0.1',
-            'JMTO-REQUEST-ID' => '123456789',
-        ])
-            ->retry(1, 100)
-            ->withoutVerifying()
-            ->post(env('PG_BASE_URL') . $path, $payload);
-        return $response;
+        $signature = self::generateSignature($method, $path, $token, $timestamp, $payload);
+        switch ($method) {
+            case 'POST':
+                $response = Http::withHeaders([
+                    'JMTO-TIMESTAMP' => $timestamp,
+                    'JMTO-SIGNATURE' => $signature,
+                    'JMTO-DEVICE-ID' => env('PG_DEVICE_ID', '123456789'),
+                    'CHANNEL-ID' => 'PC',
+                    'JMTO-LATITUDE' => '106.8795316',
+                    'JMTO-LONGITUDE' => '-6.2927969',
+                    'Content-Type' => 'Application/json',
+                    'Authorization' => 'Bearer ' . $token,
+                    'JMTO-IP-CLIENT' => '172.0.0.1',
+                    'JMTO-REQUEST-ID' => '123456789',
+                ])
+                    ->retry(1, 100)
+                    ->withoutVerifying()
+                    ->post(env('PG_BASE_URL') . $path, $payload);
+                return $response;
+                break;
+            case 'GET':
+                $response = Http::withHeaders([
+                    'JMTO-TIMESTAMP' => $timestamp,
+                    'JMTO-SIGNATURE' => $signature,
+                    'JMTO-DEVICE-ID' => env('PG_DEVICE_ID', '123456789'),
+                    'CHANNEL-ID' => 'PC',
+                    'JMTO-LATITUDE' => '106.8795316',
+                    'JMTO-LONGITUDE' => '-6.2927969',
+                    'Content-Type' => 'Application/json',
+                    'Authorization' => 'Bearer ' . $token,
+                    'JMTO-IP-CLIENT' => '172.0.0.1',
+                    'JMTO-REQUEST-ID' => '123456789',
+                ])
+                    ->retry(1, 100)
+                    ->withoutVerifying()
+                    ->get(env('PG_BASE_URL') . $path, $payload);
+                return $response;
+            
+            default:
+                # code...
+                break;
+        }
+       
     }
 
     public static function vaCreate($sof_code, $bill_id, $bill_name, $amount, $desc, $phone, $email, $customer_name)
@@ -154,7 +172,7 @@ class PgJmto extends Model
             //end fake
         }
 
-        $res = self::service('/va/create', $payload);
+        $res = self::service('POST','/va/create', $payload);
         Log::info('Va create', $res->json());
         return $res->json();
     }
@@ -210,7 +228,7 @@ class PgJmto extends Model
             //end fake
         }
 
-        $res = self::service('/va/cekstatus', $payload);
+        $res = self::service('POST','POST','/va/cekstatus', $payload);
         Log::info('Va status', $res->json());
         return $res->json();
     }
@@ -226,46 +244,32 @@ class PgJmto extends Model
             "email" =>  $email,
             "customer_name" =>  $customer_name,
         ];
-        $res = self::service('/va/delete', $payload);
+        $res = self::service('POST','/va/delete', $payload);
         Log::info('Va delete', $res->json());
 
         return $res->json();
     }
 
-    public static function tarifFee($sof_id, $payment_method_id, $sub_merchant_id)
+    public static function tarifFee($sof_id, $payment_method_id, $sub_merchant_id, $bill_amount)
     {
         $payload = [
             "sof_id" =>  $sof_id,
             "payment_method_id" =>  $payment_method_id,
             "sub_merchant_id" =>  $sub_merchant_id,
+            "bill_amount" =>  $bill_amount,
         ];
-        $res = self::service('/sof/tariffee', $payload);
-        // Log::info('PG tarif fee', $res->json());
+        $res = self::service('POST','/sof/tariffee', $payload);
+        Log::info('PG tarif fee', $res->json());
 
         if ($res->successful()) {
             if($res->json()['status'] == 'ERROR'){
                 Log::warning('PG Tarif Fee', $res->json());
                 return null;
             }
-            return $res->json()['responseData']['value'];
+            return $res->json()['responseData']['service_fee'];
         }
 
         return null;
-    }
-
-    public static function feeBriVa()
-    {
-        return PgJmto::tarifFee(254, 2, null);
-    }
-
-    public static function feeMandiriVa()
-    {
-        return PgJmto::tarifFee(3, 2, null);
-    }
-
-    public static function feeBniVa()
-    {
-        return PgJmto::tarifFee(4, 2, null);
     }
 
     public static function bindDD($payload)
@@ -316,7 +320,7 @@ class PgJmto extends Model
             "customer_name" => $payload['customer_name'],
             "submerchant_id" => null
         ];
-        $res = self::service('/sof/bind', $payload);
+        $res = self::service('POST','/sof/bind', $payload);
         Log::info('DD bind', $res->json());
         return $res;
     }
@@ -345,7 +349,7 @@ class PgJmto extends Model
             ]);
             //end fake
         }
-        $res = self::service('/sof/bind-validate', $payload);
+        $res = self::service('POST','/sof/bind-validate', $payload);
         Log::info('DD bind validate', $res->json());
         return $res;
     }
@@ -373,7 +377,7 @@ class PgJmto extends Model
             ]);
             //end fake
         }
-        $res = self::service('/sof/unbind', $payload);
+        $res = self::service('POST','/sof/unbind', $payload);
         Log::info('DD unbind', $res->json());
         return $res;
     }
@@ -407,7 +411,7 @@ class PgJmto extends Model
             ]);
             //end fake
         }
-        $res = self::service('/directdebit/inquiry', $payload);
+        $res = self::service('POST','/directdebit/inquiry', $payload);
         Log::info('DD inquiry', $res->json());
         return $res;
     }
@@ -441,15 +445,84 @@ class PgJmto extends Model
             ]);
             //end fake
         }
-        $res = self::service('/directdebit/payment', $payload);
+        $res = self::service('POST','/directdebit/payment', $payload);
         Log::info('DD payment', $res->json());
         return $res;
     }
 
     public static function cardList($payload)
     {
-        $res = self::service('/sof/cardlist', $payload);
+        $res = self::service('POST','/sof/cardlist', $payload);
         Log::info('Card list', $res->json());
+        return $res;
+    }
+
+    public static function sofList()
+    {
+        if (env('PG_FAKE_RESPON') === true) {
+            //for fake
+            Http::fake([
+                env('PG_BASE_URL') . '/sof/list' => function () {
+                    return Http::response([
+                        "status" => "success",
+                        "rc" => "0000",
+                        "rcm" => "success",
+                        "responseData" => [
+                            [
+                                "sof_id" => 4,
+                                "code" => "BNI",
+                                "name" => "Bank Negara Indonesia",
+                                "description" => "BNI",
+                                "payment_method_id" => 2,
+                                "payment_method_code" => "VA"
+                            ],
+                            [
+                                "sof_id" => 3,
+                                "code" => "MANDIRI",
+                                "name" => "Bank Mandiri",
+                                "description" => "Bank Mandiri",
+                                "payment_method_id" => 2,
+                                "payment_method_code" => "VA"
+                            ],
+                            [
+                                "sof_id" => 3,
+                                "code" => "MANDIRI",
+                                "name" => "Bank Mandiri",
+                                "description" => "Bank Mandiri",
+                                "payment_method_id" => 1,
+                                "payment_method_code" => "DD"
+                            ],
+                            [
+                                "sof_id" => 254,
+                                "code" => "BRI",
+                                "name" => "PT Bank Rakyat Indonesia Tbk - Prod",
+                                "description" => "PT Bank Rakyat Indonesia Tbk-Prod",
+                                "payment_method_id" => 2,
+                                "payment_method_code" => "VA"
+                            ],
+                            [
+                                "sof_id" => 254,
+                                "code" => "BRI",
+                                "name" => "PT Bank Rakyat Indonesia Tbk - Prod",
+                                "description" => "PT Bank Rakyat Indonesia Tbk-Prod",
+                                "payment_method_id" => 1,
+                                "payment_method_code" => "DD"
+                            ]
+                        ]
+                    ], 200);
+                },
+            ]);
+            //end fake
+        }
+
+        $res = self::service('POST','/sof/list',[]);
+        Log::info('SOF list', $res->json());
+        return $res;
+    }
+
+    public static function listSubMerchant()
+    {
+        $res = self::service('GET','/merchant-data/submerchant',[]);
         return $res;
     }
 }

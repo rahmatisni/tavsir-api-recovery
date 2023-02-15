@@ -31,6 +31,8 @@ class CreateRefSupertenant extends Migration
             $table->integer('merchant_id')->unsigned()->nullable();
             $table->integer('sub_merchant_id')->unsigned()->nullable();
             $table->boolean('is_open')->default(1);
+            $table->boolean('is_verified')->default(0);
+            $table->boolean('in_takengo')->default(1);
 
             $table->integer('created_by')->nullable();
             $table->timestamps();

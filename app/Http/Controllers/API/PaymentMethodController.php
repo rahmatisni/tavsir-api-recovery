@@ -17,32 +17,6 @@ class PaymentMethodController extends Controller
     public function index()
     {
         $paymentMethods = PaymentMethod::all();
-        foreach ($paymentMethods as $value) {
-            if ($value->code_name == 'pg_va_bri') {
-                $fee = PgJmto::feeBriVa();
-                if ($fee) {
-                    $value->fee = $fee;
-                    $value->save();
-                }
-            }
-
-            if ($value->code_name == 'pg_va_mandiri') {
-                $fee = PgJmto::feeMandiriVa();
-                if ($fee) {
-                    $value->fee = $fee;
-                    $value->save();
-                }
-                $value->save();
-            }
-
-            if ($value->code_name == 'pg_va_bni') {
-                $fee = PgJmto::feeBniVa();
-                if ($fee) {
-                    $value->fee = $fee;
-                    $value->save();
-                }
-            }
-        }
         return response()->json($paymentMethods);
     }
 
@@ -66,36 +40,6 @@ class PaymentMethodController extends Controller
      */
     public function show(PaymentMethod $paymentMethod)
     {
-        switch ($paymentMethod->code_name) {
-            case 'pg_va_bri':
-                $fee = PgJmto::feeBriVa();
-                if ($fee) {
-                    $paymentMethod->fee = $fee;
-                    $paymentMethod->save();
-                }
-                break;
-
-            case 'pg_va_mandiri':
-                $fee = PgJmto::feeMandiriVa();
-                if ($fee) {
-                    $paymentMethod->fee = $fee;
-                    $paymentMethod->save();
-                }
-                break;
-
-            case 'pg_va_bni':
-                $fee = PgJmto::feeBniVa();
-                if ($fee) {
-                    $paymentMethod->fee = $fee;
-                    $paymentMethod->save();
-                }
-                break;
-
-            default:
-                # code...
-                break;
-        }
-
         return response()->json($paymentMethod);
     }
 

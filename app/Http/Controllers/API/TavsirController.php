@@ -348,16 +348,6 @@ class TavsirController extends Controller
             'message' => 'Refund sebesar '.$total_refund
         ]);
     }
-   
-
-    //order by id
-    //Order
-    //Update order
-    //order by member
-    //order by id member
-    //Confirm order member tenant
-    //Payment
-    //Change Status DONE
 
     public function productList(Request $request)
     {
@@ -619,32 +609,23 @@ class TavsirController extends Controller
         return response()->json(Bank::all());
     }
 
-    public function paymentMethod()
+    public function paymentMethod(Request $request)
     {
+        //$reques->trans_order_Id
+        // if(!$data->is_verified){
+            //cek ke PG
+            //set verified
+        // }
+
+        //if(verified)
+        //show payment method fro pg
+
         $paymentMethods = PaymentMethod::all();
-        foreach ($paymentMethods as $value) {
-            if ($value->code_name == 'pg_va_bri') {
-                $fee = PgJmto::feeBriVa();
-                if ($fee) {
-                    $value->fee = $fee;
-                    $value->save();
-                }
-            }
-
-            if ($value->code_name == 'pg_va_mandiri') {
-                $fee = PgJmto::feeMandiriVa();
-                if ($fee) {
-                    $value->fee = $fee;
-                    $value->save();
-                }
-            }
-
-            if ($value->code_name == 'pg_va_bni') {
-                $fee = PgJmto::feeBniVa();
-                if ($fee) {
-                    $value->fee = $fee;
-                    $value->save();
-                }
+        foreach ($paymentMethods as $key => $value) {
+            if($value->sof_id && $request->amount)
+            {
+                $data = PgJmto::tarifFee($value->sof_id,$value->payment_method_id, $value->sub_merchant_id,$request->amount);
+                $value->fee = $data;
             }
         }
         return response()->json($paymentMethods);
@@ -708,6 +689,7 @@ class TavsirController extends Controller
         if ($data->status == TransOrder::DONE || $data->status == TransOrder::CANCEL) {
             return response()->json(['message' => 'Order Status ' . $data->statusLabel()], 400);
         }
+        
         $payment_method = PaymentMethod::findOrFail($request->payment_method_id);
         try {
             DB::beginTransaction();
@@ -836,7 +818,6 @@ class TavsirController extends Controller
         } catch (\Throwable $th) {
             DB::rollback();
             Log::error($th);
-            dd($th);
             return response()->json(['error' => $th->getMessage()], 500);
         }
     }

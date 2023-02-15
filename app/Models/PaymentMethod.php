@@ -9,11 +9,13 @@ class PaymentMethod extends BaseModel
     protected $table = 'ref_payment_method';
 
     protected $fillable = [
-        'name',
         'code_name',
-        'code_sof',
-        'is_active',
-        'fee',
+        'sof_id',
+        'code',
+        'name',
+        'description',
+        'payment_method_id',
+        'payment_method_code',
     ];
 
     public function order()

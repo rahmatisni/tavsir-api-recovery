@@ -25,6 +25,7 @@ class RekapPendapatanController extends Controller
         }
 
         $data_all = TransOrder::done()
+            ->with('payment_method')
             ->where('tenant_id', auth()->user()->tenant_id)
             ->where('casheer_id', auth()->user()->id)
             ->whereBetween('created_at', [$periode_berjalan->start_date, Carbon::now()])
@@ -54,15 +55,15 @@ class RekapPendapatanController extends Controller
         $digital = $data_all;
         $total_pendapatan = $data_all;
 
-        $cash = $cash->where('payment_method_id', 6)->sum('sub_total');
-        $qr = $qr->where('payment_method_id', 5)->sum('sub_total');
+        $cash = $cash->where('payment_method.code_name', 'cash')->sum('sub_total');
+        $qr = $qr->where('payment_method.code_name', 'tav_qr')->sum('sub_total');
 
-        $mandiri_va = $mandiri_va->where('payment_method_id', 1)->sum('sub_total');
-        $bri_va = $bri_va->where('payment_method_id', 2)->sum('sub_total');
-        $bri_dd = $bri_dd->where('payment_method_id', 3)->sum('sub_total');
-        $link_aja = $link_aja->where('payment_method_id', 4)->sum('sub_total');
-        $bni_va = $bni_va->where('payment_method_id', 7)->sum('sub_total');
-        $digital = $digital->whereIn('payment_method_id', [1, 2, 3, 4, 7])->sum('sub_total');
+        $mandiri_va = $mandiri_va->where('payment_method.code_name', 'pg_va_mandiri')->sum('sub_total');
+        $bri_va = $bri_va->where('payment_method.code_name', 'pg_va_bri')->sum('sub_total');
+        $bri_dd = $bri_dd->where('payment_method.code_name', 'pg_dd_bri')->sum('sub_total');
+        $link_aja = $link_aja->where('payment_method.code_name', 'pg_link_aja')->sum('sub_total');
+        $bni_va = $bni_va->where('payment_method.code_name', 'pg_va_bni')->sum('sub_total');
+        $digital = $mandiri_va + $bri_va + $bri_dd + $link_aja + $bni_va;
 
         $total_pendapatan = $total_pendapatan->sum('sub_total');
 

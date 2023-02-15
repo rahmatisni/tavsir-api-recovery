@@ -28,7 +28,7 @@ class TsCreatePaymentRequest extends FormRequest
             'customer_phone' => 'required|string|max:15',
             'customer_name' => 'required|string|max:50',
             'customer_email' => 'required|string|max:50',
-            'voucher' => 'required_if:payment_method_id,5|max:50',
+            'voucher' => 'required_if:payment_method_id,3|max:50',
         ];
     }
 }
