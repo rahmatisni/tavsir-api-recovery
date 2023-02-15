@@ -332,7 +332,7 @@ class TravShopController extends Controller
                         'phone' => $request->customer_phone,
                         'email' => $request->customer_email,
                         'customer_name' => $request->customer_name,
-                        "submerchant_id" => ''
+                        "submerchant_id" => $data->tenant?->sub_merchant_id ?? '',
                     ];
                     $res = PgJmto::vaCreate(
                         $payment_method->code_sof,
@@ -374,7 +374,7 @@ class TravShopController extends Controller
                         'phone' => $request->customer_phone,
                         'email' => $request->customer_email,
                         'customer_name' => $request->customer_name,
-                        "submerchant_id" => ''
+                        "submerchant_id" => $data->tenant?->sub_merchant_id ?? '',
                     ];
                     $res = PgJmto::vaCreate(
                         $payment_method->code_sof,
@@ -416,7 +416,7 @@ class TravShopController extends Controller
                         'phone' => $request->customer_phone,
                         'email' => $request->customer_email,
                         'customer_name' => $request->customer_name,
-                        "submerchant_id" => ''
+                        "submerchant_id" => $data->tenant?->sub_merchant_id ?? '',
                     ];
                     $res = PgJmto::vaCreate(
                         $payment_method->code_sof,
