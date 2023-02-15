@@ -254,8 +254,8 @@ class TravShopController extends Controller
         if($request->trans_order_id)
         {
             $trans_order = TransOrder::with('tenant')->findOrfail($request->trans_order_id);
-            $tenant_is_verified = $trans_order->tenant->is_verified;
-        $tenant_is_verified = false;
+            $tenant = $trans_order->tenant;
+            $tenant_is_verified = $tenant?->is_verified;
 
             if($tenant_is_verified == false)
             {
@@ -266,8 +266,12 @@ class TravShopController extends Controller
                     if($merchant['status'] == 'success'){
                         $merchant = $merchant['responseData'];
                         foreach ($merchant as $key => $value) {
-                            dd($value);
-                            //cek
+                            if($value['email'] == $tenant->email)
+                            {
+                                $trans_order->tenant()->update([
+                                    'is_verified' => 1,
+                                ]);
+                            }
                         }
                     }
                 }
