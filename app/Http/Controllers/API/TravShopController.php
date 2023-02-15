@@ -270,6 +270,7 @@ class TravShopController extends Controller
                             {
                                 $trans_order->tenant()->update([
                                     'is_verified' => 1,
+                                    'sub_merchant_id' => $value['merchant_id']
                                 ]);
                             }
                         }
