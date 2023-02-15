@@ -26,6 +26,7 @@ class Tenant extends BaseModel
         'time_start',
         'time_end',
         'phone',
+        'email',
         'manager',
         'photo_url',
         'merchant_id',

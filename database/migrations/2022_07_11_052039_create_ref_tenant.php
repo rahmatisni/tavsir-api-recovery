@@ -27,6 +27,7 @@ class CreateRefTenant extends Migration
             $table->string('time_start');
             $table->string('time_end');
             $table->string('phone')->nullable();
+            $table->string('email')->nullable();
             $table->string('manager')->nullable();
             $table->string('photo_url')->nullable();
             $table->integer('merchant_id')->unsigned()->nullable();
