@@ -560,7 +560,7 @@ class TavsirController extends Controller
 
     public function countCarSaved()
     {
-        $data = TransOrder::where('tenant_id', '=', auth()->user()->tenant_id)
+        $data = TransOrder::byRole()
             ->where('order_type', '=', TransOrder::ORDER_TAVSIR)
             ->where('status', '=', TransOrder::CART)
             ->count();
