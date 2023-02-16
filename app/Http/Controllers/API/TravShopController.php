@@ -167,7 +167,7 @@ class TravShopController extends Controller
                 $order_detil_many[] = $order_detil;
             }
 
-            $data->fee = 2000;
+            $data->fee = env('PLATFORM_FEE');
             $data->sub_total = $sub_total;
             $data->total = $data->sub_total + $data->fee + $data->service_fee;
             $data->status = TransOrder::WAITING_CONFIRMATION_TENANT;
@@ -319,6 +319,12 @@ class TravShopController extends Controller
 
             $res = 'Invalid';
             $payment_method = PaymentMethod::find($request->payment_method_id);
+            $payment_method_fee = PgJmto::tarifFee(
+                $payment_method->sof_id,
+                $payment_method->payment_method_id,
+                $payment_method->sub_merchant_id,
+                $data->sub_total
+            );
             switch ($payment_method->code_name) {
                 case 'pg_va_mandiri':
                     $payment_payload = [
@@ -377,7 +383,7 @@ class TravShopController extends Controller
                         "submerchant_id" => $data->tenant?->sub_merchant_id ?? '',
                     ];
                     $res = PgJmto::vaCreate(
-                        $payment_method->code_sof,
+                        $payment_method->code,
                         $data->order_id,
                         'Take N Go',
                         $data->sub_total + $data->fee,

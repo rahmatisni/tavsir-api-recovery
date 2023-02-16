@@ -228,7 +228,7 @@ class PgJmto extends Model
             //end fake
         }
 
-        $res = self::service('POST','POST','/va/cekstatus', $payload);
+        $res = self::service('POST','/va/cekstatus', $payload);
         Log::info('Va status', $res->json());
         return $res->json();
     }

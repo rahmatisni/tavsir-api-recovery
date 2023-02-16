@@ -30,7 +30,7 @@ class CreateRefTenant extends Migration
             $table->string('email')->nullable();
             $table->string('manager')->nullable();
             $table->string('photo_url')->nullable();
-            $table->integer('merchant_id')->unsigned()->nullable();
+            $table->integer('merchant_id')->unsigned()->default(169);
             $table->integer('sub_merchant_id')->unsigned()->nullable();
             $table->boolean('is_open')->default(1);
             $table->boolean('is_verified')->default(0);
