@@ -356,6 +356,8 @@ class TavsirController extends Controller
                 ->orwhere('sku', 'like', "%$filter%");
         })->when($category_id = $request->category_id, function ($q) use ($category_id) {
             return $q->where('category_id', $category_id);
+        })->when($tenant_id = $request->tenant_id, function ($q) use ($tenant_id) {
+            return $q->where('tenant_id', $tenant_id);
         });
         if ($request->is_active == '0') {
             $data->where('is_active', '0');
