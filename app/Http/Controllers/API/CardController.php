@@ -43,6 +43,36 @@ class CardController extends Controller
         }
     }
 
+    public function rebind($id)
+    {
+        try {
+            $bind = Bind::whereNull('bind_id')->where('id', $id)->first();
+            if (!$bind) {
+                return response()->json(['message' => 'Not Found.'], 404);
+            }
+
+            $data = $bind->toArray();
+            $res = PgJmto::bindDD($data);
+            if ($res->successful()) {
+                $res = $res->json();
+                if ($res['status'] == 'ERROR') {
+                    return response()->json($res, 400);
+                }
+                $res = $res['responseData'];
+                $res['customer_id'] = $data['customer_id'];
+                $bind->fill($res);
+                $bind->save();
+                return response()->json([
+                    'data' => $bind,
+                    'info' => $res
+                ]);
+            }
+            return response()->json($res->json(), 400);
+        } catch (\Throwable $th) {
+            return response()->json($th->getMessage(), 400);
+        }
+    }
+
     public function bindValidate(BindValidateRequest $request, $id)
     {
         try {

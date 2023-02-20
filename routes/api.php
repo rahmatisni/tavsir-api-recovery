@@ -179,6 +179,7 @@ Route::prefix('travshop')->group(function () {
 
 Route::get('/card', [App\Http\Controllers\API\CardController::class, 'index']);
 Route::post('/card', [App\Http\Controllers\API\CardController::class, 'bind']);
+Route::post('/card/rebind/{id}', [App\Http\Controllers\API\CardController::class, 'rebind']);
 Route::put('/card/{id}', [App\Http\Controllers\API\CardController::class, 'bindValidate']);
 Route::delete('/card/{id}', [App\Http\Controllers\API\CardController::class, 'unBind']);
 
