@@ -24,7 +24,7 @@ class BindValidateRequest extends FormRequest
     public function rules()
     {
         return [
-            'otp' => 'nullable',
+            'otp' => 'required',
         ];
     }
 }
