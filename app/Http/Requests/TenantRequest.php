@@ -31,8 +31,12 @@ class TenantRequest extends FormRequest
                 'integer',
                 'exists:ref_business,id',
             ],
+            'category_tenant_id' => [
+                'required',
+                'integer',
+                'exists:ref_category_tenant,id',
+            ],
             'name' => 'required|string',
-            'category' => 'required|string',
             'address' => 'nullable|string',
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',

@@ -19,7 +19,7 @@ class CreateRefTenant extends Migration
             $table->integer('business_id')->unsigned();
             $table->integer('ruas_id')->unsigned();
             $table->string('name');
-            $table->string('category');
+            $table->integer('category_tenant_id')->unsigned();
             $table->string('address')->nullable();
             $table->decimal('latitude', 10, 8);
             $table->decimal('longitude', 11, 8);

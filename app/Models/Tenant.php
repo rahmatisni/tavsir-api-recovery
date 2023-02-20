@@ -18,7 +18,7 @@ class Tenant extends BaseModel
         'is_supertenant',
         'ruas_id',
         'name',
-        'category',
+        'category_tenant_id',
         'address',
         'latitude',
         'longitude',
@@ -117,5 +117,10 @@ class Tenant extends BaseModel
     public function supertenant()
     {
         return $this->belongsTo(Supertenant::class, 'supertenant_id');
+    }
+
+    public function category_tenant()
+    {
+        return $this->belongsTo(CategoryTenant::class, 'category_tenant_id');
     }
 }

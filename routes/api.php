@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\CategoryTenantController;
 use App\Models\PgJmto;
 use App\Services\External\KiosBankService;
 use Carbon\Carbon;
@@ -34,6 +35,15 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('rest-area', App\Http\Controllers\API\RestAreaController::class);
     Route::apiResource('business', App\Http\Controllers\API\BusinessController::class);
     Route::apiResource('tenant', App\Http\Controllers\API\TenantController::class);
+
+    Route::prefix('category-tenant')->controller(CategoryTenantController::class)->group(function(){
+        Route::get('/','index');
+        Route::get('/{id}','show');
+        Route::post('/','store');
+        Route::post('/{id}','update');
+        Route::delete('/{id}','delete');
+    });
+
     Route::post('/tenant/buka-tutup-toko', [App\Http\Controllers\API\TenantController::class, 'bukaTutupToko']);
     Route::post('/product/update-status', [App\Http\Controllers\API\ProductController::class, 'updateStatus']);
     Route::apiResource('product', App\Http\Controllers\API\ProductController::class);
