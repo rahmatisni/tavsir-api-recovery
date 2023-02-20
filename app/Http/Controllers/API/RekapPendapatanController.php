@@ -48,6 +48,7 @@ class RekapPendapatanController extends Controller
         $qr = $data_all;
         $digital = $data_all;
         $mandiri_va = $data_all;
+        $mandiri_dd = $data_all;
         $bri_va = $data_all;
         $bri_dd = $data_all;
         $link_aja = $data_all;
@@ -59,11 +60,12 @@ class RekapPendapatanController extends Controller
         $qr = $qr->where('payment_method.code_name', 'tav_qr')->sum('sub_total');
 
         $mandiri_va = $mandiri_va->where('payment_method.code_name', 'pg_va_mandiri')->sum('sub_total');
+        $mandiri_dd = $mandiri_dd->where('payment_method.code_name', 'pg_dd_mandiri')->sum('sub_total');
         $bri_va = $bri_va->where('payment_method.code_name', 'pg_va_bri')->sum('sub_total');
         $bri_dd = $bri_dd->where('payment_method.code_name', 'pg_dd_bri')->sum('sub_total');
         $link_aja = $link_aja->where('payment_method.code_name', 'pg_link_aja')->sum('sub_total');
         $bni_va = $bni_va->where('payment_method.code_name', 'pg_va_bni')->sum('sub_total');
-        $digital = $mandiri_va + $bri_va + $bri_dd + $link_aja + $bni_va;
+        $digital = $mandiri_va + $mandiri_dd + $bri_va + $bri_dd + $link_aja + $bni_va;
 
         $total_pendapatan = $total_pendapatan->sum('sub_total');
 
@@ -77,6 +79,7 @@ class RekapPendapatanController extends Controller
             'total_cash' => $cash,
             'total_qr' => $qr,
             'total_mandiri_va' => $mandiri_va,
+            'total_mandiri_dd' => $mandiri_dd,
             'total_bri_va' => $bri_va,
             'total_bri_dd' => $bri_dd,
             'total_link_aja' => $link_aja,

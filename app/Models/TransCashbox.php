@@ -22,6 +22,7 @@ class TransCashbox extends BaseModel
         'rp_va_bri',
         'rp_dd_bri',
         'rp_va_mandiri',
+        'rp_dd_mandiri',
         'rp_va_bni',
         'rp_tav_qr',
         'rp_link_aja',
@@ -36,6 +37,6 @@ class TransCashbox extends BaseModel
 
     public function getTotalDigitalAttribute($value)
     {
-        return $this->rp_va_bri + $this->rp_dd_bri + $this->rp_va_mandiri + $this->rp_va_bni + $this->rp_link_aja;
+        return $this->rp_va_bri + $this->rp_dd_bri + $this->rp_va_mandiri +  $this->rp_dd_mandiri + $this->rp_va_bni + $this->rp_link_aja;
     }
 }
