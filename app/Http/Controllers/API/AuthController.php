@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BukaTutupTenantRequest;
 use App\Http\Requests\CloseCashierRequest;
 use App\Http\Requests\PinRequest;
 use App\Http\Requests\PinStoreRequest;
@@ -250,6 +251,10 @@ class AuthController extends Controller
                 $rp_va_mandiri = $rp_va_mandiri->where('payment_method.code_name', 'pg_va_mandiri')->sum('sub_total');
                 $trans_cashbox->rp_va_mandiri = $rp_va_mandiri;
 
+                $rp_dd_mandiri = $data_all;
+                $rp_dd_mandiri = $rp_dd_mandiri->where('payment_method.code_name', 'pg_dd_mandiri')->sum('sub_total');
+                $trans_cashbox->rp_dd_mandiri = $rp_dd_mandiri;
+
                 $rp_va_bni = $data_all;
                 $rp_va_bni = $rp_va_bni->where('payment_method.code_name', 'pg_va_bni')->sum('sub_total');
                 $trans_cashbox->rp_va_bni = $rp_va_bni;
@@ -308,5 +313,43 @@ class AuthController extends Controller
             return $q->where('id', $id);
         })->get();
         return response()->json(TsTenantResource::collection($data));
+    }
+
+    public function bukaToko(BukaTutupTenantRequest $request)
+    {
+        $user = auth()->user();
+        if (Hash::check($request->pin, $user->pin)) {
+            $tenant = Tenant::findOrFail($user->tenant_id);
+            $tenant->is_open = 1;
+            $tenant->save();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Open tenant '.$tenant->name.' successfully',
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'PIN verification failed'
+        ], 422);
+    }
+
+    public function tutupToko(BukaTutupTenantRequest $request)
+    {
+        $user = auth()->user();
+        if (Hash::check($request->pin, $user->pin)) {
+            $tenant = Tenant::findOrFail($user->tenant_id);
+            $tenant->is_open = 0;
+            $tenant->save();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Close tenant '.$tenant->name.' successfully',
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'PIN verification failed'
+        ], 422);
     }
 }

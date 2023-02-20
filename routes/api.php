@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\PgJmto;
+use App\Services\External\KiosBankService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -22,6 +23,8 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/reset-pin', [App\Http\Controllers\API\AuthController::class, 'resetPin']);
     Route::post('/open-cashier', [App\Http\Controllers\API\AuthController::class, 'openCashier']);
     Route::post('/check-open-cashier', [App\Http\Controllers\API\AuthController::class, 'checkOpenCashier']);
+    Route::post('/open-tenant', [App\Http\Controllers\API\AuthController::class, 'bukaToko']);
+    Route::post('/close-tenant', [App\Http\Controllers\API\AuthController::class, 'tutupToko']);
     Route::post('/close-cashier', [App\Http\Controllers\API\AuthController::class, 'closeCashier']);
     Route::get('/get-rating', [App\Http\Controllers\API\AuthController::class, 'getRating']);
     Route::post('/dashboard', [App\Http\Controllers\API\DashboardController::class, 'index']);
@@ -238,4 +241,11 @@ Route::get('test-notif', function () {
         ],
         'status' => json_decode($result)
     ]);
+});
+
+
+Route::get('cek', function(){
+    $kios = new KiosBankService();
+    $data = $kios->auth();
+    return response()->json($data);
 });
