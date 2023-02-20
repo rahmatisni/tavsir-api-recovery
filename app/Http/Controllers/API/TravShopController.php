@@ -328,7 +328,7 @@ class TravShopController extends Controller
             switch ($payment_method->code_name) {
                 case 'pg_va_mandiri':
                     $payment_payload = [
-                        "sof_code" =>  $payment_method->code_sof,
+                        "sof_code" =>  $payment_method->code,
                         'bill_id' => $data->order_id,
                         'bill_name' => 'Take N Go',
                         'amount' => (string) $data->total,
@@ -341,7 +341,7 @@ class TravShopController extends Controller
                         "submerchant_id" => $data->tenant?->sub_merchant_id ?? '',
                     ];
                     $res = PgJmto::vaCreate(
-                        $payment_method->code_sof,
+                        $payment_method->code,
                         $data->order_id,
                         'Take N Go',
                         $data->sub_total + $data->fee,
@@ -370,7 +370,7 @@ class TravShopController extends Controller
                     break;
                 case 'pg_va_bri':
                     $payment_payload = [
-                        "sof_code" =>  $payment_method->code_sof,
+                        "sof_code" =>  $payment_method->code,
                         'bill_id' => $data->order_id,
                         'bill_name' => 'Take N Go',
                         'amount' => (string) $data->total,
@@ -412,7 +412,7 @@ class TravShopController extends Controller
                     break;
                 case 'pg_va_bni':
                     $payment_payload = [
-                        "sof_code" =>  $payment_method->code_sof,
+                        "sof_code" =>  $payment_method->code,
                         'bill_id' => $data->order_id,
                         'bill_name' => 'Take N Go',
                         'amount' => (string) $data->total,
@@ -425,7 +425,7 @@ class TravShopController extends Controller
                         "submerchant_id" => $data->tenant?->sub_merchant_id ?? '',
                     ];
                     $res = PgJmto::vaCreate(
-                        $payment_method->code_sof,
+                        $payment_method->code,
                         $data->order_id,
                         'Take N Go',
                         $data->sub_total + $data->fee,
