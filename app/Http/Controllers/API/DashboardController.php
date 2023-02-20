@@ -175,19 +175,19 @@ class DashboardController extends Controller
         //     ]
         // ];
 
-        // $topProduct = $order;
-        // $topProduct = $topProduct->groupBy('detil.product_id')->map(function ($item) {
-        //         return $item->count();
-        //     })->sortDesc();
-        // $top_product = [];
-        // foreach ($topProduct as $key => $value) {
-        //     $product = Product::find($key);
-        //     $top_product[] = [
-        //         'name' => $product->name,
-        //         'photo' => $product->photo ? asset($product->photo) : null,
-        //         'total' => $value,
-        //     ];
-        // }
+        $topProduct = $order;
+        $topProduct = $topProduct->groupBy('detil.product_id')->map(function ($item) {
+                return $item->count();
+            })->sortDesc();
+        $top_product = [];
+        foreach ($topProduct as $key => $value) {
+            $product = Product::find($key);
+            $top_product[] = [
+                'name' => $product->name,
+                'photo' => $product->photo ? asset($product->photo) : null,
+                'total' => $value,
+            ];
+        }
 
         $data = [
             'total_pemasukan' => number_format($total_pemasukan, 0, ',', '.'),
@@ -202,7 +202,7 @@ class DashboardController extends Controller
             'top_rest_area' => $top_rest_area,
             'top_tenant' => $top_tenant,
             'total_merchat' => $total_merchant,
-            // 'top_product' => $top_product,
+            'top_product' => $top_product,
         ];
 
         return response()->json($data);
