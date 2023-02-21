@@ -14,7 +14,7 @@ class RestAreaResource extends JsonResource
      * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
      */
     public function toArray($request)
-    {
+    {   
         return [
             ...parent::toArray($request),
             'photo' => $this->photo ? asset($this->photo) : null,
