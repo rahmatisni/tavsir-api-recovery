@@ -2,45 +2,12 @@
 
 namespace App\Services\External;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Redis;
 
 class KiosBankService
 {
-    const SIGN_ON = '/auth/Sign-On';
-
-    public function getDigest()
-    {
-        $res = Http::withOptions(['verify' => false,])->get(env('KIOSBANK_URL'));
-        $diges = $res->header('WWW-Authenticate');
-        // $diges = "Digest realm=\"Design Jaya Indonesia\",qop=\"auth\",nonce=\"4812f6bd4c0d16c54f0199e64bdfb923\",opaque=\"d99cbbdd31259a30b4b50c78bc53d3d3\"";
-        $data = explode(',', $diges);
-        $result = array();
-        foreach ($data as $auth) {
-            list($key, $val) = explode('=', $auth);
-            $result[$key] = substr($val, 1, strlen($val) - 2);
-        }
-        return $result;
-    }
-
-    public function getToken(): string
-    {
-        $digest = $this->getDigest();
-
-        $method = 'POST';
-        $path = '/auth/Sign-On';
-        $username = 'dji';
-        $password = 'abcde';
-        $nc = '1'; //berurutan 1,2,3..dst sesuai request
-        $cnonce = uniqid();
-
-        $a1 = md5($username . ':' . $digest['Digest realm'] . ':' . $password);
-        $a2 = md5($method . ':' . $path);
-
-        $response = md5($a1 . ':' . $digest['nonce'] . ':' . $nc . ':' . $cnonce . ':' . $digest['qop'] . ':' . $a2);
-
-        return $response;
-    }
-
     function post($url, $header, $params = false)
     {
         $curl = curl_init();
@@ -103,22 +70,8 @@ class KiosBankService
         return $query_str;
     }
 
-    public function cek()
+    public function generateSessionId() : string
     {
-        // $payload=array(
-        //     'mitra'=>'DJI',
-        //     'accountID'=>'085640224722',
-        //     'merchantID'=>'DJI000472',
-        //     'merchantName'=>'PT.Testing',
-        //     'counterID'=>'1'
-        // );
-
-        // $res = Http::withOptions(['verify' => false,])
-        //                 ->withHeaders(['Authorization' => 'Digest '.$this->getToken()])
-        //                 ->post(env('KIOSBANK_URL').self::SIGN_ON, $payload);
-
-        // return $res->json();
-
         $ip_interface = '10.11.12.5';
         $port_interface = '16551';
 
@@ -139,7 +92,6 @@ class KiosBankService
         }
         $auth_query = $this->auth_response($auth_sorted, '/auth/Sign-On', 'POST');
 
-        $post_header = 'Authorization : Digest ' . $auth_query;
         /*
 	    SESUAIKAN INI
         */
@@ -154,6 +106,32 @@ class KiosBankService
         $post_response = Http::withOptions(['verify' => false,])
                   ->withHeaders(['Authorization' => 'Digest '.$auth_query])
                   ->post($full_url, $body_params);
-        return $post_response->json();
+        $res_json = $post_response->json();
+
+        return $res_json['SessionID'];
+    }
+
+    public function getSeesionId()
+    {
+        $session = Redis::get('session_kios_bank');
+        if(!$session)
+        {
+            $now = Carbon::now();
+            $tomorrow = Carbon::tomorrow()->setMinute(15);
+            $diff = $now->diffInMinutes($tomorrow) * 60;
+            $session = $this->generateSessionId();
+            Redis::set('session_kios_bank',$session,$diff);
+        }
+
+        return $session;
+    }
+
+    //sesion id
+    //CE1CD18DB249ED3D5AC166D2063D7BF5
+    public function cek()
+    {
+       $session_id = $this->getSeesionId();
+
+       return $session_id;
     }
 }
