@@ -150,7 +150,9 @@ class KiosBankService
             'merchantName' => 'PT.Testing',
             'counterID' => '1'
         );
-        $post_response = $this->post($full_url, $post_header, $body_params);
+        // $post_response = $this->post($full_url, $post_header, $body_params);
+        $post_response = Http::withOptions(['verify' => false,])
+                  ->withHeaders(['Authorization' => 'Digest '.$auth_query]);
         return $post_response;
     }
 }
