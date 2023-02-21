@@ -25,8 +25,8 @@ class KiosBankService
                 $header,
                 'content-type:application/json'
             ),
-            // CURLOPT_SSL_VERIFYHOST=>0,
-            // CURLOPT_SSL_VERIFYPEER=>0
+            CURLOPT_SSL_VERIFYHOST=>0,
+            CURLOPT_SSL_VERIFYPEER=>0
         ));
         $response=curl_exec($curl);
         $err=curl_error($curl);
@@ -46,7 +46,9 @@ class KiosBankService
                 return $res;
             
             case 2:
-                $res = Http::get(env('KIOSBANK_URL'));
+                $res = Http::withOptions([
+                    'verify' => false,
+                ])->get(env('KIOSBANK_URL'));
                 return $res->json();
 
                 break;
