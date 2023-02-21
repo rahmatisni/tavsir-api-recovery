@@ -43,7 +43,7 @@ class KiosBankService
         switch ($id) {
             case 1:
                 $res = $this->post(url: env('KIOSBANK_URL'));
-                return json_decode($res);
+                return $res;
             
             case 2:
                 $res = Http::get(env('KIOSBANK_URL'));
