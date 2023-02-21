@@ -49,7 +49,7 @@ class KiosBankService
                 $res = Http::withOptions([
                     'verify' => false,
                 ])->get(env('KIOSBANK_URL'));
-                return $res->json();
+                return $res->headers();
 
                 break;
             
