@@ -121,6 +121,7 @@ class KiosBankService
             $diff = $now->diffInMinutes($tomorrow) * 60;
             $session = $this->generateSessionId();
             Redis::set('session_kios_bank',$session,$diff);
+            Redis::expire('session_kios_bank',$diff);
         }
 
         return $session;
@@ -130,9 +131,6 @@ class KiosBankService
     //CE1CD18DB249ED3D5AC166D2063D7BF5
     public function cek()
     {
-        Redis::set('cek','qwerty');
-        Redis::expire('cek',60);
-        return [Redis::get('cek'), Redis::ttl('cek')];
        $session_id = $this->getSeesionId();
 
        return $session_id;
