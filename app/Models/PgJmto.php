@@ -173,7 +173,8 @@ class PgJmto extends Model
         }
 
         $res = self::service('POST','/va/create', $payload);
-        Log::info('Va create', $res->json());
+        Log::info('Va create payload', json_encode($payload));
+        Log::info('Va create res', $res->json());
         return $res->json();
     }
 
