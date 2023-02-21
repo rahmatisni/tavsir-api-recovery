@@ -59,11 +59,6 @@ class Tenant extends BaseModel
         }
     }
 
-    public function category()
-    {
-        return $this->hasMany(Category::class, 'tenant_id');
-    }
-
     public function product()
     {
         return $this->hasMany(Product::class, 'tenant_id');

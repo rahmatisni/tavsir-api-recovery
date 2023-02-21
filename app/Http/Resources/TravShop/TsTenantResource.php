@@ -21,7 +21,7 @@ class TsTenantResource extends JsonResource
             'rating' => round($this->rating, 1),
             'total_rating' => $this->total_rating,
             'penilaian' => 200,
-            'category' => $this->category,
+            'category' => $this->category_tenant->name ?? '',
             'sub_category' => 'Restaurant',
             'is_open' => $this->is_open == 1 ? true : false,
             'time_end' => $this->time_end,
