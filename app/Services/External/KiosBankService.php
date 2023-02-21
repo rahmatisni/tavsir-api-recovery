@@ -152,7 +152,9 @@ class KiosBankService
         );
         // $post_response = $this->post($full_url, $post_header, $body_params);
         $post_response = Http::withOptions(['verify' => false,])
-                  ->withHeaders(['Authorization' => 'Digest '.$auth_query]);
+                  ->withHeaders(['Authorization' => 'Digest '.$auth_query])
+                  ->post($full_url, $body_params);
+                  dd($post_response);
         return $post_response;
     }
 }
