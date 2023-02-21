@@ -120,7 +120,7 @@ class KiosBankService
             $tomorrow = Carbon::tomorrow()->setMinute(15);
             $diff = $now->diffInMinutes($tomorrow) * 60;
             $session = $this->generateSessionId();
-            Redis::set('session_kios_bank',$session,$diff);
+            Redis::set('session_kios_bank',$session);
             Redis::expire('session_kios_bank',$diff);
         }
 
