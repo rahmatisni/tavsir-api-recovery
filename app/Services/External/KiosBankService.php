@@ -114,7 +114,6 @@ class KiosBankService
     public function getSeesionId()
     {
         $session = Redis::get('session_kios_bank');
-        $session = null;
         if(!$session)
         {
             $now = Carbon::now();
@@ -130,7 +129,6 @@ class KiosBankService
 
     public function cek()
     {
-        //21113E142067F9FD15BDCC991FCEBE99
        $session_id = $this->getSeesionId();
 
        return $session_id;
