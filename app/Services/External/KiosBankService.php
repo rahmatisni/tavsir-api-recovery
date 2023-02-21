@@ -38,9 +38,23 @@ class KiosBankService
         }
     }
 
-    public function auth()
+    public function auth($id)
     {
-        return $this->post(url: env('KIOSBANK_URL'));
+        switch ($id) {
+            case 1:
+                $res = $this->post(url: env('KIOSBANK_URL'));
+                return json_encode($res);
+            
+            case 2:
+                $res = Http::get(env('KIOSBANK_URL'));
+                return $res->json();
+
+                break;
+            
+            default:
+                # code...
+                break;
+        }
     }
 
 }

@@ -255,8 +255,8 @@ Route::get('test-notif', function () {
 });
 
 
-Route::get('cek', function(){
+Route::get('cek', function(Request $request){
     $kios = new KiosBankService();
-    $data = $kios->auth();
+    $data = $kios->auth($request->id);
     return response()->json($data);
 });
