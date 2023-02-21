@@ -371,14 +371,7 @@ class TavsirController extends Controller
 
     public function productStore(TavsirProductRequest $request)
     {
-        try {
-            $validator = Validator::make($request->all(), [
-                'sku' => 'max:5',
-            ]);
-            if ($validator->fails())
-            {
-                return response(['message'=>$validator->errors()->all()], 422);
-            }                          
+        try {                         
             DB::beginTransaction();
             $data = new Product();
             $data->tenant_id = auth()->user()->tenant_id;
