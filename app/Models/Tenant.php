@@ -96,7 +96,7 @@ class Tenant extends BaseModel
 
     public function scopeCategoryCount($query)
     {
-        return $query->groupBy('category')->select('category as kategori', DB::raw('COUNT(*) as tenant'));
+        return $query->groupBy('category_id')->select('category as kategori', DB::raw('COUNT(*) as tenant'));
     }
 
     public function saldo()

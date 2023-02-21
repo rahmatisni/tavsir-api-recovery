@@ -6,7 +6,9 @@ use Illuminate\Support\Facades\Http;
 
 class KiosBankService
 {
-    public function auth()
+    const SIGN_ON = '/auth/Sign-On';
+    
+    public function getDigest()
     {
         // $res = Http::withOptions(['verify' => false,])->get(env('KIOSBANK_URL'));
         // $diges = $res->header('WWW-Authenticate');
@@ -17,24 +19,30 @@ class KiosBankService
             list($key, $val) = explode('=', $auth);
             $auth_sorted[$key] = substr($val, 1, strlen($val) - 2);
         }
-        $diges;
+        return $diges;
+    }
 
-        $res = Http::withOptions(['verify' => false,])->post(env('KIOSBANK_URL'));
+    public function authDigest($diges) : string
+    {
+        $method = 'POST';
+        $path = '/auth/Sign-On';
+        $username='dji';
+        $password='abcde';
+        $nc='1';//berurutan 1,2,3..dst sesuai request
+        $cnonce=uniqid();
 
-        $auth_header = 'Authorization : Digest '.$diges;
+        $a1=md5($username.':'.$diges['Digest realm'].':'.$password);
+        $a2=md5($method.':'.$path);
 
+	    $response=md5($a1.':'.$diges['nonce'].':'.$nc.':'.$cnonce.':'.$diges['qop'].':'.$a2);
+        return $response;
+    }
 
-        /*
-            SESUAIKAN INI
-        */
-        $body_params=array(
-            'mitra'=>'DJI',
-            'accountID'=>'testAccount',
-            'merchantID'=>'TST956124',
-            'merchantName'=>'PT.Testing',
-            'counterID'=>'1'
-        );
-        $post_response=post($full_url,$post_header,$body_params);
-        echo $post_response;
+    public function cek()
+    {
+        $digest = $this->getDigest();
+        $auth_digest = $this->authDigest($digest);
+
+        return $auth_digest;
     }
 }
