@@ -280,6 +280,9 @@ class TravShopController extends Controller
 
             foreach ($paymentMethods as $value) 
             {
+                $value->platform_fee = env('PLATFORM_FEE');
+                $value->fee = 0;
+
                 if($value->sof_id)
                 {
                     if($tenant_is_verified)
