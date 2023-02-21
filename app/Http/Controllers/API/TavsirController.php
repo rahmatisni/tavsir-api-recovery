@@ -45,6 +45,7 @@ use App\Services\StockServices;
 use App\Services\TransSharingServices;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class TavsirController extends Controller
 {
@@ -371,6 +372,13 @@ class TavsirController extends Controller
     public function productStore(TavsirProductRequest $request)
     {
         try {
+            $validator = Validator::make($request->all(), [
+                'sku' => 'max:5',
+            ]);
+            if ($validator->fails())
+            {
+                return response(['message'=>$validator->errors()->all()], 422);
+            }                          
             DB::beginTransaction();
             $data = new Product();
             $data->tenant_id = auth()->user()->tenant_id;

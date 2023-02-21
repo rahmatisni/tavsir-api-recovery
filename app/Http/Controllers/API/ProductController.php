@@ -8,6 +8,7 @@ use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use App\Models\TransStock;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
@@ -37,6 +38,13 @@ class ProductController extends Controller
     public function store(ProductRequest $request)
     {
         try {
+            $validator = Validator::make($request->all(), [
+                'sku' => 'max:5',
+            ]);
+            if ($validator->fails())
+            {
+                return response(['message'=>$validator->errors()->all()], 422);
+            }          
             DB::beginTransaction();
             $data = new Product();
             $data->fill($request->all());
