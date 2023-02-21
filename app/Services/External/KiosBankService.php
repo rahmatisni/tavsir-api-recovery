@@ -25,8 +25,8 @@ class KiosBankService
                 $header,
                 'content-type:application/json'
             ),
-            CURLOPT_SSL_VERIFYHOST=>0,
-            CURLOPT_SSL_VERIFYPEER=>0
+            // CURLOPT_SSL_VERIFYHOST=>0,
+            // CURLOPT_SSL_VERIFYPEER=>0
         ));
         $response=curl_exec($curl);
         $err=curl_error($curl);
