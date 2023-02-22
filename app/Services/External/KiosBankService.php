@@ -114,27 +114,24 @@ class KiosBankService
     public function getSeesionId()
     {
         $session = Redis::get('session_kios_bank');
-        Redis::set('cek',99);
-        if(!$session)
-        {
-            $now = Carbon::now();
-            $tomorrow = Carbon::tomorrow()->setMinute(15);
-            $diff = $now->diffInMinutes($tomorrow) * 60;
-            $session = $this->generateSessionId();
-            Redis::set('session_kios_bank',$session);
-            Redis::expire('session_kios_bank',$diff);
-        }
+        // if(!$session)
+        // {
+        //     $now = Carbon::now();
+        //     $tomorrow = Carbon::tomorrow()->setMinute(15);
+        //     $diff = $now->diffInMinutes($tomorrow) * 60;
+        //     $session = $this->generateSessionId();
+        //     Redis::set('session_kios_bank',$session);
+        //     Redis::expire('session_kios_bank',$diff);
+        // }
 
         return $session;
     }
 
     public function cek()
     {
-    //    $session_id = $this->getSeesionId();
-    //    $session_id = $this->generateSessionId();
-       
-    Redis::set('cek','test');
+        $session_id = $this->getSeesionId();
+        //    $session_id = $this->generateSessionId();
 
-       return Redis::get('cek');
+        return $session_id;
     }
 }
