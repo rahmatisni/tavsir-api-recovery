@@ -114,6 +114,7 @@ class KiosBankService
     public function getSeesionId()
     {
         $session = Redis::get('jmt');
+        Redis::set('jmt', 'ada');
         // if(!$session)
         // {
         //     $now = Carbon::now();
