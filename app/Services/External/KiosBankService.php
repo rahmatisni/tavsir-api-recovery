@@ -63,7 +63,7 @@ class KiosBankService
 
     function post2($url, $header, $params = [])
     {
-        return Http::withOptions(['verifed' => false])->withHeaders(['Authorization' => $header])->post($url, $params)->json();
+        return Http::withOptions(['verify' => false])->withHeaders(['Authorization' => $header])->post($url, $params)->json();
     }
 
     function auth_response($params, $uri, $request_method)
