@@ -123,6 +123,8 @@ class KiosBankService
             'merchantName'=>'PT.Testing',
             'counterID'=>'1'
         );
+
+        dd($this->account, $body_params);
         $post_response=$this->post($full_url,$post_header,$body_params);
         echo '<pre>'.$post_response.'</pre>';
     }
