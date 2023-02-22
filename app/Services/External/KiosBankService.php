@@ -170,10 +170,8 @@ class KiosBankService
         /*
 	    SESUAIKAN IP DAN PORT
         */
-        $ip_interface='10.11.12.5';
-        $port_interface='16551';
 
-        $full_url='https://'.$ip_interface.':'.$port_interface.'/auth/Sign-On';
+        $full_url=env('KIOS_BANK_URL').'/auth/Sign-On';
         $sign_on_response=$this->post($full_url,'');
         $response_arr=explode('WWW-Authenticate: ', $sign_on_response);
 
