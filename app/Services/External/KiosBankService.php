@@ -107,6 +107,7 @@ class KiosBankService
             $auth_sorted[$key] = substr($val, 1, strlen($val) - 2);
         }
         $auth_query = $this->auth_response($auth_sorted,$path, $method);
+        dd($auth_query);
         return $auth_query ;
     }
 
