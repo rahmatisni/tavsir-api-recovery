@@ -171,7 +171,7 @@ class KiosBankService
 	    SESUAIKAN IP DAN PORT
         */
 
-        $full_url=env('KIOS_BANK_URL').'/auth/Sign-On';
+        $full_url=env('KIOSBANK_URL').'/auth/Sign-On';
         $sign_on_response=$this->post($full_url,'');
         $response_arr=explode('WWW-Authenticate: ', $sign_on_response);
 
