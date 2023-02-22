@@ -2,6 +2,7 @@
 
 namespace App\Services\External;
 
+use App\Models\KiosBank\ProductKiosBank;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Redis;
@@ -159,10 +160,24 @@ class KiosBankService
         return $res_json;
     }
 
+    public function getProduct()
+    {
+        $status_product = $this->cekStatusProduct();
+        dd($status_product[1]);
+        $data = ProductKiosBank::get();
+        return $data;
+    }
+
+    public function showProduct($id)
+    {
+        $product = ProductKiosBank::findOrFail($id);
+        return $product;
+    }
+
+
     public function cek()
     {
-        $session_id = $this->getSeesionId();
-        $status_product =  $this->cekStatusProduct();
-        return [$session_id, $status_product];
+        $cek =  $this->getProduct();
+        return $cek;
     }
 }
