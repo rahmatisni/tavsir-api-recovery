@@ -127,7 +127,7 @@ class KiosBankService
         return $session;
     }
 
-    public function cekStatusProduct() : string
+    public function cekStatusProduct()
     {
         $full_url = env('KIOSBANK_URL').'/Services/get-Active-Product';
 
