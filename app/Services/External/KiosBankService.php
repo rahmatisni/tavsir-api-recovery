@@ -169,7 +169,7 @@ class KiosBankService
         {
             $data = ProductKiosBank::get();
 
-            $active = $product[1]['active'];
+            $active = $product['active'];
             $active =  explode(',',$active);
             foreach ($data as $key => $value) {
                 $value->status = false;
