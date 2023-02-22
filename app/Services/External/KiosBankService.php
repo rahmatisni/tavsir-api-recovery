@@ -70,7 +70,7 @@ class KiosBankService
         return $query_str;
     }
 
-    public function generateSessionId() : string
+    public function signOn() : string
     {
         $ip_interface = '10.11.12.5';
         $port_interface = '16551';
@@ -113,17 +113,16 @@ class KiosBankService
 
     public function getSeesionId()
     {
-        $session = Redis::get('jmt');
-        Redis::set('jmt', 'ada');
-        // if(!$session)
-        // {
-        //     $now = Carbon::now();
-        //     $tomorrow = Carbon::tomorrow()->setMinute(15);
-        //     $diff = $now->diffInMinutes($tomorrow) * 60;
-        //     $session = $this->generateSessionId();
-        //     Redis::set('session_kios_bank',$session);
-        //     Redis::expire('session_kios_bank',$diff);
-        // }
+        $session = Redis::get('session_kios_bank');
+        if(!$session)
+        {
+            $now = Carbon::now();
+            $tomorrow = Carbon::tomorrow()->setMinute(15);
+            $diff = $now->diffInMinutes($tomorrow) * 60;
+            $session = $this->signOn();
+            Redis::set('session_kios_bank',$session);
+            Redis::expire('session_kios_bank',$diff);
+        }
 
         return $session;
     }
@@ -131,7 +130,6 @@ class KiosBankService
     public function cek()
     {
         $session_id = $this->getSeesionId();
-        //    $session_id = $this->generateSessionId();
 
         return $session_id;
     }
