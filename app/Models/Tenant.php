@@ -118,4 +118,11 @@ class Tenant extends BaseModel
     {
         return $this->belongsTo(CategoryTenant::class, 'category_tenant_id');
     }
+
+
+    //Product
+    public function category()
+    {
+        return $this->hasMany(Category::class, 'tenant_id');
+    }
 }

@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Business;
+use App\Models\CategoryTenant;
 use App\Models\Ruas;
 use App\Models\RestArea;
 use App\Models\Supertenant;
@@ -24,7 +25,7 @@ class TenantSeeder extends Seeder
                     'name' => 'Rumah Talas',
                     'business_id' => Business::all()->random()->id,
                     'ruas_id' => Ruas::all()->random()->id,
-                    'category' => 'Food',
+                    'category_tenant_Id' => CategoryTenant::all()->random()->id,
                     'address' => 'Jl. Raya Jawa Timur',
                     'latitude' => -6.91436,
                     'longitude' => 107.60981,
@@ -43,7 +44,7 @@ class TenantSeeder extends Seeder
                     'name' => 'Drink Sweet',
                     'business_id' => Business::all()->random()->id,
                     'ruas_id' => Ruas::all()->random()->id,
-                    'category' => 'Drink',
+                    'category_tenant_Id' => CategoryTenant::all()->random()->id,
                     'address' => 'Jl. Raya Jakarta',
                     'latitude' => -41.03622500,
                     'longitude' => 106.21695600,
@@ -62,7 +63,7 @@ class TenantSeeder extends Seeder
                     'name' => 'Pecel Sedap',
                     'business_id' => Business::all()->random()->id,
                     'ruas_id' => Ruas::all()->random()->id,
-                    'category' => 'Food',
+                    'category_tenant_Id' => CategoryTenant::all()->random()->id,
                     'address' => 'Jl. Raya Bandung',
                     'latitude' => 35.47488000,
                     'longitude' => 60.51634100,
@@ -84,8 +85,8 @@ class TenantSeeder extends Seeder
                     'name' => 'Member Tenant 1',
                     'supertenant_id' => $supertenant->id,
                     'business_id' => Business::all()->random()->id,
+                    'category_tenant_Id' => CategoryTenant::all()->random()->id,
                     'ruas_id' => $supertenant->ruas_id,
-                    'category' => 'Food',
                     'address' => 'Jl. Raya Jawa Timur',
                     'latitude' => -6.91436,
                     'longitude' => 107.60981,
@@ -104,8 +105,8 @@ class TenantSeeder extends Seeder
                     'name' => 'Member Tenant 2',
                     'supertenant_id' => $supertenant->id,
                     'business_id' => Business::all()->random()->id,
+                    'category_tenant_Id' => CategoryTenant::all()->random()->id,
                     'ruas_id' => $supertenant->ruas_id,
-                    'category' => 'Food',
                     'address' => 'Jl. Raya Jawa Timur',
                     'latitude' => -6.91436,
                     'longitude' => 107.60981,
