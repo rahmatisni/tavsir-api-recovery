@@ -116,6 +116,7 @@ class KiosBankService
         $full_url = $base_url.$path;
         
         $body_params = $this->account;
+        dd($body_params);
         $digestHeader = $this->generateDigestHeader(method: 'POST', path:$path);
 
         $post_response = Http::withOptions(['verify' => false,])
