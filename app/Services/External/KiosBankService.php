@@ -103,7 +103,6 @@ class KiosBankService
         /*
 	    SESUAIKAN INI
         */
-        // $post_response = $this->post($full_url, $post_header, $body_params);
         $post_response = Http::withOptions(['verify' => false,])
                   ->withHeaders(['Authorization' => 'Digest '.$auth_query])
                   ->post($full_url, $this->accountKisonBank);
@@ -148,14 +147,10 @@ class KiosBankService
         /*
 	    SESUAIKAN INI
         */
-        $body_params = array(
-            'mitra' => 'DJI',
-            'accountID' => '085640224722',
-            'merchantID' => 'DJI000472',
-            'merchantName' => 'PT.Testing',
-            'counterID' => '1'
+        $body_params=array(
+            'sessionID'=> $this->getSeesionId(),
+            ...$this->accountKisonBank
         );
-        // $post_response = $this->post($full_url, $post_header, $body_params);
         $post_response = Http::withOptions(['verify' => false,])
                   ->withHeaders(['Authorization' => 'Digest '.$auth_query])
                   ->post($full_url, $body_params);
@@ -167,7 +162,7 @@ class KiosBankService
     public function cek()
     {
         $session_id = $this->getSeesionId();
-
-        return $session_id;
+        $status_product =  $this->cekStatusProduct();
+        return [$session_id, $status_product];
     }
 }
