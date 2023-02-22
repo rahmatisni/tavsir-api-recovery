@@ -90,48 +90,8 @@ class KiosBankService
         return $query_str;
     }
 
-    public function signOn()
-    {
-        /*
-	    SESUAIKAN IP DAN PORT
-        */
-        $ip_interface='10.11.12.5';
-        $port_interface='16551';
-
-        $full_url=env('KIOSBANK_URL').'/auth/Sign-On';
-        $sign_on_response=$this->post($full_url,'');
-        $response_arr=explode('WWW-Authenticate: ', $sign_on_response);
-
-        $response_arr_1=explode('error', $response_arr[1]);
-        $response=trim($response_arr_1[0]);
-        $auth_arr=explode(',',$response);
-        $auth_sorted=array();
-        foreach($auth_arr as $auth){
-            list($key,$val)=explode('=', $auth);
-            $auth_sorted[$key]=substr($val, 1, strlen($val)-2);
-        }
-        $auth_query=$this->auth_response($auth_sorted,'/auth/Sign-On','POST');
-
-        $post_header='Authorization : Digest '.$auth_query;
-        /*
-            SESUAIKAN INI
-        */
-        $body_params=array(
-            'mitra'=>'DJI',
-            'accountID'=>'085640224722',
-            'merchantID'=>'DJI000472',
-            'merchantName'=>'PT.Testing',
-            'counterID'=>'1'
-        );
-
-        dd($this->account, $body_params);
-        $post_response=$this->post($full_url,$post_header,$body_params);
-        echo '<pre>'.$post_response.'</pre>';
-    }
-
     public function generateDigestHeader($method, $path) : string
     {
-
         $full_url = env('KIOSBANK_URL').$path;
 
         $sign_on_response = $this->post($full_url, '');
@@ -151,52 +111,19 @@ class KiosBankService
 
     public function generateSessionId()
     {
-        // $base_url = env('KIOS_BANK_URL');
-        // $path = self::SIGN_ON;
-        // $full_url = $base_url.$path;
+        $base_url = env('KIOS_BANK_URL');
+        $path = self::SIGN_ON;
+        $full_url = $base_url.$path;
         
-        // $body_params = $this->account;
-        // $digestHeader = $this->generateDigestHeader(method: 'POST', path:$path);
-
-        // $post_response = Http::withOptions(['verify' => false,])
-        //           ->withHeaders(['Authorization' => 'Digest '.$digestHeader])
-        //           ->post($full_url, $body_params);
-        // $res_json = $post_response->json();
-
-        // return $res_json['SessionID'];
-
-        $ip_interface = '10.11.12.5';
-        $port_interface = '16551';
-
-        $full_url = 'https://' . $ip_interface . ':' . $port_interface . '/auth/Sign-On';
-
-        $full_url = env('KIOSBANK_URL').self::SIGN_ON;
-
-        $sign_on_response = $this->post($full_url, '');
-        $response_arr = explode('WWW-Authenticate: ', $sign_on_response);
-
-        $response_arr_1 = explode('error', $response_arr[1]);
-        $response = trim($response_arr_1[0]);
-        $auth_arr = explode(',', $response);
-        $auth_sorted = array();
-        foreach ($auth_arr as $auth) {
-            list($key, $val) = explode('=', $auth);
-            $auth_sorted[$key] = substr($val, 1, strlen($val) - 2);
-        }
-        $auth_query = $this->auth_response($auth_sorted, '/auth/Sign-On', 'POST');
-
-        /*
-	    SESUAIKAN INI
-        */
         $body_params = $this->account;
-        // $post_response = $this->post($full_url, $post_header, $body_params);
+        $digestHeader = $this->generateDigestHeader(method: 'POST', path:$path);
+
         $post_response = Http::withOptions(['verify' => false,])
-                  ->withHeaders(['Authorization' => 'Digest '.$auth_query])
+                  ->withHeaders(['Authorization' => 'Digest '.$digestHeader])
                   ->post($full_url, $body_params);
-                  dd($post_response->json());
         $res_json = $post_response->json();
 
-        return $res_json['SessionID'];        
+        return $res_json['SessionID'];    
     }
 
     public function getSeesionId()
@@ -214,17 +141,7 @@ class KiosBankService
 
         return $session;
     }
-
-    public function cek()
-    {
-        // $cek = $this->getSeesionId();
-        // $cek = $this->cekStatusProduct();
-        // $cek = $this->generateSessionId();
-        $cek = $this->signOn();
-
-       return $cek;
-    }
-
+    
     public function cekStatusProduct()
     {
         $base_url = env('KIOS_BANK_URL');
@@ -247,6 +164,17 @@ class KiosBankService
         return $res_json;
 
     }
+
+    public function cek()
+    {
+        // $cek = $this->getSeesionId();
+        $cek = $this->cekStatusProduct();
+        // $cek = $this->generateSessionId();
+
+       return $cek;
+    }
+
+    
 
     public function getProduct()
     {
