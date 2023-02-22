@@ -156,7 +156,7 @@ class KiosBankService
                   ->post($full_url, $body_params);
         $res_json = $post_response->json();
 
-        return $res_json['SessionID'];
+        return $res_json;
     }
 
     public function cek()
