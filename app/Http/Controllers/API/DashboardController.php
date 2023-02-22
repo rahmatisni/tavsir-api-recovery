@@ -69,9 +69,6 @@ class DashboardController extends Controller
         }
        
 
-
-       
-
         $total_pemasukan = $all1->sum('sub_total');
         $total_transaksi_takengo = $takengo_count;
         $total_transaksi_tavsir = $tavsir;
@@ -82,8 +79,8 @@ class DashboardController extends Controller
         $total_customer = $customer_count;
 
         $ct = $order;
-        $ct_group = $ct->sortBy('tenant.category')
-            ->groupBy('tenant.category')->map(function ($item) {
+        $ct_group = $ct->sortBy('tenant.category_tenant_id')
+            ->groupBy('tenant.category_tenant_id')->map(function ($item) {
                 return $item->count();
             });
         $category_tenant = [
