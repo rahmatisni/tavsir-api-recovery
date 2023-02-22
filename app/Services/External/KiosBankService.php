@@ -133,7 +133,7 @@ class KiosBankService
     //    $session_id = $this->getSeesionId();
     //    $session_id = $this->generateSessionId();
        
-    Redis::set('cek',99);
+    Redis::set('cek','test');
 
        return Redis::get('cek');
     }
