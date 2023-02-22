@@ -181,7 +181,7 @@ class DashboardController extends Controller
             $product = Product::find($key);
             $top_product[] = [
                 'name' => $product->name ?? '',
-                'photo' => $product->photo ? asset($product->photo) : null,
+                'photo' => $product?->photo ? asset($product?->photo) : null,
                 'total' => $value,
             ];
         }
