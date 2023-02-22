@@ -165,7 +165,6 @@ class KiosBankService
     {
         $product = $this->cekStatusProduct();
         $status_respon = $product[1]['rc'] ?? '';
-        
         if($status_respon == '00')
         {
             $data = ProductKiosBank::get();
@@ -187,8 +186,11 @@ class KiosBankService
                     }
                 }
             }
-        }
         return $data;
+
+        }else{
+            return $product;
+        }
     }
 
     public function showProduct($id)
