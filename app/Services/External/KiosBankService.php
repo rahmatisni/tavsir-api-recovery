@@ -217,7 +217,8 @@ class KiosBankService
     {
         // $cek = $this->getSeesionId();
         // $cek = $this->cekStatusProduct();
-        $cek = $this->generateSessionId();
+        // $cek = $this->generateSessionId();
+        $cek = $this->signOn();
 
        return $cek;
     }
