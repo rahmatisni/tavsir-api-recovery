@@ -201,10 +201,10 @@ class KiosBankService
     {
         // $cek = $this->getSeesionId();
         // $cek = $this->cekStatusProduct();
-        $cek1 = $this->generateSessionId();
-        $cek2 = $this->sigOn();
+        // $cek = $this->generateSessionId();
+        $cek = $this->sigOn();
 
-       return [$cek1, $cek2];
+       return $cek;
     }
 
     
