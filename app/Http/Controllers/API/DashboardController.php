@@ -180,7 +180,7 @@ class DashboardController extends Controller
         foreach ($topProduct as $key => $value) {
             $product = Product::find($key);
             $top_product[] = [
-                'name' => $product->name,
+                'name' => $product->name ?? '',
                 'photo' => $product->photo ? asset($product->photo) : null,
                 'total' => $value,
             ];
