@@ -143,8 +143,8 @@ class DashboardController extends Controller
         foreach ($topTenant as $key => $value) {
             $tenant = Tenant::find($key);
             $top_tenant[] = [
-                'name' => $tenant->name,
-                'photo' => $tenant->photo ? asset($tenant->photo) : null,
+                'name' => $tenant?->name,
+                'photo' => $tenant?->photo ? asset($tenant->photo) : null,
                 'total_transaksi' => $value,
             ];
         }
