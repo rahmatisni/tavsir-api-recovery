@@ -61,6 +61,11 @@ class KiosBankService
         }
     }
 
+    function post2($url, $header, $params = [])
+    {
+        return Http::withOptions(['verifed' => false])->withHeaders(['Authorization' => $header])->post($url, $params)->json();
+    }
+
     function auth_response($params, $uri, $request_method)
     {
         /*
@@ -172,7 +177,7 @@ class KiosBankService
         */
 
         $full_url=env('KIOSBANK_URL').'/auth/Sign-On';
-        $sign_on_response=$this->post($full_url,'');
+        $sign_on_response=$this->post2($full_url,'');
         $response_arr=explode('WWW-Authenticate: ', $sign_on_response);
 
         $response_arr_1=explode('error', $response_arr[1]);
@@ -185,13 +190,14 @@ class KiosBankService
         }
         $auth_query=$this->auth_response($auth_sorted,'/auth/Sign-On','POST');
 
-        $post_header='Authorization : Digest '.$auth_query;
+        // $post_header='Authorization : Digest '.$auth_query;
+        $post_header=$auth_query;
         /*
             SESUAIKAN INI
         */
         $body_params=$this->account;
 
-        $post_response=$this->post($full_url,$post_header,$body_params);
+        $post_response=$this->post2($full_url,$post_header,$body_params);
         return $post_response;
     }
 
@@ -201,7 +207,6 @@ class KiosBankService
         // $cek = $this->cekStatusProduct();
         // $cek = $this->generateSessionId();
         $cek = $this->sigOn();
-
        return $cek;
     }
 
