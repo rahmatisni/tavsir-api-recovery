@@ -154,6 +154,7 @@ class KiosBankService
         $post_response = Http::withOptions(['verify' => false,])
                   ->withHeaders(['Authorization' => 'Digest '.$auth_query])
                   ->post($full_url, $body_params);
+                  dd($post_response->json());
         $res_json = $post_response->json();
 
         return $res_json['SessionID'];        
