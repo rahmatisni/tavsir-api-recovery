@@ -90,14 +90,10 @@ class KiosBankService
         return $query_str;
     }
 
-    public function generateSessionId() : string
+    public function generateDigestHeader($method, $path) : string
     {
-        $ip_interface = '10.11.12.5';
-        $port_interface = '16551';
 
-        $full_url = 'https://' . $ip_interface . ':' . $port_interface . '/auth/Sign-On';
-
-        $full_url = env('KIOSBANK_URL').self::SIGN_ON;
+        $full_url = env('KIOSBANK_URL').$path;
 
         $sign_on_response = $this->post($full_url, '');
         $response_arr = explode('WWW-Authenticate: ', $sign_on_response);
@@ -110,15 +106,21 @@ class KiosBankService
             list($key, $val) = explode('=', $auth);
             $auth_sorted[$key] = substr($val, 1, strlen($val) - 2);
         }
-        $auth_query = $this->auth_response($auth_sorted, '/auth/Sign-On', 'POST');
+        $auth_query = $this->auth_response($auth_sorted,$path, $method);
+        return $auth_query ;
+    }
 
-        /*
-	    SESUAIKAN INI
-        */
+    public function generateSessionId()
+    {
+        $base_url = env('KIOS_BANK_URL');
+        $path = self::SIGN_ON;
+        $full_url = $base_url.$path;
+        
         $body_params = $this->account;
-        // $post_response = $this->post($full_url, $post_header, $body_params);
+        $digestHeader = $this->generateDigestHeader(method: 'POST', path:$path);
+
         $post_response = Http::withOptions(['verify' => false,])
-                  ->withHeaders(['Authorization' => 'Digest '.$auth_query])
+                  ->withHeaders(['Authorization' => 'Digest '.$digestHeader])
                   ->post($full_url, $body_params);
         $res_json = $post_response->json();
 
@@ -151,13 +153,21 @@ class KiosBankService
 
     public function cekStatusProduct()
     {
+        $base_url = env('KIOS_BANK_URL');
+        $path = self::ACTIVE_PRODUCT;
+        $full_url = $base_url.$path;
+        
+        $body_params = $this->account;
+        $digestHeader = $this->generateDigestHeader(method: 'POST', path:$path);
+
         $body_params = array(
             'sessionID'=>$this->getSeesionId(),
             ...$this->account,
         );
         
         $post_response = Http::withOptions(['verify' => false,])
-                  ->post(env('KIOSBANK_URL').self::ACTIVE_PRODUCT, $body_params);
+                ->withHeaders(['Authorization' => 'Digest '.$digestHeader])
+                ->post($full_url, $body_params);
         $res_json = $post_response->json();
 
         return $res_json;
