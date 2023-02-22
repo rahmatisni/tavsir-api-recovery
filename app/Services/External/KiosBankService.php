@@ -168,8 +168,8 @@ class KiosBankService
     public function cek()
     {
         // $cek = $this->getSeesionId();
-        $cek = $this->cekStatusProduct();
-        // $cek = $this->generateSessionId();
+        // $cek = $this->cekStatusProduct();
+        $cek = $this->generateSessionId();
 
        return $cek;
     }
