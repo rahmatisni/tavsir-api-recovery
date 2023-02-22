@@ -61,11 +61,6 @@ class KiosBankService
         }
     }
 
-    function post2($url, $header, $params = [])
-    {
-        return Http::withOptions(['verify' => false])->withHeaders(['Authorization' => $header])->post($url, $params)->json();
-    }
-
     function auth_response($params, $uri, $request_method)
     {
         /*
@@ -190,14 +185,13 @@ class KiosBankService
         }
         $auth_query=$this->auth_response($auth_sorted,'/auth/Sign-On','POST');
 
-        // $post_header='Authorization : Digest '.$auth_query;
-        $post_header=$auth_query;
+        $post_header='Authorization : Digest '.$auth_query;
         /*
             SESUAIKAN INI
         */
         $body_params=$this->account;
 
-        $post_response=$this->post2($full_url,$post_header,$body_params);
+        $post_response=$this->post($full_url,$post_header,$body_params);
         return $post_response;
     }
 
