@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call(RestAreaSeeder::class);
         $this->call(PaystationSeeder::class);
         $this->call(SupertenantSeeder::class);
+        $this->call(CategoryTenantSeeder::class);
         $this->call(TenantSeeder::class);
         $this->call(UserSeeder::class);
         $this->call(CategorySeeder::class);
@@ -26,6 +27,7 @@ class DatabaseSeeder extends Seeder
         $this->call(BankSeeder::class);
         $this->call(PaymentMethodSeeder::class);
         $this->call(VoucherSeeder::class);
+        $this->call(ProductKiosBankSeeder::class);
         // $this->call(TransOrderSeeder::class);
     }
 }

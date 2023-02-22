@@ -2,12 +2,32 @@
 
 namespace App\Services\External;
 
+use App\Models\KiosBank\ProductKiosBank;
+use App\Services\BaseService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Redis;
 
 class KiosBankService
 {
+    protected $model;
+
+    const SIGN_ON = '/auth/Sign-On';
+    const ACTIVE_PRODUCT = '/Services/get-Active-Product';
+
+    protected $account;
+
+    public function __construct()
+    {
+        $this->account = [
+            'mitra' => env('KIOSBANK_MITRA'),
+            'accountID' => env('KIOSBANK_ACCOUNT_ID'),
+            'merchantID' => env('KIOSBANK_MERCHANT_ID'),
+            'merchantName' => env('KIOSBANK_MERCHANT_NAME'),
+            'counterID' => env('KIOSBANK_COUNTER_ID'),
+        ];
+    }
+
     function post($url, $header, $params = false)
     {
         $curl = curl_init();
@@ -77,7 +97,7 @@ class KiosBankService
 
         $full_url = 'https://' . $ip_interface . ':' . $port_interface . '/auth/Sign-On';
 
-        $full_url = env('KIOSBANK_URL').'/auth/Sign-On';
+        $full_url = env('KIOSBANK_URL').self::SIGN_ON;
 
         $sign_on_response = $this->post($full_url, '');
         $response_arr = explode('WWW-Authenticate: ', $sign_on_response);
@@ -95,13 +115,7 @@ class KiosBankService
         /*
 	    SESUAIKAN INI
         */
-        $body_params = array(
-            'mitra' => 'DJI',
-            'accountID' => '085640224722',
-            'merchantID' => 'DJI000472',
-            'merchantName' => 'PT.Testing',
-            'counterID' => '1'
-        );
+        $body_params = $this->account;
         // $post_response = $this->post($full_url, $post_header, $body_params);
         $post_response = Http::withOptions(['verify' => false,])
                   ->withHeaders(['Authorization' => 'Digest '.$auth_query])
@@ -129,8 +143,35 @@ class KiosBankService
 
     public function cek()
     {
-       $session_id = $this->getSeesionId();
+        $cek = $this->getSeesionId();
+        $cek = $this->cekStatusProduct();
 
-       return $session_id;
+       return $cek;
+    }
+
+    public function cekStatusProduct()
+    {
+        $body_params = array(
+            'sessionID'=>$this->getSeesionId(),
+            ...$this->account,
+        );
+        
+        $post_response = Http::withOptions(['verify' => false,])
+                  ->post(env('KIOSBANK_URL').self::ACTIVE_PRODUCT, $body_params);
+        $res_json = $post_response->json();
+
+        return $res_json;
+
+    }
+
+    public function getProduct()
+    {
+        return ProductKiosBank::get();
+    }
+
+    public function showProduct($id)
+    {
+        $product = ProductKiosBank::findOrFail($id);
+        return $product;
     }
 }

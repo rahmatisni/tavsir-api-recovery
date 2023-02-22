@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\CategoryTenantController;
+use App\Http\Controllers\API\KiosBank\KiosBankController;
 use App\Models\PgJmto;
 use App\Services\External\KiosBankService;
 use Carbon\Carbon;
@@ -259,4 +260,13 @@ Route::get('cek', function(Request $request){
     $kios = new KiosBankService();
     $data = $kios->cek();
     return response()->json($data);
+});
+
+
+//Kiosbank
+Route::prefix('kios-bank')->group(function(){
+    Route::prefix('product')->controller(KiosBankController::class)->group(function(){
+        Route::get('/','index');
+        Route::get('/{id}','show');
+    });
 });
