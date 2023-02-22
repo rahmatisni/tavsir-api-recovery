@@ -192,7 +192,7 @@ class KiosBankService
         $body_params=$this->account;
 
         $post_response=$this->post($full_url,$post_header,$body_params);
-        return '<pre>'.$post_response.'</pre>';
+        echo '<pre>'.$post_response.'</pre>';
     }
 
     public function cek()
