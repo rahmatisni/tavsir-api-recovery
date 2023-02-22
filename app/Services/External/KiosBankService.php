@@ -116,9 +116,15 @@ class KiosBankService
         /*
             SESUAIKAN INI
         */
-        $body_params=$this->account;
+        $body_params=array(
+            'mitra'=>'DJI',
+            'accountID'=>'085640224722',
+            'merchantID'=>'DJI000472',
+            'merchantName'=>'PT.Testing',
+            'counterID'=>'1'
+        );
         $post_response=$this->post($full_url,$post_header,$body_params);
-        return '<pre>'.$post_response.'</pre>';
+        echo '<pre>'.$post_response.'</pre>';
     }
 
     public function generateDigestHeader($method, $path) : string
@@ -211,8 +217,7 @@ class KiosBankService
     {
         // $cek = $this->getSeesionId();
         // $cek = $this->cekStatusProduct();
-        // $cek = $this->generateSessionId();
-        $cek = $this->signOn();
+        $cek = $this->generateSessionId();
 
        return $cek;
     }
