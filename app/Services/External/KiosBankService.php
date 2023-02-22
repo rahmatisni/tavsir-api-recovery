@@ -178,6 +178,7 @@ class KiosBankService
 
         $full_url=env('KIOSBANK_URL').'/auth/Sign-On';
         $sign_on_response=$this->post2($full_url,'');
+        dd($sign_on_response);
         $response_arr=explode('WWW-Authenticate: ', $sign_on_response);
 
         $response_arr_1=explode('error', $response_arr[1]);
