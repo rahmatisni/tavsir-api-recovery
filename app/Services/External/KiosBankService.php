@@ -163,7 +163,7 @@ class KiosBankService
     public function getProduct()
     {
         $status_product = $this->cekStatusProduct();
-        dd($status_product[1]);
+        dd($status_product[0]);
         $data = ProductKiosBank::get();
         return $data;
     }
