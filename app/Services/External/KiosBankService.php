@@ -90,6 +90,37 @@ class KiosBankService
         return $query_str;
     }
 
+    public function signOn()
+    {
+        /*
+	    SESUAIKAN IP DAN PORT
+        */
+        $ip_interface='10.11.12.5';
+        $port_interface='16551';
+
+        $full_url=env('KIOSBANK_URL').'/auth/Sign-On';
+        $sign_on_response=$this->post($full_url,'');
+        $response_arr=explode('WWW-Authenticate: ', $sign_on_response);
+
+        $response_arr_1=explode('error', $response_arr[1]);
+        $response=trim($response_arr_1[0]);
+        $auth_arr=explode(',',$response);
+        $auth_sorted=array();
+        foreach($auth_arr as $auth){
+            list($key,$val)=explode('=', $auth);
+            $auth_sorted[$key]=substr($val, 1, strlen($val)-2);
+        }
+        $auth_query=$this->auth_response($auth_sorted,'/auth/Sign-On','POST');
+
+        $post_header='Authorization : Digest '.$auth_query;
+        /*
+            SESUAIKAN INI
+        */
+        $body_params=$this->account;
+        $post_response=$this->post($full_url,$post_header,$body_params);
+        echo '<pre>'.$post_response.'</pre>';
+    }
+
     public function generateDigestHeader($method, $path) : string
     {
 
@@ -180,7 +211,8 @@ class KiosBankService
     {
         // $cek = $this->getSeesionId();
         // $cek = $this->cekStatusProduct();
-        $cek = $this->generateSessionId();
+        // $cek = $this->generateSessionId();
+        $cek = $this->signOn();
 
        return $cek;
     }
