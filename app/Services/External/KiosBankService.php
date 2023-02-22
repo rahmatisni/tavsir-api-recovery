@@ -129,7 +129,9 @@ class KiosBankService
 
     public function cek()
     {
-       $session_id = $this->getSeesionId();
+    //    $session_id = $this->getSeesionId();
+       $session_id = $this->generateSessionId();
+       
 
        return $session_id;
     }
