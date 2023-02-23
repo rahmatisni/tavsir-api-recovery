@@ -598,7 +598,7 @@ class TravShopController extends Controller
 
             if ($data->status == TransOrder::PAYMENT_SUCCESS) {
                 $kios = [];
-                if($data->order_type == TransOrder::ORDER_TAVSIR){
+                if($data->order_type == TransOrder::ORDER_TRAVOY){
                     $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id);
                     dd($kios);
                 }
@@ -676,7 +676,7 @@ class TravShopController extends Controller
                         $data->status = TransOrder::DONE;
                     }
                     $data->save();
-                    if($data->order_type == TransOrder::ORDER_TAVSIR){
+                    if($data->order_type == TransOrder::ORDER_TRAVOY){
                         $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id);
                     }
                     foreach ($data->detil as $key => $value) {
