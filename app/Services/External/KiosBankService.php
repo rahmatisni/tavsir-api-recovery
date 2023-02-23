@@ -255,10 +255,9 @@ class KiosBankService
         $body_params=array(
             'sessionID'=> $this->getSeesionId(),
             'prefixID'=> $prefix_id,
-            ...array_keys($this->accountKisonBank, "merchantID")
+            'merchantID' => env('KIOSBANK_MERCHANT_ID')
         );
 
-        dd($body_params);
         $post_response = Http::withOptions(['verify' => false,])
                   ->withHeaders(['Authorization' => 'Digest '.$auth_query])
                   ->post($full_url, $body_params);
