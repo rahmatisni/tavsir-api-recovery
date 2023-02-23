@@ -308,7 +308,7 @@ class KiosBankService
         $order->status = TransOrder::WAITING_PAYMENT;
         $order->save();
 
-        return $data;
+        return $order;
     }
 
     public function singlePayment($sub_total,$order_id)
@@ -381,7 +381,7 @@ class KiosBankService
             'tagihan'=>$sub_total,
             'sessionID'=> $this->getSeesionId(),
             'productID'=>$order[0],
-            'referenceID'=>'900000030222',
+            'referenceID'=>$order[2],
             'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
             'customerID'=>$order[1]
         );
