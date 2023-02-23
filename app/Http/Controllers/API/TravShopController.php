@@ -597,6 +597,7 @@ class TravShopController extends Controller
 
 
             if ($data->status == TransOrder::PAYMENT_SUCCESS) {
+                $kios = [];
                 if($data->order_type == TransOrder::ORDER_TAVSIR){
                     $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id);
                 }
