@@ -257,6 +257,8 @@ class KiosBankService
             'prefixID'=> $prefix_id,
             ...array_keys($this->accountKisonBank, "merchantID")
         );
+
+        dd($body_params);
         $post_response = Http::withOptions(['verify' => false,])
                   ->withHeaders(['Authorization' => 'Digest '.$auth_query])
                   ->post($full_url, $body_params);
