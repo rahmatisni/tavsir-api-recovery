@@ -354,7 +354,7 @@ class KiosBankService
 
     public function cekStatus($sub_total,$order_id)
     {
-        $full_url = env('KIOSBANK_URL').'/Services/SCheck-Status';
+        $full_url = env('KIOSBANK_URL').'/Services/Check-Status';
 
         $sign_on_response = $this->post($full_url, '');
         $response_arr = explode('WWW-Authenticate: ', $sign_on_response);
@@ -367,7 +367,7 @@ class KiosBankService
             list($key, $val) = explode('=', $auth);
             $auth_sorted[$key] = substr($val, 1, strlen($val) - 2);
         }
-        $auth_query = $this->auth_response($auth_sorted, '/Services/SCheck-Status', 'POST');
+        $auth_query = $this->auth_response($auth_sorted, '/Services/Check-Status', 'POST');
 
         /*
 	    SESUAIKAN INI
