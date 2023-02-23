@@ -263,63 +263,22 @@ class KiosBankService
                   ->post($full_url, $body_params);
         $res_json = $post_response->json();
 
-        return $res_json;
+        if($res_json['rc'] == '00')
+        {
+            $record = $res_json['record'];
+            foreach ($record as $key => $value) {
+                $fee = env('PLATFORM_FEE') ?? 0;
+                $total = $fee + $value['price'];
 
-        // $full_url = env('KIOSBANK_URL').'/Services/getPulsa-Prabayar';
+                $value['platform_fee'] = $fee;
+                $value['total'] = $total;
 
-        // $sign_on_response = $this->post($full_url, '');
-        // $response_arr = explode('WWW-Authenticate: ', $sign_on_response);
-
-        // $response_arr_1 = explode('error', $response_arr[1]);
-        // $response = trim($response_arr_1[0]);
-        // $auth_arr = explode(',', $response);
-        // $auth_sorted = array();
-        // foreach ($auth_arr as $auth) {
-        //     list($key, $val) = explode('=', $auth);
-        //     $auth_sorted[$key] = substr($val, 1, strlen($val) - 2);
-        // }
-        // $auth_query = $this->auth_response($auth_sorted, '/Services/getPulsa-Prabayar', 'POST');
-
-        /*
-	    SESUAIKAN INI
-        */
-        // $body_params=array(
-        //     'sessionID'=> $this->getSeesionId(),
-        //     'prefixID'=> $prefix_id,
-        //     'merchantID' => env('KIOSBANK_MERCHANT_ID')
-        // );
-
-        // $post_response = Http::withOptions(['verify' => false,])
-        //           ->withHeaders(['Authorization' => 'Digest '.$auth_query])
-        //           ->post($full_url, $body_params);
-        // $res_json = $post_response->json();
-
-        // if($res_json['rc'] == 0)
-        // {
-        //     $record = $res_json['record'];
-        //     $record = [
-        //         [
-        //             "code" => "500511",
-        //             "name" => "Indosat Prabayar 5.000",
-        //             "price" => 6050
-        //         ],
-        //     ];
-        //     $new_record = [];
-        //     foreach ($record as $key => $value) {
-        //         $fee = env('PLATFORM_FEE') ?? 0;
-        //         $total = $fee + $value['price'];
-
-        //         $value['platform_fee'] = $fee;
-        //         $value['total'] = $total;
-
-        //         array_push($new_record, $value);
-        //     }
-        //     return $record;
-        // }else{
-        //     return $res_json();
-        // }
-
-        // return $res_json;
+                array_push($new_record, $value);
+            }
+            return $record;
+        }else{
+            return $res_json;
+        }
     }
 
     public function showProductPulsa($id)
