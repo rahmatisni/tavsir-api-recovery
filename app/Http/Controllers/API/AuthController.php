@@ -314,7 +314,29 @@ class AuthController extends Controller
         })->get();
         return response()->json(TsTenantResource::collection($data));
     }
+    public function notifBukaTutupToko(User $user, $info){
+        $data = User::where([['id', '!=', $user->id], ['tenant_id', $user->tenant_id], ['fcm_token', '!=', null], ['fcm_token', '!=', '']])->get();
+        $ids = array();
+        foreach ($data as $val) {
+            if ($val['fcm_token'] != null && $val['fcm_token'] != '')
+                array_push($ids, $val['fcm_token']);
+        }
 
+        if ($ids != '') {
+            $payload = array(
+                'id' => random_int(1000, 9999),
+                'type' => 'action',
+                'action' => 'refresh_buka_toko'
+            );
+            if($info=='tutup'){
+                $result = sendNotif($ids, 'Pemberitahun', 'Pemberitahuan Toko anda di tutup sementara oleh ' . $user->name, $payload);
+            }else
+            if($info=='buka'){
+                $result = sendNotif($ids, 'Pemberitahun', 'Pemberitahuan Toko anda sudah dibukan oleh ' . $user->name, $payload);
+            }
+            return $result;
+        }
+    }
     public function bukaToko(BukaTutupTenantRequest $request)
     {
         $user = auth()->user();
@@ -322,12 +344,13 @@ class AuthController extends Controller
             $tenant = Tenant::findOrFail($user->tenant_id);
             $tenant->is_open = 1;
             $tenant->save();
+            $result = $this->notifBukaTutupToko($user, 'buka');
             return response()->json([
                 'status' => 'success',
                 'message' => 'Open tenant '.$tenant->name.' successfully',
+                'notif' => $result
             ]);
         }
-
         return response()->json([
             'status' => 'error',
             'message' => 'PIN verification failed'
@@ -341,9 +364,11 @@ class AuthController extends Controller
             $tenant = Tenant::findOrFail($user->tenant_id);
             $tenant->is_open = 0;
             $tenant->save();
+            $result = $this->notifBukaTutupToko($user, 'tutup');
             return response()->json([
                 'status' => 'success',
                 'message' => 'Close tenant '.$tenant->name.' successfully',
+                'notif' => $result
             ]);
         }
 

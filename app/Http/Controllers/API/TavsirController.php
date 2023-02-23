@@ -472,6 +472,10 @@ class TavsirController extends Controller
 
     public function categoryDestroy(Category $category)
     {
+        $data = Product::where('category_id', $category->id)->count();
+        if($data > 0){
+            return response()->json(['message'=>'Kategori tidak dapat dihapus karna sudah digunakan pada produk'], 422);
+        }
         $category->delete();
         return response()->json($category);
     }
