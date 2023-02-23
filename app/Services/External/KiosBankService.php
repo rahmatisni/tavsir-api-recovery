@@ -267,8 +267,8 @@ class KiosBankService
         {
             $record = $res_json['record'];
             foreach ($record as $key => $value) {
-                $value->platform_fee = env('PLATFORM_FEE') ?? 0;
-                $value->total = $value->price + $value->platform_fee;
+                $value['platform_fee'] = env('PLATFORM_FEE') ?? 0;
+                $value['total'] = $value['platform_fee'] + $value['price'];
             }
         }else{
             return $res_json();
