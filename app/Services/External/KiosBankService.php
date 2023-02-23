@@ -340,7 +340,7 @@ class KiosBankService
             'tagihan'=>$sub_total,
             'sessionID'=> $this->getSeesionId(),
             'productID'=>$order[0],
-            'referenceID'=>Carbon::now()->format('YmdHis'),
+            'referenceID'=>'900000000004',
             'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
             'customerID'=>$order[1]
         );
