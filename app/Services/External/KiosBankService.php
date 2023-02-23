@@ -295,7 +295,7 @@ class KiosBankService
     {
         $order = new TransOrder();
         $order->order_type = TransOrder::ORDER_TRAVOY;
-        $order->order_id = $data['code'].'-'.$data['phone'].'-'.Carbon::now()->timestamp;
+        $order->order_id = $data['code'].'-'.$data['phone'].'-'.rand(900000000000,999999999999).'-'.Carbon::now()->timestamp;
         $order->rest_area_id = 0;
         $order->tenant_id = 0;
         $order->business_id = 0;
@@ -339,10 +339,10 @@ class KiosBankService
             'admin'=>'000000000000',
             'tagihan'=>$sub_total,
             'sessionID'=> $this->getSeesionId(),
-            'productID'=>$order[0],
-            'referenceID'=>'900000030222',
+            'productID'=>$order[0] ?? '',
+            'referenceID'=>$order[3] ?? '',
             'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
-            'customerID'=>$order[1]
+            'customerID'=>$order[1] ?? ''
         );
 
         $post_response = Http::withOptions(['verify' => false,])
