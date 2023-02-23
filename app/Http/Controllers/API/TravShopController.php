@@ -597,8 +597,9 @@ class TravShopController extends Controller
 
 
             if ($data->status == TransOrder::PAYMENT_SUCCESS) {
-
-                $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id);
+                if($data->order_type == TransOrder::ORDER_TAVSIR){
+                    $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id);
+                }
                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
             }
 
@@ -665,18 +666,22 @@ class TravShopController extends Controller
                 $res_data = $res['responseData'];
                 $res_data['fee'] = $data_payment['fee'];
                 $res_data['bill'] = $data_payment['bill'];
+                $kios = [];
+
                 if ($res_data['pay_status'] == '1') {
                     $data->status = TransOrder::PAYMENT_SUCCESS;
                     if ($data->order_type == TransOrder::ORDER_TAVSIR) {
                         $data->status = TransOrder::DONE;
                     }
                     $data->save();
-                    $this->kiosBankService->singlePayment($data->sub_total, $data->order_id);
+                    if($data->order_type == TransOrder::ORDER_TAVSIR){
+                        $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id);
+                    }
                     foreach ($data->detil as $key => $value) {
                         $this->stock_service->updateStockProduct($value);
                     }
                 } else {
-                    return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '']);
+                    return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                 }
                 $data->payment()->update(['data' => $res_data]);
             }
