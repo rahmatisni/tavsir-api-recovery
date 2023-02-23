@@ -264,12 +264,27 @@ class KiosBankService
         $res_json = $post_response->json();
 
         if($res_json['rc'] == 0)
+        if(true)
         {
             $record = $res_json['record'];
+            $record = [
+                [
+                    "code" => "500511",
+                    "name" => "Indosat Prabayar 5.000",
+                    "price" => 6050
+                ],
+            ];
+            $new_record = [];
             foreach ($record as $key => $value) {
-                $value['platform_fee'] = env('PLATFORM_FEE') ?? 0;
-                $value['total'] = $value['platform_fee'] + $value['price'];
+                $fee = env('PLATFORM_FEE') ?? 0;
+                $total = $fee + $value['price'];
+
+                $value['platform_fee'] = $fee;
+                $value['total'] = $total;
+
+                array_push($new_record, $value);
             }
+            return $record;
         }else{
             return $res_json();
         }
