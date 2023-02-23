@@ -352,6 +352,48 @@ class KiosBankService
         return $res_json;
     }
 
+    public function cekStatus($sub_total,$order_id)
+    {
+        $full_url = env('KIOSBANK_URL').'/Services/SCheck-Status';
+
+        $sign_on_response = $this->post($full_url, '');
+        $response_arr = explode('WWW-Authenticate: ', $sign_on_response);
+
+        $response_arr_1 = explode('error', $response_arr[1]);
+        $response = trim($response_arr_1[0]);
+        $auth_arr = explode(',', $response);
+        $auth_sorted = array();
+        foreach ($auth_arr as $auth) {
+            list($key, $val) = explode('=', $auth);
+            $auth_sorted[$key] = substr($val, 1, strlen($val) - 2);
+        }
+        $auth_query = $this->auth_response($auth_sorted, '/Services/SCheck-Status', 'POST');
+
+        /*
+	    SESUAIKAN INI
+        */
+
+        $order = explode('-', $order_id);
+
+        $body_params=array(
+            'total'=>$sub_total,
+            'admin'=>'000000000000',
+            'tagihan'=>$sub_total,
+            'sessionID'=> $this->getSeesionId(),
+            'productID'=>$order[0],
+            'referenceID'=>'900000030222',
+            'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
+            'customerID'=>$order[1]
+        );
+
+        $post_response = Http::withOptions(['verify' => false,])
+                  ->withHeaders(['Authorization' => 'Digest '.$auth_query])
+                  ->post($full_url, $body_params);
+        $res_json = $post_response->json();
+        return $res_json;
+    }
+    
+
 
     public function cek()
     {

@@ -594,12 +594,10 @@ class TravShopController extends Controller
         $data = TransOrder::with('payment_method')->findOrfail($id);
         try {
             DB::beginTransaction();
-
-
             if ($data->status == TransOrder::PAYMENT_SUCCESS) {
                 $kios = [];
                 if($data->order_type == TransOrder::ORDER_TRAVOY){
-                    $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id);
+                    $kios = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id);
                     if($kios['rc'] == '00'){
                         $data->status == TransOrder::DONE;
                         $data->save();
