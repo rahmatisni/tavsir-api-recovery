@@ -263,6 +263,17 @@ class KiosBankService
                   ->post($full_url, $body_params);
         $res_json = $post_response->json();
 
+        if($res_json['rc'] == 0)
+        {
+            $record = $res_json['record'];
+            foreach ($record as $key => $value) {
+                $value->platform_fee = env('PLATFORM_FEE') ?? 0;
+                $value->total = $value->price + $value->platform_fee;
+            }
+        }else{
+            return $res_json();
+        }
+
         return $res_json;
     }
 
