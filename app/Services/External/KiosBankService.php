@@ -266,6 +266,7 @@ class KiosBankService
         if($res_json['rc'] == '00')
         {
             $record = $res_json['record'];
+            $new_record = [];
             foreach ($record as $key => $value) {
                 $fee = env('PLATFORM_FEE') ?? 0;
                 $total = $fee + $value['price'];
@@ -275,7 +276,7 @@ class KiosBankService
 
                 array_push($new_record, $value);
             }
-            return $record;
+            return $new_record;
         }else{
             return $res_json;
         }
