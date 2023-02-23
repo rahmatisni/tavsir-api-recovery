@@ -4,6 +4,7 @@ namespace App\Services\External;
 
 use App\Models\KiosBank\ProductKiosBank;
 use App\Models\Product;
+use App\Models\TransOrder;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Redis;
@@ -262,24 +263,24 @@ class KiosBankService
                   ->withHeaders(['Authorization' => 'Digest '.$auth_query])
                   ->post($full_url, $body_params);
         $res_json = $post_response->json();
+        return $res_json;
+        // if($res_json['rc'] == '00')
+        // {
+        //     $record = $res_json['record'];
+        //     $new_record = [];
+        //     foreach ($record as $key => $value) {
+        //         $fee = (int) env('PLATFORM_FEE') ?? 0;
+        //         $total = $fee + $value['price'];
 
-        if($res_json['rc'] == '00')
-        {
-            $record = $res_json['record'];
-            $new_record = [];
-            foreach ($record as $key => $value) {
-                $fee = (int) env('PLATFORM_FEE') ?? 0;
-                $total = $fee + $value['price'];
+        //         $value['platform_fee'] = $fee;
+        //         $value['sub_total'] = $total;
 
-                $value['platform_fee'] = $fee;
-                $value['total'] = $total;
-
-                array_push($new_record, $value);
-            }
-            return $new_record;
-        }else{
-            return $res_json;
-        }
+        //         array_push($new_record, $value);
+        //     }
+        //     return $new_record;
+        // }else{
+        //     return $res_json;
+        // }
     }
 
     public function showProductPulsa($id)
@@ -290,14 +291,65 @@ class KiosBankService
         return $product_pulsa;
     }
 
-    public function cekHargaPulsa($id)
+    public function orderPulsa($data)
     {
-        $product_pulsa = $this->showProductPulsa($id);
-        if($product_pulsa)
-        {
+        $order = new TransOrder();
+        $order->order_type = TransOrder::ORDER_TRAVOY;
+        $order->order_id = $data['code'].'-'.$data['phone'].'-'.Carbon::now()->timestamp;
+        $order->rest_area_id = 0;
+        $order->tenant_id = 0;
+        $order->business_id = 0;
+        $order->customer_id = $data['customer_id'];
+        $order->customer_name = $data['customer_name'];
+        $order->customer_phone = $data['customer_phone'];
+        $order->merchant_id = '';
+        $order->sub_merchant_id = '';
+        $order->sub_total = $data['price'];
+        $order->status = TransOrder::WAITING_PAYMENT;
+        $order->save();
 
+        return $data;
+    }
+
+    public function singlePayment($sub_total,$order_id)
+    {
+        $full_url = env('KIOSBANK_URL').'/Services//Services/SinglePayment';
+
+        $sign_on_response = $this->post($full_url, '');
+        $response_arr = explode('WWW-Authenticate: ', $sign_on_response);
+
+        $response_arr_1 = explode('error', $response_arr[1]);
+        $response = trim($response_arr_1[0]);
+        $auth_arr = explode(',', $response);
+        $auth_sorted = array();
+        foreach ($auth_arr as $auth) {
+            list($key, $val) = explode('=', $auth);
+            $auth_sorted[$key] = substr($val, 1, strlen($val) - 2);
         }
-        return $product_pulsa;
+        $auth_query = $this->auth_response($auth_sorted, '/Services//Services/SinglePayment', 'POST');
+
+        /*
+	    SESUAIKAN INI
+        */
+
+        $order = explode('-', $order_id);
+
+        $body_params=array(
+            'total'=>$sub_total,
+            'admin'=>'000000000000',
+            'tagihan'=>$sub_total,
+            'sessionID'=> $this->getSeesionId(),
+            'productID'=>$order[0],
+            'referenceID'=>$order_id,
+            'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
+            'customerID'=>$order[1]
+        );
+
+        $post_response = Http::withOptions(['verify' => false,])
+                  ->withHeaders(['Authorization' => 'Digest '.$auth_query])
+                  ->post($full_url, $body_params);
+        $res_json = $post_response->json();
+        return $res_json;
     }
 
 

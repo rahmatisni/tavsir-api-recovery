@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\KiosBank;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\OrderPulsaRequest;
 use App\Services\External\KiosBankService;
 use Illuminate\Http\Request;
 
@@ -34,6 +35,12 @@ class KiosBankController extends Controller
     public function listProductOperatorPulsa($id)
     {
         $data = $this->service->listProductOperatorPulsa($id);
+        return response()->json($data);
+    }
+
+    public function orderPulsa(OrderPulsaRequest $reqest)
+    {
+        $data = $this->service->orderPulsa($reqest->validated());
         return response()->json($data);
     }
 }

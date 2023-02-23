@@ -273,5 +273,6 @@ Route::prefix('kios-bank')->group(function(){
     Route::prefix('pulsa')->controller(KiosBankController::class)->group(function(){
         Route::get('/operator','listOperatorPulsa');
         Route::get('/operator-product/{id}','listProductOperatorPulsa');
+        Route::post('/order','orderPulsa');
     });
 });

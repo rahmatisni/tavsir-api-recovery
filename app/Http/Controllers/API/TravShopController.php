@@ -26,6 +26,7 @@ use App\Models\TransOrder;
 use App\Models\TransOrderDetil;
 use App\Models\TransPayment;
 use App\Models\Voucher;
+use App\Services\External\KiosBankService;
 use App\Services\StockServices;
 use App\Services\TransSharingServices;
 use Illuminate\Support\Facades\DB;
@@ -36,11 +37,13 @@ class TravShopController extends Controller
 {
     protected $stock_service;
     protected $trans_sharing_service;
+    protected $kiosBankService;
 
-    public function __construct(StockServices $stock_service, TransSharingServices $trans_sharing_service)
+    public function __construct(StockServices $stock_service, TransSharingServices $trans_sharing_service, KiosBankService $kiosBankService)
     {
         $this->stock_service = $stock_service;
         $this->trans_sharing_service = $trans_sharing_service;
+        $this->kiosBankService = $kiosBankService;
     }
 
     public function restArea(Request $request)
@@ -257,7 +260,7 @@ class TravShopController extends Controller
             $tenant = $trans_order->tenant;
             $tenant_is_verified = $tenant?->is_verified;
 
-            if($tenant_is_verified == false)
+            if($tenant_is_verified === false && $trans_order->order_type != TransOrder::ORDER_TRAVOY)
             {
                 $merchant = PgJmto::listSubMerchant();
                 if($merchant->successful())
@@ -285,7 +288,7 @@ class TravShopController extends Controller
 
                 if($value->sof_id)
                 {
-                    if($tenant_is_verified)
+                    if($tenant_is_verified || $trans_order->order_type == TransOrder::ORDER_TRAVOY)
                     {
                         $data = PgJmto::tarifFee($value->sof_id,$value->payment_method_id, $value->sub_merchant_id,$trans_order->sub_total);
                         $value->fee = $data;
@@ -427,12 +430,13 @@ class TravShopController extends Controller
                         'customer_name' => $request->customer_name,
                         "submerchant_id" => $data->tenant?->sub_merchant_id ?? '',
                     ];
+                    
                     $res = PgJmto::vaCreate(
                         $payment_method->code,
                         $data->order_id,
                         'Take N Go',
                         $data->sub_total + $data->fee,
-                        $data->tenant->name ?? '',
+                        $data->tenant->name ?? 'Travoy',
                         $request->customer_phone,
                         $request->customer_email,
                         $request->customer_name
@@ -594,7 +598,8 @@ class TravShopController extends Controller
 
             if ($data->status == TransOrder::PAYMENT_SUCCESS) {
 
-                return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '']);
+                $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id);
+                return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
             }
 
             if ($data->status != TransOrder::WAITING_PAYMENT) {
@@ -666,6 +671,7 @@ class TravShopController extends Controller
                         $data->status = TransOrder::DONE;
                     }
                     $data->save();
+                    $this->kiosBankService->singlePayment($data->sub_total, $data->order_id);
                     foreach ($data->detil as $key => $value) {
                         $this->stock_service->updateStockProduct($value);
                     }
