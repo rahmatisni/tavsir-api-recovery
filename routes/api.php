@@ -265,8 +265,13 @@ Route::get('cek', function(Request $request){
 
 //Kiosbank
 Route::prefix('kios-bank')->group(function(){
-    Route::prefix('product')->controller(KiosBankController::class)->group(function(){
-        Route::get('/','index');
-        Route::get('/{id}','show');
+    Route::controller(KiosBankController::class)->group(function(){
+        Route::get('/product','index');
+        Route::get('/product/{id}','show');
+    });
+
+    Route::prefix('pulsa')->controller(KiosBankController::class)->group(function(){
+        Route::get('/operator','listOperatorPulsa');
+        Route::get('/operator-product/{id}','listProductOperatorPulsa');
     });
 });
