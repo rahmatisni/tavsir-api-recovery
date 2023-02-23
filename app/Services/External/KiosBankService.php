@@ -264,7 +264,6 @@ class KiosBankService
         $res_json = $post_response->json();
 
         if($res_json['rc'] == 0)
-        if(true)
         {
             $record = $res_json['record'];
             $record = [
