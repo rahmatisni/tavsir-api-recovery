@@ -125,9 +125,10 @@ class KiosBankService
         $response_arr = explode('WWW-Authenticate: ', $sign_on_response);
 
         $response_arr_1 = explode('error', $response_arr[1]);
-        dd($digest,$response_arr_1);
 
         $response = trim($response_arr_1[0]);
+        dd($digest,$response);
+
         $auth_arr = explode(',', $response);
         $auth_sorted = array();
         foreach ($auth_arr as $auth) {
