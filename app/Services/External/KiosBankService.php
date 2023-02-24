@@ -123,9 +123,10 @@ class KiosBankService
         $digest = $this->http->post($path)->header('WWW-Authenticate');
         $sign_on_response = $this->post($full_url, '');
         $response_arr = explode('WWW-Authenticate: ', $sign_on_response);
-        dd($digest,$response_arr);
 
         $response_arr_1 = explode('error', $response_arr[1]);
+        dd($digest,$response_arr_1);
+
         $response = trim($response_arr_1[0]);
         $auth_arr = explode(',', $response);
         $auth_sorted = array();
