@@ -267,7 +267,7 @@ Route::get('cek', function(Request $request){
 Route::prefix('kios-bank')->group(function(){
     Route::controller(KiosBankController::class)->group(function(){
         Route::any('/callback','callback');
-    
+        Route::post('/cek-deposit','cekDeposit');
     });
 
     Route::controller(KiosBankController::class)->group(function(){

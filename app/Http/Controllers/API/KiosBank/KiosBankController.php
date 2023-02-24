@@ -49,4 +49,10 @@ class KiosBankController extends Controller
         $data = $this->service->callback($reqest->all());
         return response()->json($data);
     }
+
+    public function cekDeposit()
+    {
+        $data = $this->service->cekDeposit();
+        return response()->json($data);
+    }
 }
