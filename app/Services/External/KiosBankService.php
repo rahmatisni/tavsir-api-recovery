@@ -6,6 +6,7 @@ use App\Models\KiosBank\ProductKiosBank;
 use App\Models\Product;
 use App\Models\TransOrder;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Redis;
 
@@ -157,7 +158,21 @@ class KiosBankService
 
     function http($method = 'POST', $path , $payload=[])
     {
-        return $this->http->withHeaders(['Authorization' => 'Digest '.$this->generateDigest(method: $method, path: $path)]);
+        $http = $this->http->withHeaders(['Authorization' => 'Digest '.$this->generateDigest(method: $method, path: $path)]);
+        switch ($method) {
+            case 'POST':
+                $http = $http->post($path, $payload);
+                break;
+
+            case 'GET':
+                $http = $http->get($path, $payload);
+                break;
+            
+            default:
+                throw new Exception("Error Processing Request", 1);
+                break;
+        }
+        return $http;
     }
 
     public function signOn() : string
