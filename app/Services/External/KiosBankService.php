@@ -11,46 +11,48 @@ use Illuminate\Support\Facades\Redis;
 
 class KiosBankService
 {
-    protected $accountKisonBank;
-
+    protected $baseUrl;
+    protected $accountKiosBank;
     protected $operatorPulsa;
+    protected $http;
 
     function __construct()
     {
-        $this->accountKisonBank = [
+        $this->baseUrl = env('KIOSBANK_URL');
+        $this->http = Http::baseUrl($this->baseUrl);
+        $this->accountKiosBank = [
             'mitra' => env('KIOSBANK_MITRA'),
             'accountID' => env('KIOSBANK_ACCOUNT_ID'),
             'merchantID' => env('KIOSBANK_MERCHANT_ID'),
             'merchantName' => env('KIOSBANK_MERCHANT_NAME'),
             'counterID' => env('KIOSBANK_COUNTER_ID')
         ];
-
         $this->operatorPulsa = [
-                [
-                    'prefix_id' => '11',
-                    'name' => 'Indosat',
-                ],
-                [
-                    'prefix_id' => '21',
-                    'name' => 'Telkomsel',
-                ],
-                [
-                    'prefix_id' => '31',
-                    'name' => 'XL',
-                ],
-                [
-                    'prefix_id' => '41',
-                    'name' => 'Tri',
-                ],
-                [
-                    'prefix_id' => '51',
-                    'name' => 'Axis',
-                ],
-                [
-                    'prefix_id' => '81',
-                    'name' => 'Smartfren',
-                ],
-            ];
+            [
+                'prefix_id' => '11',
+                'name' => 'Indosat',
+            ],
+            [
+                'prefix_id' => '21',
+                'name' => 'Telkomsel',
+            ],
+            [
+                'prefix_id' => '31',
+                'name' => 'XL',
+            ],
+            [
+                'prefix_id' => '41',
+                'name' => 'Tri',
+            ],
+            [
+                'prefix_id' => '51',
+                'name' => 'Axis',
+            ],
+            [
+                'prefix_id' => '81',
+                'name' => 'Smartfren',
+            ],
+        ];
     }
 
     function post($url, $header, $params = false)
@@ -115,6 +117,27 @@ class KiosBankService
         return $query_str;
     }
 
+    function generateDigest($path)
+    {
+        $full_url = $this->baseUrl.$path;
+        $digest = $this->http->post($path)->header('WWW-Authenticate: ');
+        dd($digest);
+        $sign_on_response = $this->post($full_url, '');
+        $response_arr = explode('WWW-Authenticate: ', $sign_on_response);
+
+        $response_arr_1 = explode('error', $response_arr[1]);
+        $response = trim($response_arr_1[0]);
+        $auth_arr = explode(',', $response);
+        $auth_sorted = array();
+        foreach ($auth_arr as $auth) {
+            list($key, $val) = explode('=', $auth);
+            $auth_sorted[$key] = substr($val, 1, strlen($val) - 2);
+        }
+        $auth_query = $this->auth_response($auth_sorted, $path, 'POST');
+
+        return $auth_query;
+    }
+
     public function signOn() : string
     {
         $full_url = env('KIOSBANK_URL').'/auth/Sign-On';
@@ -137,7 +160,7 @@ class KiosBankService
         */
         $post_response = Http::withOptions(['verify' => false,])
                   ->withHeaders(['Authorization' => 'Digest '.$auth_query])
-                  ->post($full_url, $this->accountKisonBank);
+                  ->post($full_url, $this->accountKiosBank);
         $res_json = $post_response->json();
 
         return $res_json['SessionID'];
@@ -181,7 +204,7 @@ class KiosBankService
         */
         $body_params=array(
             'sessionID'=> $this->getSeesionId(),
-            ...$this->accountKisonBank
+            ...$this->accountKiosBank
         );
         $post_response = Http::withOptions(['verify' => false,])
                   ->withHeaders(['Authorization' => 'Digest '.$auth_query])
@@ -392,12 +415,21 @@ class KiosBankService
         $res_json = $post_response->json();
         return $res_json;
     }
+
+    public function callback($request)
+    {
+        return $request;
+    }
     
+    public function cekDeposit()
+    {
+
+    }
 
 
     public function cek()
     {
-        $cek =  $this->getProduct();
+        $cek =  $this->generateDigest('/Services/get-Active-Product');
        
         return $cek;
     }

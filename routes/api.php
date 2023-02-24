@@ -266,7 +266,13 @@ Route::get('cek', function(Request $request){
 //Kiosbank
 Route::prefix('kios-bank')->group(function(){
     Route::controller(KiosBankController::class)->group(function(){
+        Route::any('/callback','callback');
+    
+    });
+
+    Route::controller(KiosBankController::class)->group(function(){
         Route::get('/product','index');
+        Route::get('/product/{id}','show');
         Route::get('/product/{id}','show');
     });
 
