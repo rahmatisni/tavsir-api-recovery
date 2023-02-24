@@ -276,7 +276,11 @@ class KiosBankService
     
     public function cekDeposit()
     {
-        $res_json =  $this->http('POST',self::CEK_DEPOSIT,$this->accountKiosBank);
+        $payload = [
+            'sessionID'=> $this->getSeesionId(),
+            ...$this->accountKiosBank
+        ];
+        $res_json =  $this->http('POST',self::CEK_DEPOSIT,$payload);
         $res_json = $res_json->json();
         return $res_json;
     }
