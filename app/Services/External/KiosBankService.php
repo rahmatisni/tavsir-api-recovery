@@ -19,7 +19,7 @@ class KiosBankService
     function __construct()
     {
         $this->baseUrl = env('KIOSBANK_URL');
-        $this->http = Http::baseUrl($this->baseUrl);
+        $this->http = Http::baseUrl($this->baseUrl)->withOptions(["verify"=>false]);
         $this->accountKiosBank = [
             'mitra' => env('KIOSBANK_MITRA'),
             'accountID' => env('KIOSBANK_ACCOUNT_ID'),
@@ -120,7 +120,7 @@ class KiosBankService
     function generateDigest($path)
     {
         $full_url = $this->baseUrl.$path;
-        $digest = $this->http->post($path)->header('WWW-Authenticate: ');
+        $digest = $this->http->post($path)->header('WWW-Authenticate');
         dd($digest);
         $sign_on_response = $this->post($full_url, '');
         $response_arr = explode('WWW-Authenticate: ', $sign_on_response);
