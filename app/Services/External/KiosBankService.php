@@ -17,8 +17,9 @@ class KiosBankService
     protected $operatorPulsa;
     protected $http;
 
-    protected const ACTIVE_PRODUCT = '/Services/get-Active-Product';
     protected const SIGN_ON = '/auth/Sign-On';
+    protected const ACTIVE_PRODUCT = '/Services/get-Active-Product';
+    protected const PULSA_PRABAYAR = '/Services/getPulsa-Prabayar';
 
     function __construct()
     {
@@ -256,35 +257,35 @@ class KiosBankService
     }
 
     public function listProductOperatorPulsa($prefix_id){
-        $full_url = env('KIOSBANK_URL').'/Services/getPulsa-Prabayar';
+        // $full_url = env('KIOSBANK_URL').'/Services/getPulsa-Prabayar';
 
-        $sign_on_response = $this->post($full_url, '');
-        $response_arr = explode('WWW-Authenticate: ', $sign_on_response);
+        // $sign_on_response = $this->post($full_url, '');
+        // $response_arr = explode('WWW-Authenticate: ', $sign_on_response);
 
-        $response_arr_1 = explode('error', $response_arr[1]);
-        $response = trim($response_arr_1[0]);
-        $auth_arr = explode(',', $response);
-        $auth_sorted = array();
-        foreach ($auth_arr as $auth) {
-            list($key, $val) = explode('=', $auth);
-            $auth_sorted[$key] = substr($val, 1, strlen($val) - 2);
-        }
-        $auth_query = $this->auth_response($auth_sorted, '/Services/getPulsa-Prabayar', 'POST');
+        // $response_arr_1 = explode('error', $response_arr[1]);
+        // $response = trim($response_arr_1[0]);
+        // $auth_arr = explode(',', $response);
+        // $auth_sorted = array();
+        // foreach ($auth_arr as $auth) {
+        //     list($key, $val) = explode('=', $auth);
+        //     $auth_sorted[$key] = substr($val, 1, strlen($val) - 2);
+        // }
+        // $auth_query = $this->auth_response($auth_sorted, '/Services/getPulsa-Prabayar', 'POST');
 
-        /*
-	    SESUAIKAN INI
-        */
-        $body_params=array(
-            'sessionID'=> $this->getSeesionId(),
-            'prefixID'=> $prefix_id,
-            'merchantID' => env('KIOSBANK_MERCHANT_ID')
-        );
+        // /*
+	    // SESUAIKAN INI
+        // */
+        // $body_params=array(
+        //     'sessionID'=> $this->getSeesionId(),
+        //     'prefixID'=> $prefix_id,
+        //     'merchantID' => env('KIOSBANK_MERCHANT_ID')
+        // );
 
-        $post_response = Http::withOptions(['verify' => false,])
-                  ->withHeaders(['Authorization' => 'Digest '.$auth_query])
-                  ->post($full_url, $body_params);
-        $res_json = $post_response->json();
-        return $res_json;
+        // $post_response = Http::withOptions(['verify' => false,])
+        //           ->withHeaders(['Authorization' => 'Digest '.$auth_query])
+        //           ->post($full_url, $body_params);
+        // $res_json = $post_response->json();
+        // return $res_json;
         // if($res_json['rc'] == '00')
         // {
         //     $record = $res_json['record'];
@@ -302,6 +303,14 @@ class KiosBankService
         // }else{
         //     return $res_json;
         // }
+
+        $payload = [
+            'sessionID'=> $this->getSeesionId(),
+            'prefixID'=> $prefix_id,
+            'merchantID' => env('KIOSBANK_MERCHANT_ID')
+        ];
+        $res_json =  $this->http('POST',self::PULSA_PRABAYAR,$payload)->json();
+        return $res_json;
     }
 
     public function showProductPulsa($id)
@@ -427,7 +436,7 @@ class KiosBankService
 
     public function cek()
     {
-        $cek = $this->cekStatusProduct();
+        $cek = $this->listProductOperatorPulsa(11);
         return $cek;
     }
 }
