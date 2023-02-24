@@ -20,6 +20,7 @@ class KiosBankService
     protected const SIGN_ON = '/auth/Sign-On';
     protected const ACTIVE_PRODUCT = '/Services/get-Active-Product';
     protected const PULSA_PRABAYAR = '/Services/getPulsa-Prabayar';
+    protected const SINGLE_PAYMENT = '/Services/SinglePayment';
 
     function __construct()
     {
@@ -244,7 +245,6 @@ class KiosBankService
         }
     }
     
-
     public function showProduct($id)
     {
         $product = ProductKiosBank::findOrFail($id);
@@ -252,58 +252,13 @@ class KiosBankService
         return $product;
     }
 
-    public function getListOperatorPulsa(){
+    public function getListOperatorPulsa()
+    {
         return $this->operatorPulsa;
     }
 
-    public function listProductOperatorPulsa($prefix_id){
-        // $full_url = env('KIOSBANK_URL').'/Services/getPulsa-Prabayar';
-
-        // $sign_on_response = $this->post($full_url, '');
-        // $response_arr = explode('WWW-Authenticate: ', $sign_on_response);
-
-        // $response_arr_1 = explode('error', $response_arr[1]);
-        // $response = trim($response_arr_1[0]);
-        // $auth_arr = explode(',', $response);
-        // $auth_sorted = array();
-        // foreach ($auth_arr as $auth) {
-        //     list($key, $val) = explode('=', $auth);
-        //     $auth_sorted[$key] = substr($val, 1, strlen($val) - 2);
-        // }
-        // $auth_query = $this->auth_response($auth_sorted, '/Services/getPulsa-Prabayar', 'POST');
-
-        // /*
-	    // SESUAIKAN INI
-        // */
-        // $body_params=array(
-        //     'sessionID'=> $this->getSeesionId(),
-        //     'prefixID'=> $prefix_id,
-        //     'merchantID' => env('KIOSBANK_MERCHANT_ID')
-        // );
-
-        // $post_response = Http::withOptions(['verify' => false,])
-        //           ->withHeaders(['Authorization' => 'Digest '.$auth_query])
-        //           ->post($full_url, $body_params);
-        // $res_json = $post_response->json();
-        // return $res_json;
-        // if($res_json['rc'] == '00')
-        // {
-        //     $record = $res_json['record'];
-        //     $new_record = [];
-        //     foreach ($record as $key => $value) {
-        //         $fee = (int) env('PLATFORM_FEE') ?? 0;
-        //         $total = $fee + $value['price'];
-
-        //         $value['platform_fee'] = $fee;
-        //         $value['sub_total'] = $total;
-
-        //         array_push($new_record, $value);
-        //     }
-        //     return $new_record;
-        // }else{
-        //     return $res_json;
-        // }
-
+    public function listProductOperatorPulsa($prefix_id)
+    {
         $payload = [
             'sessionID'=> $this->getSeesionId(),
             'prefixID'=> $prefix_id,
@@ -343,28 +298,45 @@ class KiosBankService
 
     public function singlePayment($sub_total,$order_id)
     {
-        $full_url = env('KIOSBANK_URL').'/Services/SinglePayment';
+        // $full_url = env('KIOSBANK_URL').'/Services/SinglePayment';
 
-        $sign_on_response = $this->post($full_url, '');
-        $response_arr = explode('WWW-Authenticate: ', $sign_on_response);
+        // $sign_on_response = $this->post($full_url, '');
+        // $response_arr = explode('WWW-Authenticate: ', $sign_on_response);
 
-        $response_arr_1 = explode('error', $response_arr[1]);
-        $response = trim($response_arr_1[0]);
-        $auth_arr = explode(',', $response);
-        $auth_sorted = array();
-        foreach ($auth_arr as $auth) {
-            list($key, $val) = explode('=', $auth);
-            $auth_sorted[$key] = substr($val, 1, strlen($val) - 2);
-        }
-        $auth_query = $this->auth_response($auth_sorted, '/Services/SinglePayment', 'POST');
+        // $response_arr_1 = explode('error', $response_arr[1]);
+        // $response = trim($response_arr_1[0]);
+        // $auth_arr = explode(',', $response);
+        // $auth_sorted = array();
+        // foreach ($auth_arr as $auth) {
+        //     list($key, $val) = explode('=', $auth);
+        //     $auth_sorted[$key] = substr($val, 1, strlen($val) - 2);
+        // }
+        // $auth_query = $this->auth_response($auth_sorted, '/Services/SinglePayment', 'POST');
 
-        /*
-	    SESUAIKAN INI
-        */
+        // /*
+	    // SESUAIKAN INI
+        // */
 
-        $order = explode('-', $order_id);
+        // $order = explode('-', $order_id);
 
-        $body_params=array(
+        // $body_params=array(
+        //     'total'=>$sub_total,
+        //     'admin'=>'000000000000',
+        //     'tagihan'=>$sub_total,
+        //     'sessionID'=> $this->getSeesionId(),
+        //     'productID'=>$order[0] ?? '',
+        //     'referenceID'=>$order[3] ?? '',
+        //     'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
+        //     'customerID'=>$order[1] ?? ''
+        // );
+
+        // $post_response = Http::withOptions(['verify' => false,])
+        //           ->withHeaders(['Authorization' => 'Digest '.$auth_query])
+        //           ->post($full_url, $body_params);
+        // $res_json = $post_response->json();
+        // return $res_json;
+
+        $payload = [
             'total'=>$sub_total,
             'admin'=>'000000000000',
             'tagihan'=>$sub_total,
@@ -373,12 +345,8 @@ class KiosBankService
             'referenceID'=>$order[3] ?? '',
             'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
             'customerID'=>$order[1] ?? ''
-        );
-
-        $post_response = Http::withOptions(['verify' => false,])
-                  ->withHeaders(['Authorization' => 'Digest '.$auth_query])
-                  ->post($full_url, $body_params);
-        $res_json = $post_response->json();
+        ];
+        $res_json =  $this->http('POST',self::SINGLE_PAYMENT,$payload)->json();
         return $res_json;
     }
 
@@ -436,7 +404,7 @@ class KiosBankService
 
     public function cek()
     {
-        $cek = $this->listProductOperatorPulsa(11);
+        $cek = $this->singlePayment(25200,'73056ba5-0939-48bf-b3c6-e9efcf5a3088');
         return $cek;
     }
 }
