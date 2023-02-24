@@ -21,6 +21,8 @@ class KiosBankService
     protected const ACTIVE_PRODUCT = '/Services/get-Active-Product';
     protected const PULSA_PRABAYAR = '/Services/getPulsa-Prabayar';
     protected const SINGLE_PAYMENT = '/Services/SinglePayment';
+    protected const CEK_STATUS = '/Services/Check-Status';
+    protected const CEK_DEPOSIT = '/Services/getCurrentDeposit';
 
     function __construct()
     {
@@ -60,68 +62,6 @@ class KiosBankService
                 'name' => 'Smartfren',
             ],
         ];
-    }
-
-    function post($url, $header, $params = false)
-    {
-        $curl = curl_init();
-
-        if ($params === false)
-            $query = '';
-        else
-            $query = json_encode($params);
-
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => 800,
-            CURLOPT_HEADER => true,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => $query,
-            CURLOPT_HTTPHEADER => array(
-                $header,
-                'content-type:application/json'
-            ),
-            CURLOPT_SSL_VERIFYHOST => 0,
-            CURLOPT_SSL_VERIFYPEER => 0
-        ));
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-        curl_close($curl);
-        if ($err) {
-            return $err;
-        } else {
-            return $response;
-        }
-    }
-
-    function auth_response($params, $uri, $request_method)
-    {
-        /*
-            SESUAIKAN INI
-        */
-        $username = 'dji';
-        $password = 'abcde';
-        $nc = '1'; //berurutan 1,2,3..dst sesuai request
-        $cnonce = uniqid();
-
-        $a1 = md5($username . ':' . $params['Digest realm'] . ':' . $password);
-        $a2 = md5($request_method . ':' . $uri);
-        $response = md5($a1 . ':' . $params['nonce'] . ':' . $nc . ':' . $cnonce . ':' . $params['qop'] . ':' . $a2);
-        $query = array(
-            'username' => $username,
-            'password' => $password,
-            'realm' => $params['Digest realm'],
-            'nonce' => $params['nonce'],
-            'uri' => $uri,
-            'qop' => $params['qop'],
-            'nc' => $nc,
-            'cnonce' => $cnonce,
-            'opaque' => $params['opaque'],
-            'response' => $response
-        );
-        $query_str = 'username="' . $query['username'] . '",realm="' . $query['realm'] . '",nonce="' . $query['nonce'] . '",uri="' . $query['uri'] . '",qop="' . $query['qop'] . '",nc="' . $query['nc'] . '",cnonce="' . $query['cnonce'] . '",response="' . $query['response'] . '",opaque="' . $query['opaque'] . '"';
-        return $query_str;
     }
 
     function generateDigest($method = 'POST', $path)
@@ -298,44 +238,6 @@ class KiosBankService
 
     public function singlePayment($sub_total,$order_id)
     {
-        // $full_url = env('KIOSBANK_URL').'/Services/SinglePayment';
-
-        // $sign_on_response = $this->post($full_url, '');
-        // $response_arr = explode('WWW-Authenticate: ', $sign_on_response);
-
-        // $response_arr_1 = explode('error', $response_arr[1]);
-        // $response = trim($response_arr_1[0]);
-        // $auth_arr = explode(',', $response);
-        // $auth_sorted = array();
-        // foreach ($auth_arr as $auth) {
-        //     list($key, $val) = explode('=', $auth);
-        //     $auth_sorted[$key] = substr($val, 1, strlen($val) - 2);
-        // }
-        // $auth_query = $this->auth_response($auth_sorted, '/Services/SinglePayment', 'POST');
-
-        // /*
-	    // SESUAIKAN INI
-        // */
-
-        // $order = explode('-', $order_id);
-
-        // $body_params=array(
-        //     'total'=>$sub_total,
-        //     'admin'=>'000000000000',
-        //     'tagihan'=>$sub_total,
-        //     'sessionID'=> $this->getSeesionId(),
-        //     'productID'=>$order[0] ?? '',
-        //     'referenceID'=>$order[3] ?? '',
-        //     'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
-        //     'customerID'=>$order[1] ?? ''
-        // );
-
-        // $post_response = Http::withOptions(['verify' => false,])
-        //           ->withHeaders(['Authorization' => 'Digest '.$auth_query])
-        //           ->post($full_url, $body_params);
-        // $res_json = $post_response->json();
-        // return $res_json;
-
         $payload = [
             'total'=>$sub_total,
             'admin'=>'000000000000',
@@ -352,28 +254,8 @@ class KiosBankService
 
     public function cekStatus($sub_total,$order_id)
     {
-        $full_url = env('KIOSBANK_URL').'/Services/Check-Status';
-
-        $sign_on_response = $this->post($full_url, '');
-        $response_arr = explode('WWW-Authenticate: ', $sign_on_response);
-
-        $response_arr_1 = explode('error', $response_arr[1]);
-        $response = trim($response_arr_1[0]);
-        $auth_arr = explode(',', $response);
-        $auth_sorted = array();
-        foreach ($auth_arr as $auth) {
-            list($key, $val) = explode('=', $auth);
-            $auth_sorted[$key] = substr($val, 1, strlen($val) - 2);
-        }
-        $auth_query = $this->auth_response($auth_sorted, '/Services/Check-Status', 'POST');
-
-        /*
-	    SESUAIKAN INI
-        */
-
         $order = explode('-', $order_id);
-
-        $body_params=array(
+        $payload = [
             'total'=>$sub_total,
             'admin'=>'000000000000',
             'tagihan'=>$sub_total,
@@ -382,12 +264,8 @@ class KiosBankService
             'referenceID'=>$order[2],
             'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
             'customerID'=>$order[1]
-        );
-
-        $post_response = Http::withOptions(['verify' => false,])
-                  ->withHeaders(['Authorization' => 'Digest '.$auth_query])
-                  ->post($full_url, $body_params);
-        $res_json = $post_response->json();
+        ];
+        $res_json =  $this->http('POST',self::CEK_STATUS,$payload)->json();
         return $res_json;
     }
 
@@ -398,13 +276,15 @@ class KiosBankService
     
     public function cekDeposit()
     {
-
+        $res_json =  $this->http('POST',self::CEK_DEPOSIT,$this->accountKiosBank);
+        $res_json = $res_json->json();
+        return $res_json;
     }
 
 
     public function cek()
     {
-        $cek = $this->singlePayment(25200,'73056ba5-0939-48bf-b3c6-e9efcf5a3088');
+        $cek = $this->cekDeposit();
         return $cek;
     }
 }
