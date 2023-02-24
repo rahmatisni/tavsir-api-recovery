@@ -17,6 +17,9 @@ class KiosBankService
     protected $operatorPulsa;
     protected $http;
 
+    protected const ACTIVE_PRODUCT = '/Services/get-Active-Product';
+    protected const SIGN_ON = '/auth/Sign-On';
+
     function __construct()
     {
         $this->baseUrl = env('KIOSBANK_URL');
@@ -178,29 +181,34 @@ class KiosBankService
 
     public function signOn() : string
     {
-        $full_url = env('KIOSBANK_URL').'/auth/Sign-On';
+        // $full_url = env('KIOSBANK_URL').'/auth/Sign-On';
 
-        $sign_on_response = $this->post($full_url, '');
-        $response_arr = explode('WWW-Authenticate: ', $sign_on_response);
+        // $sign_on_response = $this->post($full_url, '');
+        // $response_arr = explode('WWW-Authenticate: ', $sign_on_response);
 
-        $response_arr_1 = explode('error', $response_arr[1]);
-        $response = trim($response_arr_1[0]);
-        $auth_arr = explode(',', $response);
-        $auth_sorted = array();
-        foreach ($auth_arr as $auth) {
-            list($key, $val) = explode('=', $auth);
-            $auth_sorted[$key] = substr($val, 1, strlen($val) - 2);
-        }
-        $auth_query = $this->auth_response($auth_sorted, '/auth/Sign-On', 'POST');
+        // $response_arr_1 = explode('error', $response_arr[1]);
+        // $response = trim($response_arr_1[0]);
+        // $auth_arr = explode(',', $response);
+        // $auth_sorted = array();
+        // foreach ($auth_arr as $auth) {
+        //     list($key, $val) = explode('=', $auth);
+        //     $auth_sorted[$key] = substr($val, 1, strlen($val) - 2);
+        // }
+        // $auth_query = $this->auth_response($auth_sorted, '/auth/Sign-On', 'POST');
 
-        /*
-	    SESUAIKAN INI
-        */
-        $post_response = Http::withOptions(['verify' => false,])
-                  ->withHeaders(['Authorization' => 'Digest '.$auth_query])
-                  ->post($full_url, $this->accountKiosBank);
-        $res_json = $post_response->json();
+        // /*
+	    // SESUAIKAN INI
+        // */
+        // $post_response = Http::withOptions(['verify' => false,])
+        //           ->withHeaders(['Authorization' => 'Digest '.$auth_query])
+        //           ->post($full_url, $this->accountKiosBank);
+        // $res_json = $post_response->json();
 
+        // return $res_json['SessionID'];
+
+       
+        $res_json =  $this->http('POST',self::SIGN_ON,$this->accountKiosBank);
+        $res_json = $res_json->json();
         return $res_json['SessionID'];
     }
 
@@ -467,11 +475,12 @@ class KiosBankService
 
     public function cek()
     {
-        $payload = [
-            'sessionID'=> $this->getSeesionId(),
-            ...$this->accountKiosBank
-        ];
-        $cek =  $this->http('POST','/Services/get-Active-Product',$payload);
-        return $cek->json();
+        // $payload = [
+        //     'sessionID'=> $this->getSeesionId(),
+        //     ...$this->accountKiosBank
+        // ];
+        // $cek =  $this->http('POST',self::ACTIVE_PRODUCT,$payload);
+        $cek = $this->signOn();
+        return $cek;
     }
 }
