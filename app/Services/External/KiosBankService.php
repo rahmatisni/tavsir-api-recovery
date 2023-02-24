@@ -158,7 +158,9 @@ class KiosBankService
 
     function http($method, $path , $payload=[])
     {
-        $http = $this->http->withHeaders(['Authorization' => 'Digest '.$this->generateDigest(method: $method, path: $path)]);
+        $digest = $this->generateDigest(method: $method, path: $path);
+        dd($digest);
+        $http = $this->http->withHeaders(['Authorization' => 'Digest '.$digest]);
         switch ($method) {
             case 'POST':
                 $http = $http->post($path, $payload);
