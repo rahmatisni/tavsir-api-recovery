@@ -163,7 +163,7 @@ class KiosBankService
         switch ($method) {
             case 'POST':
                 $http = $http->post($path, $payload);
-                dd($http);
+                dd($http->json());
                 break;
 
             case 'GET':
