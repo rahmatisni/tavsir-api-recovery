@@ -159,11 +159,11 @@ class KiosBankService
     function http($method, $path , $payload=[])
     {
         $digest = $this->generateDigest(method: $method, path: $path);
-        dd($digest);
         $http = $this->http->withHeaders(['Authorization' => 'Digest '.$digest]);
         switch ($method) {
             case 'POST':
                 $http = $http->post($path, $payload);
+                dd($http);
                 break;
 
             case 'GET':
@@ -482,9 +482,7 @@ class KiosBankService
             $auth_sorted[$key] = substr($val, 1, strlen($val) - 2);
         }
         $auth_query = $this->auth_response($auth_sorted, '/Services/getPulsa-Prabayar', 'POST');
-        dd($auth_query);
         $cek =  $this->http('POST','/Services/get-Active-Product');
-       
         return $cek;
     }
 }
