@@ -19,7 +19,8 @@ class KiosBankService
     function __construct()
     {
         $this->baseUrl = env('KIOSBANK_URL');
-        $this->http = Http::baseUrl($this->baseUrl)->withOptions(["verify"=>false]);
+        $this->http = Http::baseUrl($this->baseUrl)
+                        ->withOptions(["verify"=>false]);
         $this->accountKiosBank = [
             'mitra' => env('KIOSBANK_MITRA'),
             'accountID' => env('KIOSBANK_ACCOUNT_ID'),
@@ -117,27 +118,46 @@ class KiosBankService
         return $query_str;
     }
 
-    function generateDigest($path)
+    function generateDigest($method = 'POST', $path)
     {
-        $full_url = $this->baseUrl.$path;
         $digest = $this->http->post($path)->header('WWW-Authenticate');
-        $sign_on_response = $this->post($full_url, '');
-        $response_arr = explode('WWW-Authenticate: ', $sign_on_response);
 
-        $response_arr_1 = explode('error', $response_arr[1]);
-
-        $response = trim($response_arr_1[0]);
-        dd($digest,$response);
-
-        $auth_arr = explode(',', $response);
-        $auth_sorted = array();
+        $auth_arr = explode(',', $digest);
+        $params = array();
         foreach ($auth_arr as $auth) {
             list($key, $val) = explode('=', $auth);
-            $auth_sorted[$key] = substr($val, 1, strlen($val) - 2);
+            $params[$key] = substr($val, 1, strlen($val) - 2);
         }
-        $auth_query = $this->auth_response($auth_sorted, $path, 'POST');
+        /*
+            SESUAIKAN INI
+        */
+        $username = 'dji';
+        $password = 'abcde';
+        $nc = '1'; //berurutan 1,2,3..dst sesuai request
+        $cnonce = uniqid();
 
-        return $auth_query;
+        $a1 = md5($username . ':' . $params['Digest realm'] . ':' . $password);
+        $a2 = md5($method . ':' . $path);
+        $response = md5($a1 . ':' . $params['nonce'] . ':' . $nc . ':' . $cnonce . ':' . $params['qop'] . ':' . $a2);
+        $query = array(
+            'username' => $username,
+            'password' => $password,
+            'realm' => $params['Digest realm'],
+            'nonce' => $params['nonce'],
+            'uri' => $path,
+            'qop' => $params['qop'],
+            'nc' => $nc,
+            'cnonce' => $cnonce,
+            'opaque' => $params['opaque'],
+            'response' => $response
+        );
+        $query_str = 'username="' . $query['username'] . '",realm="' . $query['realm'] . '",nonce="' . $query['nonce'] . '",uri="' . $query['uri'] . '",qop="' . $query['qop'] . '",nc="' . $query['nc'] . '",cnonce="' . $query['cnonce'] . '",response="' . $query['response'] . '",opaque="' . $query['opaque'] . '"';
+        return $query_str;
+    }
+
+    function http($method = 'POST', $path , $payload=[])
+    {
+        return $this->http->withHeaders(['Authorization' => 'Digest '.$this->generateDigest(method: $method, path: $path)]);
     }
 
     public function signOn() : string
@@ -431,7 +451,7 @@ class KiosBankService
 
     public function cek()
     {
-        $cek =  $this->generateDigest('/Services/get-Active-Product');
+        $cek =  $this->http(path:'/Services/get-Active-Product');
        
         return $cek;
     }
