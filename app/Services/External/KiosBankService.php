@@ -156,9 +156,8 @@ class KiosBankService
         return $query_str;
     }
 
-    function http($path , $payload=[])
+    function http($method, $path , $payload=[])
     {
-        $method = 'POST';
         $http = $this->http->withHeaders(['Authorization' => 'Digest '.$this->generateDigest(method: $method, path: $path)]);
         switch ($method) {
             case 'POST':
@@ -467,7 +466,7 @@ class KiosBankService
 
     public function cek()
     {
-        $cek =  $this->http('/Services/get-Active-Product');
+        $cek =  $this->http('POST','/Services/get-Active-Product');
        
         return $cek;
     }
