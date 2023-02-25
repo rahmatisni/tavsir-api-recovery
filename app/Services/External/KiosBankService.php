@@ -239,9 +239,9 @@ class KiosBankService
     public function singlePayment($sub_total,$order_id)
     {
         $payload = [
-            'total'=>$sub_total,
+            'total'=>str_pad($sub_total, 12, '0', STR_PAD_LEFT),
             'admin'=>'000000000000',
-            'tagihan'=>$sub_total,
+            'tagihan'=>str_pad($sub_total, 12, '0', STR_PAD_LEFT),
             'sessionID'=> $this->getSeesionId(),
             'productID'=>$order[0] ?? '',
             'referenceID'=>$order[3] ?? '',
