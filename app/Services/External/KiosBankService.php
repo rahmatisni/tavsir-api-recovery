@@ -249,7 +249,7 @@ class KiosBankService
             'customerID'=>$order[1] ?? ''
         ];
         $res_json =  $this->http('POST',self::SINGLE_PAYMENT,$payload)->json();
-        var_dump($payload)
+        var_dump($payload);
         // return $res_json;
 
     }
