@@ -238,6 +238,7 @@ class KiosBankService
 
     public function singlePayment($sub_total,$order_id)
     {
+        $order = explode('-', $order_id);
         $payload = [
             'total'=>$sub_total,
             'admin'=>'000000000000',
