@@ -251,8 +251,6 @@ class KiosBankService
         ];
         $res_json =  $this->http('POST',self::SINGLE_PAYMENT,$payload)->json();
         return $res_json;
-        // return $payload;
-
     }
 
     public function cekStatus($sub_total,$order_id)
