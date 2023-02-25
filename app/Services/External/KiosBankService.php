@@ -239,9 +239,9 @@ class KiosBankService
     public function singlePayment($sub_total,$order_id)
     {
         $payload = [
-            'total'=>'10390',
+            'total'=>$sub_total,
             'admin'=>'000000000000',
-            'tagihan'=>'10390',
+            'tagihan'=>$sub_total,
             'sessionID'=> $this->getSeesionId(),
             'productID'=>$order[0] ?? '',
             'referenceID'=>$order[3] ?? '',
@@ -249,7 +249,9 @@ class KiosBankService
             'customerID'=>$order[1] ?? ''
         ];
         $res_json =  $this->http('POST',self::SINGLE_PAYMENT,$payload)->json();
-        return $res_json;
+        // return $res_json;
+        return $payload;
+
     }
 
     public function cekStatus($sub_total,$order_id)
