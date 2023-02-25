@@ -671,9 +671,8 @@ class TravShopController extends Controller
                 $res_data['bill'] = $data_payment['bill'];
                 $kios = [];
 
-                // dd('cek');
-                $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id);
-                dd($kios);
+                // $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id);
+                // dd($kios);
 
                 if ($res_data['pay_status'] == '1') {
                     $data->status = TransOrder::PAYMENT_SUCCESS;
