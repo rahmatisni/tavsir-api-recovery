@@ -245,7 +245,7 @@ class KiosBankService
             'tagihan'=>$sub_total,
             'sessionID'=> $this->getSeesionId(),
             'productID'=>$order[0] ?? '',
-            'referenceID'=>$order[3] ?? '',
+            'referenceID'=>$order[2] ?? '',
             'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
             'customerID'=>$order[1] ?? ''
         ];
