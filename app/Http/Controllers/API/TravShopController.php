@@ -602,8 +602,8 @@ class TravShopController extends Controller
                         $data->status == TransOrder::DONE;
                         $data->save();
                     }
-                    else {
-                        $data->status == TransOrder::READY;
+                    if($kios['rc'] == '17'){
+                        $data->status == TransOrder::CANCEL;
                         $data->save();
                     }
                 }
