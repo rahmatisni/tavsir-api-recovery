@@ -602,10 +602,10 @@ class TravShopController extends Controller
                         $data->status == TransOrder::DONE;
                         $data->save();
                     }
-                    dd($kios);
                     if($kios['rc'] == '17'){
                         $data->status == TransOrder::CANCEL;
                         $data->save();
+                        dd($data);
                     }
                 }
                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
