@@ -30,7 +30,7 @@ class OrderPulsaRequest extends FormRequest
             'phone' => 'required',
             'code' => 'required',
             'description' => 'required',
-            'price' => 'required|integer|min:10000',
+            'price' => 'required|integer|min:1000',
         ];
     }
 }
