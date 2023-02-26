@@ -605,6 +605,7 @@ class TravShopController extends Controller
                     if($kios['rc'] == '17'){
                         $data->status = TransOrder::CANCEL;
                         $data->save();
+                        DB::commit();
                         dd($data);
                     }
                 }
