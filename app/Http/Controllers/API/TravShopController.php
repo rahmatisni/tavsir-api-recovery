@@ -682,6 +682,9 @@ class TravShopController extends Controller
                         if($kios['rc'] == '00'){
                             $data->status = TransOrder::READY;
                         }
+                        else {
+                            $data->status = TransOrder::PENDING;
+                        }
                     }
                     foreach ($data->detil as $key => $value) {
                         $this->stock_service->updateStockProduct($value);
