@@ -676,23 +676,23 @@ class TravShopController extends Controller
                     if ($data->order_type == TransOrder::ORDER_TAVSIR) {
                         $data->status = TransOrder::DONE;
                     }
-                    $data->save();
+                    // $data->save();
                     if($data->order_type == TransOrder::ORDER_TRAVOY){
                         $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id);
-                        if($kios['rc'] == '00'){
+                        // if($kios['rc'] == '00'){
+                        //     $data->status = TransOrder::READY;
+                        //     // $data->save();
+                        // }
+                        // if($data->status == TransOrder::READY){
+                        //     $data->status = TransOrder::PENDING;
+                        //     // $data->save();
+                        // }
+                        // else {
                             $data->status = TransOrder::READY;
-                            // $data->save();
-                        }
-                        if($data->status == TransOrder::READY){
-                            $data->status = TransOrder::PENDING;
-                            // $data->save();
-                        }
-                        else {
-                            $data->status = TransOrder::READY;
-                            // $data->save();
-                        }
-                        $data->save();
+                        //     // $data->save();
+                        // }
                     }
+                    $data->save();
                     foreach ($data->detil as $key => $value) {
                         $this->stock_service->updateStockProduct($value);
                     }
