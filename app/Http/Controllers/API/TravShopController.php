@@ -692,11 +692,11 @@ class TravShopController extends Controller
                             $data->save();
                             return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                         }
-                        else {
-                            $data->status = TransOrder::CANCEL;
-                            $data->save();
-                            return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
-                        }    
+                        // else {
+                        //     $data->status = TransOrder::CANCEL;
+                        //     $data->save();
+                        //     return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
+                        // }    
                         DB::commit();
                     }
                     foreach ($data->detil as $key => $value) {
