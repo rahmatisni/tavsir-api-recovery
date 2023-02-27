@@ -689,7 +689,6 @@ class TravShopController extends Controller
                     $data->save();
                     if($data->order_type == TransOrder::ORDER_TRAVOY){
                         $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id);
-                        $data->kiosbank_respon = json_encode($kios);
                         $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
                             'data' => $kios
                         ]);
