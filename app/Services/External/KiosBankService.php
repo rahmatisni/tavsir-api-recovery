@@ -317,7 +317,7 @@ class KiosBankService
         $res_json = $res_json->json();
         if($res_json['rc'] == '00')
         {
-            $order->sub_total = $res_json['data']['harga'];
+            $order->sub_total = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'];
             $order->description = $res_json['data']['noHandphone'].' '.$res_json['data']['nama'];
             $order->save();
             return $order;
