@@ -9,6 +9,11 @@ class LogKiosbank extends Model
 {
     protected $table = 'log_kiosbank';
 
+    protected $fillable = [
+        'trans_order_id',
+        'data',
+    ];
+
     public function getDataAttribute($value)
     {
         return json_decode($value, true);
