@@ -325,9 +325,9 @@ class TravShopController extends Controller
             if($data->order_type == TransOrder::ORDER_TRAVOY)
             {
                 $deposit = $this->kiosBankService->cekDeposit();
-                if($deposit['rc' == '00'])
+                if($deposit['rc'] == '00')
                 {
-                    if($deposit['deposit'] < $data->sub_total){
+                    if((int) $deposit['deposit'] < $data->sub_total){
                         return response()->json(['info' => 'Deposit '.$deposit['deposit'].' < '.$data->sub_total], 422);
                     }
                 }else{
