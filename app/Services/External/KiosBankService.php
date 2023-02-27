@@ -304,12 +304,13 @@ class KiosBankService
         $order->sub_merchant_id = '';
         $order->status = TransOrder::WAITING_PAYMENT;
 
+        $ref = explode('-', $order->order_id);
         $payload = [
             'sessionID'=> $this->getSeesionId(),
             'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
             'productID'=>$data['code'],
             'customerID'=>$data['phone'],
-            'referenceID'=>$order->order_id,
+            'referenceID'=>$ref[2],
         ];
 
         $res_json =  $this->http('POST',self::INQUIRY,$payload);
