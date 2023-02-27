@@ -278,13 +278,19 @@ class KiosBankService
     {
         // return $request;
         // try {
-            $kode = $request['productID'];
-            $customer = $request['customerID'];
-            $referensi = $request['referenceID'];
-            $id = $kode.'-'.$customer.'-'.$referensi;            
-            // dd($id);
-            $callback = CallbackKiosBank::where('order_id','LIKE','%'.$id.'%')->get();
-            return $callback;      
+            if ($request['rc'] == '00'){
+
+                $kode = $request['productID'];
+                $customer = $request['customerID'];
+                $referensi = $request['referenceID'];
+                $id = $kode.'-'.$customer.'-'.$referensi;            
+                $data = CallbackKiosBank::where('order_id','LIKE','%'.$id.'%')->get();
+                $data->status = TransOrder::DONE;
+                $data->save();
+
+                return $data;     
+
+            }
 
         // } catch (\Throwable $th) {
         //     DB::rollBack();
