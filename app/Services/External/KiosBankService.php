@@ -294,6 +294,7 @@ class KiosBankService
         // $cek = $this->cekDeposit();
         // return $cek;
 
+        dd($this->username, $this->password);
         return Http::withOptions(["verify"=>false])
             ->withDigestAuth($this->username,$this->password)
             ->post($this->baseUrl.self::CEK_DEPOSIT)->json();
