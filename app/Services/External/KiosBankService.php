@@ -16,6 +16,8 @@ class KiosBankService
     protected $accountKiosBank;
     protected $operatorPulsa;
     protected $http;
+    protected $username;
+    protected $password;
 
     protected const SIGN_ON = '/auth/Sign-On';
     protected const ACTIVE_PRODUCT = '/Services/get-Active-Product';
@@ -26,6 +28,8 @@ class KiosBankService
 
     function __construct()
     {
+        $this->username = env('KIOSBANK_USERNAME');
+        $this->password = env('KIOSBANK_PASSWORD');
         $this->baseUrl = env('KIOSBANK_URL');
         $this->http = Http::baseUrl($this->baseUrl)
                         ->withOptions(["verify"=>false]);
@@ -77,17 +81,15 @@ class KiosBankService
         /*
             SESUAIKAN INI
         */
-        $username = 'dji';
-        $password = 'abcde';
         $nc = '1'; //berurutan 1,2,3..dst sesuai request
         $cnonce = uniqid();
 
-        $a1 = md5($username . ':' . $params['Digest realm'] . ':' . $password);
+        $a1 = md5($this->username . ':' . $params['Digest realm'] . ':' . $this->password);
         $a2 = md5($method . ':' . $path);
         $response = md5($a1 . ':' . $params['nonce'] . ':' . $nc . ':' . $cnonce . ':' . $params['qop'] . ':' . $a2);
         $query = array(
-            'username' => $username,
-            'password' => $password,
+            'username' => $this->username,
+            'password' => $this->password,
             'realm' => $params['Digest realm'],
             'nonce' => $params['nonce'],
             'uri' => $path,
@@ -289,7 +291,11 @@ class KiosBankService
 
     public function cek()
     {
-        $cek = $this->cekDeposit();
-        return $cek;
+        // $cek = $this->cekDeposit();
+        // return $cek;
+
+        return Http::withOptions(["verify"=>false])
+            ->withDigestAuth($this->username,$this->password)
+            ->post($this->baseUrl.self::CEK_DEPOSIT)->json();
     }
 }
