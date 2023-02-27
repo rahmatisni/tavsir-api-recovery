@@ -279,8 +279,8 @@ class KiosBankService
         // return $request;
         // try {
             $kode = $request['productID'];
-            $customer = $request['data']['noHandphone'] ?? $request['data']['idPelanggan'].' '.$request['data']['nama'];
-            $referensi = $request['data']['noReferensi'];
+            $customer = $request['customerID'];
+            $referensi = $request['referenceID'];
             $id = $kode.'-'.$customer.'-'.$referensi;            
             dd($id);
             $callback = CallbackKiosBank::where('order_id','LIKE','%'.$id.'%')->get();
