@@ -282,7 +282,7 @@ class KiosBankService
             $customer = $request['customerID'];
             $referensi = $request['referenceID'];
             $id = $kode.'-'.$customer.'-'.$referensi;            
-            dd($id);
+            // dd($id);
             $callback = CallbackKiosBank::where('order_id','LIKE','%'.$id.'%')->get();
             return $callback;      
 
