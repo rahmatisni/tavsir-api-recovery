@@ -320,6 +320,8 @@ class KiosBankService
             $order->sub_total = $res_json['data']['harga'];
             $order->description = $res_json['data']['noHandphone'].' '.$res_json['data']['nama'];
             $order->save();
+            return $order;
+
         }
 
         return $res_json;
