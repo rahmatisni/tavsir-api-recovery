@@ -62,4 +62,6 @@ class KiosBankController extends Controller
         $data = $this->service->uangelEktronik($request->validated());
         return response()->json($data);
     }
+
+    
 }

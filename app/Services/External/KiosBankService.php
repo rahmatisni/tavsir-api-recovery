@@ -2,6 +2,7 @@
 
 namespace App\Services\External;
 
+use App\Models\KiosBank\CallbackKiosBank;
 use App\Models\KiosBank\ProductKiosBank;
 use App\Models\Product;
 use App\Models\TransOrder;
@@ -275,7 +276,20 @@ class KiosBankService
 
     public function callback($request)
     {
-        return $request;
+        // return $request;
+        try {
+            $kode = $request['productID'];
+            $customer = $request['data']['noHandphone'] ?? $request['data']['idPelanggan'].' '.$request['data']['nama'];
+            $referensi = $request['data']['noReferensi'];
+            $id = $kode.'-'.$customer.'-'.$referensi;            
+
+            $callback = CallbackKiosBank::where('order_id','LIKE','%'.$id.'%')->get();
+            return $callback;      
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['error' => $th->getMessage()], 500);
+        }
     }
     
     public function cekDeposit()
