@@ -598,17 +598,20 @@ class TravShopController extends Controller
                 $kios = [];
                 if($data->order_type == TransOrder::ORDER_TRAVOY){
                     $kios = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id);
+                    $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
+                        'data' => $kios
+                    ]);
                     // dd($kios);
                     if($kios['rc'] == '00'){
                         $data->status = TransOrder::DONE;
                         $data->save();
                         DB::commit();
                     }
-                    if($kios['rc'] == '71'){
-                        $data->status = TransOrder::READY;
-                        $data->save();
-                        DB::commit();
-                    }
+                    // if($kios['rc'] == '71'){
+                    //     $data->status = TransOrder::READY;
+                    //     $data->save();
+                    //     DB::commit();
+                    // }
                 }
                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
             }
@@ -686,17 +689,20 @@ class TravShopController extends Controller
                     $data->save();
                     if($data->order_type == TransOrder::ORDER_TRAVOY){
                         $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id);
-                        // dd($kios['rc']);
+                        $data->kiosbank_respon = json_encode($kios);
+                        $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
+                            'data' => $kios
+                        ]);
                         if($kios['rc'] == '00'){
-                            $data->status = TransOrder::READY;
-                            $data->save();
+                            $data->status = TransOrder::DONE;
                             return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                         }
                         // else {
                         //     $data->status = TransOrder::CANCEL;
                         //     $data->save();
                         //     return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
-                        // }    
+                        // } 
+                        $data->save();
                         DB::commit();
                     }
                     foreach ($data->detil as $key => $value) {

@@ -84,6 +84,11 @@ class TransOrder extends BaseModel
         return $this->hasOne(TransPayment::class, 'trans_order_id');
     }
 
+    public function log_kiosbank()
+    {
+        return $this->hasOne(LogKiosbank::class, 'trans_order_id');
+    }
+
     public function scopeFromTakengo($query)
     {
         return $query->where('order_type', self::ORDER_TAKE_N_GO);

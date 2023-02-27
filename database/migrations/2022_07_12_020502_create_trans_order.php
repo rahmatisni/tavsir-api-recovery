@@ -52,6 +52,7 @@ class CreateTransOrder extends Migration
             $table->integer('id_ops')->nullable();
             $table->integer('saldo_qr')->unisgned()->nullable();
             $table->string('description')->nullable();
+            $table->text('kiosbank_respon')->nullable();
 
             $table->timestamps();
         });
