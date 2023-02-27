@@ -321,6 +321,20 @@ class TravShopController extends Controller
 
                 return response()->json(['info' => $data->status], 422);
             }
+            //Cek deposit
+            if($data->order_type == TransOrder::ORDER_TRAVOY)
+            {
+                $deposit = $this->kiosBankService->cekDeposit();
+                if($deposit['rc' == '00'])
+                {
+                    if($deposit['deposit'] < $data->sub_total){
+                        return response()->json(['info' => 'Deposit '.$deposit['deposit'].' < '.$data->sub_total], 422);
+                    }
+                }else{
+                    return response()->json(['info' => 'Deposit ', 'data' => $deposit], 422);
+                }
+            }
+
             $data->payment_method_id = $request->payment_method_id;
 
             $res = 'Invalid';
