@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\KiosBank;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\OrderPulsaRequest;
+use App\Http\Requests\UangElektronikRequest;
 use App\Services\External\KiosBankService;
 use Illuminate\Http\Request;
 
@@ -53,6 +54,12 @@ class KiosBankController extends Controller
     public function cekDeposit()
     {
         $data = $this->service->cekDeposit();
+        return response()->json($data);
+    }
+
+    public function orderUangElektronik(UangElektronikRequest $request)
+    {
+        $data = $this->service->uangelEktronik($request->validated());
         return response()->json($data);
     }
 }

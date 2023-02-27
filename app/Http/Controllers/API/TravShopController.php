@@ -5,7 +5,6 @@ namespace App\Http\Controllers\API;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TsCreatePaymentRequest;
-use App\Http\Requests\TsOrderConfirmRequest;
 use App\Http\Requests\TsOrderRequest;
 use App\Http\Requests\VerifikasiOrderReqeust;
 use App\Http\Resources\SaldoResource;

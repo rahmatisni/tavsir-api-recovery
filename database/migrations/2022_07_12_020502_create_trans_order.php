@@ -51,6 +51,7 @@ class CreateTransOrder extends Migration
             $table->integer('voucher_id')->nullable();
             $table->integer('id_ops')->nullable();
             $table->integer('saldo_qr')->unisgned()->nullable();
+            $table->string('description')->nullable();
 
             $table->timestamps();
         });

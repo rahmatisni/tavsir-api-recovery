@@ -51,6 +51,7 @@ class TransOrder extends BaseModel
         'discount',
         'is_save',
         'rating',
+        'description',
     ];
 
     public function detil()

@@ -281,4 +281,8 @@ Route::prefix('kios-bank')->group(function(){
         Route::get('/operator-product/{id}','listProductOperatorPulsa');
         Route::post('/order','orderPulsa');
     });
+
+    Route::prefix('uang-elektronik')->controller(KiosBankController::class)->group(function(){
+        Route::post('/order','orderUangElektronik');
+    });
 });

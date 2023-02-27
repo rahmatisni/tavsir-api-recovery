@@ -25,6 +25,7 @@ class KiosBankService
     protected const SINGLE_PAYMENT = '/Services/SinglePayment';
     protected const CEK_STATUS = '/Services/Check-Status';
     protected const CEK_DEPOSIT = '/Services/getCurrentDeposit';
+    protected const INQUIRY = '/Services/Inquiry';
 
     function __construct()
     {
@@ -285,6 +286,41 @@ class KiosBankService
         ];
         $res_json =  $this->http('POST',self::CEK_DEPOSIT,$payload);
         $res_json = $res_json->json();
+        return $res_json;
+    }
+
+    public function uangelEktronik($data)
+    {
+        $order = new TransOrder();
+        $order->order_type = TransOrder::ORDER_TRAVOY;
+        $order->order_id = $data['code'].'-'.$data['phone'].'-'.rand(900000000000,999999999999).'-'.Carbon::now()->timestamp;
+        $order->rest_area_id = 0;
+        $order->tenant_id = 0;
+        $order->business_id = 0;
+        $order->customer_id = $data['customer_id'];
+        $order->customer_name = $data['customer_name'];
+        $order->customer_phone = $data['customer_phone'];
+        $order->merchant_id = '';
+        $order->sub_merchant_id = '';
+        $order->status = TransOrder::WAITING_PAYMENT;
+
+        $payload = [
+            'sessionID'=> $this->getSeesionId(),
+            'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
+            'productID'=>$data['code'],
+            'customerID'=>$data['phone'],
+            'referenceID'=>$order->order_id,
+        ];
+
+        $res_json =  $this->http('POST',self::INQUIRY,$payload);
+        $res_json = $res_json->json();
+        if($res_json['rc'] == '00')
+        {
+            $order->sub_total = $res_json['data']['harga'];
+            $order->description = $res_json['data']['noHandphone'].' '.$res_json['data']['nama'];
+            $order->save();
+        }
+
         return $res_json;
     }
 
