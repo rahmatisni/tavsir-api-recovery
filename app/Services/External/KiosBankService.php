@@ -284,9 +284,7 @@ class KiosBankService
                 $customer = $request['customerID'];
                 $referensi = $request['referenceID'];
                 $id = $kode.'-'.$customer.'-'.$referensi;            
-                $data = CallbackKiosBank::where('order_id','LIKE','%'.$id.'%')->get();
-                $data->status = TransOrder::DONE;
-                $data->save();
+                $data = CallbackKiosBank::where('order_id','LIKE','%'.$id.'%')->update(['status' => TransOrder::DONE]);
 
                 return $data;     
 
