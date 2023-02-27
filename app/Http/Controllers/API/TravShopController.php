@@ -604,6 +604,11 @@ class TravShopController extends Controller
                         $data->save();
                         DB::commit();
                     }
+                    if($kios['rc'] == '71'){
+                        $data->status = TransOrder::READY;
+                        $data->save();
+                        DB::commit();
+                    }
                 }
                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
             }
