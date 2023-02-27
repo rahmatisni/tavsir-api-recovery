@@ -286,10 +286,11 @@ class KiosBankService
                 $id = $kode.'-'.$customer.'-'.$referensi;            
                 $data = CallbackKiosBank::where('order_id','LIKE','%'.$id.'%')->update(['status' => TransOrder::DONE]);
                 $datalog = CallbackKiosBank::where('order_id','LIKE','%'.$id.'%')->first();
-                $datalog->log_kiosbank()->updateOrCreate(['trans_order_id' => $datalog->id],[
-                    'data' => $request
-                ]);
-                return $data;     
+
+                // $datalog->log_kiosbank()->updateOrCreate(['trans_order_id' => $datalog->id],[
+                //     'data' => $request
+                // ]);
+                return $datalog;     
             }
         // } catch (\Throwable $th) {
         //     DB::rollBack();
