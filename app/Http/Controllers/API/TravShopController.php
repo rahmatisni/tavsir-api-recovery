@@ -407,7 +407,7 @@ class TravShopController extends Controller
                         $data->order_id,
                         'Take N Go',
                         $data->sub_total + $data->fee,
-                        $data->tenant->name ?? '',
+                        $data->tenant->name ?? 'Travoy',
                         $request->customer_phone,
                         $request->customer_email,
                         $request->customer_name
