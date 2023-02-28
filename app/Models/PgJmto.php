@@ -457,9 +457,7 @@ class PgJmto extends Model
         return $res;
     }
 
-    // public static function sofList()
-    public static function sofList($payload)
-
+    public static function sofList()
     {
         if (env('PG_FAKE_RESPON') === true) {
             //for fake
@@ -516,9 +514,8 @@ class PgJmto extends Model
             ]);
             //end fake
         }
-        $res = self::service('POST','/sof/list', $payload);
 
-        // $res = self::service('POST','/sof/list',[]);
+        $res = self::service('POST','/sof/list',[]);
         Log::info('SOF list', $res->json());
         return $res;
     }

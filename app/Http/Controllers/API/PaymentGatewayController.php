@@ -10,7 +10,6 @@ class PaymentGatewayController extends Controller
 {
     public function sofList()
     {
-        // $res = PgJmto::service('/sof/list', ['sof_id' => request()->sof_id]);
         $res = PgJmto::service('/sof/list', ['sof_id' => request()->sof_id]);
         return $res->json();
     }
