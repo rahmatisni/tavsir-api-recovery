@@ -119,8 +119,7 @@ class PgJmto extends Model
 
     public static function vaCreate($sof_code, $bill_id, $bill_name, $amount, $desc, $phone, $email, $customer_name)
     {
-
-        dd($desc);
+        // dd($desc);
         $payload = [
             "sof_code" =>  $sof_code,
             "bill_id" =>  $bill_id,
