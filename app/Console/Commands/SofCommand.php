@@ -40,6 +40,7 @@ class SofCommand extends Command
     public function handle()
     {
         $res = PgJmto::sofList();
+        dd($res);
         if($res->successful())
         {
             $res = $res->json();
