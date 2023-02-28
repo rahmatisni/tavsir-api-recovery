@@ -516,6 +516,7 @@ class PgJmto extends Model
         }
 
         $res = self::service('POST','/sof/list',[]);
+        dd($res);
         Log::info('SOF list', $res->json());
         return $res;
     }
