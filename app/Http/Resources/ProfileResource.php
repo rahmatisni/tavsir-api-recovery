@@ -27,6 +27,7 @@ class ProfileResource extends JsonResource
             'merchant_id' => $this->merchant_id,
             'sub_merchant_id' => $this->sub_merchant_id,
             'rest_area_id' => $this->rest_area_id,
+            'rest_area_name' => $this->tenant->rest_area->name,
             'paystation_id' => $this->paystation_id,
             'paystation_name' => $this->paystation->name ?? '',
             'jabatan' => 'Karyawan',
