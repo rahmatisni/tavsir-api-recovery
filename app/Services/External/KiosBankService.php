@@ -229,7 +229,7 @@ class KiosBankService
                                             ->where('created_at', '>=', Carbon::today())
                                             ->count();
 
-        if ($barier <= 3) {
+        if ($barier >= 3) {
             return response(['info' => 'MAXIMUM TRANSAKSI UNTUK NOMOR ANDA ADALAH 3X TRANSAKSI'], 400);
         }
         else {
