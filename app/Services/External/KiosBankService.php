@@ -227,9 +227,9 @@ class KiosBankService
         $barier = BarrierOrderPulsa::where('order_id','LIKE','%'.$data['phone'].'%')
                                             ->where('created_at', '>=', Carbon::today())
                                             ->count();
-                                            
+
         if ($barier) {
-            return response()->json(['info' => 'MAXIMUM TRANSAKSI NOMOR ANDA ADALAH 3X'], 422);
+            return response(['info' => 'MAXIMUM TRANSAKSI UNTUK NOMOR ANDA ADALAH 3X TRANSAKSI'], 400);
         }
         else {
 
