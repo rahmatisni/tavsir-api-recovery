@@ -12,6 +12,7 @@ use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Redis;
 
+
 class KiosBankService
 {
     protected $baseUrl;
@@ -228,7 +229,7 @@ class KiosBankService
                                             ->where('created_at', '>=', Carbon::today())
                                             ->count();
 
-        if ($barier) {
+        if ($barier <= 3) {
             return response(['info' => 'MAXIMUM TRANSAKSI UNTUK NOMOR ANDA ADALAH 3X TRANSAKSI'], 400);
         }
         else {
