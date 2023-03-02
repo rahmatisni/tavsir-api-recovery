@@ -224,29 +224,32 @@ class KiosBankService
     public function orderPulsa($data)
     {
 
-        $product_pulsa = BarrierOrderPulsa::where('order_id','LIKE','%'.$data['phone'].'%')
+        $barier = BarrierOrderPulsa::where('order_id','LIKE','%'.$data['phone'].'%')
                                             ->where('created_at', '>=', Carbon::today())
                                             ->count();
-        
-        return $product_pulsa;
+                                            
+        if ($barier) {
+            return response()->json(['info' => 'MAXIMUM TRANSAKSI NOMOR ANDA ADALAH 3X'], 422);
+        }
+        else {
 
-        
-        // $order = new TransOrder();
-        // $order->order_type = TransOrder::ORDER_TRAVOY;
-        // $order->order_id = $data['code'].'-'.$data['phone'].'-'.rand(900000000000,999999999999).'-'.Carbon::now()->timestamp;
-        // $order->rest_area_id = 0;
-        // $order->tenant_id = 0;
-        // $order->business_id = 0;
-        // $order->customer_id = $data['customer_id'];
-        // $order->customer_name = $data['customer_name'];
-        // $order->customer_phone = $data['customer_phone'];
-        // $order->merchant_id = '';
-        // $order->sub_merchant_id = '';
-        // $order->sub_total = $data['price'];
-        // $order->status = TransOrder::WAITING_PAYMENT;
-        // $order->save();
+            $order = new TransOrder();
+            $order->order_type = TransOrder::ORDER_TRAVOY;
+            $order->order_id = $data['code'].'-'.$data['phone'].'-'.rand(900000000000,999999999999).'-'.Carbon::now()->timestamp;
+            $order->rest_area_id = 0;
+            $order->tenant_id = 0;
+            $order->business_id = 0;
+            $order->customer_id = $data['customer_id'];
+            $order->customer_name = $data['customer_name'];
+            $order->customer_phone = $data['customer_phone'];
+            $order->merchant_id = '';
+            $order->sub_merchant_id = '';
+            $order->sub_total = $data['price'];
+            $order->status = TransOrder::WAITING_PAYMENT;
+            $order->save();
 
-        // return $order;
+        return $order;
+        }
     }
 
     public function singlePayment($sub_total,$order_id)
