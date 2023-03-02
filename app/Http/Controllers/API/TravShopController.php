@@ -619,7 +619,6 @@ class TravShopController extends Controller
                     if($kios['rc'] == '00'){
                         $data->status = TransOrder::DONE;
                         $data->save();
-                        DB::commit();
                     }
                     // if($kios['rc'] == '71'){
                     //     $data->status = TransOrder::READY;
@@ -701,14 +700,13 @@ class TravShopController extends Controller
                         $data->status = TransOrder::DONE;
                     }
                     $data->save();
-                    if($data->order_type == TransOrder::ORDER_TRAVOY || $data->status != 'DONE'){
+                    if($data->order_type == TransOrder::ORDER_TRAVOY && $data->status != TransOrder::DONE){
                         $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id);
                         $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
                             'data' => $kios
                         ]);
                         if($kios['rc'] == '00'){
                             $data->status = TransOrder::DONE;
-                            $data->save();
                             return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                         }
                         // else {
