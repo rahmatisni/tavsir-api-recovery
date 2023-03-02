@@ -224,7 +224,7 @@ class KiosBankService
     public function orderPulsa($data)
     {
 
-        $product_pulsa = BarrierOrderPulsa::where('order_id','LIKE','%'.$data['phone'].'%');
+        $product_pulsa = BarrierOrderPulsa::where('order_id','LIKE','%'.$data['phone'].'%')->count();
         
         return $product_pulsa;
 
