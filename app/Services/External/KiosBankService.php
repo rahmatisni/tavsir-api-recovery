@@ -4,6 +4,7 @@ namespace App\Services\External;
 
 use App\Models\KiosBank\CallbackKiosBank;
 use App\Models\KiosBank\ProductKiosBank;
+use App\Models\KiosBank\BarrierOrderPulsa;
 use App\Models\Product;
 use App\Models\TransOrder;
 use Carbon\Carbon;
