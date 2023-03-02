@@ -608,10 +608,10 @@ class TravShopController extends Controller
         $data = TransOrder::with('payment_method')->findOrfail($id);
         try {
             DB::beginTransaction();
-            if ($data->status == TransOrder::PAYMENT_SUCCESS) {
+            if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::DONE) {
                 $kios = [];
                 if($data->order_type == TransOrder::ORDER_TRAVOY){
-                    if ($data->status == "DONE" || $data->status == "PAYMENT_SUCCESS"){
+                    // if ($data->status == "DONE" || $data->status == "PAYMENT_SUCCESS"){
                         $kios = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id);
                         $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
                             'data' => $kios
@@ -621,7 +621,9 @@ class TravShopController extends Controller
                             $data->status = TransOrder::DONE;
                             $data->save();
                         }
-                    }
+                    // }
+
+
                     // if($kios['rc'] == '71'){
                     //     $data->status = TransOrder::READY;
                     //     $data->save();
