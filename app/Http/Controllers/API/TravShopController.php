@@ -610,7 +610,7 @@ class TravShopController extends Controller
             DB::beginTransaction();
             if ($data->status == TransOrder::PAYMENT_SUCCESS) {
                 $kios = [];
-                if($data->order_type == TransOrder::ORDER_TRAVOY){
+                if($data->order_type == TransOrder::ORDER_TRAVOY && ($data->status = TransOrder::DONE || $data->status = TransOrder::PAYMENT_SUCCESS)){
                     $kios = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id);
                     $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
                         'data' => $kios
