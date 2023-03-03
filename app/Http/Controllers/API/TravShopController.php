@@ -699,7 +699,7 @@ class TravShopController extends Controller
                         $data->status = TransOrder::DONE;
                     }
                     $data->save();
-                    if($data->order_type == TransOrder::ORDER_TRAVOY && $data->status != TransOrder::DONE){
+                    if($data->order_type == TransOrder::ORDER_TRAVOY && $data->status != TransOrder::DONE && $data->status != TransOrder::READY){
                         $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id);
                         $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
                             'data' => $kios
@@ -708,17 +708,17 @@ class TravShopController extends Controller
                             $data->status = TransOrder::DONE;
                             return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                         }
-                        // else {
-                        //     return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
-
-                        // }
+                        else {
+                            $data->status = TransOrder::READY;
+                            return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
+                        }
                         // else {
                         //     $data->status = TransOrder::CANCEL;
                         //     $data->save();
                         //     return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                         // } 
                         $data->save();
-                        // DB::commit();
+                        DB::commit();
                     }
                     foreach ($data->detil as $key => $value) {
                         $this->stock_service->updateStockProduct($value);
