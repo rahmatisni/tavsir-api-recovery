@@ -706,9 +706,12 @@ class TravShopController extends Controller
                         ]);
                         if($kios['rc'] == '00'){
                             $data->status = TransOrder::DONE;
+                            $data->save();
                             return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                         }
                         else {
+                            $data->status = TransOrder::PAYMENT_SUCCESS;
+                            $data->save();
                             return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
 
                         }
