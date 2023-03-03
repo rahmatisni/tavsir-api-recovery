@@ -706,10 +706,14 @@ class TravShopController extends Controller
                         ]);
                         if($kios['rc'] == '00'){
                             $data->status = TransOrder::DONE;
+                            $data->save();
+                            DB::commit();
                             return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                         }
                         else {
                             $data->status = TransOrder::READY;
+                            $data->save();
+                            DB::commit();
                             return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                         }
                         // else {
@@ -717,8 +721,7 @@ class TravShopController extends Controller
                         //     $data->save();
                         //     return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                         // } 
-                        $data->save();
-                        DB::commit();
+                       
                     }
                     foreach ($data->detil as $key => $value) {
                         $this->stock_service->updateStockProduct($value);
