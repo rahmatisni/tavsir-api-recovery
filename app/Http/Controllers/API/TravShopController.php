@@ -620,6 +620,7 @@ class TravShopController extends Controller
                             $data->save();
                         }
                 }
+                dd('cek');
                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
             }
 
