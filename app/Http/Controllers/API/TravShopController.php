@@ -630,6 +630,16 @@ class TravShopController extends Controller
                                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                             }
                         }
+                        if($kios['rc'] == '71'){
+                            if (str_contains($kios['data']['description'], 'TRANSAKSI SEDANG DIPROSES')){
+                                $data->status = TransOrder::READY;
+                                $data->save();
+                                DB::commit();
+                                return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
+                            }
+
+                        }
+                        }
                 }
                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
             }
