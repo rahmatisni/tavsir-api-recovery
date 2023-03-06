@@ -620,6 +620,7 @@ class TravShopController extends Controller
                             {
                                 $data->status = TransOrder::DONE;
                                 $data->save();
+                                DB::commit();
                             }
                             else 
                             {
