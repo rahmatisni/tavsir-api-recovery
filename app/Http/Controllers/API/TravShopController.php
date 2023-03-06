@@ -616,11 +616,19 @@ class TravShopController extends Controller
                             'data' => $kios
                         ]);
                         if($kios['rc'] == '00'){
-                            $data->status = TransOrder::DONE;
-                            $data->save();
+                            if(str_contains($kios['data']['description'], 'BERHASIL'))
+                            {
+                                $data->status = TransOrder::DONE;
+                                $data->save();
+                            }
+                            else 
+                            {
+                                $data->status = TransOrder::READY;
+                                $data->save();
+                            }
                         }
                 }
-                dd('cek');
+                // dd('cek');
                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
             }
 
