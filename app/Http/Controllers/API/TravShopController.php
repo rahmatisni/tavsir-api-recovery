@@ -616,14 +616,20 @@ class TravShopController extends Controller
                             'data' => $kios
                         ]);
                         if($kios['rc'] == '00'){
-                            $data->status = TransOrder::DONE;
-                            $data->save();
+
+                            if (str_contains($kios['data']['description'], 'BERHASIL')){
+                                $data->status = TransOrder::DONE;
+                                $data->save();
+                                DB::commit();
+                                return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);  
+                            }
+                            else {
+                                $data->status = TransOrder::READY;
+                                $data->save();
+                                DB::commit();
+                                return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
+                            }
                         }
-                    // if($kios['rc'] == '71'){
-                    //     $data->status = TransOrder::READY;
-                    //     $data->save();
-                    //     DB::commit();
-                    // }
                 }
                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
             }
@@ -705,10 +711,19 @@ class TravShopController extends Controller
                             'data' => $kios
                         ]);
                         if($kios['rc'] == '00'){
-                            $data->status = TransOrder::DONE;
-                            $data->save();
-                            DB::commit();
-                            return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
+                            if (str_contains($kios['data']['description'], 'BERHASIL')){
+                                $data->status = TransOrder::DONE;
+                                $data->save();
+                                DB::commit();
+                                return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);  
+                            }
+                            else {
+                                $data->status = TransOrder::READY;
+                                $data->save();
+                                DB::commit();
+                                return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
+                            }
+                           
                         }
                         else {
                             $data->status = TransOrder::PAYMENT_SUCCESS;
