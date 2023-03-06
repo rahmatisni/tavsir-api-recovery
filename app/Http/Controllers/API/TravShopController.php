@@ -627,6 +627,13 @@ class TravShopController extends Controller
                                 $data->save();
                             }
                         }
+                        if($kios['rc'] == '71'){
+                            if(str_contains($kios['data']['description'], 'TRANSAKSI SEDANG DIPROSES'))
+                            {
+                                $data->status = TransOrder::READY;
+                                $data->save();
+                            }
+                        }
                 }
                 // dd('cek');
                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
