@@ -248,6 +248,7 @@ class KiosBankService
             $order->sub_total = $data['price'];
             $order->status = TransOrder::WAITING_PAYMENT;
             $order->fee = env('PLATFORM_FEE');
+            $order->total = $data->sub_total + $data->fee;
             $order->save();
 
         return $order;
