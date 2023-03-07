@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Tavsir;
 
+use App\Models\Product;
 use App\Models\TransOrder;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -30,8 +31,22 @@ class TrOrderRequest extends FormRequest
             'product.*.product_id' => 'required|integer|exists:ref_product,id',
             'product.*.customize' => 'nullable|array',
             'product.*.pilihan' => 'nullable|array',
-            'product.*.qty' => 'required|integer|min:1|max:99',
             'product.*.note' => 'nullable|string|max:255',
+            'product.*.qty' => [
+                'required',
+                'integer',
+                'min:1',
+                function($attribute, $value, $fail){
+                    $index = explode('.', $attribute)[1];
+                    $id = $this->product[$index]['product_id'];
+                    $p = Product::find($id);
+                    if($p){
+                        if ($value > $p->stock) {
+                            $fail('The '.$attribute.' is invalid. stock available is '. $p->stock);
+                        }
+                    }
+                }
+            ],
         ];
     }
 

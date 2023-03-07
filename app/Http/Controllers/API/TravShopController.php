@@ -133,8 +133,8 @@ class TravShopController extends Controller
 
             $sub_total = 0;
             foreach ($request->product as $k => $v) {
+              
                 $product = Product::find($v['product_id']);
-
                 $order_detil = new TransOrderDetil();
                 $order_detil->trans_order_id = $data->id;
                 $order_detil->product_id = $product->id;
@@ -169,7 +169,6 @@ class TravShopController extends Controller
 
                 $order_detil_many[] = $order_detil;
             }
-
             $data->fee = env('PLATFORM_FEE');
             $data->sub_total = $sub_total;
             $data->total = $data->sub_total + $data->fee + $data->service_fee;
@@ -198,6 +197,7 @@ class TravShopController extends Controller
 
             return response()->json(new TsOrderResource($data));
         } catch (\Throwable $th) {
+            dd($th);
             DB::rollback();
             return response()->json(['error' => $th->getMessage()], 500);
         }
