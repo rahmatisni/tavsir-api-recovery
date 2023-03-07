@@ -197,7 +197,6 @@ class TravShopController extends Controller
 
             return response()->json(new TsOrderResource($data));
         } catch (\Throwable $th) {
-            dd($th);
             DB::rollback();
             return response()->json(['error' => $th->getMessage()], 500);
         }

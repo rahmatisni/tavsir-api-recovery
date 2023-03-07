@@ -247,6 +247,7 @@ class KiosBankService
             $order->sub_merchant_id = '';
             $order->sub_total = $data['price'];
             $order->status = TransOrder::WAITING_PAYMENT;
+            $order->fee = env('PLATFORM_FEE');
             $order->save();
 
         return $order;
@@ -335,6 +336,7 @@ class KiosBankService
         $order->customer_phone = $data['customer_phone'];
         $order->merchant_id = '';
         $order->sub_merchant_id = '';
+        $order->fee = env('PLATFORM_FEE');
         $order->status = TransOrder::WAITING_PAYMENT;
 
         $ref = explode('-', $order->order_id);
@@ -352,6 +354,7 @@ class KiosBankService
         {
             if ($res_json['productID'] == '520021' || $res_json['productID'] == '520011') {
                 $order->sub_total = $res_json['data']['total'];
+                $order->total = $res_json['data']['total'];
                 $order->description = $res_json['data']['noHandphone'] ?? $res_json['data']['idPelanggan'].'-'.$res_json['productID'].'-'.$res_json['data']['nama'];
                 $order->save();
                 return $order;
