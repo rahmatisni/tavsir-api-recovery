@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\KiosBank\BarrierOrderPulsa;
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 
 class OrderPulsaRequest extends FormRequest
@@ -27,7 +29,19 @@ class OrderPulsaRequest extends FormRequest
             'customer_id' => 'required',
             'customer_name' => 'required',
             'customer_phone' => 'required',
-            'phone' => 'required',
+            'phone' => [
+                'required',
+                function($a, $v, $f){
+                    if($v){
+                        $barier = BarrierOrderPulsa::where('order_id','LIKE','%'.$v.'%')
+                        ->where('created_at', '>=', Carbon::today())
+                        ->count();
+                        if ($barier >= 3) {
+                            $f("Maximum transaksi $v 3x");
+                        }
+                    }
+                }
+            ],
             'code' => 'required',
             'description' => 'required',
             'price' => 'required|integer|min:1000',

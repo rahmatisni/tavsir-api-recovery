@@ -223,38 +223,25 @@ class KiosBankService
     }
 
     public function orderPulsa($data)
-    {
-        $barier = BarrierOrderPulsa::where('order_id','LIKE','%'.$data['phone'].'%')
-                                            ->where('created_at', '>=', Carbon::today())
-                                            ->count();
-
-        if ($barier >= 3) {
-            return [
-                'message' => 'MAXIMUM TRANSAKSI UNTUK NOMOR ANDA ADALAH 3X TRANSAKSI',
-                'code' => 422
-            ];
-        }
-        else {
-
-            $order = new TransOrder();
-            $order->order_type = TransOrder::ORDER_TRAVOY;
-            $order->order_id = $data['code'].'-'.$data['phone'].'-'.rand(900000000000,999999999999).'-'.Carbon::now()->timestamp;
-            $order->rest_area_id = 0;
-            $order->tenant_id = 0;
-            $order->business_id = 0;
-            $order->customer_id = $data['customer_id'];
-            $order->customer_name = $data['customer_name'];
-            $order->customer_phone = $data['customer_phone'];
-            $order->merchant_id = '';
-            $order->sub_merchant_id = '';
-            $order->sub_total = $data['price'];
-            $order->status = TransOrder::WAITING_PAYMENT;
-            $order->fee = env('PLATFORM_FEE');
-            $order->total = $order->sub_total + $order->fee;
-            $order->save();
+{
+        $order = new TransOrder();
+        $order->order_type = TransOrder::ORDER_TRAVOY;
+        $order->order_id = $data['code'].'-'.$data['phone'].'-'.rand(900000000000,999999999999).'-'.Carbon::now()->timestamp;
+        $order->rest_area_id = 0;
+        $order->tenant_id = 0;
+        $order->business_id = 0;
+        $order->customer_id = $data['customer_id'];
+        $order->customer_name = $data['customer_name'];
+        $order->customer_phone = $data['customer_phone'];
+        $order->merchant_id = '';
+        $order->sub_merchant_id = '';
+        $order->sub_total = $data['price'];
+        $order->status = TransOrder::WAITING_PAYMENT;
+        $order->fee = env('PLATFORM_FEE');
+        $order->total = $order->sub_total + $order->fee;
+        $order->save();
 
         return $order;
-        }
     }
 
     public function singlePayment($sub_total,$order_id)

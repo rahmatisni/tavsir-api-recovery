@@ -42,7 +42,7 @@ class KiosBankController extends Controller
     public function orderPulsa(OrderPulsaRequest $reqest)
     {
         $data = $this->service->orderPulsa($reqest->validated());
-        return response()->json($data, $data['code'] ?? 200);
+        return response()->json($data);
     }
 
     public function callback(Request $reqest)
