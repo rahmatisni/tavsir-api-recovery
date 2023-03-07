@@ -224,10 +224,6 @@ class KiosBankService
 
     public function orderPulsa($data)
     {
-        return [
-            'message' => 'MAXIMUM TRANSAKSI UNTUK NOMOR ANDA ADALAH 3X TRANSAKSI',
-            'code' => 422
-        ];
         $barier = BarrierOrderPulsa::where('order_id','LIKE','%'.$data['phone'].'%')
                                             ->where('created_at', '>=', Carbon::today())
                                             ->count();
