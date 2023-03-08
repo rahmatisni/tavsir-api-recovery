@@ -41,6 +41,7 @@ class TsOrderResource extends JsonResource
             'description' => $this->description,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'payment' => $this->payment->data ?? null,
+            'log_kiosbank' => $this->log_kiosbank,
             'detil' => TsOrderDetilResource::collection($this->detil),
         ];
     }
