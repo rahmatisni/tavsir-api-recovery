@@ -32,7 +32,6 @@ class ProfileResource extends JsonResource
             'paystation_name' => $this->paystation->name ?? '',
             'jabatan' => 'Karyawan',
             'role' => $this->role,
-            'paystation_id' => $this->paystation_id,
             'status' => $this->status,
             'have_pin' => $this->pin ? true : false,
             'reset_pin' => $this->reset_pin,
