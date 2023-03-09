@@ -347,7 +347,7 @@ class KiosBankService
                 $order->total = $res_json['data']['total'];
                 $order->description = $res_json['data']['noHandphone'] ?? $res_json['data']['idPelanggan'].'-'.$res_json['productID'].'-'.$res_json['data']['nama'];
                 $order->kiosbank = $res_json['data'];
-                $order->log_kiosbank()->updateOrCreate(['trans_order_id' => $order],[
+                $order->log_kiosbank()->updateOrCreate(['trans_order_id' => new TransOrder()],[
                     'data' => $res_json['data']
                 ]);
                 $order->save();
@@ -360,7 +360,7 @@ class KiosBankService
                 $order->sub_total = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
                 $order->description = $res_json['data']['noHandphone'] ?? $res_json['data']['idPelanggan'].'-'.$res_json['productID'].'-'.$res_json['data']['nama'];
                 $order->kiosbank = $res_json['data'];
-                $order->log_kiosbank()->updateOrCreate(['trans_order_id' => $order],[
+                $order->log_kiosbank()->updateOrCreate(['trans_order_id' => new TransOrder()],[
                     'data' => $res_json['data']
                 ]);
                 $order->save();
