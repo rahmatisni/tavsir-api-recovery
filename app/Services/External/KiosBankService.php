@@ -348,6 +348,9 @@ class KiosBankService
                 $order->description = $res_json['data']['noHandphone'] ?? $res_json['data']['idPelanggan'].'-'.$res_json['productID'].'-'.$res_json['data']['nama'];
                 $order->save();
                 $order->kiosbank = $res_json['data'];
+                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $order],[
+                    'data' => $$res_json['data']
+                ]);
                 return $order;
 
             }
@@ -356,6 +359,9 @@ class KiosBankService
                 $order->description = $res_json['data']['noHandphone'] ?? $res_json['data']['idPelanggan'].'-'.$res_json['productID'].'-'.$res_json['data']['nama'];
                 $order->save();
                 $order->kiosbank = $res_json['data'];
+                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $order],[
+                    'data' => $$res_json['data']
+                ]);
                 return $order;
             }
           
