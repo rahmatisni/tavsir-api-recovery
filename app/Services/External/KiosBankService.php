@@ -349,8 +349,11 @@ class KiosBankService
                 $order->save();
                 $order->kiosbank = $res_json['data'];
                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $order],[
-                    'data' => $$res_json['data']
+                    'data' => $res_json['data']
                 ]);
+                $data->save();
+                DB::commit();
+
                 return $order;
 
             }
@@ -360,8 +363,10 @@ class KiosBankService
                 $order->save();
                 $order->kiosbank = $res_json['data'];
                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $order],[
-                    'data' => $$res_json['data']
+                    'data' => $res_json['data']
                 ]);
+                $data->save();
+                DB::commit();
                 return $order;
             }
           
