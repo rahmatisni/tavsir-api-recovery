@@ -32,6 +32,7 @@ use App\Services\TransSharingServices;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class TravShopController extends Controller
 {
@@ -629,6 +630,7 @@ class TravShopController extends Controller
                         }
                     }
                     if($kios['rc'] == '71'){
+                        Log::info($kios);
                         if(str_contains($kios['data']['description'], 'TRANSAKSI SEDANG DIPROSES'))
                         {
                             $data->status = TransOrder::READY;
