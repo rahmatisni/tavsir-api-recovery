@@ -633,7 +633,7 @@ class TravShopController extends Controller
                     }
                     if($kios['rc'] == '71'){
                         Log::info($kios);
-                        if(str_contains($kios['data']['description'] ?? $kios['data']['status'], 'TRANSAKSI SEDANG DIPROSES'))
+                        if(str_contains($kios['data']['description'] ?? $kios['data']['status'] ?? '-', 'TRANSAKSI SEDANG DIPROSES'))
                         {
                             $data->status = TransOrder::READY;
                         }
