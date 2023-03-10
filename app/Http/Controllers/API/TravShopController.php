@@ -637,6 +637,9 @@ class TravShopController extends Controller
                         {
                             $data->status = TransOrder::READY;
                         }
+                        else {
+                            return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
+                        }
                     }
                     $data->save();
                     DB::commit();
