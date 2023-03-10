@@ -612,6 +612,8 @@ class TravShopController extends Controller
                 $kios = [];
                 if($data->order_type == TransOrder::ORDER_TRAVOY){
                     $kios = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id);
+                    $kios['data']['idPelanggan'] = $kios['data']['noHandphone'] ?? $kios['data']['idPelanggan'];
+                    $kios['data']['noReferensi'] = $kios['referenceID'] ?? $kios['data']['noReferensi'];
                     $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
                         'data' => $kios
                     ]);
@@ -715,6 +717,8 @@ class TravShopController extends Controller
                     $data->save();
                     if($data->order_type == TransOrder::ORDER_TRAVOY && $data->status != TransOrder::DONE){
                         $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id);
+                        $kios['data']['idPelanggan'] = $kios['data']['noHandphone'] ?? $kios['data']['idPelanggan'];
+                        $kios['data']['noReferensi'] = $kios['referenceID'] ?? $kios['data']['noReferensi'];
                         $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
                             'data' => $kios
                         ]);
