@@ -612,6 +612,7 @@ class TravShopController extends Controller
                 $kios = [];
                 if($data->order_type == TransOrder::ORDER_TRAVOY){
                     $kios = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id);
+                    Log::info($kios);
                     $kios['data']['idPelanggan'] = $kios['data']['noHandphone'] ?? $kios['data']['idPelanggan'] ?? '-';
                     $kios['data']['noReferensi'] = $kios['referenceID'] ?? $kios['data']['noReferensi'] ?? '-';
                     $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
@@ -632,7 +633,7 @@ class TravShopController extends Controller
                         }
                     }
                     if($kios['rc'] == '71'){
-                        Log::info($kios);
+                        // Log::info($kios);
                         if(str_contains($kios['description'], 'TRANSAKSI SEDANG DIPROSES'))
                         {
                             $data->status = TransOrder::READY;
