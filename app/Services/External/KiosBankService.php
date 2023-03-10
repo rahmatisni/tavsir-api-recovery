@@ -346,6 +346,8 @@ class KiosBankService
                 $order->sub_total = $res_json['data']['total'];
                 $order->total = $order->sub_total + $order->fee;
                 $order->description = $res_json['data']['noHandphone'] ?? $res_json['data']['idPelanggan'].'-'.$res_json['productID'].'-'.$res_json['data']['nama'];
+                $res_json['data']['data']['idPelanggan'] = $res_json['data']['noHandphone'] ?? $res_json['data']['idPelanggan'];
+                $res_json['data']['data']['noReferensi'] = $res_json['referenceID'] ?? $res_json['data']['noReferensi'];
                 $order->save();
                 $order->log_kiosbank()->updateOrCreate(['trans_order_id' => $order->id],[
                     'data' => $res_json
@@ -357,6 +359,8 @@ class KiosBankService
                 $order->sub_total = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
                 $order->description = $res_json['data']['noHandphone'] ?? $res_json['data']['idPelanggan'].'-'.$res_json['productID'].'-'.$res_json['data']['nama'];
                 $order->total = $order->sub_total + $order->fee;
+                $res_json['data']['data']['idPelanggan'] = $res_json['data']['noHandphone'] ?? $res_json['data']['idPelanggan'];
+                $res_json['data']['data']['noReferensi'] = $res_json['referenceID'] ?? $res_json['data']['noReferensi'];
                 $order->save();
                 $order->log_kiosbank()->updateOrCreate(['trans_order_id' => $order->id],[
                     'data' => $res_json
