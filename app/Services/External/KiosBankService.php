@@ -70,6 +70,10 @@ class KiosBankService
                 'name' => 'Smartfren',
             ],
         ];
+
+        if(env('KIOSBANK_FAKE') === true){
+            // Http::fake();
+        }
     }
 
     function generateDigest($method = 'POST', $path)
