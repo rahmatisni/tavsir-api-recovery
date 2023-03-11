@@ -615,8 +615,8 @@ class TravShopController extends Controller
                     $kios = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id);
                     Log::info($kios);
 
-                    $datalog = LogKiosbank::findOrfail($id);
-
+                    $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
+                    
                     $kios['data']['idPelanggan'] = $kios['data']['noHandphone'] ?? $kios['data']['idPelanggan'] ?? $kios['customerID'] ?? '-';
                     $kios['data']['noReferensi'] = $kios['referenceID'] ?? $kios['data']['noReferensi'] ?? '-';
                     $kios['data']['status'] = $kios['data']['status'] ?? $kios['description'] ?? '-';
@@ -731,8 +731,7 @@ class TravShopController extends Controller
                     $data->save();
                     if($data->order_type == TransOrder::ORDER_TRAVOY && $data->status != TransOrder::DONE){
                         $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id);
-                        // $datalog = LogKiosbank::findOrfail($id);
-
+                        $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
                         $kios['data']['idPelanggan'] = $kios['data']['noHandphone'] ?? $kios['data']['idPelanggan'] ?? $kios['customerID'] ?? '-';
                         $kios['data']['noReferensi'] = $kios['referenceID'] ?? $kios['data']['noReferensi'] ?? '-';
                         $kios['data']['status'] = $kios['data']['status'] ?? $kios['description'] ?? '-';
