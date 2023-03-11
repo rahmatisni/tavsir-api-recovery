@@ -731,12 +731,16 @@ class TravShopController extends Controller
                     $data->save();
                     if($data->order_type == TransOrder::ORDER_TRAVOY && $data->status != TransOrder::DONE){
                         $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id);
+                        $datalog = LogKiosbank::findOrfail($id);
 
+                        
                         $kios['data']['idPelanggan'] = $kios['data']['noHandphone'] ?? $kios['data']['idPelanggan'] ?? $kios['customerID'] ?? '-';
                         $kios['data']['noReferensi'] = $kios['referenceID'] ?? $kios['data']['noReferensi'] ?? '-';
                         $kios['data']['status'] = $kios['data']['status'] ?? $kios['description'] ?? '-';
                         $kios['data']['harga'] = $kios['data']['harga'] ?? $data->sub_total ?? '-';
 
+                        $kios['data']['nama'] = $kios['data']['nama'] ?? $datalog['data']['data']['nama'] ?? '-';
+                        $kios['data']['nominalProduk'] = $kios['data']['nominalProduk'] ?? $datalog['data']['data']['nominalProduk'] ?? '-';
 
                         $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
                             'data' => $kios
