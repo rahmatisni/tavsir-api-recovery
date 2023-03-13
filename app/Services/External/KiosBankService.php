@@ -295,11 +295,9 @@ class KiosBankService
                 // $datalog = CallbackKiosBank::where('order_id','LIKE','%'.$id.'%')->first();
                 $request['data']['idPelanggan'] = $request['data']['noHandphone'] ?? $request['data']['idPelanggan'] ?? '-';
                 $request['data']['noReferensi'] = $request['referenceID'] ?? $request['data']['noReferensi'] ?? '-';
-                // $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
-                //     $request
-                // ]);       
-                $data = CallbackKiosBank::where('order_id','LIKE','%'.$id.'%')->update(['status' => TransOrder::DONE]);
-       
+                $request->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
+                    $request
+                ]);              
                 
                 return $data;     
             }
