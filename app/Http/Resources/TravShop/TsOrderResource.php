@@ -43,6 +43,7 @@ class TsOrderResource extends JsonResource
             'payment' => $this->payment->data ?? null,
             'log_kiosbank' => $this->log_kiosbank,
             'detil' => TsOrderDetilResource::collection($this->detil),
+            'kat_kios' => $this->ppobkategory($this->log_kiosbank['id'])
         ];
     }
 }

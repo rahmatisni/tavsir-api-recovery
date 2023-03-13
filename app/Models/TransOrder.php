@@ -159,6 +159,16 @@ class TransOrder extends BaseModel
         }
     }
 
+    public function ppobkategory($id){
+        if ($this->order_type == self::ORDER_TRAVOY){
+            $katgeori = ProductKiosBank::where('id', $id);
+            return $katgeori;
+        }
+        else {
+            return null;
+        }
+    }
+
     public function trans_edc()
     {
         return $this->hasOne(TransEdc::class, 'trans_order_id');
