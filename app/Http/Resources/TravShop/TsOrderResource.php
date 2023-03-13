@@ -19,8 +19,8 @@ class TsOrderResource extends JsonResource
         $product_kios = null;
         if($this->order_type == TransOrder::ORDER_TRAVOY)
         {
-            $product_kios = explode('-',$this->order_id)[0];
-            $product_kios = ProductKiosBank::where('kode',$product_kios)
+            $product = explode('-',$this->order_id);
+            $product_kios = ProductKiosBank::where('kode',$product[0])
             ->select([
                 'kategori',
                 'sub_kategori',
@@ -28,6 +28,11 @@ class TsOrderResource extends JsonResource
                 'name'
             ])
             ->first();
+            if($product_kios)
+            {
+                $product_kios = $product_kios->toArray();
+                $product_kios['handphone'] = $product[1];
+            }
         }
         return [
             "id" => $this->id,
