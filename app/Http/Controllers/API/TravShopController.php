@@ -623,7 +623,7 @@ class TravShopController extends Controller
                     $kios['data']['harga'] = $kios['data']['harga'] ?? $data->sub_total ?? '-';
 
                     $kios['data']['nama'] = $kios['data']['nama'] ?? $datalog['data']['data']['nama'] ?? '-';
-                    $kios['data']['nominalProduk'] = $kios['data']['nominalProduk'] ?? $datalog['data']['data']['nominalProduk'] ?? '-';
+                    $kios['data']['nominalProduk'] = $kios['data']['nominalProduk'] ?? $datalog['data']['data']['nominalProduk'] ?? $kios['data']['harga'] ?? '-';
 
                     $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
                         'data' => $kios
@@ -738,7 +738,7 @@ class TravShopController extends Controller
                         $kios['data']['harga'] = $kios['data']['harga'] ?? $data->sub_total ?? '-';
 
                         $kios['data']['nama'] = $kios['data']['nama'] ?? $datalog['data']['data']['nama'] ?? '-';
-                        $kios['data']['nominalProduk'] = $kios['data']['nominalProduk'] ?? $datalog['data']['data']['nominalProduk'] ?? '-';
+                        $kios['data']['nominalProduk'] = $kios['data']['nominalProduk'] ?? $datalog['data']['data']['nominalProduk'] ?? $kios['data']['harga'] ?? '-';
 
                         $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
                             'data' => $kios
