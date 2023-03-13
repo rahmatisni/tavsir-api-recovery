@@ -300,7 +300,7 @@ class KiosBankService
                 $data->log_kiosbank()->updateOrCreate([
                     'trans_order_id' => $data->id
                 ].[
-                    'data' => $request->all()
+                    'data' => $request
                 ]);
                 DB::commit();
             }
