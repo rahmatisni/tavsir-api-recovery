@@ -282,7 +282,7 @@ class KiosBankService
     public function callback($request)
     {
         // return $request;
-        // try {
+        try {
             if ($request['rc'] == '00'){
 
                 $kode = $request['productID'];
@@ -299,10 +299,25 @@ class KiosBankService
                 
                 return $data;     
             }
-        // } catch (\Throwable $th) {
-        //     DB::rollBack();
-        //     return response()->json(['error' => $th->getMessage()], 500);
-        // }
+            else {
+                $kode = $request['productID'];
+                $customer = $request['customerID'];
+                $referensi = $request['referenceID'];
+                $id = $kode.'-'.$customer.'-'.$referensi;       
+                // $data = CallbackKiosBank::where('order_id','LIKE','%'.$id.'%')->update(['status' => TransOrder::DONE]);
+                $datalog = CallbackKiosBank::where('order_id','LIKE','%'.$id.'%')->first();
+                $request['data']['idPelanggan'] = $request['data']['noHandphone'] ?? $request['data']['idPelanggan'] ?? '-';
+                $request['data']['noReferensi'] = $request['referenceID'] ?? $request['data']['noReferensi'] ?? '-';
+                $datalog->log_kiosbank()->updateOrCreate(['trans_order_id' => $datalog->id],[
+                    $request
+                ]);              
+                
+                return $datalog;     
+            }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['error' => $th->getMessage()], 500);
+        }
     }
     
     public function cekDeposit()
