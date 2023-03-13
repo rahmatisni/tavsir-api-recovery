@@ -294,7 +294,7 @@ class KiosBankService
                 // $datalog = CallbackKiosBank::where('order_id','LIKE','%'.$id.'%')->first();
                 $request['data']['idPelanggan'] = $request['data']['noHandphone'] ?? $request['data']['idPelanggan'] ?? '-';
                 $request['data']['noReferensi'] = $request['referenceID'] ?? $request['data']['noReferensi'] ?? '-';
-                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
+                $request->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
                     $request
                 ]);              
                 
@@ -309,7 +309,7 @@ class KiosBankService
                 // dd($data);
                 $request['data']['idPelanggan'] = $request['data']['noHandphone'] ?? $request['data']['idPelanggan'] ?? '-';
                 $request['data']['noReferensi'] = $request['referenceID'] ?? $request['data']['noReferensi'] ?? '-';
-                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
+                $request->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
                     $request
                 ]);              
                 
