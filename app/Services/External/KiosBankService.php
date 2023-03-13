@@ -309,7 +309,7 @@ class KiosBankService
                 // dd($data);
                 $request['data']['idPelanggan'] = $request['data']['noHandphone'] ?? $request['data']['idPelanggan'] ?? '-';
                 $request['data']['noReferensi'] = $request['referenceID'] ?? $request['data']['noReferensi'] ?? '-';
-                dd($request);
+                dd($data->id);
                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
                     $request
                 ]);              
