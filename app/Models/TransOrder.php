@@ -160,6 +160,9 @@ class TransOrder extends BaseModel
     }
 
     public function ppobkategory($id){
+        if (!$id) {
+            return null;
+        }
         if ($this->order_type == self::ORDER_TRAVOY){
             $katgeori = ProductKiosBank::where('kode_produk', $id);
             return $katgeori;
