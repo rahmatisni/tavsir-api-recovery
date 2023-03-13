@@ -161,7 +161,7 @@ class TransOrder extends BaseModel
 
     public function ppobkategory($id){
         if ($this->order_type == self::ORDER_TRAVOY){
-            $katgeori = ProductKiosBank::where('id', $id);
+            $katgeori = ProductKiosBank::where('kode_produk', $id);
             return $katgeori;
         }
         else {
