@@ -3,8 +3,6 @@
 namespace App\Models;
 
 use App\Models\BaseModel;
-use App\Models\KiosBank\ProductKiosBank;
-
 use App\Models\Traits\Uuid;
 use Illuminate\Support\Facades\DB;
 
@@ -158,19 +156,6 @@ class TransOrder extends BaseModel
             return 'Take Away';
         } else {
             return $this->consume_type;
-        }
-    }
-
-    public function ppobkategory($id){
-        if (!$id) {
-            return null;
-        }
-        if ($this->order_type == self::ORDER_TRAVOY){
-            $katgeori = ProductKiosBank::where('kode_produk', $id);
-            return $katgeori;
-        }
-        else {
-            return null;
         }
     }
 
