@@ -2,10 +2,7 @@
 
 namespace App\Services\External;
 
-use App\Models\KiosBank\CallbackKiosBank;
 use App\Models\KiosBank\ProductKiosBank;
-use App\Models\KiosBank\BarrierOrderPulsa;
-use App\Models\Product;
 use App\Models\TransOrder;
 use Carbon\Carbon;
 use Exception;
@@ -13,8 +10,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
-use Illuminate\Support\Facades\Log;
-use App\Models\LogKiosbank;
 
 
 class KiosBankService
