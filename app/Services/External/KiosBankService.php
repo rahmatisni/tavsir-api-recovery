@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Log;
 
+
 class KiosBankService
 {
     protected $baseUrl;
@@ -305,14 +306,14 @@ class KiosBankService
                 $referensi = $request['referenceID'];
                 $id = $kode.'-'.$customer.'-'.$referensi;       
                 // $data = CallbackKiosBank::where('order_id','LIKE','%'.$id.'%')->update(['status' => TransOrder::DONE]);
-                $datalog = CallbackKiosBank::where('order_id','LIKE','%'.$id.'%')->first();
+                $data = CallbackKiosBank::where('order_id','LIKE','%'.$id.'%')->first();
                 $request['data']['idPelanggan'] = $request['data']['noHandphone'] ?? $request['data']['idPelanggan'] ?? '-';
                 $request['data']['noReferensi'] = $request['referenceID'] ?? $request['data']['noReferensi'] ?? '-';
-                $datalog->log_kiosbank()->updateOrCreate(['trans_order_id' => $datalog->id],[
+                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
                     $request
                 ]);              
                 
-                return $datalog;     
+                return $data;     
             }
         // } catch (\Throwable $th) {
         //     CallbackKiosBank::rollBack();
