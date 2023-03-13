@@ -293,6 +293,7 @@ class KiosBankService
                 $request['data']['idPelanggan'] = $request['data']['noHandphone'] ?? ($request['data']['idPelanggan'] ?? '-');
                 $request['data']['noReferensi'] = $request['referenceID'] ?? ($request['data']['noReferensi'] ?? '-');
                 
+                Log::info($request);
                 if ($request['rc'] == '00'){
                     $data->status = TransOrder::DONE;
                     $data->save();
