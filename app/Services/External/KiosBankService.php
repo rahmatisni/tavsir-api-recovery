@@ -9,7 +9,9 @@ use App\Models\Product;
 use App\Models\TransOrder;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Log;
 use App\Models\LogKiosbank;
@@ -283,28 +285,35 @@ class KiosBankService
 
     public function callback($request)
     {
-        // return $request;
-        // try {
-            if ($request['rc'] == '00'){
+        try {
+            $kode = $request['productID'];
+            $customer = $request['customerID'];
+            $referensi = $request['referenceID'];
+            $id = $kode.'-'.$customer.'-'.$referensi;            
+            $data = TransOrder::where('order_id','LIKE','%'.$id.'%')->first();
+           
+            if($data){
+                DB::beginTransaction();
 
-                $kode = $request['productID'];
-                $customer = $request['customerID'];
-                $referensi = $request['referenceID'];
-                $id = $kode.'-'.$customer.'-'.$referensi;            
-                $data = CallbackKiosBank::where('order_id','LIKE','%'.$id.'%')->update(['status' => TransOrder::DONE]);
-                // $datalog = CallbackKiosBank::where('order_id','LIKE','%'.$id.'%')->first();
-                $request['data']['idPelanggan'] = $request['data']['noHandphone'] ?? $request['data']['idPelanggan'] ?? '-';
-                $request['data']['noReferensi'] = $request['referenceID'] ?? $request['data']['noReferensi'] ?? '-';
-                $this->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
-                    $request
-                ]);              
+                $request['data']['idPelanggan'] = $request['data']['noHandphone'] ?? ($request['data']['idPelanggan'] ?? '-');
+                $request['data']['noReferensi'] = $request['referenceID'] ?? ($request['data']['noReferensi'] ?? '-');
                 
-                return $data;     
+                if ($request['rc'] == '00'){
+                    $data->status = TransOrder::DONE;
+                    $data->save();
+                }
+                $data->log_kiosbank()->updateOrCreate([
+                    'trans_order_id' => $data->id
+                ].[
+                    'data' => $request->all()
+                ]);
+                DB::commit();
             }
-        // } catch (\Throwable $th) {
-        //     DB::rollBack();
-        //     return response()->json(['error' => $th->getMessage()], 500);
-        // }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            Log::warning($th);
+            return response()->json(['error' => (string) $th], 500);
+        }
     }
     
     public function cekDeposit()
