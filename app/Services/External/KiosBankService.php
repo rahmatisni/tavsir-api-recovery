@@ -306,9 +306,10 @@ class KiosBankService
                 $referensi = $request['referenceID'];
                 $id = $kode.'-'.$customer.'-'.$referensi;       
                 $data = CallbackKiosBank::where('order_id','LIKE','%'.$id.'%')->first();
-                dd($data);
+                // dd($data);
                 $request['data']['idPelanggan'] = $request['data']['noHandphone'] ?? $request['data']['idPelanggan'] ?? '-';
                 $request['data']['noReferensi'] = $request['referenceID'] ?? $request['data']['noReferensi'] ?? '-';
+                dd($request);
                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
                     $request
                 ]);              
