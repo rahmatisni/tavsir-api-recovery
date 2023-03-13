@@ -282,7 +282,7 @@ class KiosBankService
     public function callback($request)
     {
         // return $request;
-        try {
+        // try {
             if ($request['rc'] == '00'){
 
                 $kode = $request['productID'];
@@ -314,10 +314,10 @@ class KiosBankService
                 
                 return $datalog;     
             }
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            return response()->json(['error' => $th->getMessage()], 500);
-        }
+        // } catch (\Throwable $th) {
+        //     CallbackKiosBank::rollBack();
+        //     return response()->json(['error' => $th->getMessage()], 500);
+        // }
     }
     
     public function cekDeposit()
