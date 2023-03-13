@@ -11,7 +11,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Redis;
-
+use Illuminate\Support\Facades\Log;
 
 class KiosBankService
 {
