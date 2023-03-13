@@ -745,14 +745,14 @@ class TravShopController extends Controller
                         ]);
                         if($kios['rc'] == '00')
                         {
-                            if(str_contains($kios['description']??$kios['data']['status'], 'BERHASIL'))
+                            if(str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL'))
                             {
                                 $data->status = TransOrder::DONE;
                                 $data->save();
                                 DB::commit();
                                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                             }
-                            if(str_contains($kios['description']??$kios['data']['status'], 'SUKSES'))
+                            if(str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES'))
                             {
                                 $data->status = TransOrder::DONE;
                                 $data->save();
