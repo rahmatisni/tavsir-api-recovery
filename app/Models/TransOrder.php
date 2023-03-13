@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Models\BaseModel;
+use App\Models\KiosBank\ProductKiosBank;
+
 use App\Models\Traits\Uuid;
 use Illuminate\Support\Facades\DB;
 
