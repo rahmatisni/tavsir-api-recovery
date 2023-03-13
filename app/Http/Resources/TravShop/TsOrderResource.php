@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources\TravShop;
 
+use App\Models\KiosBank\ProductKiosBank;
+use App\Models\TransOrder;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class TsOrderResource extends JsonResource
@@ -14,6 +16,19 @@ class TsOrderResource extends JsonResource
      */
     public function toArray($request)
     {
+        $product_kios = null;
+        if($this->order_type == TransOrder::ORDER_TRAVOY)
+        {
+            $product_kios = explode('-',$this->order_id)[0];
+            $product_kios = ProductKiosBank::where('kode',$product_kios)
+            ->select([
+                'kategori',
+                'sub_kategori',
+                'kode',
+                'name'
+            ])
+            ->first();
+        }
         return [
             "id" => $this->id,
             'rest_area_name' => $this->rest_area->name ?? null,
@@ -43,6 +58,7 @@ class TsOrderResource extends JsonResource
             'payment' => $this->payment->data ?? null,
             'log_kiosbank' => $this->log_kiosbank,
             'detil' => TsOrderDetilResource::collection($this->detil),
+            'detil_kios' => $product_kios
         ];
     }
 }
