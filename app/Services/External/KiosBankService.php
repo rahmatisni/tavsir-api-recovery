@@ -270,15 +270,16 @@ class KiosBankService
     {
         $order = explode('-', $order_id);
         $payload = [
-            'total'=>$sub_total,
+            'total'=>str_pad($sub_total, 12, "0", STR_PAD_LEFT),
             'admin'=>'000000000000',
-            'tagihan'=>$sub_total,
+            'tagihan'=>str_pad($sub_total, 12, "0", STR_PAD_LEFT),
             'sessionID'=> $this->getSeesionId(),
             'productID'=>$order[0] ?? '',
             'referenceID'=>$order[2] ?? '',
             'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
             'customerID'=>$order[1] ?? ''
         ];
+
 
         Log::info($payload);
         $res_json =  $this->http('POST',self::DUAL_PAYMENT,$payload)->json();
