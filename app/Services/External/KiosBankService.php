@@ -244,7 +244,7 @@ class KiosBankService
         $order->description = 'single';
         $order->save();
 
-        $data = TransOrder::where('order_id', $order->order_id)->first();
+        $Postdata = TransOrder::where('order_id', $order->order_id)->first();
         $orders = explode('-', $order->order_id);
 
         $request = [
@@ -257,12 +257,12 @@ class KiosBankService
             'description'=>'INQUIRY'
         ];
 
-        $data->log_kiosbank()->updateOrCreate([
-            'trans_order_id' => $data->id
+        $Postdata->log_kiosbank()->updateOrCreate([
+            'trans_order_id' => $Postdata->id
         ],[
             'data' => $request
         ]);
-        
+
         return $order;
     }
 
