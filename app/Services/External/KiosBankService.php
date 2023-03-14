@@ -244,6 +244,19 @@ class KiosBankService
         $order->description = 'single';
         $order->save();
 
+        $orders = explode('-', $order->order_id);
+
+        $request = [
+            'productID'=> $data['code'],
+            'customerID'=>$data['phone'],
+            'referenceID'=>$orders[2],
+            'data' => [
+                'nominalProduk'=>$data['price']
+            ],
+            'description'=>'INQUIRY'
+        ];
+        $this->callback($request->json());
+
         return $order;
     }
 
