@@ -314,7 +314,7 @@ class KiosBankService
            
             if($data){
                 DB::beginTransaction();
-
+                Log::info($request);
                 $request['data']['idPelanggan'] = $request['data']['noHandphone'] ?? ($request['data']['idPelanggan'] ?? '-');
                 $request['data']['noReferensi'] = $request['referenceID'] ?? ($request['data']['noReferensi'] ?? '-');
 
@@ -324,7 +324,8 @@ class KiosBankService
                 $request['data']['nama'] = $request['data']['nama'] ?? ($request['data']['data']['nama'] ?? '-');
                 $request['data']['nominalProduk'] = $request['data']['nominalProduk'] ?? ($request['data']['data']['nominalProduk'] ?? '-');
                 
-                Log::info($request);
+                $request['$description'] =  $request['$description'] ?? ($request['data']['status'] ?? '-');
+
                 if ($request['rc'] == '00'){
                     $data->status = TransOrder::DONE;
                     $data->save();
