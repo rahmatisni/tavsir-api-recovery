@@ -126,7 +126,7 @@ class PgJmto extends Model
             "bill_name" => $bill_name,
             "amount" => (string) $amount,
             "desc" =>  $desc,
-            "exp_date" =>  Carbon::now()->addDay(1)->format('Y-m-d H:i:s'),
+            "exp_date" =>  Carbon::now()->addMinutes(5)->format('Y-m-d H:i:s'),
             "va_type" =>  "close",
             "phone" =>  $phone,
             "email" =>  $email,
