@@ -145,7 +145,17 @@ class TransOrder extends BaseModel
 
     public function statusLabel()
     {
-        return str_replace("_", " ", $this->status);
+        if ($this->status == 'READY') {
+            return str_replace("_", " ", self::PAYMENT_SUCCESS);
+
+        }
+        elseif ($this->status == 'DONE') {
+            return str_replace("_", " ", self::PAYMENT_SUCCESS);
+
+        }
+        else {
+            return str_replace("_", " ", $this->status);
+        }
     }
 
     public function consumeTypeLabel()
