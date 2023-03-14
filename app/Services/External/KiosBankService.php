@@ -252,7 +252,10 @@ class KiosBankService
             'customerID'=>$data['phone'],
             'referenceID'=>$orders[2],
             'data' => [
-                'nominalProduk'=>$data['price']
+                'harga'=>$data['price'],
+                'nominalProduk'=>$data['price'],
+                'nama'=>$data['description']
+
             ],
             'description'=>'INQUIRY'
         ];
