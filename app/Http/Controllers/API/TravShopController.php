@@ -735,7 +735,12 @@ class TravShopController extends Controller
                     }
                     $data->save();
                     if($data->order_type == TransOrder::ORDER_TRAVOY && $data->status != TransOrder::DONE){
-                        $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id);
+                        if ($data->description == 'single'){
+                            $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id);
+                        }
+                        if ($data->description == 'dual'){
+                            $kios = $this->kiosBankService->dualPayment($data->sub_total, $data->order_id);
+                        }
                         Log::info($kios);
                         $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
                         $kios['data']['idPelanggan'] = $kios['data']['noHandphone'] ?? ($kios['data']['idPelanggan'] ?? $kios['customerID'] ?? '-');
