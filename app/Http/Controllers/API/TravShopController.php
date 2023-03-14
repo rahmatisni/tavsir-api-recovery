@@ -639,7 +639,9 @@ class TravShopController extends Controller
                         }
                         else 
                         {
-                            $data->status = TransOrder::READY;
+                            // $data->status = TransOrder::READY;
+                            $data->status = TransOrder::DONE;
+
                         }
                     }
                     if($kios['rc'] == '71'){
