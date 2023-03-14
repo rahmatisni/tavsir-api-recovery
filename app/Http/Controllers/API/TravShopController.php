@@ -628,6 +628,7 @@ class TravShopController extends Controller
                     
                     if($kios['rc'] == '00'){
                         $kios['data']['status'] = 'BERHASIL';
+                        $kios['description'] = 'BERHASIL';
                         if(str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL'))
                         {
                             $data->status = TransOrder::DONE;
@@ -749,6 +750,7 @@ class TravShopController extends Controller
                         ]);
                         if($kios['rc'] == '00')
                         {
+                            $kios['description'] = 'BERHASIL';
                             if(str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL'))
                             {
                                 $data->status = TransOrder::DONE;
