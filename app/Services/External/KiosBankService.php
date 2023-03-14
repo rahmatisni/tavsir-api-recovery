@@ -25,6 +25,8 @@ class KiosBankService
     protected const ACTIVE_PRODUCT = '/Services/get-Active-Product';
     protected const PULSA_PRABAYAR = '/Services/getPulsa-Prabayar';
     protected const SINGLE_PAYMENT = '/Services/SinglePayment';
+    protected const DUAL_PAYMENT = '/Services/Payment';
+
     protected const CEK_STATUS = '/Services/Check-Status';
     protected const CEK_DEPOSIT = '/Services/getCurrentDeposit';
     protected const INQUIRY = '/Services/Inquiry';
@@ -239,6 +241,7 @@ class KiosBankService
         $order->status = TransOrder::WAITING_PAYMENT;
         $order->fee = env('PLATFORM_FEE');
         $order->total = $order->sub_total + $order->fee;
+        $order->description = 'single';
         $order->save();
 
         return $order;
@@ -260,6 +263,25 @@ class KiosBankService
 
         Log::info($payload);
         $res_json =  $this->http('POST',self::SINGLE_PAYMENT,$payload)->json();
+        return $res_json;
+    }
+
+    public function dualPayment($sub_total,$order_id)
+    {
+        $order = explode('-', $order_id);
+        $payload = [
+            'total'=>$sub_total,
+            'admin'=>'000000000000',
+            'tagihan'=>$sub_total,
+            'sessionID'=> $this->getSeesionId(),
+            'productID'=>$order[0] ?? '',
+            'referenceID'=>$order[2] ?? '',
+            'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
+            'customerID'=>$order[1] ?? ''
+        ];
+
+        Log::info($payload);
+        $res_json =  $this->http('POST',self::DUAL_PAYMENT,$payload)->json();
         return $res_json;
     }
 
@@ -345,6 +367,7 @@ class KiosBankService
         $order->merchant_id = '';
         $order->sub_merchant_id = '';
         $order->fee = env('PLATFORM_FEE');
+        $order->description = 'dual';
         $order->status = TransOrder::WAITING_PAYMENT;
 
         $ref = explode('-', $order->order_id);
@@ -363,7 +386,7 @@ class KiosBankService
             if ($res_json['productID'] == '520021' || $res_json['productID'] == '520011') {
                 $order->sub_total = $res_json['data']['total'];
                 $order->total = $order->sub_total + $order->fee;
-                $order->description = $res_json['data']['noHandphone'] ?? $res_json['data']['idPelanggan'].'-'.$res_json['productID'].'-'.$res_json['data']['nama'];
+                // $order->description = $res_json['data']['noHandphone'] ?? $res_json['data']['idPelanggan'].'-'.$res_json['productID'].'-'.$res_json['data']['nama'];
                 $res_json['data']['idPelanggan'] = $res_json['data']['noHandphone'] ?? $res_json['data']['idPelanggan'];
                 $res_json['data']['noReferensi'] = $res_json['referenceID'] ?? $res_json['data']['noReferensi'];
 
@@ -382,7 +405,7 @@ class KiosBankService
             }
             else {
                 $order->sub_total = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
-                $order->description = $res_json['data']['noHandphone'] ?? $res_json['data']['idPelanggan'].'-'.$res_json['productID'].'-'.$res_json['data']['nama'];
+                // $order->description = $res_json['data']['noHandphone'] ?? $res_json['data']['idPelanggan'].'-'.$res_json['productID'].'-'.$res_json['data']['nama'];
                 $order->total = $order->sub_total + $order->fee;
                 $res_json['data']['idPelanggan'] = $res_json['data']['noHandphone'] ?? $res_json['data']['idPelanggan'];
                 $res_json['data']['noReferensi'] = $res_json['referenceID'] ?? $res_json['data']['noReferensi'];
