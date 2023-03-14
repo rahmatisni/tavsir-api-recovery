@@ -627,6 +627,7 @@ class TravShopController extends Controller
 
                     
                     if($kios['rc'] == '00'){
+                        $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? '-';
                         $kios['data']['status'] = 'BERHASIL';
                         if(str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL'))
                         {
@@ -740,9 +741,9 @@ class TravShopController extends Controller
                         $kios['data']['noReferensi'] = $kios['referenceID'] ?? ($kios['data']['noReferensi'] ?? '-');
                         $kios['data']['status'] = $kios['data']['status'] ?? ($kios['description'] ?? '-');
                         $kios['data']['harga'] = $kios['data']['harga'] ?? ($data->sub_total ?? '-');
-
                         $kios['data']['nama'] = $kios['data']['nama'] ?? $datalog['data']['data']['nama'] ?? '-';
                         $kios['data']['nominalProduk'] = $kios['data']['nominalProduk'] ?? $datalog['data']['data']['nominalProduk'] ?? '-';
+                        $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? '-';
 
                         $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
                             'data' => $kios
