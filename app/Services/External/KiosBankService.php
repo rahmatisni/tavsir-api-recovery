@@ -255,7 +255,7 @@ class KiosBankService
             ],
             'description'=>'INQUIRY'
         ];
-        $this->callback($request->json());
+        $this->callback($request);
 
         return $order;
     }
