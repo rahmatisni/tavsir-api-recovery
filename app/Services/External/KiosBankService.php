@@ -257,6 +257,8 @@ class KiosBankService
             'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
             'customerID'=>$order[1] ?? ''
         ];
+
+        Log::info($payload);
         $res_json =  $this->http('POST',self::SINGLE_PAYMENT,$payload)->json();
         return $res_json;
     }
