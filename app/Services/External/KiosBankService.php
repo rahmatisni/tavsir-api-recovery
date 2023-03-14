@@ -324,7 +324,7 @@ class KiosBankService
                 $request['data']['nama'] = $request['data']['nama'] ?? ($request['data']['data']['nama'] ?? '-');
                 $request['data']['nominalProduk'] = $request['data']['nominalProduk'] ?? ($request['data']['data']['nominalProduk'] ?? '-');
                 
-                $request['$description'] =  $request['$description'] ?? ($request['data']['status'] ?? '-');
+                $request['description'] =  $request['description'] ?? ($request['data']['status'] ?? '-');
 
                 if ($request['rc'] == '00'){
                     $data->status = TransOrder::DONE;
