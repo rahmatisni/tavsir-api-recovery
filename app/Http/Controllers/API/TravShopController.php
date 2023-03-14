@@ -625,10 +625,9 @@ class TravShopController extends Controller
                     $kios['data']['nama'] = $kios['data']['nama'] ?? $datalog['data']['data']['nama'] ?? '-';
                     $kios['data']['nominalProduk'] = $kios['data']['nominalProduk'] ?? $datalog['data']['data']['nominalProduk'] ?? $kios['data']['harga'] ?? '-';
 
-                    $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
-                        'data' => $kios
-                    ]);
+                    
                     if($kios['rc'] == '00'){
+                        $kios['data']['status'] = 'BERHASIL';
                         if(str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL'))
                         {
                             $data->status = TransOrder::DONE;
@@ -644,6 +643,9 @@ class TravShopController extends Controller
 
                         }
                     }
+                    $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
+                        'data' => $kios
+                    ]);
                     if($kios['rc'] == '71'){
                         // Log::info($kios);
                         if(str_contains($kios['description'] ?? $kios['data']['status'], 'TRANSAKSI SEDANG DIPROSES'))
