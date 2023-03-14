@@ -46,7 +46,7 @@ class TsOrderResource extends JsonResource
             'customer_id' => $this->customer_id,
             'customer_name' => $this->customer_name,
             'customer_phone' => $this->customer_phone,
-            'payment_method' => $this->payment_method?->only('code_name','code','name'), 
+            'payment_method' => $this->payment_method?->only('code_name','code','name','id'), 
             'sub_total' => $this->sub_total,
             'fee' => $this->fee,
             'service_fee' => $this->service_fee,
