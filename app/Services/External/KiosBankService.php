@@ -380,9 +380,10 @@ class KiosBankService
             'customerID'=>$data['phone'],
             'referenceID'=>$ref[2],
         ];
-        Log::info($payload);
         $res_json =  $this->http('POST',self::INQUIRY,$payload);
         $res_json = $res_json->json();
+        Log::info($payload, $res_json);
+
         if($res_json['rc'] == '00')
         {
             if ($res_json['productID'] == '520021' || $res_json['productID'] == '520011') {
@@ -418,6 +419,7 @@ class KiosBankService
                 $res_json['data']['nama'] = $res_json['data']['nama'] ?? ($res_json['data']['data']['nama'] ?? '-');
                 $res_json['data']['nominalProduk'] = $res_json['data']['nominalProduk'] ?? ($res_json['data']['data']['nominalProduk'] ?? '-');
 
+                $res_json['description'] = 'INQUIRY';
                 $order->save();
                 $order->log_kiosbank()->updateOrCreate(['trans_order_id' => $order->id],[
                     'data' => $res_json
