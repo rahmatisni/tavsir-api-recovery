@@ -382,7 +382,7 @@ class KiosBankService
         ];
         $res_json =  $this->http('POST',self::INQUIRY,$payload);
         $res_json = $res_json->json();
-        Log::info($payload, $res_json);
+        Log::info($payload+'\n\n'+$res_json);
 
         if($res_json['rc'] == '00')
         {
