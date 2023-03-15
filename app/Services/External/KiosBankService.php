@@ -126,6 +126,7 @@ class KiosBankService
                 throw new Exception("Error Processing Request", 1);
                 break;
         }
+        Log::info($http->json());
         return $http;
     }
 
