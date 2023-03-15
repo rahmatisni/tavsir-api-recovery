@@ -755,11 +755,14 @@ class TravShopController extends Controller
                         $kios['data']['nominalProduk'] = $kios['data']['nominalProduk'] ?? $datalog['data']['data']['nominalProduk'] ?? '-';
                         $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? '-';
 
-                        $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
-                            'data' => $kios
-                        ]);
+                        
                         if($kios['rc'] == '00')
                         {
+                            $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? 'BERHASIL';
+                            $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
+                                'data' => $kios
+                            ]);
+
                             if(str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL'))
                             {
                                 $data->status = TransOrder::DONE;
@@ -787,6 +790,9 @@ class TravShopController extends Controller
                             // return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                         }
                         else {
+                            $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
+                                'data' => $kios
+                            ]);
                             $data->status = TransOrder::PAYMENT_SUCCESS;
                             $data->save();
                             DB::commit();
