@@ -244,27 +244,27 @@ class KiosBankService
         $order->description = 'single';
         $order->save();
 
-        $Postdata = TransOrder::where('order_id', $order->order_id)->first();
-        $orders = explode('-', $order->order_id);
+        // $Postdata = TransOrder::where('order_id', $order->order_id)->first();
+        // $orders = explode('-', $order->order_id);
 
-        $request = [
-            'productID'=> $data['code'],
-            'customerID'=>$data['phone'],
-            'referenceID'=>$orders[2],
-            'data' => [
-                'harga'=>$data['price'],
-                'nominalProduk'=>$data['price'],
-                'nama'=>$data['description']
+        // $request = [
+        //     'productID'=> $data['code'],
+        //     'customerID'=>$data['phone'],
+        //     'referenceID'=>$orders[2],
+        //     'data' => [
+        //         'harga'=>$data['price'],
+        //         'nominalProduk'=>$data['price'],
+        //         'nama'=>$data['description']
 
-            ],
-            'description'=>'INQUIRY'
-        ];
+        //     ],
+        //     'description'=>'INQUIRY'
+        // ];
 
-        $Postdata->log_kiosbank()->updateOrCreate([
-            'trans_order_id' => $Postdata->id
-        ],[
-            'data' => $request
-        ]);
+        // $Postdata->log_kiosbank()->updateOrCreate([
+        //     'trans_order_id' => $Postdata->id
+        // ],[
+        //     'data' => $request
+        // ]);
 
         return $order;
     }
