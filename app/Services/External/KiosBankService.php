@@ -336,7 +336,8 @@ class KiosBankService
                 DB::beginTransaction();
                 Log::info($request);
                 $request['data']['idPelanggan'] = $request['data']['noHandphone'] ?? ($request['data']['idPelanggan'] ?? '-');
-                $request['data']['noReferensi'] = $request['referenceID'] ?? ($request['data']['noReferensi'] ?? '-');
+                // $request['data']['noReferensi'] = $request['referenceID'] ?? ($request['data']['noReferensi'] ?? '-');
+                $request['data']['noReferensi'] = $request['data']['noReferensi'] ?? '-';
 
                 $request['data']['status'] = $request['data']['status'] ?? ($request['description'] ?? '-');
                 $request['data']['harga'] = $request['data']['harga'] ?? ($data->sub_total ?? '-');
