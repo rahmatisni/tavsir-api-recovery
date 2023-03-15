@@ -627,9 +627,7 @@ class TravShopController extends Controller
                     $kios['data']['nominalProduk'] = $kios['data']['nominalProduk'] ?? $datalog['data']['data']['nominalProduk'] ?? $kios['data']['harga'] ?? '-';
                     $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? $kios['data']['description'] ?? '-';
 
-                    $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
-                        'data' => $kios
-                    ]);
+                   
                     
                     if($kios['rc'] == '00'){
                         // $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? '-';
@@ -650,6 +648,9 @@ class TravShopController extends Controller
 
                         }
                     }
+                    $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
+                        'data' => $kios
+                    ]);
                     // $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
                     //     'data' => $kios
                     // ]);
