@@ -256,7 +256,7 @@ class KiosBankService
             //     'nama'=>$data['description']
 
             // ],
-            'referenceID'=>$orders[2],
+            // 'referenceID'=>$orders[2],
             'description'=>'INQUIRY'
         ];
 
