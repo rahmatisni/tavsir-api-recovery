@@ -284,13 +284,13 @@ class KiosBankService
         return $res_json;
     }
 
-    public function dualPayment($sub_total,$order_id)
+    public function dualPayment($sub_total,$order_id,$tagihan,$admin, $total)
     {
         $order = explode('-', $order_id);
         $payload = [
-            'total'=>str_pad($sub_total, 12, "0", STR_PAD_LEFT),
-            'admin'=>'000000000000',
-            'tagihan'=>str_pad($sub_total, 12, "0", STR_PAD_LEFT),
+            'total'=>$total,
+            'admin'=> $admin,
+            'tagihan'=>$tagihan,
             'sessionID'=> $this->getSeesionId(),
             'productID'=>$order[0] ?? '',
             'referenceID'=>$order[2] ?? '',
