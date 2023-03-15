@@ -758,13 +758,11 @@ class TravShopController extends Controller
                         
                         if($kios['rc'] == '00')
                         {
-                            $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? 'BERHASIL';
-                            $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
-                                'data' => $kios
-                            ]);
-
                             if(str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL'))
                             {
+                                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
+                                    'data' => $kios
+                                ]);
                                 $data->status = TransOrder::DONE;
                                 $data->save();
                                 DB::commit();
@@ -772,6 +770,9 @@ class TravShopController extends Controller
                             }
                             if(str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES'))
                             {
+                                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
+                                    'data' => $kios
+                                ]);
                                 $data->status = TransOrder::DONE;
                                 $data->save();
                                 DB::commit();
@@ -779,6 +780,10 @@ class TravShopController extends Controller
                             }
                             else 
                             {
+                                $kios['description'] = 'BERHASIL';
+                                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
+                                    'data' => $kios
+                                ]);
                                 $data->status = TransOrder::READY;
                                 $data->save();
                                 DB::commit();
