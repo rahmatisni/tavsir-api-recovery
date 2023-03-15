@@ -625,7 +625,7 @@ class TravShopController extends Controller
 
                     $kios['data']['nama'] = $kios['data']['nama'] ?? $datalog['data']['data']['nama'] ?? '-';
                     $kios['data']['nominalProduk'] = $kios['data']['nominalProduk'] ?? $datalog['data']['data']['nominalProduk'] ?? $kios['data']['harga'] ?? '-';
-                    $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '-';
+                    $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? ($kios['data']['description'] ?? '-');
 
                     $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
                         'data' => $kios
