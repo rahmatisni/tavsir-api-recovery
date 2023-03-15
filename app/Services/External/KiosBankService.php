@@ -249,7 +249,7 @@ class KiosBankService
         $orders = explode('-', $order->order_id);
 
         $request = [
-            'referenceID'=>$orders[2],
+            'referenceID'=>'-',
             'data' => [
                 'harga'=>$data['price'],
                 'nominalProduk'=>$data['price'],
@@ -411,7 +411,8 @@ class KiosBankService
                 $order->total = $order->sub_total + $order->fee;
                 // $order->description = $res_json['data']['noHandphone'] ?? $res_json['data']['idPelanggan'].'-'.$res_json['productID'].'-'.$res_json['data']['nama'];
                 $res_json['data']['idPelanggan'] = $res_json['data']['noHandphone'] ?? $res_json['data']['idPelanggan'];
-                $res_json['data']['noReferensi'] = $res_json['referenceID'] ?? $res_json['data']['noReferensi'];
+                // $res_json['data']['noReferensi'] = $res_json['referenceID'] ?? $res_json['data']['noReferensi'];
+                $res_json['data']['noReferensi'] = $res_json['data']['noReferensi'] ?? '-';
 
                 $res_json['data']['status'] = $res_json['data']['status'] ?? ($res_json['description'] ?? '-');
                 $res_json['data']['harga'] = $res_json['data']['harga'] ?? ($order->sub_total ?? '-');
@@ -431,7 +432,8 @@ class KiosBankService
                 // $order->description = $res_json['data']['noHandphone'] ?? $res_json['data']['idPelanggan'].'-'.$res_json['productID'].'-'.$res_json['data']['nama'];
                 $order->total = $order->sub_total + $order->fee;
                 $res_json['data']['idPelanggan'] = $res_json['data']['noHandphone'] ?? $res_json['data']['idPelanggan'];
-                $res_json['data']['noReferensi'] = $res_json['referenceID'] ?? $res_json['data']['noReferensi'];
+                // $res_json['data']['noReferensi'] = $res_json['referenceID'] ?? $res_json['data']['noReferensi'];
+                $res_json['data']['noReferensi'] = $res_json['data']['noReferensi'] ?? '-';
 
                 $res_json['data']['status'] = $res_json['data']['status'] ?? ($res_json['description'] ?? '-');
                 $res_json['data']['harga'] = $res_json['data']['harga'] ?? ($order->sub_total ?? '-');
