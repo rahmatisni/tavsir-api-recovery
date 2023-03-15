@@ -652,6 +652,9 @@ class TravShopController extends Controller
                         // Log::info($kios);
                         if(str_contains($kios['description'] ?? $kios['data']['status'], 'TRANSAKSI SEDANG DIPROSES'))
                         {
+                            $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
+                                'data' => $kios
+                            ]);
                             $data->status = TransOrder::READY;
                         }
                         else {
