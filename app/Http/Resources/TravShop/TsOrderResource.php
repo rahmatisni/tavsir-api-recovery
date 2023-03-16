@@ -36,7 +36,7 @@ class TsOrderResource extends JsonResource
             }
         }
 
-        $temp = json_decode($this->log_kiosbank->data);
+        $temp = $this->log_kiosbank->data;
 
        
 
