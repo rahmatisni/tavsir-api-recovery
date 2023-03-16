@@ -17,6 +17,7 @@ class TsOrderResource extends JsonResource
     public function toArray($request)
     {
         $product_kios = null;
+        
         if($this->order_type == TransOrder::ORDER_TRAVOY)
         {
             $product = explode('-',$this->order_id);
@@ -34,6 +35,11 @@ class TsOrderResource extends JsonResource
                 $product_kios['handphone'] = $product[1];
             }
         }
+
+        
+        $log_kios_bank = preg_replace('/\B([A-Z])/', '_$1', $this->log_kiosbank);
+
+
         return [
             "id" => $this->id,
             'rest_area_name' => $this->rest_area->name ?? null,
@@ -62,7 +68,7 @@ class TsOrderResource extends JsonResource
             'description' => $this->description,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'payment' => $this->payment->data ?? null,
-            'log_kiosbank' => $this->log_kiosbank,
+            'log_kiosbank' => $log_kios_bank,
             'detil' => TsOrderDetilResource::collection($this->detil),
             'detil_kios' => $product_kios
         ];
