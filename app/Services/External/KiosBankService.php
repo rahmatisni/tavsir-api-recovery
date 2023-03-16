@@ -247,12 +247,14 @@ class KiosBankService
 
         $Postdata = TransOrder::where('order_id', $order->order_id)->first();
         $orders = explode('-', $order->order_id);
+        $nom = $data['description'];
+        $nom = preg_replace('/[^0-9]/', '', $nom);
 
         $request = [
             'referenceID'=>'-',
             'data' => [
                 'harga'=>$data['price'],
-                'nominalProduk'=>$data['price'],
+                'nominalProduk'=>$nom,
             ],
             'description'=>'INQUIRY'
         ];
