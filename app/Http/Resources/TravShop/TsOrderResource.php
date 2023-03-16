@@ -43,7 +43,7 @@ class TsOrderResource extends JsonResource
             $key = ucwords(preg_replace("/(?<=[a-zA-Z])(?=[A-Z])/", "_", $key));
             $newArr[$key] = $val;
         }
-
+        $this->log_kiosbank->data['data'] = $newArr;
        
 
         return [
