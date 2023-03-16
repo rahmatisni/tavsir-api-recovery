@@ -17,6 +17,7 @@ use App\Http\Resources\TravShop\TsTenantResource;
 use App\Http\Resources\TravShop\TsRestAreaResource;
 use App\Http\Resources\TsPaymentresource;
 use App\Models\Bind;
+use App\Models\KiosBank\ProductKiosBank;
 use App\Models\PaymentMethod;
 use App\Models\PgJmto;
 use App\Models\Product;
@@ -32,6 +33,7 @@ use App\Services\StockServices;
 use App\Services\TransSharingServices;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -207,8 +209,22 @@ class TravShopController extends Controller
     public function orderCustomer($id, Request $request)
     {
         $tanggal_awal = $request->tanggal_awal;
-        $tanggal_akhir = $request->tanggal_akhir;
+        $tanggal_akhir = $request->tanggal_akhir ?? Carbon::now()->endOfDay();
 
+        $tanggal_sub = null;
+        $tanggal_end = null;
+
+        if($request->hari){
+            $now = CarbonImmutable::now();
+            $tanggal_sub = $now->subDay($request->hari);
+            $tanggal_end = $now->endOfDay();
+        }
+
+        $kategori = null;
+        if($request->kategori){
+            $kategori = ProductKiosBank::where('sub_kategori', $request->kategori)->pluck('kode')->toArray();
+        }
+        
         $data = TransOrder::with('detil')->where('customer_id', $id)
             ->when($status = request()->status, function ($q) use ($status) {
                 return $q->where('status', $status);
@@ -226,8 +242,28 @@ class TravShopController extends Controller
                         $tanggal_akhir . ' 23:59:59'
                     ]
                 );
+            })->when($request->hari, function ($q) use ($tanggal_sub, $tanggal_end) {
+                return $q->whereBetween(
+                    'created_at',
+                    [
+                        $tanggal_sub,
+                        $tanggal_end,
+                    ]
+                );
             })
             ->orderByDesc('created_at')->get();
+
+            if(count($kategori) > 0)
+            {
+                $data = $data->filter(function($item)use ($kategori){
+                    if($item->order_type == TransOrder::ORDER_TRAVOY){
+                        $kategori_id = explode('-',$item->order_id)[0];
+                        if(in_array($kategori_id, $kategori)){
+                            return $item;
+                        }
+                    }
+                });
+            }
         return response()->json(TsOrderResource::collection($data));
     }
 
