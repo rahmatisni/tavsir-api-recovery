@@ -58,7 +58,7 @@ class TsOrderResource extends JsonResource
 
         return [
             "id" => $this->id,
-            'rest_area_name' => $this->rest_area->name ?? null,
+            'rest_area_name' => $this->rest_area?->name ?? null,
             'tenant_id' => $this->tenant_id,
             'tenant_name' => $this->tenant->name ?? null,
             'tenant_photo' => $this->tenant ? ($this->tenant->photo_url ? asset($this->tenant->photo_url) : null) : null,
