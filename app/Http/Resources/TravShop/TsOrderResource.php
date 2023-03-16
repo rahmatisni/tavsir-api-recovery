@@ -75,7 +75,8 @@ class TsOrderResource extends JsonResource
             'description' => $this->description,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'payment' => $this->payment->data ?? null,
-            'log_kiosbank' => $newArr,
+            'log_kiosbank' => $this->log_kiosbank,
+            'dump' => $newArr,
             'detil' => TsOrderDetilResource::collection($this->detil),
             'detil_kios' => $product_kios
         ];
