@@ -305,12 +305,12 @@ class KiosBankService
         return $res_json;
     }
 
-    public function cekStatus($sub_total,$order_id)
+    public function cekStatus($sub_total,$order_id,$admin)
     {
         $order = explode('-', $order_id);
         $payload = [
             'total'=>$sub_total,
-            'admin'=>'000000000000',
+            'admin'=>$admin,
             'tagihan'=>$sub_total,
             'sessionID'=> $this->getSeesionId(),
             'productID'=>$order[0],

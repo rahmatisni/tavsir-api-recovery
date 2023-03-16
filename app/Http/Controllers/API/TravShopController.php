@@ -612,10 +612,12 @@ class TravShopController extends Controller
             if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::DONE || $data->status == TransOrder::READY) {
                 $kios = [];
                 if($data->order_type == TransOrder::ORDER_TRAVOY){
-                    $kios = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id);
+                    $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
+                    $adminBank = $datalog['data']['data']['adminBank'] ?? '000000000000';
+
+                    $kios = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id, $adminBank);
                     Log::info($kios);
 
-                    $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
                     
                     $kios['data']['idPelanggan'] = $kios['data']['noHandphone'] ?? $kios['data']['idPelanggan'] ?? $kios['customerID'] ?? '-';
                     // $kios['data']['noReferensi'] = $kios['referenceID'] ?? ($kios['data']['noReferensi'] ?? '-');
