@@ -631,7 +631,7 @@ class TravShopController extends Controller
                     Log::info($kios);
 
                     
-                    $kios['data']['idPelanggan'] = $kios['data']['noHandphone'] ?? $kios['data']['idPelanggan'] ?? $kios['customerID'] ?? '-';
+                    // $kios['data']['idPelanggan'] = $kios['data']['noHandphone'] ?? $kios['data']['idPelanggan'] ?? $kios['customerID'] ?? '-';
                     // $kios['data']['noReferensi'] = $kios['referenceID'] ?? ($kios['data']['noReferensi'] ?? '-');
                     $kios['data']['noReferensi'] = $kios['data']['noReferensi'] ?? '-';
                    // $kios['data']['status'] = $kios['data']['status'] ?? ($kios['description'] ?? $kios['data']['description'] ?? '-');
@@ -770,7 +770,7 @@ class TravShopController extends Controller
                         }
                         Log::info($kios);
                         $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
-                        $kios['data']['idPelanggan'] = $kios['data']['noHandphone'] ?? ($kios['data']['idPelanggan'] ?? $kios['customerID'] ?? '-');
+                        // $kios['data']['idPelanggan'] = $kios['data']['noHandphone'] ?? ($kios['data']['idPelanggan'] ?? $kios['customerID'] ?? '-');
                         // $kios['data']['noReferensi'] = $kios['referenceID'] ?? ($kios['data']['noReferensi'] ?? '-');
                         $kios['data']['noReferensi'] = $kios['data']['noReferensi'] ?? '-';
                        // $kios['data']['status'] = $kios['data']['status'] ?? ($kios['description'] ?? '-');
