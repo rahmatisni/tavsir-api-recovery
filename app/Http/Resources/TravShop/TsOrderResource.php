@@ -32,7 +32,7 @@ class TsOrderResource extends JsonResource
             if($product_kios)
             {
                 $product_kios = $product_kios->toArray();
-                $product_kios['handphone'] = $product[1];
+                // $product_kios['handphone'] = $product[1];
             }
             $temp = $this->log_kiosbank?->data['data'];
 

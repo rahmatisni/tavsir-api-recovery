@@ -253,6 +253,7 @@ class KiosBankService
         $request = [
             'referenceID'=>'-',
             'data' => [
+                'noHandphone'=>$data['phone'],
                 'harga'=>$data['price'],
                 'nominalProduk'=>$nom,
             ],
