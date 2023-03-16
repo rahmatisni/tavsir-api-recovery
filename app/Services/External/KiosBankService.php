@@ -339,10 +339,10 @@ class KiosBankService
                 $request['data']['noReferensi'] = $request['data']['noReferensi'] ?? '-';
 
                 $request['data']['status'] = $request['data']['status'] ?? ($request['description'] ?? '-');
-                $request['data']['harga'] = $request['data']['harga'] ?? ($data->sub_total ?? '-');
+                $request['data']['harga'] = $request['data']['harga'] ?? ($data->sub_total ?? '0');
 
                 $request['data']['nama'] = $request['data']['nama'] ?? ($request['data']['data']['nama'] ?? '-');
-                $request['data']['nominalProduk'] = $request['data']['nominalProduk'] ?? ($request['data']['data']['nominalProduk'] ?? '-');
+                $request['data']['nominalProduk'] = $request['data']['nominalProduk'] ?? ($request['data']['data']['nominalProduk'] ?? ($data->sub_total ?? '0'));
                 
                 $request['description'] =  $request['description'] ?? ($request['data']['status'] ?? '-');
 
@@ -415,10 +415,10 @@ class KiosBankService
                 $res_json['data']['noReferensi'] = $res_json['data']['noReferensi'] ?? '-';
 
                 $res_json['data']['status'] = $res_json['data']['status'] ?? ($res_json['description'] ?? '-');
-                $res_json['data']['harga'] = $res_json['data']['harga'] ?? ($order->sub_total ?? '-');
+                $res_json['data']['harga'] = $res_json['data']['harga'] ?? ($order->sub_total ?? '0');
 
                 $res_json['data']['nama'] = $res_json['data']['nama'] ?? ($res_json['data']['data']['nama'] ?? '-');
-                $res_json['data']['nominalProduk'] = $res_json['data']['nominalProduk'] ?? ($res_json['data']['data']['nominalProduk'] ?? '-');
+                $res_json['data']['nominalProduk'] = $res_json['data']['nominalProduk'] ?? ($res_json['data']['data']['nominalProduk'] ?? ($order->sub_total ?? '0'));
                 
                 $order->save();
                 $order->log_kiosbank()->updateOrCreate(['trans_order_id' => $order->id],[
@@ -436,10 +436,10 @@ class KiosBankService
                 $res_json['data']['noReferensi'] = $res_json['data']['noReferensi'] ?? '-';
 
                 $res_json['data']['status'] = $res_json['data']['status'] ?? ($res_json['description'] ?? '-');
-                $res_json['data']['harga'] = $res_json['data']['harga'] ?? ($order->sub_total ?? '-');
+                $res_json['data']['harga'] = $res_json['data']['harga'] ?? ($order->sub_total ?? '0');
 
                 $res_json['data']['nama'] = $res_json['data']['nama'] ?? ($res_json['data']['data']['nama'] ?? '-');
-                $res_json['data']['nominalProduk'] = $res_json['data']['nominalProduk'] ?? ($res_json['data']['data']['nominalProduk'] ?? '-');
+                $res_json['data']['nominalProduk'] = $res_json['data']['nominalProduk'] ?? ($res_json['data']['data']['nominalProduk'] ?? ($order->sub_total ?? '0'));
 
                 $res_json['description'] = 'INQUIRY';
                 $order->save();
