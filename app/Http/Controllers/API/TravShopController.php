@@ -633,7 +633,7 @@ class TravShopController extends Controller
                     
                     // $kios['data']['idPelanggan'] = $kios['data']['noHandphone'] ?? $kios['data']['idPelanggan'] ?? $kios['customerID'] ?? '-';
                     // $kios['data']['noReferensi'] = $kios['referenceID'] ?? ($kios['data']['noReferensi'] ?? '-');
-                    $kios['data']['noReferensi'] = $kios['data']['noReferensi'] ?? '-';
+                    // $kios['data']['noReferensi'] = $kios['data']['noReferensi'] ?? '-';
                    // $kios['data']['status'] = $kios['data']['status'] ?? ($kios['description'] ?? $kios['data']['description'] ?? '-');
                     $kios['data']['harga'] = $kios['data']['harga'] ?? ($data->sub_total ?? '0');
 
@@ -772,7 +772,7 @@ class TravShopController extends Controller
                         $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
                         // $kios['data']['idPelanggan'] = $kios['data']['noHandphone'] ?? ($kios['data']['idPelanggan'] ?? $kios['customerID'] ?? '-');
                         // $kios['data']['noReferensi'] = $kios['referenceID'] ?? ($kios['data']['noReferensi'] ?? '-');
-                        $kios['data']['noReferensi'] = $kios['data']['noReferensi'] ?? '-';
+                        // $kios['data']['noReferensi'] = $kios['data']['noReferensi'] ?? '-';
                        // $kios['data']['status'] = $kios['data']['status'] ?? ($kios['description'] ?? '-');
                         $kios['data']['harga'] = $kios['data']['harga'] ?? ($data->sub_total ?? '0');
                         $kios['data']['nama'] = $kios['data']['nama'] ?? $datalog['data']['data']['nama'] ?? '-';
@@ -804,7 +804,7 @@ class TravShopController extends Controller
                             }
                             else 
                             {
-                                $kios['description'] = 'BERHASIL';
+                                $kios['description'] = $kios['description'] ?? $kios['data']['description'];
                                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
                                     'data' => $kios
                                 ]);
