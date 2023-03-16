@@ -220,7 +220,7 @@ class TravShopController extends Controller
             $tanggal_end = $now->endOfDay();
         }
 
-        $kategori = null;
+        $kategori = [];
         if($request->kategori){
             $kategori = ProductKiosBank::where('sub_kategori', $request->kategori)->pluck('kode')->toArray();
         }
