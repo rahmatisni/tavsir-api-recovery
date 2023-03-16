@@ -34,20 +34,25 @@ class TsOrderResource extends JsonResource
                 $product_kios = $product_kios->toArray();
                 $product_kios['handphone'] = $product[1];
             }
+            $temp = $this->log_kiosbank->data['data'];
+
+            if ($temp)
+            {
+                $temps = $this->log_kiosbank->data;
+                $temps['data'] = [];
+        
+                $newArr = array();
+                // $newArrs = array();
+                // $temps['data'] = $newArr;
+        
+                foreach($temp as $key => $val) {
+                    $key = ucwords(preg_replace("/(?<=[a-zA-Z])(?=[A-Z])/", "_", $key));
+                    $temps['data'][$key] = $val;
+                }
+            }
         }
 
-        $temp = $this->log_kiosbank->data['data'];
-        $temps = $this->log_kiosbank->data;
-        $temps['data'] = [];
-
-        $newArr = array();
-        // $newArrs = array();
-        // $temps['data'] = $newArr;
-
-        foreach($temp as $key => $val) {
-            $key = ucwords(preg_replace("/(?<=[a-zA-Z])(?=[A-Z])/", "_", $key));
-            $temps['data'][$key] = $val;
-        }
+       
       
        
 
