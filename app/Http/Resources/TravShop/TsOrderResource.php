@@ -49,7 +49,7 @@ class TsOrderResource extends JsonResource
       
         foreach($temps as $key => $val) {
             // if ($key == 'data'){
-                $newArrs[$key] = $newArr+'1';
+                $newArrs['data'] = $newArr;
             // }
             // else {
             //     $newArrs[$key] = $val;
