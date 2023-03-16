@@ -204,8 +204,11 @@ class TravShopController extends Controller
         }
     }
 
-    public function orderCustomer($id)
+    public function orderCustomer($id, Request $request)
     {
+        $tanggal_awal = $request->tanggal_awal;
+        $tanggal_akhir = $request->tanggal_akhir;
+
         $data = TransOrder::with('detil')->where('customer_id', $id)
             ->when($status = request()->status, function ($q) use ($status) {
                 return $q->where('status', $status);
@@ -215,7 +218,16 @@ class TravShopController extends Controller
                 return $q->where('order_type', $order_type);
             })->when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
                 return $q->where('tenant_id', $tenant_id);
-            })->orderByDesc('created_at')->get();
+            })->when(($tanggal_awal && $tanggal_akhir), function ($q) use ($tanggal_awal, $tanggal_akhir) {
+                return $q->whereBetween(
+                    'created_at',
+                    [
+                        $tanggal_awal,
+                        $tanggal_akhir . ' 23:59:59'
+                    ]
+                );
+            })
+            ->orderByDesc('created_at')->get();
         return response()->json(TsOrderResource::collection($data));
     }
 
