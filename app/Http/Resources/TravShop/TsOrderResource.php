@@ -40,9 +40,8 @@ class TsOrderResource extends JsonResource
         $newArr = array();
 
         foreach($temp as $key => $val) {
-            // array_push($newArr,"blue","yellow");
-            array_push($newArr, array($key => $val));
-
+            // array_push($newArr, array($key => $val));
+            $newArr[$key] = $val;
         }
 
        
