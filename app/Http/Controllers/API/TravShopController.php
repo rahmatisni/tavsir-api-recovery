@@ -621,10 +621,10 @@ class TravShopController extends Controller
                     // $kios['data']['noReferensi'] = $kios['referenceID'] ?? ($kios['data']['noReferensi'] ?? '-');
                     $kios['data']['noReferensi'] = $kios['data']['noReferensi'] ?? '-';
                     $kios['data']['status'] = $kios['data']['status'] ?? ($kios['description'] ?? $kios['data']['description'] ?? '-');
-                    $kios['data']['harga'] = $kios['data']['harga'] ?? ($data->sub_total ?? '-');
+                    $kios['data']['harga'] = $kios['data']['harga'] ?? ($data->sub_total ?? '0');
 
                     $kios['data']['nama'] = $kios['data']['nama'] ?? $datalog['data']['data']['nama'] ?? '-';
-                    $kios['data']['nominalProduk'] = $kios['data']['nominalProduk'] ?? $datalog['data']['data']['nominalProduk'] ?? $kios['data']['harga'] ?? '-';
+                    $kios['data']['nominalProduk'] = $kios['data']['nominalProduk'] ?? $datalog['data']['data']['nominalProduk'] ?? $kios['data']['harga'] ?? '0';
                     $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '-';
 
                    
@@ -760,9 +760,9 @@ class TravShopController extends Controller
                         // $kios['data']['noReferensi'] = $kios['referenceID'] ?? ($kios['data']['noReferensi'] ?? '-');
                         $kios['data']['noReferensi'] = $kios['data']['noReferensi'] ?? '-';
                         $kios['data']['status'] = $kios['data']['status'] ?? ($kios['description'] ?? '-');
-                        $kios['data']['harga'] = $kios['data']['harga'] ?? ($data->sub_total ?? '-');
+                        $kios['data']['harga'] = $kios['data']['harga'] ?? ($data->sub_total ?? '0');
                         $kios['data']['nama'] = $kios['data']['nama'] ?? $datalog['data']['data']['nama'] ?? '-';
-                        $kios['data']['nominalProduk'] = $kios['data']['nominalProduk'] ?? $datalog['data']['data']['nominalProduk'] ?? '-';
+                        $kios['data']['nominalProduk'] = $kios['data']['nominalProduk'] ?? $datalog['data']['data']['nominalProduk'] ?? '0';
                         $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? '-';
 
                         
