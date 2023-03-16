@@ -40,7 +40,7 @@ class TsOrderResource extends JsonResource
         $newArr = array();
 
         foreach($temp as $key => $val) {
-            // array_push($newArr, array($key => $val));
+            $key = preg_replace("/(?<=[a-zA-Z])(?=[A-Z])/", "_", $key);
             $newArr[$key] = $val;
         }
 
