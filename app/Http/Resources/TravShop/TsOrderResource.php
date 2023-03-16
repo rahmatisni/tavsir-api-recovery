@@ -51,9 +51,9 @@ class TsOrderResource extends JsonResource
             if ($key == 'data'){
                 $newArrs[$key] = $newArr;
             }
-            else {
-                $newArrs[$key] = $val;
-            }
+            // else {
+            //     $newArrs[$key] = $val;
+            // }
         }
        
 
