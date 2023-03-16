@@ -36,14 +36,18 @@ class TsOrderResource extends JsonResource
             }
         }
 
-        $temp = $this->log_kiosbank->data['data'];
+        $temp = $this->log_kiosbank->data;
         $newArr = array();
 
         foreach($temp as $key => $val) {
-            $key = ucwords(preg_replace("/(?<=[a-zA-Z])(?=[A-Z])/", "_", $key));
-            $newArr[$key] = $val;
+            // if ($key == 'data') {
+            //     foreach($val as $key => $val) {
+            //         $key = ucwords(preg_replace("/(?<=[a-zA-Z])(?=[A-Z])/", "_", $key));
+                    $newArr[$key] = $val;
+            // }
+
         }
-        $this->log_kiosbank->data['data'] = $newArr;
+      
        
 
         return [
