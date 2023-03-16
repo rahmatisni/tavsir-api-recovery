@@ -44,8 +44,8 @@ class TsOrderResource extends JsonResource
         // $temps['data'] = $newArr;
 
         foreach($temp as $key => $val) {
-            $key = ucwords(preg_replace("/(?<=[a-zA-Z])(?=[A-Z])/", "_", $key));
-            $temps['data'][$key] = $val;
+            $keys = ucwords(preg_replace("/(?<=[a-zA-Z])(?=[A-Z])/", "_", $key));
+            $temps['data'][$key] = $temps['data'][$keys];
         }
       
        
