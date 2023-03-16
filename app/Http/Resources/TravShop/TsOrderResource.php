@@ -38,6 +38,10 @@ class TsOrderResource extends JsonResource
 
         $temp = $this->log_kiosbank->data;
 
+        $newArr = array();
+        foreach($temp as $key => $value) {
+            $newArr[$key];
+        }
 
         // echo json_encode($newArr);
         // $log_kios_bank = $newArr;
@@ -71,7 +75,7 @@ class TsOrderResource extends JsonResource
             'description' => $this->description,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'payment' => $this->payment->data ?? null,
-            'log_kiosbank' => $temp,
+            'log_kiosbank' => $newArr,
             'detil' => TsOrderDetilResource::collection($this->detil),
             'detil_kios' => $product_kios
         ];
