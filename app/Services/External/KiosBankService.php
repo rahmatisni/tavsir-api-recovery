@@ -417,7 +417,7 @@ class KiosBankService
                 $res_json['data']['status'] = $res_json['data']['status'] ?? ($res_json['description'] ?? '-');
                 $res_json['data']['harga'] = $res_json['data']['harga'] ?? ($order->sub_total ?? '0');
 
-                $res_json['data']['nama'] = $res_json['data']['nama'] ?? ($res_json['data']['data']['nama'] ?? '-');
+                // $res_json['data']['nama'] = $res_json['data']['nama'] ?? ($res_json['data']['data']['nama'] ?? '-');
                 $res_json['data']['nominalProduk'] = $res_json['data']['nominalProduk'] ?? ($res_json['data']['data']['nominalProduk'] ?? ($order->sub_total ?? '0'));
                 
                 $order->save();
@@ -438,7 +438,7 @@ class KiosBankService
                 $res_json['data']['status'] = $res_json['data']['status'] ?? ($res_json['description'] ?? '-');
                 $res_json['data']['harga'] = $res_json['data']['harga'] ?? ($order->sub_total ?? '0');
 
-                $res_json['data']['nama'] = $res_json['data']['nama'] ?? ($res_json['data']['data']['nama'] ?? '-');
+                // $res_json['data']['nama'] = $res_json['data']['nama'] ?? ($res_json['data']['data']['nama'] ?? '-');
                 $res_json['data']['nominalProduk'] = $res_json['data']['nominalProduk'] ?? ($res_json['data']['data']['nominalProduk'] ?? ($order->sub_total ?? '0'));
 
                 $res_json['description'] = 'INQUIRY';
