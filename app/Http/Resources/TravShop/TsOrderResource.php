@@ -38,14 +38,15 @@ class TsOrderResource extends JsonResource
 
         $temp = $this->log_kiosbank->data['data'];
         $temps = $this->log_kiosbank->data;
+        $temps['data'] = [];
 
         $newArr = array();
         // $newArrs = array();
         // $temps['data'] = $newArr;
 
         foreach($temp as $key => $val) {
-            $keys = ucwords(preg_replace("/(?<=[a-zA-Z])(?=[A-Z])/", "_", $key));
-            $temps['data'][$key] = $temps['data'][$keys];
+            $key = ucwords(preg_replace("/(?<=[a-zA-Z])(?=[A-Z])/", "_", $key));
+            $temps['data'][$key] = $val;
         }
       
        
