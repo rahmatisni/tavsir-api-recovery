@@ -36,9 +36,12 @@ class TsOrderResource extends JsonResource
             }
         }
 
-        
-        $log_kios_bank = preg_replace('/\B([A-Z])/', '_$1', $this->log_kiosbank);
+        $temp = $this->log_kiosbank->data;
 
+
+        // echo json_encode($newArr);
+        // $log_kios_bank = $newArr;
+        // $log_kios_bank = $this->log_kiosbank;
 
         return [
             "id" => $this->id,
@@ -68,7 +71,7 @@ class TsOrderResource extends JsonResource
             'description' => $this->description,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'payment' => $this->payment->data ?? null,
-            'log_kiosbank' => $log_kios_bank,
+            'log_kiosbank' => $temp,
             'detil' => TsOrderDetilResource::collection($this->detil),
             'detil_kios' => $product_kios
         ];
