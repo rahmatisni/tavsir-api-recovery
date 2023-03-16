@@ -40,21 +40,14 @@ class TsOrderResource extends JsonResource
         $temps = $this->log_kiosbank->data;
 
         $newArr = array();
-        $newArrs = array();
+        // $newArrs = array();
+        $temps['data'] = $newArr;
 
         foreach($temp as $key => $val) {
             $key = ucwords(preg_replace("/(?<=[a-zA-Z])(?=[A-Z])/", "_", $key));
             $newArr[$key] = $val;
         }
       
-        foreach($temps as $key => $val) {
-            // if ($key == 'data'){
-                $newArrs['data'] = $newArr;
-            // }
-            // else {
-            //     $newArrs[$key] = $val;
-            // }
-        }
        
 
         return [
@@ -86,7 +79,7 @@ class TsOrderResource extends JsonResource
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'payment' => $this->payment->data ?? null,
             'log_kiosbank' => $this->log_kiosbank,
-            'dump' => $newArrs,
+            'dump' => $temps,
             'detil' => TsOrderDetilResource::collection($this->detil),
             'detil_kios' => $product_kios
         ];
