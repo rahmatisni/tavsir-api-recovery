@@ -43,7 +43,12 @@ class TsOrderResource extends JsonResource
         
                 foreach($temp as $key => $val) {
                     $key = ucwords(preg_replace("/(?<=[a-zA-Z])(?=[A-Z])/", "_", $key));
-                    $temps['data'][$key] = $val;
+                    if ($key == ('Tagihan' || 'tagihan')){
+                        $temps['data'][$key] = 'asd';
+                    }
+                    else {
+                        $temps['data'][$key] = $val;
+                    }
                 }
             }
         }
