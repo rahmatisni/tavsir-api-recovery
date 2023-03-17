@@ -50,9 +50,9 @@ class TsOrderResource extends JsonResource
                     $valz = preg_replace('/^0/', '', $val);
 
                     $temps['data'][$key] = $val;
-                    if ($valz){
-                        $temps['data'][$key] = $valz;
-                    }
+                    // if ($valz){
+                    //     $temps['data'][$key] = $valz;
+                    // }
                 }
             }
         }
