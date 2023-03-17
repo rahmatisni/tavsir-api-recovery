@@ -6,6 +6,18 @@ use App\Models\KiosBank\ProductKiosBank;
 use App\Models\TransOrder;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * Summary of App\Http\Resources\TravShop\rupiah
+ * @param mixed $angka
+ * @return string
+ */
+function rupiah($angka){
+	
+    $hasil_rupiah = "Rp." . number_format($angka,0,',','.');
+    return $hasil_rupiah;
+ 
+}
+
 class TsOrderResource extends JsonResource
 {
     /**
@@ -14,13 +26,7 @@ class TsOrderResource extends JsonResource
      * @param  \Illuminate\Http\Request  $request
      * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
      */
-    public function rupiah($angka){
-	
-        $hasil_rupiah = "Rp." . number_format($angka,0,',','.');
-        return $hasil_rupiah;
-     
-    }
-
+   
      public function toArray($request)
     {
         $product_kios = null;
