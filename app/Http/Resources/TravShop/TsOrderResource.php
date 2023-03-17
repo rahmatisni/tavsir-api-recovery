@@ -35,6 +35,12 @@ class TsOrderResource extends JsonResource
                 $product_kios['handphone'] = $product[1];
             }
             $temp = $this->log_kiosbank?->data['data'];
+            function rupiah($angka){
+	
+                $hasil_rupiah = "Rp." . number_format($angka,0,',','.');
+                return $hasil_rupiah;
+             
+            }
 
             if ($temp)
             {
@@ -47,7 +53,7 @@ class TsOrderResource extends JsonResource
                     if (in_array($key, $param))
                     {
                         // $out = preg_replace('/^0/', '', $val);
-                        $temps['data'][$key] = (int)$val;
+                        $temps['data'][$key] = rupiah((int)$val);
                     }
                     else {
                         $temps['data'][$key] = $val;
@@ -94,4 +100,6 @@ class TsOrderResource extends JsonResource
             'detil_kios' => $product_kios
         ];
     }
+
+    
 }
