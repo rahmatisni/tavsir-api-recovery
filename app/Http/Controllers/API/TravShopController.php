@@ -666,7 +666,7 @@ class TravShopController extends Controller
                     $kios = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id, $adminBank);
                     Log::info($kios);
                     $kios['data']['harga'] = $kios['data']['harga'] ?? ($data->sub_total ?? '0');
-                    $kios['data']['nominalProduk'] = $kios['data']['nominalProduk'] ?? $datalog['data']['data']['nominalProduk'] ?? $kios['data']['harga'] ?? '0';
+                    // $kios['data']['nominalProduk'] = $kios['data']['nominalProduk'] ?? $datalog['data']['data']['nominalProduk'] ?? $kios['data']['harga'] ?? '0';
                     $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '-';
 
                    
@@ -798,9 +798,9 @@ class TravShopController extends Controller
                         }
                         Log::info($kios);
                         $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
-                        $kios['data']['harga'] = $kios['data']['harga'] ?? ($data->sub_total ?? '0');
-                        $kios['data']['nama'] = $kios['data']['nama'] ?? $datalog['data']['data']['nama'] ?? '-';
-                        $kios['data']['nominalProduk'] = $kios['data']['nominalProduk'] ?? $datalog['data']['data']['nominalProduk'] ?? '0';
+                        // $kios['data']['harga'] = $kios['data']['harga'] ?? ($data->sub_total ?? '0');
+                        // $kios['data']['nama'] = $kios['data']['nama'] ?? $datalog['data']['data']['nama'] ?? '-';
+                        // $kios['data']['nominalProduk'] = $kios['data']['nominalProduk'] ?? $datalog['data']['data']['nominalProduk'] ?? '0';
                         $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? '-';
 
                         
