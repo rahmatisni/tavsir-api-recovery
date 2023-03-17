@@ -46,7 +46,8 @@ class TsOrderResource extends JsonResource
                     $key = ucwords(preg_replace("/(?<=[a-zA-Z])(?=[A-Z])/", "_", $key));
                     if (in_array($key, $param))
                     {
-                        $temps['data'][$key] = 'asd';
+                        $out = preg_replace('/^0/', '', $val);
+                        $temps['data'][$key] = $out;
                     }
                     else {
                         $temps['data'][$key] = $val;
