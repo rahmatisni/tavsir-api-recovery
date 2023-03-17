@@ -41,7 +41,7 @@ class TsOrderResource extends JsonResource
                 $temps = $this->log_kiosbank->data;
                 $temps['data'] = [];
         
-                $os = array('Total','Tagihan','Admin_Bank');
+                $os = array('total','tagihan','adminBank');
 
         
                 foreach($temp as $key => $val) {
