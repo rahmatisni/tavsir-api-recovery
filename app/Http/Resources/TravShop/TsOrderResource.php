@@ -14,7 +14,14 @@ class TsOrderResource extends JsonResource
      * @param  \Illuminate\Http\Request  $request
      * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
      */
-    public function toArray($request)
+    public function rupiah($angka){
+	
+        $hasil_rupiah = "Rp." . number_format($angka,0,',','.');
+        return $hasil_rupiah;
+     
+    }
+
+     public function toArray($request)
     {
         $product_kios = null;
         
@@ -35,12 +42,7 @@ class TsOrderResource extends JsonResource
                 $product_kios['handphone'] = $product[1];
             }
             $temp = $this->log_kiosbank?->data['data'];
-            function rupiah($angka){
-	
-                $hasil_rupiah = "Rp." . number_format($angka,0,',','.');
-                return $hasil_rupiah;
-             
-            }
+            
 
             if ($temp)
             {
