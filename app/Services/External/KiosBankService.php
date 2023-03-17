@@ -422,7 +422,8 @@ class KiosBankService
 
                 // $res_json['data']['nama'] = $res_json['data']['nama'] ?? ($res_json['data']['data']['nama'] ?? '-');
                 // $res_json['data']['nominalProduk'] = $res_json['data']['nominalProduk'] ?? ($res_json['data']['data']['nominalProduk'] ?? ($order->sub_total ?? '0'));
-                
+                $res_json['description'] = 'INQUIRY';
+
                 $order->save();
                 $order->log_kiosbank()->updateOrCreate(['trans_order_id' => $order->id],[
                     'data' => $res_json
