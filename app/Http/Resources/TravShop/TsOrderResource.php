@@ -47,8 +47,9 @@ class TsOrderResource extends JsonResource
                 $product_kios = $product_kios->toArray();
                 $product_kios['handphone'] = $product[1];
             }
-            $temp = $this->log_kiosbank?->data['data'] ?? null;
+            // $temp = $this->log_kiosbank?->data['data'] ?? null;
             
+            $temp = null;
 
             if ($temp)
             {
