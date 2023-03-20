@@ -228,18 +228,8 @@ class KiosBankService
         return $product_pulsa;
     }
 
-    public function orderPulsa($data, $validatorarr)
-{
-    // dd($validator);
-
-        if (in_array($data['code'], $validatorarr))
-        {
-        }
-        else
-        {
-            return response()->json(['message' => 'Nomor Tidak Sesuai Dengan Produk!'], 422);
-        }
-        
+    public function orderPulsa($data)
+    {
         $order = new TransOrder();
         $order->order_type = TransOrder::ORDER_TRAVOY;
         $order->order_id = $data['code'].'-'.$data['phone'].'-'.rand(900000000000,999999999999).'-'.Carbon::now()->timestamp;

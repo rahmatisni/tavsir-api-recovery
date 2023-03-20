@@ -62,7 +62,12 @@ class KiosBankController extends Controller
         foreach ($validatordata as $y) {
             array_push($validatorarr, $y->kode);
         }
-        $data = $this->service->orderPulsa($reqest->validated(), $validatorarr);
+        if (!in_array($reqest->code, $validatorarr))
+        {
+            return response()->json(['message' => 'Nomor Tidak Sesuai Dengan Produk!'], 422);
+        }
+
+        $data = $this->service->orderPulsa($reqest->validated());
         return response()->json($data);
     }
 
