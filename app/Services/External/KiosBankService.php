@@ -228,7 +228,7 @@ class KiosBankService
         return $product_pulsa;
     }
 
-    public function orderPulsa($data)
+    public function orderPulsa($data, $validator)
 {
         $order = new TransOrder();
         $order->order_type = TransOrder::ORDER_TRAVOY;
