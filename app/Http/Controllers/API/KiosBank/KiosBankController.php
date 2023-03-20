@@ -48,7 +48,7 @@ class KiosBankController extends Controller
     {
         $kategori_pulsa = codefikasiNomor($reqest->phone);
         if($reqest->phone && !$kategori_pulsa){
-            return response()->json(['message' => 'Nomor Tidak Sesuai'], 422);
+            return response()->json(['message' => 'Nomor Tidak Sesuai Dengan Produk!', 'errors' => ['phone'=> ['Nomor Tidak Sesuai Dengan Produk!']]], 422);
         }
 
         $datax = $this->service->getProduct($kategori_pulsa);
