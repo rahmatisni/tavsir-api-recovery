@@ -51,9 +51,9 @@ class KiosBankController extends Controller
             return response()->json(['message' => 'Nomor Tidak Sesuai Dengan Produk Yang Dipilih!'], 422);
         }
         $datax = $this->service->getProduct($kategori_pulsa);
-        // return response()->json($data);
-        dd(json_decode($datax));
-        $data = $this->service->orderPulsa($reqest->validated());
+        $validator = json_decode($datax['PULSA']);
+        dd($validator);
+        $data = $this->service->orderPulsa($reqest->validated(), $validator);
         return response()->json($data);
     }
 
