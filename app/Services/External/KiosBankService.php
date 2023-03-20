@@ -230,6 +230,8 @@ class KiosBankService
 
     public function orderPulsa($data, $validator)
 {
+
+    dd($validator);
         $order = new TransOrder();
         $order->order_type = TransOrder::ORDER_TRAVOY;
         $order->order_id = $data['code'].'-'.$data['phone'].'-'.rand(900000000000,999999999999).'-'.Carbon::now()->timestamp;
