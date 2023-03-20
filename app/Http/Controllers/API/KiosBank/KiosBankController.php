@@ -47,6 +47,7 @@ class KiosBankController extends Controller
     public function orderPulsa(OrderPulsaRequest $reqest)
     {
         $validdata = $this->index($reqest);
+        dd($validdata);
         if ($validdata) {
             $data = $this->service->orderPulsa($reqest->validated());
             return response()->json($data);
