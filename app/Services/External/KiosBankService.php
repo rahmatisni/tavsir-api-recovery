@@ -228,11 +228,11 @@ class KiosBankService
         return $product_pulsa;
     }
 
-    public function orderPulsa($data, $validator)
+    public function orderPulsa($data, $validatorarr)
 {
     // dd($validator);
 
-        if (in_array($validator['kode'], $data['code']))
+        if (in_array($validatorarr, $data['code']))
         {
         }
         else

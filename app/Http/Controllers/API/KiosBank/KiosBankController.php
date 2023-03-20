@@ -58,7 +58,7 @@ class KiosBankController extends Controller
             array_push($validatorarr, $v->kode);
         }
         dd($validatorarr);
-        $data = $this->service->orderPulsa($reqest->validated(), $validator);
+        $data = $this->service->orderPulsa($reqest->validated(), $validatorarr);
         return response()->json($data);
     }
 
