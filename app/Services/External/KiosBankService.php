@@ -261,7 +261,7 @@ class KiosBankService
         $Postdata = TransOrder::where('order_id', $order->order_id)->first();
         $orders = explode('-', $order->order_id);
         $nom = $data['description'];
-        $nom = preg_replace('/[^0-9]/', '', $nom);
+        // $nom = preg_replace('/[^0-9]/', '', $nom);
 
         $request = [
             'referenceID'=>'-',
