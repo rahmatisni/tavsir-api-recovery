@@ -52,7 +52,7 @@ class KiosBankController extends Controller
         }
         $datax = $this->service->getProduct($kategori_pulsa);
         // return response()->json($data);
-        dd(json($datax));
+        dd(json_decode($datax));
         $data = $this->service->orderPulsa($reqest->validated());
         return response()->json($data);
     }
