@@ -17,7 +17,7 @@ class KiosBankController extends Controller
    
     public function index(Request $request)
     {
-        $kategori_pulsa = codefikasiNomor($request->nomor_hp);
+        $kategori_pulsa = codefikasiNomor($request->phone);
         if($request->nomor_hp && !$kategori_pulsa){
             return response()->json(['message' => 'Nomor Salah'], 422);
         }
@@ -46,8 +46,12 @@ class KiosBankController extends Controller
 
     public function orderPulsa(OrderPulsaRequest $reqest)
     {
-        $data = $this->service->orderPulsa($reqest->validated());
-        return response()->json($data);
+        $validdata = $this->index($reqest);
+        if ($validdata) {
+            $data = $this->service->orderPulsa($reqest->validated());
+            return response()->json($data);
+        }
+       
     }
 
     public function callback(Request $reqest)
