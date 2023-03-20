@@ -64,7 +64,7 @@ class KiosBankController extends Controller
         }
         if (!in_array($reqest->code, $validatorarr))
         {
-            return response()->json(['message' => 'Nomor Tidak Sesuai Dengan Produk!', 'errors => asd'], 422);
+            return response()->json(['message' => 'Nomor Tidak Sesuai Dengan Produk!', 'errors' => ['phone'=>'Nomor Tidak Sesuai Dengan Produk!']], 422);
         }
 
         $data = $this->service->orderPulsa($reqest->validated());
