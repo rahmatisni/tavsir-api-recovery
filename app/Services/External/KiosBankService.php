@@ -232,7 +232,7 @@ class KiosBankService
 {
     // dd($validator);
 
-        if (in_array($validatorarr, $data['code']))
+        if (in_array($data['code'], $validatorarr))
         {
         }
         else
