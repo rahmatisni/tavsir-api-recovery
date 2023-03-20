@@ -163,13 +163,18 @@ class KiosBankService
         return $res_json;
     }
 
-    public function getProduct()
+    public function getProduct($request)
     {
+        $kategori_pulsa = codefikasiNomor($request->nomor_hp);
         $product = $this->cekStatusProduct();
         $status_respon = $product['rc'] ?? '';
         if($status_respon == '00')
         {
-            $data = ProductKiosBank::get();
+            $kategori_pulsa = 'INDOSAT';
+            $data = ProductKiosBank::when($kategori_pulsa, function($q)use($kategori_pulsa){
+                return $q->where('kategori',$kategori_pulsa);
+            })
+            ->get();
 
             $active = $product['active'];
             $active =  explode(',',$active);

@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Models\KiosBank\BarrierOrderPulsa;
+use App\Models\TransOrder;
 use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -33,7 +33,7 @@ class OrderPulsaRequest extends FormRequest
                 'required',
                 function($a, $v, $f){
                     if($v){
-                        $barier = BarrierOrderPulsa::where('order_id','LIKE','%'.$v.'%')
+                        $barier = TransOrder::where('order_id','LIKE','%'.$v.'%')
                         ->where('created_at', '>=', Carbon::today())
                         ->count();
                         if ($barier >= 3) {

@@ -15,9 +15,9 @@ class KiosBankController extends Controller
     )
     {}
    
-    public function index()
+    public function index(Request $reqest)
     {
-        $data = $this->service->getProduct();
+        $data = $this->service->getProduct($reqest);
         return response()->json($data);
     }
 
