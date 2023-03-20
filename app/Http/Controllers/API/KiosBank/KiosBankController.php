@@ -55,7 +55,7 @@ class KiosBankController extends Controller
         $validator = json_decode($datax['PULSA']);
         $validatorarr = array();
         foreach ($validator as $v) {
-            array_push($validatorarr, $v['kode']);
+            array_push($validatorarr, $v->kode);
         }
         dd($validatorarr);
         $data = $this->service->orderPulsa($reqest->validated(), $validator);
