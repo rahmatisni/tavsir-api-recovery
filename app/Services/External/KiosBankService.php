@@ -268,7 +268,7 @@ class KiosBankService
             'data' => [
                 'noHandphone'=>$data['phone'],
                 'harga'=>$data['price'],
-                'nominalProduk'=>$nom,
+                // 'nominalProduk'=>$nom,
             ],
             'description'=>'INQUIRY'
         ];
