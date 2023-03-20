@@ -163,9 +163,8 @@ class KiosBankService
         return $res_json;
     }
 
-    public function getProduct($request)
+    public function getProduct($kategori_pulsa = null)
     {
-        $kategori_pulsa = codefikasiNomor($request->nomor_hp);
         $product = $this->cekStatusProduct();
         $status_respon = $product['rc'] ?? '';
         if($status_respon == '00')

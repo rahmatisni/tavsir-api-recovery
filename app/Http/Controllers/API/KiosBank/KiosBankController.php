@@ -15,9 +15,14 @@ class KiosBankController extends Controller
     )
     {}
    
-    public function index(Request $reqest)
+    public function index(Request $request)
     {
-        $data = $this->service->getProduct($reqest);
+        $kategori_pulsa = codefikasiNomor($request->nomor_hp);
+        if($request->nomor_hp && !$kategori_pulsa){
+            return response()->json(['message' => 'Nomor Salah'], 422);
+        }
+
+        $data = $this->service->getProduct($kategori_pulsa);
         return response()->json($data);
     }
 

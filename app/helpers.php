@@ -64,5 +64,5 @@ function  codefikasiNomor($phone)
             '0887' => 'SMARTFREN',
             '0888' => 'SMARTFREN',
         ];
-    return $code[$code_phone] ?? throw new Exception('Nomor Salah', 400);
+    return $code[$code_phone] ?? null;
 }
