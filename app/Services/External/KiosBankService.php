@@ -170,7 +170,6 @@ class KiosBankService
         $status_respon = $product['rc'] ?? '';
         if($status_respon == '00')
         {
-            $kategori_pulsa = 'INDOSAT';
             $data = ProductKiosBank::when($kategori_pulsa, function($q)use($kategori_pulsa){
                 return $q->where('kategori',$kategori_pulsa);
             })
