@@ -209,7 +209,7 @@ class TravShopController extends Controller
     public function orderCustomer($id, Request $request)
     {
         $tanggal_awal = $request->tanggal_awal;
-        $tanggal_akhir = $request->tanggal_akhir ?? Carbon::now()->endOfDay();
+        $tanggal_akhir = $request->tanggal_akhir;
 
         $tanggal_sub = null;
         $tanggal_end = null;
