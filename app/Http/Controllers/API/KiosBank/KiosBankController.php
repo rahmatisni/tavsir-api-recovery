@@ -59,8 +59,8 @@ class KiosBankController extends Controller
         foreach ($validatorpulsa as $v) {
             array_push($validatorarr, $v->kode);
         }
-        foreach ($validatordata as $v) {
-            array_push($validatorarr, $v->kode);
+        foreach ($validatordata as $y) {
+            array_push($validatorarr, $y->kode);
         }
         $data = $this->service->orderPulsa($reqest->validated(), $validatorarr);
         return response()->json($data);
