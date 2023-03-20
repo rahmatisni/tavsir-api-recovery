@@ -230,6 +230,7 @@ class KiosBankService
 
     public function orderPulsa($data, $validator)
 {
+    dd($validator);
 
         if (in_array($validator['kode'], $data['code']))
         {
