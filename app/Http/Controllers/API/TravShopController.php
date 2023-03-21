@@ -740,6 +740,13 @@ class TravShopController extends Controller
                 log::info($res);
                 if ($res->successful()) {
                     $res = $res->json();
+                    if ($res['status'] == 'ERROR') {
+                         return response()->json([
+                        "message" => "Pembayaran Gagal.",
+                        "errors" => [
+                        ]
+                    ], 422);
+                    }
                     $respon = $res['responseData'];
                     if ($data->payment === null) {
                         $payment = new TransPayment();
