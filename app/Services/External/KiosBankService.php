@@ -267,7 +267,7 @@ class KiosBankService
             'trans_order_id' => $Postdata->id
         ],[
             'data' => $request, 
-            'inquiry'=>$request
+            'inquiry'=>$request,
         ]);
 
         return $order;

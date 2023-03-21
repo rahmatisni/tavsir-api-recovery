@@ -12,7 +12,7 @@ class LogKiosbank extends Model
     protected $fillable = [
         'trans_order_id',
         'data',
-        'inqury',
+        'inquiry',
         'payment',
         'status'
     ];
