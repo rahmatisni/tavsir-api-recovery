@@ -741,7 +741,7 @@ class TravShopController extends Controller
                 if ($res->successful()) {
                     $res = $res->json();
                     $respon = $res['responseData'] ?? null;
-                    if ($respon) {
+                    if (!$respon) {
                         return response()->json(['status' => 'OTP EXPIRED'], 422);
                     }
                     if ($data->payment === null) {
