@@ -269,6 +269,8 @@ class KiosBankService
             'data' => $request
         ]);
 
+        //minta tambah updateOrCreate ke column inquiry
+
         return $order;
     }
 
@@ -340,16 +342,7 @@ class KiosBankService
             if($data){
                 DB::beginTransaction();
                 Log::info($request);
-                // $request['data']['idPelanggan'] = $request['data']['noHandphone'] ?? ($request['data']['idPelanggan'] ?? '-');
-                // // $request['data']['noReferensi'] = $request['referenceID'] ?? ($request['data']['noReferensi'] ?? '-');
-                // $request['data']['noReferensi'] = $request['data']['noReferensi'] ?? '-';
-
-                // $request['data']['status'] = $request['data']['status'] ?? ($request['description'] ?? '-');
-                // $request['data']['harga'] = $request['data']['harga'] ?? ($data->sub_total ?? '0');
-
-                // $request['data']['nama'] = $request['data']['nama'] ?? ($request['data']['data']['nama'] ?? '-');
-                // $request['data']['nominalProduk'] = $request['data']['nominalProduk'] ?? ($request['data']['data']['nominalProduk'] ?? ($data->sub_total ?? '0'));
-                
+               
                 $request['description'] =  $request['description'] ?? ($request['data']['status'] ?? '-');
 
                 if ($request['rc'] == '00'){
@@ -422,6 +415,9 @@ class KiosBankService
                 $order->log_kiosbank()->updateOrCreate(['trans_order_id' => $order->id],[
                     'data' => $res_json
                 ]);
+
+                //minta tambah updateOrCreate ke column inquiry
+
                 return $order;
 
             }
@@ -434,6 +430,9 @@ class KiosBankService
                 $order->log_kiosbank()->updateOrCreate(['trans_order_id' => $order->id],[
                     'data' => $res_json
                 ]);
+                               
+                //minta tambah updateOrCreate ke column inquiry
+
                 return $order;
             }
         }

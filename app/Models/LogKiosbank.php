@@ -25,10 +25,6 @@ class LogKiosbank extends Model
     public function setDataAttribute($value)
     {
         $this->attributes['data'] = json_encode($value);
-        // $this->attributes['inquiry'] = json_encode($value);
-        // $this->attributes['payment'] = json_encode($value);
-        // $this->attributes['status'] = json_encode($value);
-
     }
 
     public function trans_order()
