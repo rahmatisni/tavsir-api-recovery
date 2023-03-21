@@ -76,8 +76,6 @@ class KiosBankService
     function generateDigest($method = 'POST', $path)
     {
         $digest = $this->http->post($path)->header('WWW-Authenticate');
-        Log::info($digest);
-
         $auth_arr = explode(',', $digest);
         $params = array();
         foreach ($auth_arr as $auth) {
@@ -288,7 +286,6 @@ class KiosBankService
             'customerID'=>$order[1] ?? ''
         ];
 
-        Log::info($payload);
         $res_json =  $this->http('POST',self::SINGLE_PAYMENT,$payload)->json();
         return $res_json;
     }
@@ -308,7 +305,6 @@ class KiosBankService
         ];
 
 
-        Log::info($payload);
         $res_json =  $this->http('POST',self::DUAL_PAYMENT,$payload)->json();
         return $res_json;
     }
@@ -401,7 +397,6 @@ class KiosBankService
         ];
         $res_json =  $this->http('POST',self::INQUIRY,$payload);
         $res_json = $res_json->json();
-        Log::info($payload, $res_json);
 
         if($res_json['rc'] == '00')
         {
