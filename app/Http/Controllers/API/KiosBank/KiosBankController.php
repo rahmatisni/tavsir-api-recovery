@@ -41,6 +41,10 @@ class KiosBankController extends Controller
     public function listProductOperatorPulsa($id)
     {
         $data = $this->service->listProductOperatorPulsa($id);
+        if($data['rc'] != '00')
+        {
+            $data['record'] = [];
+        }
         return response()->json($data);
     }
 
