@@ -742,7 +742,7 @@ class TravShopController extends Controller
                 if ($res->successful()) {
                     $res = $res->json();
 
-                    if ($res->status == 'ERROR') {
+                    if ($res->json()->status == 'ERROR') {
                         return response()->json([
                             "message" => "ERROR!",
                             "errors" => [
