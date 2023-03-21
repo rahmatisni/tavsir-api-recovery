@@ -740,6 +740,16 @@ class TravShopController extends Controller
                 log::info($res);
                 if ($res->successful()) {
                     $res = $res->json();
+
+                    if (!$res['responseData']) {
+                        return response()->json([
+                            "message" => "ERROR!",
+                            "errors" => [
+                               $res
+                            ]
+                        ], 422);
+                    }
+
                     $respon = $res['responseData'];
                     if ($data->payment === null) {
                         $payment = new TransPayment();
@@ -750,6 +760,7 @@ class TravShopController extends Controller
                         $pay->data = $respon;
                         $pay->save();
                     }
+
                     $data->status = TransOrder::PAYMENT_SUCCESS;
                     if ($data->order_type == TransOrder::ORDER_TAVSIR) {
                         $data->status = TransOrder::DONE;
