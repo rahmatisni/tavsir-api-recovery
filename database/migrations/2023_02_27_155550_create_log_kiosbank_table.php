@@ -18,6 +18,9 @@ class CreateLogKiosbankTable extends Migration
                 $table->string('trans_order_id');
                 $table->string('data');
                 $table->timestamps();
+                $table->string('inquiry');
+                $table->string('payment');
+                $table->string('status');
         });
     }
 

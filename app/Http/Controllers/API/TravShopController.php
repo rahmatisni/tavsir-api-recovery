@@ -808,7 +808,9 @@ class TravShopController extends Controller
                             if(str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL'))
                             {
                                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
-                                    'data' => $kios
+                                    'data' => $kios, 
+                                    'payment' => $kios,
+
                                 ]);
                                 $data->status = TransOrder::DONE;
                                 $data->save();
@@ -818,7 +820,9 @@ class TravShopController extends Controller
                             if(str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES'))
                             {
                                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
-                                    'data' => $kios
+                                    'data' => $kios,
+                                    'payment' => $kios,
+
                                 ]);
                                 $data->status = TransOrder::DONE;
                                 $data->save();
@@ -829,7 +833,9 @@ class TravShopController extends Controller
                             {
                                 $kios['description'] = $kios['description'] ?? $kios['data']['description'];
                                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
-                                    'data' => $kios
+                                    'data' => $kios,
+                                    'payment' => $kios,
+
                                 ]);
                                 $data->status = TransOrder::READY;
                                 $data->save();
@@ -843,7 +849,9 @@ class TravShopController extends Controller
                         }
                         else {
                             $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
-                                'data' => $kios
+                                'data' => $kios, 
+                                'payment' => $kios,
+
                             ]);
                             $data->status = TransOrder::PAYMENT_SUCCESS;
                             $data->save();
