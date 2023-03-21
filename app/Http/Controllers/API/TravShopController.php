@@ -740,10 +740,10 @@ class TravShopController extends Controller
                 log::info($res);
                 if ($res->successful()) {
                     $res = $res->json();
-                    $respon = $res['responseData'] ?? null;
-                    if (!$respon) {
-                        return response()->json(['status' => 'OTP EXPIRED'], 422);
-                    }
+                    $respon = $res['responseData'];
+                    // if (!$respon) {
+                    //     return response()->json(['status' => 'OTP EXPIRED'], 422);
+                    // }
                     if ($data->payment === null) {
                         $payment = new TransPayment();
                         $payment->data = $respon;
