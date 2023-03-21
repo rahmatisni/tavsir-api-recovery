@@ -266,8 +266,8 @@ class KiosBankService
         $Postdata->log_kiosbank()->updateOrCreate([
             'trans_order_id' => $Postdata->id
         ],[
-            'inquiry' => $request,
-
+            'data' => $request, 
+            'inquiry'=>$request
         ]);
 
         return $order;
@@ -360,7 +360,9 @@ class KiosBankService
                 $data->log_kiosbank()->updateOrCreate([
                     'trans_order_id' => $data->id
                 ],[
-                    'data' => $request
+                    'data' => $request,
+                    'status'=>$request
+
                 ]);
                 DB::commit();
             }
@@ -422,7 +424,7 @@ class KiosBankService
                 $order->save();
                 $order->log_kiosbank()->updateOrCreate(['trans_order_id' => $order->id],[
                     'data' => $res_json,
-                    'payment' => $res_json,
+                    'inquiry'=>$res_json
 
                 ]);
                 return $order;
@@ -436,7 +438,8 @@ class KiosBankService
                 $order->save();
                 $order->log_kiosbank()->updateOrCreate(['trans_order_id' => $order->id],[
                     'data' => $res_json,
-                    'payment' => $res_json,
+                    'inquiry'=>$res_json
+
                 ]);
                 return $order;
             }
