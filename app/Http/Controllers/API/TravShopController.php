@@ -604,6 +604,7 @@ class TravShopController extends Controller
                         "fee" => (string)$data->fee,
                     ];
                     $respon = PgJmto::inquiryDD($payment_payload);
+                    log::info($respon);
                     if ($respon->successful()) {
                         $res = $respon->json();
                         if ($res['status'] == 'ERROR') {
