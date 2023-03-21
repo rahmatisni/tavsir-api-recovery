@@ -266,8 +266,8 @@ class KiosBankService
         $Postdata->log_kiosbank()->updateOrCreate([
             'trans_order_id' => $Postdata->id
         ],[
-            'data' => $request,
-            'inquiry'=>$request,
+            ['data' => $request,
+            'inquiry'=>$request,]
         ]);
 
         return $order;
