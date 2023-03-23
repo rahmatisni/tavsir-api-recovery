@@ -256,7 +256,7 @@ class KiosBankService
             'referenceID'=>'',
             'data' => [
                 'noHandphone'=>$data['phone'],
-                // 'harga_kios'=>$data['price'],
+                'harga_kios'=>$data['price'],
                 'harga'=>$data['price_jmto']
             ],
             'description'=>'INQUIRY'
