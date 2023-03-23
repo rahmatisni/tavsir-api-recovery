@@ -69,14 +69,7 @@ class TsOrderResource extends JsonResource
                     }
                 }
                 foreach($temps as $keys => $vals) {
-                    // $key = ucwords(preg_replace("/(?<=[a-zA-Z])(?=[A-Z])/", "_", $key));
-                    if (in_array($keys, $slice))
-                    {
-                        $keys = 1;
-                        // $out = preg_replace('/^0/', '', $val);
-                        // $temps['data'][$key] = rupiah((int)$val);
-                    }
-                  
+                    dd($keys);
                 }
                 
             }
