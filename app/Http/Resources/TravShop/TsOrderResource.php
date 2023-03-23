@@ -70,7 +70,7 @@ class TsOrderResource extends JsonResource
                         $temps['data'][$key] = $val;
                     }
                 }
-                dd($temps);
+                // dd($temps);
 
                 // foreach($temps as $keys => $vals) {
                 //     dd($keys);
