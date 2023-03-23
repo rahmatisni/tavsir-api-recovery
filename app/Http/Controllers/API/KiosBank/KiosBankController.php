@@ -114,7 +114,7 @@ class KiosBankController extends Controller
         
         // dd($data['rc']);
 
-        if (!$data['rc']) {
+        if ($data['rc']) {
             return response()->json(['message' => $data['description'], 'errors' => $data['description']], 422);
         }
         return response()->json($data);
