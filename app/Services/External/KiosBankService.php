@@ -341,6 +341,8 @@ class KiosBankService
                 Log::info($request);
                
                 $request['description'] =  $request['description'] ?? ($request['data']['status'] ?? '-');
+                $request['data']['harga_kios'] = $request['data']['harga'];
+                $request['data']['harga'] = $data->sub_total;
 
                 if ($request['rc'] == '00'){
                     $data->status = TransOrder::DONE;
