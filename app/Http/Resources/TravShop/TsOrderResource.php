@@ -50,6 +50,7 @@ class TsOrderResource extends JsonResource
             $slice = ['Harga_kios'];
 
             $tempo = $this->log_kiosbank?->data ?? null;
+            dd($tempo);
             if ($tempo) {
                 foreach($tempo as $key => $val) {
                     // $key = ucwords(preg_replace("/(?<=[a-zA-Z])(?=[A-Z])/", "_", $key));
