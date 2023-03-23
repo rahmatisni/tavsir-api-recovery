@@ -239,7 +239,7 @@ class KiosBankService
         $order->customer_phone = $data['customer_phone'];
         $order->merchant_id = '';
         $order->sub_merchant_id = '';
-        $order->sub_total = $data['price'];
+        $order->sub_total = $data['price_jmto'];
         $order->status = TransOrder::WAITING_PAYMENT;
         $order->fee = env('PLATFORM_FEE');
         $order->total = $order->sub_total + $order->fee;
@@ -253,11 +253,11 @@ class KiosBankService
         // $nom = preg_replace('/[^0-9]/', '', $nom);
 
         $request = [
-            'referenceID'=>'-',
+            'referenceID'=>'',
             'data' => [
                 'noHandphone'=>$data['phone'],
-                'harga'=>$data['price'],
-                // 'nominalProduk'=>$nom,
+                'harga_kios'=>$data['price'],
+                'harga'=>$data['price_jmto']
             ],
             'description'=>'INQUIRY'
         ];
@@ -273,13 +273,13 @@ class KiosBankService
         return $order;
     }
 
-    public function singlePayment($sub_total,$order_id)
+    public function singlePayment($sub_total,$order_id,$harga_kios)
     {
         $order = explode('-', $order_id);
         $payload = [
-            'total'=>$sub_total,
+            'total'=>$harga_kios,
             'admin'=>'000000000000',
-            'tagihan'=>$sub_total,
+            'tagihan'=>$harga_kios,
             'sessionID'=> $this->getSeesionId(),
             'productID'=>$order[0] ?? '',
             'referenceID'=>$order[2] ?? '',
