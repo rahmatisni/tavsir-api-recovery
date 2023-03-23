@@ -253,10 +253,10 @@ class KiosBankService
         // $nom = preg_replace('/[^0-9]/', '', $nom);
 
         $request = [
-            'referenceID'=>'',
+            'referenceID'=>'-',
             'data' => [
                 'noHandphone'=>$data['phone'],
-                // 'harga_kios'=>$data['price'],
+                'harga_kios'=>$data['price'],
                 'harga'=>$data['price_jmto']
             ],
             'description'=>'INQUIRY'
