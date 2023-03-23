@@ -401,8 +401,8 @@ class KiosBankService
         if($res_json['rc'] == '00')
         {
             if ($res_json['productID'] == '520021' || $res_json['productID'] == '520011') {
-                $order->sub_total = $res_json['data']['total'];
-                $order->total = $order->sub_total + $order->fee +100;
+                $order->sub_total = 100 + $res_json['data']['total'];
+                $order->total = $order->sub_total + $order->fee;
               
                 $res_json['description'] = 'INQUIRY';
 
@@ -417,8 +417,8 @@ class KiosBankService
 
             }
             else {
-                $order->sub_total = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
-                $order->total = $order->sub_total + $order->fee +100;
+                $order->sub_total = 100 + $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
+                $order->total = $order->sub_total + $order->fee;
             
                 $res_json['description'] = 'INQUIRY';
                 $order->save();
