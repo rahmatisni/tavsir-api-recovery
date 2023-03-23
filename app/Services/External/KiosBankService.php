@@ -405,6 +405,13 @@ class KiosBankService
                 $order->harga_kios = $res_json['data']['total'];
                 //harga jual
                 $order->sub_total = $res_json['data']['total'];
+
+                $bank = ProductKiosBank::where('kode',$res_json['productID'])->first();
+                dd($bank);
+
+                // $order->sub_total = 
+                // dd($order->sub_total);
+
                 
                 $res_json['data']['total'];
 
@@ -428,7 +435,6 @@ class KiosBankService
                 // $order->sub_total = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
 
                 $order->sub_total = ProductKiosBank::where('kode',$res_json['productID'])->first();
-                dd($order->sub_total);
                 $order->total = $order->sub_total + $order->fee;
             
                 $res_json['description'] = 'INQUIRY';
