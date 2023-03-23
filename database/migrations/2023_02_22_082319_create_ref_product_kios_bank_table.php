@@ -20,6 +20,7 @@ class CreateRefProductKiosBankTable extends Migration
             $table->string('kode')->unique();
             $table->string('name');
             $table->unsignedInteger('prefix_id')->nullable();
+            $table->string('harga')->nullable();
             $table->timestamps();
         });
     }
