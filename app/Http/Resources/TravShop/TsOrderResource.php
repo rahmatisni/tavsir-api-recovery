@@ -54,7 +54,7 @@ class TsOrderResource extends JsonResource
             {
                 $temps = $this->log_kiosbank->data;
                 $temps['data'] = [];
-                dd($temps['data']);
+                dd($temp['data']);
         
                 $param = ['Admin_Bank','Total', 'Jumlah_Pembayaran'];
                 // $slice = ['harga_kios'];
