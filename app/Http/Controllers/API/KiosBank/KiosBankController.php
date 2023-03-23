@@ -7,6 +7,7 @@ use App\Http\Requests\OrderPulsaRequest;
 use App\Http\Requests\UangElektronikRequest;
 use App\Services\External\KiosBankService;
 use Illuminate\Http\Request;
+use App\Models\KiosBank\ProductKiosBank;
 
 class KiosBankController extends Controller
 {
@@ -49,7 +50,12 @@ class KiosBankController extends Controller
         
         foreach($harga as $key => $val) {
 
-            $data['record'][$key]['price'] = $val['price']+1;
+            $harga_jual = ProductKiosBank::where('kode', $data['record'][$key]['code'])
+            ->select([
+                'kode',
+                'harga'
+            ]);
+            $data['record'][$key]['price'] = $val['price']+$harga_jual['price'];
 
         }
 
