@@ -68,27 +68,11 @@ class TsOrderResource extends JsonResource
                         $temps['data'][$key] = $val;
                     }
                 }
-                foreach($temps as $keys => $vals) {
-                    // dd($keys);
-                }
+                // foreach($temps as $keys => $vals) {
+                //     // dd($keys);
+                // }
                 
-            }
-            else {
-                $temps = $this->log_kiosbank->data;
-                $slice = ['harga_kios'];
-                dd($temps);
-                foreach($temps as $key => $val) {
-                    // ddPOP
-                    // // $key = ucwords(preg_replace("/(?<=[a-zA-Z])(?=[A-Z])/", "_", $key));
-                    // if (in_array($key, $param))
-                    // {
-                    //     // $out = preg_replace('/^0/', '', $val);
-                    //     $temps['data'][$key] = rupiah((int)$val);
-                    // }
-                    // else {
-                    //     $temps['data'][$key] = $val;
-                    // }
-                }
+            
             }
         }
 
