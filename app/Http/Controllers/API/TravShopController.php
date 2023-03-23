@@ -815,6 +815,8 @@ class TravShopController extends Controller
                         // $kios['data']['nama'] = $kios['data']['nama'] ?? $datalog['data']['data']['nama'] ?? '-';
                         // $kios['data']['nominalProduk'] = $kios['data']['nominalProduk'] ?? $datalog['data']['data']['nominalProduk'] ?? '0';
                         $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '';
+                        $kios['data']['harga_kios'] = $kios['data']['harga'] ?? ($data->sub_total ?? '0');
+                        $kios['data']['harga'] = $data->sub_total ?? '0';
                         
                         if($kios['rc'] == '00')
                         {
