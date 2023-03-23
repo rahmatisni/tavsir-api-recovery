@@ -664,7 +664,7 @@ class TravShopController extends Controller
                     $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
                     $adminBank = $datalog['data']['data']['adminBank'] ?? '000000000000';
 
-                    $kios = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id, $adminBank);
+                    $kios = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id, $adminBank, $data->harga_kios);
                     Log::info($kios);
                     $kios['data']['harga'] = $kios['data']['harga'] ?? ($data->sub_total ?? '0');
                     // $kios['data']['nominalProduk'] = $kios['data']['nominalProduk'] ?? $datalog['data']['data']['nominalProduk'] ?? $kios['data']['harga'] ?? '0';
