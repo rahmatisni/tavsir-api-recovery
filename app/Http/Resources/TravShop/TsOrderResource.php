@@ -64,14 +64,21 @@ class TsOrderResource extends JsonResource
                         // $out = preg_replace('/^0/', '', $val);
                         $temps['data'][$key] = rupiah((int)$val);
                     }
-                    if (in_array($key, $slice))
-                    {
-                        $temps['data'][$key] = 1;
-                    }
                     else {
                         $temps['data'][$key] = $val;
                     }
                 }
+                foreach($temps as $keys => $vals) {
+                    // $key = ucwords(preg_replace("/(?<=[a-zA-Z])(?=[A-Z])/", "_", $key));
+                    if (in_array($keys, $slice))
+                    {
+                        $temps[$keys] = 1;
+                        // $out = preg_replace('/^0/', '', $val);
+                        // $temps['data'][$key] = rupiah((int)$val);
+                    }
+                  
+                }
+                
             }
             else {
                 $temps = $this->log_kiosbank->data;
