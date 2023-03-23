@@ -805,9 +805,9 @@ class TravShopController extends Controller
                         }
                         if ($data->description == 'dual'){
                             $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
-                            $tagihan = $datalog['data']['data']['tagihan'] ?? $datalog['data']['data']['harga'];
+                            $tagihan = $datalog['data']['data']['tagihan'] ?? $datalog['data']['data']['harga_kios'];
                             $admin = $datalog['data']['data']['adminBank'] ?? '000000000000';
-                            $total = $datalog['data']['data']['total'] ?? $datalog['data']['data']['harga'] ?? $tagihan;
+                            $total = $datalog['data']['data']['total'] ?? $datalog['data']['data']['harga_kios'] ?? $tagihan;
                             $kios = $this->kiosBankService->dualPayment($data->sub_total, $data->order_id, $tagihan, $admin, $total);
                         }
                         $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
