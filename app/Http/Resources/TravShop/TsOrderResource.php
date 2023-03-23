@@ -56,7 +56,7 @@ class TsOrderResource extends JsonResource
                     // $key = ucwords(preg_replace("/(?<=[a-zA-Z])(?=[A-Z])/", "_", $key));
                     if (in_array($key, $slice))
                     {
-                        unset($tempo[$key]);
+                        $tempo[$key] = 1;
                     }
                 }
             }
