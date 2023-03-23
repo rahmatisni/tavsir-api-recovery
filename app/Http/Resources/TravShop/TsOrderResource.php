@@ -68,6 +68,9 @@ class TsOrderResource extends JsonResource
                     }
                 }
             }
+            else {
+                $temps = $this->log_kiosbank->data;
+            }
         }
 
        
@@ -102,7 +105,7 @@ class TsOrderResource extends JsonResource
             'description' => $this->description,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'payment' => $this->payment->data ?? null,
-            // 'log_kiosbank' => $temps ?? $this->log_kiosbank,
+            'log_kiosbank' => $temps,
             'detil' => TsOrderDetilResource::collection($this->detil),
             'detil_kios' => $product_kios
         ];
