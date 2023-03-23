@@ -64,9 +64,9 @@ class TsOrderResource extends JsonResource
                         $temps['data'][$key] = rupiah((int)$val);
                     }
                     else {
-                        // if ( $temps['data'][$key] == 'Harga_kios'){
-                        //     $temps['data'][$key] = 2;
-                        // }
+                        if ( $temps[$key] == 'Harga_kios'){
+                            $temps[$key] = 2;
+                        }
                         $temps['data'][$key] = $val;
 
                     }
