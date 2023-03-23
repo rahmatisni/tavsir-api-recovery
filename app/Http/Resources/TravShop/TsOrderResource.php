@@ -54,14 +54,13 @@ class TsOrderResource extends JsonResource
             {
                 $temps = $this->log_kiosbank->data;
                 $temps['data'] = [];
+                dd($temps);
         
                 $param = ['Admin_Bank','Total', 'Jumlah_Pembayaran'];
                 $slice = ['harga_kios'];
                 foreach($temp as $key => $val) {
                     $key = ucwords(preg_replace("/(?<=[a-zA-Z])(?=[A-Z])/", "_", $key));
-                    if (in_array($key, $slice)){
-                        $temps['data'][$key] = '';
-                    }
+                  
                     if (in_array($key, $param))
                     {
                         // $out = preg_replace('/^0/', '', $val);
