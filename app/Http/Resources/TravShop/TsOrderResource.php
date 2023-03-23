@@ -47,10 +47,10 @@ class TsOrderResource extends JsonResource
                 $product_kios = $product_kios->toArray();
                 $product_kios['handphone'] = $product[1];
             }
-            $slice = ['Harga_kios'];
+            $slice = ['harga_kios'];
 
             $tempo = $this->log_kiosbank?->data ?? null;
-            dd($tempo);
+            // dd($tempo);
             if ($tempo) {
                 foreach($tempo as $key => $val) {
                     // $key = ucwords(preg_replace("/(?<=[a-zA-Z])(?=[A-Z])/", "_", $key));
@@ -60,6 +60,7 @@ class TsOrderResource extends JsonResource
                     }
                 }
             }
+            dd($tempo);
 
             $temp = $this->log_kiosbank?->data['data'] ?? null;
             
