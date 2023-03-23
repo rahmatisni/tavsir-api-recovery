@@ -68,7 +68,7 @@ class TsOrderResource extends JsonResource
 
                     }
                     elseif (in_array($key, $slice)){
-                        $temps['data'][$key] =1;
+                        // $temps['data'][$key] =1;
 
                     }
                     else {
@@ -114,7 +114,7 @@ class TsOrderResource extends JsonResource
             'description' => $this->description,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'payment' => $this->payment->data ?? null,
-            'log_kiosbank' => $temps,
+            'log_kiosbank' => $temps ?? $this->log_kiosbank,
             'detil' => TsOrderDetilResource::collection($this->detil),
             'detil_kios' => $product_kios
         ];
