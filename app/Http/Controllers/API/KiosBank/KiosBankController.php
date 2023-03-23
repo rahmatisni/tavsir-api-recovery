@@ -55,7 +55,14 @@ class KiosBankController extends Controller
             //     'kode',
             //     'harga'
             // ]);
-            $harga_jual = ProductKiosBank::where('kode_produk', $val['code']);
+            $harga_jual = ProductKiosBank::where('kode_produk', $val['code'])
+            ->select([
+                'kategori',
+                'sub_kategori',
+                'kode',
+                'name'
+            ])
+            ->first();
             dd($harga_jual);
             $data['record'][$key]['price'] = $val['price']+$harga_jual[0]['price'];
 
