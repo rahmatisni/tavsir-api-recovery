@@ -56,6 +56,7 @@ class TsOrderResource extends JsonResource
                 $temps['data'] = [];
                 // $slice = ['harga_kios'];
                 $param = ['Admin_Bank','Total', 'Jumlah_Pembayaran'];
+                dd($temps);
                 foreach($temp as $key => $val) {
                     $key = ucwords(preg_replace("/(?<=[a-zA-Z])(?=[A-Z])/", "_", $key));
                    
@@ -64,20 +65,13 @@ class TsOrderResource extends JsonResource
                         $temps['data'][$key] = rupiah((int)$val);
                     }
                     else {
-                        if ( $temps[$key] == 'Harga_kios'){
-                            $temps[$key] = 2;
-                        }
+                        // if ( $temps['data'][$key] == 'Harga_kios'){
+                        //     $temps['data'][$key] = 2;
+                        // }
                         $temps['data'][$key] = $val;
 
                     }
                 }
-                dd($temps);
-
-                // foreach($temps as $keys => $vals) {
-                //     dd($keys);
-                // }
-                
-            
             }
         }
 
