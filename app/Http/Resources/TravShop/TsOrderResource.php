@@ -47,7 +47,7 @@ class TsOrderResource extends JsonResource
                 $product_kios = $product_kios->toArray();
                 $product_kios['handphone'] = $product[1];
             }
-            $slice = ['harga_kios'];
+            $slice = ['Harga_kios'];
 
             $tempo = $this->log_kiosbank?->data ?? null;
             if ($tempo) {
