@@ -45,12 +45,11 @@ class KiosBankController extends Controller
         {
             $data['record'] = [];
         }
-        dd($data['record']);
-        // foreach($data)
+        $harga = $data['record'];
 
-        // foreach ($data as $v) {
-
-        // }
+        foreach ($harga as $v) {
+            $data['record']['price'] = $v['price'] +1;
+        }
         return response()->json($data);
     }
 
