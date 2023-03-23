@@ -113,7 +113,7 @@ class KiosBankController extends Controller
         $data = $this->service->uangelEktronik($request->validated());
         // dump($data['rc']);
 
-        if ($data['rc'] == "00") {
+        if ($data->rc == "00") {
             return response()->json($data);
 
         }
