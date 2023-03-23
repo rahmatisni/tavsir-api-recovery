@@ -244,6 +244,7 @@ class KiosBankService
         $order->fee = env('PLATFORM_FEE');
         $order->total = $order->sub_total + $order->fee;
         $order->description = 'single';
+        $order->harga_kios = $data['price'];
         $order->save();
 
         $Postdata = TransOrder::where('order_id', $order->order_id)->first();
