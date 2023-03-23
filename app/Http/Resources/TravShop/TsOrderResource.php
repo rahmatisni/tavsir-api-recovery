@@ -47,6 +47,19 @@ class TsOrderResource extends JsonResource
                 $product_kios = $product_kios->toArray();
                 $product_kios['handphone'] = $product[1];
             }
+            $slice = ['harga_kios'];
+
+            $tempo = $this->log_kiosbank?->data ?? null;
+            if ($tempo) {
+                foreach($tempo as $key => $val) {
+                    // $key = ucwords(preg_replace("/(?<=[a-zA-Z])(?=[A-Z])/", "_", $key));
+                    if (in_array($key, $slice))
+                    {
+                        unset($tempo[$key]);
+                    }
+                }
+            }
+
             $temp = $this->log_kiosbank?->data['data'] ?? null;
             
 
@@ -68,6 +81,7 @@ class TsOrderResource extends JsonResource
                     }
                 }
             }
+
         }
 
        
@@ -103,7 +117,7 @@ class TsOrderResource extends JsonResource
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'payment' => $this->payment->data ?? null,
             // 'log_kiosbank' => $this->log_kiosbank,
-            'log_kiosbank' => $temps ?? $this->log_kiosbank,
+            'log_kiosbank' => $temps ?? $tempo ?? $this->log_kiosbank,
             'detil' => TsOrderDetilResource::collection($this->detil),
             'detil_kios' => $product_kios
         ];
