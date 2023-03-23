@@ -13,6 +13,7 @@ class ProductKiosBank extends BaseModel
         'sub_kategori',
         'kode',
         'name',
-        'prefix_id'
+        'prefix_id',
+        'harga'
     ];
 }
