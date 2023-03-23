@@ -407,7 +407,7 @@ class KiosBankService
                 $order->sub_total = $res_json['data']['total'];
 
                 $bank = ProductKiosBank::where('kode',$res_json['productID'])->first();
-                dd($bank);
+                dd($bank['harga']);
 
                 // $order->sub_total = 
                 // dd($order->sub_total);
