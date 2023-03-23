@@ -413,7 +413,7 @@ class KiosBankService
 
                 $order->total = $order->sub_total + $order->fee;
               
-                $res_json['data']['harga_kios'] =  $res_json['data']['harga'];
+                $res_json['data']['harga_kios'] = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
                 $res_json['data']['harga'] =  $order->sub_total;
                 $res_json['description'] = 'INQUIRY';
               
