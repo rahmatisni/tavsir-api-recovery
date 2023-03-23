@@ -45,7 +45,7 @@ class KiosBankController extends Controller
         {
             $data['record'] = [];
         }
-        dd($data['record']['price']);
+        dd($data->record);
         return response()->json($data);
     }
 
