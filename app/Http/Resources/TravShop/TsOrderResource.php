@@ -54,10 +54,10 @@ class TsOrderResource extends JsonResource
             {
                 $temps = $this->log_kiosbank->data;
                 $temps['data'] = [];
-                // dd($temps);
+                dd($temps['data']);
         
                 $param = ['Admin_Bank','Total', 'Jumlah_Pembayaran'];
-                $slice = ['harga_kios'];
+                // $slice = ['harga_kios'];
                 foreach($temp as $key => $val) {
                     $key = ucwords(preg_replace("/(?<=[a-zA-Z])(?=[A-Z])/", "_", $key));
                   
