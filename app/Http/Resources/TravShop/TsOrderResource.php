@@ -60,13 +60,13 @@ class TsOrderResource extends JsonResource
                     $key = ucwords(preg_replace("/(?<=[a-zA-Z])(?=[A-Z])/", "_", $key));
                     if (in_array($key, $param))
                     {
-                        // $out = preg_replace('/^0/', '', $val);
                         $temps['data'][$key] = rupiah((int)$val);
+                       
+                    }
+                    else {
                         if ( $temps['data'][$key] === 'Harga_kios'){
                             $temps['data'][$key] = 2;
                         }
-                    }
-                    else {
                         $temps['data'][$key] = $val;
                     }
                 }
