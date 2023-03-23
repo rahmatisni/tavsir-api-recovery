@@ -111,6 +111,9 @@ class KiosBankController extends Controller
     public function orderUangElektronik(UangElektronikRequest $request)
     {
         $data = $this->service->uangelEktronik($request->validated());
+        if (!$data->rc == '00') {
+            return response()->json(['message' => $data->description, 'errors' => $data->description], 422);
+        }
         return response()->json($data);
     }
 
