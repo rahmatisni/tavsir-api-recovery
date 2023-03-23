@@ -44,8 +44,8 @@ class KiosBankController extends Controller
         if($data['rc'] != '00')
         {
             $data['record'] = [];
-            dd($data['record']['price']);
         }
+        dd($data['record']['price']);
         return response()->json($data);
     }
 
