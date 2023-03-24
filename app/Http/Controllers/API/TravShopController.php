@@ -588,7 +588,7 @@ class TravShopController extends Controller
 
                     // }
 
-                    dd($bind_before->data->bind_id);
+                    dd($bind_before->data['bind_id']);
                    
                     if (!$bind) {
                         return response()->json(['message' => 'Card Not Found'], 404);
