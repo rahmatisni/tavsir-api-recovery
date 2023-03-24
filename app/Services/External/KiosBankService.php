@@ -408,7 +408,7 @@ class KiosBankService
                 //harga jual
 
                 $harga_jual_kios = ProductKiosBank::where('kode',$res_json['productID'])->first() ?? $res_json['data']['total'];
-                $order->sub_total = $harga_jual_kios?->harga ?? $res_json['data']['total'];
+                $order->sub_total = ($harga_jual_kios?->harga ?? 0) + $res_json['data']['total'];
 
 
                 $order->total = $order->sub_total + $order->fee;
@@ -430,12 +430,9 @@ class KiosBankService
             else {
                 $order->harga_kios = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
                 //harga jual
-                // $order->sub_total = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
-
-                // $order->sub_total = ProductKiosBank::where('kode',$res_json['productID'])->first();
-
                 $harga_jual_kios = ProductKiosBank::where('kode',$res_json['productID'])->first();
-                $order->sub_total = $harga_jual_kios?->harga ?? $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
+                // $order->sub_total = $harga_jual_kios?->harga ?? $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
+                $order->sub_total = ($harga_jual_kios?->harga ?? 0) + $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
 
                 $order->total = $order->sub_total + $order->fee;
 
