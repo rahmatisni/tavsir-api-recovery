@@ -585,8 +585,6 @@ class TravShopController extends Controller
                     $bind = Bind::where('id', $request->card_id)->first();
                     $bind_before = TransPayment::where('trans_order_id', $data->id)->first();
                   
-                    // dd($bind_before->data['bind_id']);
-                   
                     if (!$bind && $request->card_id) {
                         return response()->json(['message' => 'Card Not Found'], 404);
                     }
