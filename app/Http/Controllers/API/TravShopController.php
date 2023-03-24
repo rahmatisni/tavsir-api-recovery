@@ -584,13 +584,10 @@ class TravShopController extends Controller
                 case 'pg_dd_bri':
                     $bind = Bind::where('id', $request->card_id)->first();
                     $bind_before = TransPayment::where('trans_order_id', $data->id)->first();
-                    // if ($bind_before->data->bind_id) {
-
-                    // }
-
-                    dd($bind_before->data['bind_id']);
+                  
+                    // dd($bind_before->data['bind_id']);
                    
-                    if (!$bind) {
+                    if (!$bind && $request->card_id) {
                         return response()->json(['message' => 'Card Not Found'], 404);
                     }
                     if (!$bind->is_valid) {
@@ -599,7 +596,7 @@ class TravShopController extends Controller
 
                     $payment_payload = [
                         "sof_code" => $bind->sof_code,
-                        "bind_id" => (string) $bind->bind_id,
+                        "bind_id" => (string) $bind->bind_id ?? (string)$bind_before->data['bind_id'],
                         "refnum" => $bind->refnum,
                         "card_no" => $bind->card_no,
                         "amount" => (string) $data->total,
