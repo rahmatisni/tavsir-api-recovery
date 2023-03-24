@@ -590,9 +590,13 @@ class TravShopController extends Controller
                     if (!$bind && $request->card_id) {
                         return response()->json(['message' => 'Card Not Found'], 404);
                     }
-                    if (!$bind->is_valid) {
-                        return response()->json(['message' => 'Card Not Valid'], 404);
+                    if ($bind)
+                    {
+                        if (!$bind->is_valid) {
+                            return response()->json(['message' => 'Card Not Valid'], 404);
+                        }
                     }
+                    
 
                     $payment_payload = [
                         "sof_code" => $bind->sof_code ?? $bind_before->data['sof_code'],
