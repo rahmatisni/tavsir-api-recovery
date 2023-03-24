@@ -595,16 +595,16 @@ class TravShopController extends Controller
                     }
 
                     $payment_payload = [
-                        "sof_code" => $bind->sof_code ?? (string)$bind_before->data['sof_code'],
-                        "bind_id" => (string) $bind->bind_id ?? (string)$bind_before->data['bind_id'],
-                        "refnum" => $bind->refnum ?? (string)$bind_before->data['refnum'],
-                        "card_no" => $bind->card_no ?? (string)$bind_before->data['card_no'],
+                        "sof_code" => $bind->sof_code ?? $bind_before->data['sof_code'],
+                        "bind_id" => (string) $bind->bind_id ?? (string) $bind_before->data['bind_id'],
+                        "refnum" => $bind->refnum ?? $bind_before->data['refnum'],
+                        "card_no" => $bind->card_no ?? $bind_before->data['card_no'],
                         "amount" => (string) $data->total,
                         "trxid" => $data->order_id,
                         "remarks" => $data->tenant->name ?? 'Travoy',
-                        "phone" => $bind->phone ?? (string)$bind_before->data['phone'],
-                        "email" => $bind->email ?? (string)$bind_before->data['email'],
-                        "customer_name" => $bind->customer_name ?? (string)$bind_before->data['customer_name'],
+                        "phone" => $bind->phone ?? $bind_before->data['phone'],
+                        "email" => $bind->email ?? $bind_before->data['email'],
+                        "customer_name" => $bind->customer_name ?? $bind_before->data['customer_name'],
                         "bill" => (string)$data->sub_total,
                         "fee" => (string)$data->fee,
                     ];
