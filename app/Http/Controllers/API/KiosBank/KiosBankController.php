@@ -62,7 +62,7 @@ class KiosBankController extends Controller
             ])
             ->first();
             // dd($harga_jual);
-            $data['record'][$key]['price_jmto'] = $harga_jual['harga'];
+            // $data['record'][$key]['price_jmto'] = $harga_jual['harga'];
 
         }
 

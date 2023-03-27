@@ -259,7 +259,7 @@ class KiosBankService
             'data' => [
                 'noHandphone'=>$data['phone'],
                 'harga_kios'=>$data['price'],
-                'harga'=>$data['price_jmto']
+                // 'harga'=>$data['price_jmto']
             ],
             'description'=>'INQUIRY'
         ];
