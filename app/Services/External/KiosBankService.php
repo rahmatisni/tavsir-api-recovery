@@ -239,9 +239,7 @@ class KiosBankService
         $order->customer_phone = $data['customer_phone'];
         $order->merchant_id = '';
         $order->sub_merchant_id = '';
-        // $order->sub_total = $data['price_jmto'];
-        $order->sub_total = $data['price'];
-
+        $order->sub_total = $data['price_jmto'];
         $order->status = TransOrder::WAITING_PAYMENT;
         $order->fee = env('PLATFORM_FEE');
         $order->total = $order->sub_total + $order->fee;
@@ -259,7 +257,7 @@ class KiosBankService
             'data' => [
                 'noHandphone'=>$data['phone'],
                 'harga_kios'=>$data['price'],
-                // 'harga'=>$data['price_jmto']
+                'harga'=>$data['price_jmto']
             ],
             'description'=>'INQUIRY'
         ];
