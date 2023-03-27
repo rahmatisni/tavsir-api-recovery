@@ -45,7 +45,7 @@ class OrderPulsaRequest extends FormRequest
             'code' => 'required',
             'description' => 'required',
             'price' => 'required|integer|min:1000',
-            // 'price_jmto' => 'required|integer|min:1000',
+            'price_jmto' => 'required|integer|min:1000',
 
         ];
     }
