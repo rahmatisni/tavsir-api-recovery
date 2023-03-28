@@ -30,7 +30,9 @@ class TsOrderResource extends JsonResource
      public function toArray($request)
     {
         $product_kios = null;
-        
+        $rest_area_name = $this->rest_area?->name ?? null;
+        $tenant_name = $this->tenant->name ?? null;
+
         if($this->order_type == TransOrder::ORDER_TRAVOY)
         {
             $product = explode('-',$this->order_id);
@@ -80,17 +82,17 @@ class TsOrderResource extends JsonResource
                     }
                 }
             }
+
+            $rest_area_name = 'Travoy';
+            $tenant_name = 'Multibiller';
         }
 
        
-      
-       
-
         return [
             "id" => $this->id,
-            'rest_area_name' => $this->rest_area?->name ?? null,
+            'rest_area_name' => $rest_area_name,
             'tenant_id' => $this->tenant_id,
-            'tenant_name' => $this->tenant->name ?? null,
+            'tenant_name' => $tenant_name,
             'tenant_photo' => $this->tenant ? ($this->tenant->photo_url ? asset($this->tenant->photo_url) : null) : null,
             'tenant_is_open' => $this->tenant ? ($this->tenant->is_open == 1 ? true : false) : false,
             'order_id' => $this->order_id,
