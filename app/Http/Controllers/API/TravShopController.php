@@ -598,7 +598,7 @@ class TravShopController extends Controller
 
                     $payment_payload = [
                         "sof_code" => $bind->sof_code ?? $bind_before->data['sof_code'],
-                        "bind_id" => (string)($bind->bind_id ?? $bind_before->data['bind_id']),
+                        "bind_id" => (string)($bind?->bind_id ?? $bind_before->data['bind_id']),
                         "refnum" => $bind->refnum ?? $bind_before->data['refnum'],
                         "card_no" => $bind->card_no ?? $bind_before->data['card_no'],
                         "amount" => (string) $data->total,
