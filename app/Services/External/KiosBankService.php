@@ -168,9 +168,7 @@ class KiosBankService
         if($status_respon == '00')
         {
             $data = ProductKiosBank::when($kategori_pulsa, function($q)use($kategori_pulsa){
-                return $q->where('kategori',$kategori_pulsa)
-                ->where('is_active','1');
-                ;
+                return $q->where('kategori',$kategori_pulsa);
             })
             ->get();
 
@@ -180,6 +178,7 @@ class KiosBankService
                 $value->status = false;
             }
 
+            dd($active);
             if(count($active) > 1)
             {
                 foreach ($active as $key => $value) {
