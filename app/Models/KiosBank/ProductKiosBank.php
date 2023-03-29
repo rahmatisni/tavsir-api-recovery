@@ -14,6 +14,7 @@ class ProductKiosBank extends BaseModel
         'kode',
         'name',
         'prefix_id',
-        'harga'
+        'harga',
+        'is_active'
     ];
 }

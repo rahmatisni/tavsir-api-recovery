@@ -169,8 +169,7 @@ class KiosBankService
         {
             $data = ProductKiosBank::when($kategori_pulsa, function($q)use($kategori_pulsa){
                 return $q->where('kategori',$kategori_pulsa);
-            })
-            ->get();
+            })->where('is_active', 1)->get();
 
             $active = $product['active'];
             $active =  explode(',',$active);
