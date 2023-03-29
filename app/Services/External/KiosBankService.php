@@ -171,7 +171,6 @@ class KiosBankService
                 return $q->where('kategori',$kategori_pulsa);
             })
             ->get();
-            dd($data);
 
             $active = $product['active'];
             $active =  explode(',',$active);
