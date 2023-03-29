@@ -226,7 +226,7 @@ class KiosBankService
     {
         $product_pulsa = ProductKiosBank::where('id',$id)
                                     ->where('sub_kategori','PULSA')
-                                    ->where('is_active',1)
+                                    // ->where('is_active',1)
                                     ->whereNotNull('prefix_id')->first();
         return $product_pulsa;
     }
