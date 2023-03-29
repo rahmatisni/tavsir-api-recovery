@@ -22,6 +22,8 @@ class CreateRefProductKiosBankTable extends Migration
             $table->unsignedInteger('prefix_id')->nullable();
             $table->string('harga')->nullable();
             $table->timestamps();
+            $table->unsignedInteger('is_active')->nullable();
+
         });
     }
 

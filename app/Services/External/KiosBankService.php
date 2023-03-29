@@ -197,7 +197,12 @@ class KiosBankService
     
     public function showProduct($id)
     {
-        $product = ProductKiosBank::findOrFail($id);
+        $product = 
+        ProductKiosBank::where('id',$id)
+        ->where('is_active','1');
+        // ProductKiosBank::findOrFail($id);
+      
+
        
         return $product;
     }
@@ -222,6 +227,7 @@ class KiosBankService
     {
         $product_pulsa = ProductKiosBank::where('id',$id)
                                     ->where('sub_kategori','PULSA')
+                                    ->where('is_active','1')
                                     ->whereNotNull('prefix_id')->first();
         return $product_pulsa;
     }
