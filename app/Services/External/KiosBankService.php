@@ -29,7 +29,7 @@ class KiosBankService
 
     protected const CEK_STATUS = '/Services/Check-Status';
     protected const CEK_DEPOSIT = '/Services/getCurrentDeposit';
-    protected const INQUIRY = '/Services/Inquiry';
+    public const INQUIRY = '/Services/Inquiry';
 
     function __construct()
     {
