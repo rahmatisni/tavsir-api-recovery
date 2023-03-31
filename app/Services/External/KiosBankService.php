@@ -171,6 +171,7 @@ class KiosBankService
                 return $q->where('kategori',$kategori_pulsa);
             })->where('is_active', 1)
             // ->orderBy('name', 'asc')
+            ->orderBy('kode', 'asc')
             ->get();
 
             $active = $product['active'];
