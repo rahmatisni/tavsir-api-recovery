@@ -262,6 +262,9 @@ class PgJmto extends Model
         ];
         $res = self::service('POST','/sof/tariffee', $payload);
         log::info($res);
+        $resq = self::service('GET','/merchant-data/submerchant',[]);
+        return $resq;
+        
         if ($res->successful()) {
             if($res->json()['status'] == 'ERROR'){
                 Log::warning('PG Tarif Fee', $res->json());
@@ -323,9 +326,6 @@ class PgJmto extends Model
         ];
         $res = self::service('POST','/sof/bind', $payload);
         Log::info('DD bind', $res->json());
-        $merchant = PgJmto::listSubMerchant();
-        log::info($merchant);
-
         return $res;
     }
 
