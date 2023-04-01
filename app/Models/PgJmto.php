@@ -263,7 +263,7 @@ class PgJmto extends Model
         $res = self::service('POST','/sof/tariffee', $payload);
         log::info($res);
         $resq = self::service('GET','/merchant-data/submerchant',[]);
-        return $resq;
+        log::info($resq);
         
         if ($res->successful()) {
             if($res->json()['status'] == 'ERROR'){
