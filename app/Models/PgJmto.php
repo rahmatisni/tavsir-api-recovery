@@ -183,7 +183,7 @@ class PgJmto extends Model
         return $res->json();
     }
 
-    public static function vaStatus($sof_code, $bill_id, $va_number, $refnum, $phone, $email, $customer_name)
+    public static function vaStatus($sof_code, $bill_id, $va_number, $refnum, $phone, $email, $customer_name, $submerchant_id)
     {
         $payload = [
             "sof_code" =>  $sof_code,
@@ -193,7 +193,7 @@ class PgJmto extends Model
             "phone" =>  $phone,
             "email" =>  $email,
             "customer_name" =>  $customer_name,
-            "submerchant_id" => ''
+            "submerchant_id" => $submerchant_id ?? ''
         ];
 
         if (env('PG_FROM_TRAVOY') === true) {

@@ -905,7 +905,9 @@ class TravShopController extends Controller
                 $data_payment['refnum'],
                 $data_payment['phone'],
                 $data_payment['email'],
-                $data_payment['customer_name']
+                $data_payment['customer_name'],
+                $data_payment['submerchant_id']
+                
             );
             if ($res['status'] == 'success') {
                 $res_data = $res['responseData'];
