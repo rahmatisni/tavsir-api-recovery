@@ -119,7 +119,11 @@ class PgJmto extends Model
 
     public static function vaCreate($sof_code, $bill_id, $bill_name, $amount, $desc, $phone, $email, $customer_name, $sub_merchant_id)
     {
-        // dd($desc);
+        if($sub_merchant_id == 0)
+        {
+            $sub_merchant_id = "";
+        }
+
         $payload = [
             "sof_code" =>  $sof_code,
             "bill_id" =>  $bill_id,
@@ -131,7 +135,7 @@ class PgJmto extends Model
             "phone" =>  $phone,
             "email" =>  $email,
             "customer_name" =>  $customer_name,
-            "submerchant_id" => (string)$sub_merchant_id ?? ""
+            "submerchant_id" => (string)$sub_merchant_id
         ];
 
         if (env('PG_FROM_TRAVOY') === true) {
