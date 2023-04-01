@@ -408,9 +408,9 @@ class TravShopController extends Controller
                         'phone' => $request->customer_phone,
                         'email' => $request->customer_email,
                         'customer_name' => $request->customer_name,
-                        "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->submerchant_id ?? '',
+                        "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id ?? '',
                     ];
-                    dd($data);
+                    
                     $res = PgJmto::vaCreate(
                         $payment_method->code,
                         $data->order_id,
@@ -420,7 +420,7 @@ class TravShopController extends Controller
                         $request->customer_phone,
                         $request->customer_email,
                         $request->customer_name,
-                        $data->submerchant_id
+                        $data->sub_merchant_id
 
                     );
                     if ($res['status'] == 'success') {
