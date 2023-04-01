@@ -707,14 +707,13 @@ class TravShopController extends Controller
                         $random_id = rand(900000000000,999999999999);
                         $data->order_id = $ref[0].'-'.$ref[1].'-'.$random_id.'-'.Carbon::now()->timestamp;
 
-                        // dd($this->kiosBankService->getSeesionId());
     
                         $payload = [
                             'sessionID'=> $this->kiosBankService->getSeesionId(),
                             'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
                             'productID'=>$ref[0],
                             'customerID'=>$ref[1],
-                            'referenceID'=>$random_id,
+                            'referenceID'=>(string)$random_id,
                         ];
                         
                         $res_json = $this->kiosBankService->http('POST',$this->kiosBankService::INQUIRY,$payload);
