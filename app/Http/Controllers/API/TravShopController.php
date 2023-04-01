@@ -705,6 +705,8 @@ class TravShopController extends Controller
                         $ref = explode('-', $data->order_id);
                         $random_id = rand(900000000000,999999999999);
                         $data->order_id = $ref[0].'-'.$ref[1].'-'.$random_id.'-'.Carbon::now()->timestamp;
+
+                        dd($ref);
     
                         $payload = [
                             'sessionID'=> $this->getSeesionId(),
