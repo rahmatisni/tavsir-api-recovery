@@ -323,6 +323,9 @@ class PgJmto extends Model
         ];
         $res = self::service('POST','/sof/bind', $payload);
         Log::info('DD bind', $res->json());
+        $merchant = PgJmto::listSubMerchant();
+        log::info($merchant);
+
         return $res;
     }
 
