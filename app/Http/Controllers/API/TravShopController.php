@@ -37,6 +37,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
+
 class TravShopController extends Controller
 {
     protected $stock_service;
@@ -706,7 +707,7 @@ class TravShopController extends Controller
                         $random_id = rand(900000000000,999999999999);
                         $data->order_id = $ref[0].'-'.$ref[1].'-'.$random_id.'-'.Carbon::now()->timestamp;
 
-                        dd($ref);
+                        dd($this->getSeesionId());
     
                         $payload = [
                             'sessionID'=> $this->getSeesionId(),
