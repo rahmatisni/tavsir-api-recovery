@@ -713,7 +713,7 @@ class TravShopController extends Controller
                             'sessionID'=> $this->kiosBankService->getSeesionId(),
                             'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
                             'productID'=>$ref[0],
-                            'customerID'=>$$ref[1],
+                            'customerID'=>$ref[1],
                             'referenceID'=>$random_id,
                         ];
                         
