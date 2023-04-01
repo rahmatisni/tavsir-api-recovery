@@ -131,7 +131,7 @@ class PgJmto extends Model
             "phone" =>  $phone,
             "email" =>  $email,
             "customer_name" =>  $customer_name,
-            "submerchant_id" => $sub_merchant_id ?? ""
+            "submerchant_id" => $sub_merchant_id
         ];
 
         if (env('PG_FROM_TRAVOY') === true) {
@@ -262,9 +262,6 @@ class PgJmto extends Model
         ];
         $res = self::service('POST','/sof/tariffee', $payload);
         log::info($res);
-        $resq = self::service('GET','/merchant-data/submerchant',[]);
-        log::info($resq);
-        
         if ($res->successful()) {
             if($res->json()['status'] == 'ERROR'){
                 Log::warning('PG Tarif Fee', $res->json());

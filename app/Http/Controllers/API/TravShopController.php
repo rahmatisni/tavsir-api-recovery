@@ -410,6 +410,7 @@ class TravShopController extends Controller
                         'customer_name' => $request->customer_name,
                         "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->submerchant_id ?? '',
                     ];
+                    dd($payment_payload);
                     $res = PgJmto::vaCreate(
                         $payment_method->code,
                         $data->order_id,
