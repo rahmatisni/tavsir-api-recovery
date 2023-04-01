@@ -117,7 +117,7 @@ class PgJmto extends Model
        
     }
 
-    public static function vaCreate($sof_code, $bill_id, $bill_name, $amount, $desc, $phone, $email, $customer_name)
+    public static function vaCreate($sof_code, $bill_id, $bill_name, $amount, $desc, $phone, $email, $customer_name, $sub_merchant_id)
     {
         // dd($desc);
         $payload = [
@@ -131,7 +131,7 @@ class PgJmto extends Model
             "phone" =>  $phone,
             "email" =>  $email,
             "customer_name" =>  $customer_name,
-            "submerchant_id" => ""
+            "submerchant_id" => $sub_merchant_id ?? ""
         ];
 
         if (env('PG_FROM_TRAVOY') === true) {
