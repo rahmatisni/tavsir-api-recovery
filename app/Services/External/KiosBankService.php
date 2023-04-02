@@ -336,6 +336,22 @@ class KiosBankService
         $res_json =  $this->http('POST',self::CEK_STATUS,$payload)->json();
         return $res_json;
     }
+    public function reinquiry($sub_total,$order_id,$admin,$harga_kios)
+    {
+        $order = explode('-', $order_id);
+        $payload = [
+            'total'=>$harga_kios,
+            'admin'=>$admin,
+            'tagihan'=>$harga_kios,
+            'sessionID'=> $this->getSeesionId(),
+            'productID'=>$order[0],
+            'referenceID'=>$order[2],
+            'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
+            'customerID'=>$order[1]
+        ];
+        $res_json =  $this->http('POST',self::CEK_STATUS,$payload)->json();
+        return $res_json;
+    }
 
     public function callback($request)
     {
@@ -464,76 +480,6 @@ class KiosBankService
         return $res_json;
     }
 
-
-
-    public function reinquiry($productId, $customerID, $referenceID)
-    {
-        $payload = [
-            'sessionID'=> $this->getSeesionId(),
-            'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
-            'productID'=>$productId,
-            'customerID'=>$customerID,
-            'referenceID'=>$referenceID,
-        ];
-        $res_json =  $this->http('POST',self::REINQUIRY,$payload);
-        $res_json = $res_json->json();
-        log::info($res_json);
-
-        return $res_json;
-
-        // dd($res_json);
-        // if($res_json['rc'] == '00')
-        // {
-        //     if ($res_json['productID'] == '520021' || $res_json['productID'] == '520011') {
-        //         $order->harga_kios = $res_json['data']['total'];
-        //         //harga jual
-
-        //         $harga_jual_kios = ProductKiosBank::where('kode',$res_json['productID'])->first() ?? $res_json['data']['total'];
-        //         $order->sub_total = ($harga_jual_kios?->harga ?? 0) + $res_json['data']['total'];
-
-
-        //         $order->total = $order->sub_total + $order->fee;
-              
-        //         $res_json['data']['harga_kios'] = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
-        //         $res_json['data']['harga'] =  $order->sub_total;
-        //         $res_json['description'] = 'INQUIRY';
-              
-        //         $order->save();
-        //         $order->log_kiosbank()->updateOrCreate(['trans_order_id' => $order->id],[
-        //             'data' => $res_json
-        //         ]);
-
-        //         //minta tambah updateOrCreate ke column inquiry
-
-        //         return $order;
-
-        //     }
-        //     else {
-        //         $order->harga_kios = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
-        //         //harga jual
-        //         $harga_jual_kios = ProductKiosBank::where('kode',$res_json['productID'])->first();
-        //         // $order->sub_total = $harga_jual_kios?->harga ?? $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
-        //         $order->sub_total = ($harga_jual_kios?->harga ?? 0) + $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
-
-        //         $order->total = $order->sub_total + $order->fee;
-
-        //         $res_json['data']['harga_kios'] = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
-        //         $res_json['data']['harga'] =  $order->sub_total;
-        //         $res_json['description'] = 'INQUIRY';
-        //         $order->save();
-        //         $order->log_kiosbank()->updateOrCreate(['trans_order_id' => $order->id],[
-        //             'data' => $res_json
-        //         ]);
-                               
-        //         //minta tambah updateOrCreate ke column inquiry
-
-        //         return $order;
-        //     }
-        // }
-
-        
-        // return $res_json;
-    }
     public function cek()
     {
         // $cek = $this->cekDeposit();
