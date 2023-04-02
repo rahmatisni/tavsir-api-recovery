@@ -30,6 +30,8 @@ class KiosBankService
     protected const CEK_STATUS = '/Services/Check-Status';
     protected const CEK_DEPOSIT = '/Services/getCurrentDeposit';
     public const INQUIRY = '/Services/Inquiry';
+    public const REINQUIRY = '/Services/Inquiry';
+
 
     function __construct()
     {
@@ -473,7 +475,7 @@ class KiosBankService
             'customerID'=>$customerID,
             'referenceID'=>$referenceID,
         ];
-        $res_json =  $this->http('POST',self::INQUIRY,$payload);
+        $res_json =  $this->http('POST',self::REINQUIRY,$payload);
         $res_json = $res_json->json();
         log::info($res_json);
 
