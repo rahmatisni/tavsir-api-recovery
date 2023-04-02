@@ -474,7 +474,7 @@ class KiosBankService
             'referenceID'=>$referenceID,
         ];
         
-        $res_json =  $this->http('POST',$this->baseUrl.self::INQUIRY,$payload);
+        $res_json =  $this->http('POST',self::INQUIRY,$payload);
         $res_json = $res_json->json();
         log::info($res_json);
         // dd($res_json);
