@@ -680,6 +680,8 @@ class TravShopController extends Controller
                 if($data->order_type == TransOrder::ORDER_TRAVOY){
                     $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
                     $adminBank = $datalog['data']['data']['adminBank'] ?? '000000000000';
+
+                    dd($datalog);
                     if($datalog) {
                         $kios = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id, $adminBank, $data->harga_kios);
                         Log::info($kios);
