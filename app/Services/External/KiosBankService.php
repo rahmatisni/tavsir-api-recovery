@@ -467,18 +467,13 @@ class KiosBankService
     public function reinquiry($productId, $customerID, $referenceID)
     {
         $payload = [
-            // 'sessionID'=> $this->getSeesionId(),
-            // 'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
-            // 'productID'=>$productId,
-            // 'customerID'=>$customerID,
-            // 'referenceID'=>$referenceID,
-            'sessionID' => '695BA2F15245ACDE5D4951C827612B5A',
-            'merchantID' => 'DJI000472',
-            'productID' => '751011',
-            'customerID' => '081210654090',
-            'referenceID' => '937803333121',
+            'sessionID'=> $this->getSeesionId(),
+            'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
+            'productID'=>$productId,
+            'customerID'=>$customerID,
+            'referenceID'=>$referenceID,
         ];
-        
+        dd($this->http);
         $res_json =  $this->http('POST',self::INQUIRY,$payload);
         $res_json = $res_json->json();
         log::info($res_json);
