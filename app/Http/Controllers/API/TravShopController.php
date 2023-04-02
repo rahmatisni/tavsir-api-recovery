@@ -683,6 +683,7 @@ class TravShopController extends Controller
 
                     $kios = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id, $adminBank, $data->harga_kios);
                     Log::info($kios);
+                    
                     $kios['data']['harga_kios'] = $data->harga_kios;
                     $kios['data']['harga'] = $data->sub_total ?? '0';
                     $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '-';
