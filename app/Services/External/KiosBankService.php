@@ -30,6 +30,8 @@ class KiosBankService
     protected const CEK_STATUS = '/Services/Check-Status';
     protected const CEK_DEPOSIT = '/Services/getCurrentDeposit';
     public const INQUIRY = '/Services/Inquiry';
+    public const REINQUIRY = '/Services/Inquiry';
+
 
     function __construct()
     {
@@ -334,6 +336,20 @@ class KiosBankService
         $res_json =  $this->http('POST',self::CEK_STATUS,$payload)->json();
         return $res_json;
     }
+    public function reinquiry($productId, $customerID, $referenceID)
+    {
+
+        $payload = [
+            'sessionID'=> $this->getSeesionId(),
+            'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
+            'productID'=>$productId,
+            'customerID'=>$customerID,
+            'referenceID'=>$referenceID,
+        ];
+        $res_json =  $this->http('POST',self::INQUIRY,$payload);
+        $res_json = $res_json->json();
+        return $res_json;
+    }
 
     public function callback($request)
     {
@@ -477,7 +493,6 @@ class KiosBankService
         $res_json =  $this->http('POST',self::INQUIRY,$payload);
         $res_json = $res_json->json();
         log::info($res_json);
-        
         // dd($res_json);
         // if($res_json['rc'] == '00')
         // {
