@@ -851,7 +851,7 @@ class TravShopController extends Controller
                             }
                             //end pay ulang
                         }
-                        end inquiry ulang
+                        // end inquiry ulang
                     }
 
                     $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
