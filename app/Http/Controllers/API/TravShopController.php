@@ -708,15 +708,18 @@ class TravShopController extends Controller
                         $data->order_id = $ref[0].'-'.$ref[1].'-'.$random_id.'-'.Carbon::now()->timestamp;
 
     
-                        $payload = [
-                            'sessionID'=> $this->kiosBankService->getSeesionId(),
-                            'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
-                            'productID'=>$ref[0],
-                            'customerID'=>$ref[1],
-                            'referenceID'=>(string)$random_id,
-                        ];
-                        
-                        $res_json = $this->kiosBankService->http('POST',$this->kiosBankService::INQUIRY,$payload);
+                        // $payload = [
+                        //     'sessionID'=> $this->kiosBankService->getSeesionId(),
+                        //     'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
+                        //     'productID'=>$ref[0],
+                        //     'customerID'=>$ref[1],
+                        //     'referenceID'=>(string)$random_id,
+                        // ];
+                        $productId = $ref[0];
+                        $customerID = $ref[1];
+                        $referenceID = $random_id;
+
+                        $res_json = $this->kiosBankService->reinquiry($productId, $customerID, $referenceID);
                         $res_json = $res_json->json();
 
                         // dd($res_json);
