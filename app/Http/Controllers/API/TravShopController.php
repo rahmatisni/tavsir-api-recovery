@@ -719,7 +719,8 @@ class TravShopController extends Controller
                         $res_json = $this->kiosBankService->http('POST',$this->kiosBankService::INQUIRY,$payload);
                         $res_json = $res_json->json();
 
-                        dd($res_json);
+                        // dd($res_json);
+                        log::info($res_json);
     
                         if($res_json['rc'] == '00')
                         {
