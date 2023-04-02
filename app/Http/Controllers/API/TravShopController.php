@@ -706,8 +706,7 @@ class TravShopController extends Controller
                         $ref = explode('-', $data->order_id);
                         $random_id = rand(900000000000,999999999999);
                         $data->order_id = $ref[0].'-'.$ref[1].'-'.$random_id.'-'.Carbon::now()->timestamp;
-
-    
+                        dd('cek');
                         // $payload = [
                         //     'sessionID'=> $this->kiosBankService->getSeesionId(),
                         //     'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
@@ -719,8 +718,6 @@ class TravShopController extends Controller
                         $customerID = $ref[1];
                         $referenceID = (string)$random_id;
 
-                        $deposit = $this->kiosBankService->cekDeposit();
-                        dd($deposit);
                         $res_json = $this->kiosBankService->reinquiry($productId, $customerID, $referenceID);
                         $res_json = $res_json->json();
 
