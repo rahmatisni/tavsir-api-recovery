@@ -705,7 +705,25 @@ class TravShopController extends Controller
                     }
 
                     if($kios['rc'] == '19'){
-                        dd($kios);
+                        $ref = explode('-', $data->order_id);
+                        $random_id = rand(900000000000,999999999999);
+                        $data->order_id = $ref[0].'-'.$ref[1].'-'.$random_id.'-'.Carbon::now()->timestamp;
+                        
+                        // $payload = [
+                        //     'sessionID'=> $this->kiosBankService->getSeesionId(),
+                        //     'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
+                        //     'productID'=>$ref[0],
+                        //     'customerID'=>$ref[1],
+                        //     'referenceID'=>(string)$random_id,
+                        // ];
+                        $productId = $ref[0];
+                        $customerID = $ref[1];
+                        $referenceID = (string)$random_id;
+
+                        $z = $this->kiosBankService->reinquiry($productId, $customerID, $referenceID);
+                        dd($z);
+
+                        // $res_json = $res_json->json();
                     }
                     // else{
                     //     //inquiry ulang
