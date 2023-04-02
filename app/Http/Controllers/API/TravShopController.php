@@ -720,8 +720,8 @@ class TravShopController extends Controller
                         $customerID = $ref[1];
                         $referenceID = (string)$random_id;
 
-                        $kios = $this->kiosBankService->reinquiry($data->sub_total, $data->order_id, $adminBank, $data->harga_kios);
-                        dd($kios);
+                        $z = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id, $adminBank, $data->harga_kios);
+                        dd($z);
 
                         // $res_json = $res_json->json();
                     }
