@@ -688,21 +688,26 @@ class TravShopController extends Controller
                     $kios['data']['harga'] = $data->sub_total ?? '0';
                     $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '-';
                     
-                    // if($kios['rc'] == '00')
-                    // {
-                    //     if(str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL'))
-                    //     {
-                    //         $data->status = TransOrder::DONE;
-                    //     }
-                    //     if(str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES'))
-                    //     {
-                    //         $data->status = TransOrder::DONE;
-                    //     }
-                    //     else 
-                    //     {
-                    //         $data->status = TransOrder::DONE;
-                    //     }
-                    // }
+
+                    if($kios['rc'] == '00')
+                    {
+                        if(str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL'))
+                        {
+                            $data->status = TransOrder::DONE;
+                        }
+                        if(str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES'))
+                        {
+                            $data->status = TransOrder::DONE;
+                        }
+                        else 
+                        {
+                            $data->status = TransOrder::DONE;
+                        }
+                    }
+
+                    if($kios['rc'] == '19'){
+                        dd($kios);
+                    }
                     // else{
                     //     //inquiry ulang
                     //     $ref = explode('-', $data->order_id);
