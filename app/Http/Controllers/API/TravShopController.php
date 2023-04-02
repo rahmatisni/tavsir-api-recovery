@@ -682,12 +682,23 @@ class TravShopController extends Controller
                     $adminBank = $datalog['data']['data']['adminBank'] ?? '000000000000';
 
                     // dd($datalog['data']['rc']);
-                    if($datalog['data']['rc'] == '19') {
+                    if($datalog['data']['rc'] == '00') {
                         $kios = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id, $adminBank, $data->harga_kios);
                         Log::info($kios);
-                        dd($kios);
+                        // dd($kios);
                     }
+                    if($datalog['data']['rc'] == '19') {
+                        $ref = explode('-', $data->order_id);
+                        $random_id = rand(900000000000,999999999999);
+                        $data->order_id = $ref[0].'-'.$ref[1].'-'.$random_id.'-'.Carbon::now()->timestamp;
 
+                        $productId = $ref[0];
+                        $customerID = $ref[1];
+                        $referenceID = (string)$random_id;
+
+                        $res_json = $this->kiosBankService->reinquiry($productId, $customerID, $referenceID);
+                        $res_json = $res_json->json();
+                    }
                     $kios['data']['harga_kios'] = $data->harga_kios;
                     $kios['data']['harga'] = $data->sub_total ?? '0';
                     $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '-';

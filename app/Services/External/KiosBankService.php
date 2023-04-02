@@ -336,20 +336,18 @@ class KiosBankService
         $res_json =  $this->http('POST',self::CEK_STATUS,$payload)->json();
         return $res_json;
     }
-    public function reinquiry($sub_total,$order_id,$admin,$harga_kios)
+    public function reinquiry($productId, $customerID, $referenceID)
     {
-        $order = explode('-', $order_id);
+
         $payload = [
-            'total'=>$harga_kios,
-            'admin'=>$admin,
-            'tagihan'=>$harga_kios,
             'sessionID'=> $this->getSeesionId(),
-            'productID'=>$order[0],
-            'referenceID'=>$order[2],
             'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
-            'customerID'=>$order[1]
+            'productID'=>$productId,
+            'customerID'=>$customerID,
+            'referenceID'=>$referenceID,
         ];
-        $res_json =  $this->http('POST',self::CEK_STATUS,$payload)->json();
+        $res_json =  $this->http('POST',self::INQUIRY,$payload);
+        $res_json = $res_json->json();
         return $res_json;
     }
 
