@@ -471,7 +471,7 @@ class KiosBankService
             'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
             'productID'=>$productId,
             'customerID'=>$customerID,
-            'referenceID'=>$referenceID,
+            'referenceID'=> '937803333120',
         ];
         
         $res_json =  $this->http('POST',self::INQUIRY,$payload);
