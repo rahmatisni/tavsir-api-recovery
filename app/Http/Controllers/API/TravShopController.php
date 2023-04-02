@@ -687,7 +687,9 @@ class TravShopController extends Controller
                     $kios['data']['harga'] = $data->sub_total ?? '0';
                     $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '-';
                     
-
+                    $z = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id, $adminBank, $data->harga_kios);
+                    dd($z);
+                    
                     if($kios['rc'] == '00')
                     {
                         if(str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL'))
@@ -720,8 +722,7 @@ class TravShopController extends Controller
                         $customerID = $ref[1];
                         $referenceID = (string)$random_id;
 
-                        $z = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id, $adminBank, $data->harga_kios);
-                        dd($z);
+
 
                         // $res_json = $res_json->json();
                     }
