@@ -473,9 +473,12 @@ class KiosBankService
             'customerID'=>$customerID,
             'referenceID'=>$referenceID,
         ];
+        
         $res_json =  $this->http('POST',self::INQUIRY,$payload);
         $res_json = $res_json->json();
-        dd($res_json);
+        log::info($payload);
+        log::info($res_json);
+        // dd($res_json);
         // if($res_json['rc'] == '00')
         // {
         //     if ($res_json['productID'] == '520021' || $res_json['productID'] == '520011') {
