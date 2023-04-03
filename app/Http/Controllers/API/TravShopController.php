@@ -682,8 +682,8 @@ class TravShopController extends Controller
                     $adminBank = $datalog['data']['data']['adminBank'] ?? '000000000000';
 
                     $kios = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id, $adminBank, $data->harga_kios);
-                    sleep(30);
-                    $kios = $this->kiosBankService->cekDeposit();
+                    // sleep(30);
+                    // $kios = $this->kiosBankService->cekDeposit();
                     $kios['data']['harga_kios'] = $data->harga_kios;
                     $kios['data']['harga'] = $data->sub_total ?? '0';
                     $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '-';
@@ -706,6 +706,7 @@ class TravShopController extends Controller
                     }
 
                     if($kios['rc'] == '19'){
+                        dd('oke');
                     // $kios = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id, $adminBank, $data->harga_kios);
 
                     //     $ref = explode('-', $data->order_id);
