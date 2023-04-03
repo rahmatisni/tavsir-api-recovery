@@ -38,7 +38,7 @@ class KiosBankService
         $this->username = env('KIOSBANK_USERNAME');
         $this->password = env('KIOSBANK_PASSWORD');
         $this->baseUrl = env('KIOSBANK_URL');
-        $this->http = Http::baseUrl($this->baseUrl)
+        $this->http = Http::dd()->baseUrl($this->baseUrl)
                         ->withOptions(["verify"=>false]);
         $this->accountKiosBank = [
             'mitra' => env('KIOSBANK_MITRA'),
