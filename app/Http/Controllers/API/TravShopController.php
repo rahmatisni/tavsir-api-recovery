@@ -687,6 +687,8 @@ class TravShopController extends Controller
                     $kios['data']['harga'] = $data->sub_total ?? '0';
                     $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '-';
                     
+                    $asd = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id, $adminBank, $data->harga_kios);
+                    dd($asd);
 
                     if($kios['rc'] == '00')
                     {
@@ -705,8 +707,7 @@ class TravShopController extends Controller
                     }
 
                     if($kios['rc'] == '19'){
-                        $asd = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id, $adminBank, $data->harga_kios);
-                        dd($asd);
+                      
 
                     // $kios = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id, $adminBank, $data->harga_kios);
 
