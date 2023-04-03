@@ -194,7 +194,7 @@ class KiosBankService
                          $v->status = true;
                        }
                        else {
-                        unset($v);
+                        unset($data[$k]);
                        }
                     }
                 }
