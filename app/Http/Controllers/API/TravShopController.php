@@ -673,9 +673,7 @@ class TravShopController extends Controller
     public function statusPayment(Request $request, $id)
     {
         $asd = $this->kiosBankService->cekDeposit();
-        $asd1 = $this->kiosBankService->cekDeposit();
-
-        // dd($asd, $asd1);
+        dd($asd);
 
         $data = TransOrder::with('payment_method')->findOrfail($id);
         try {
@@ -691,8 +689,6 @@ class TravShopController extends Controller
                     $kios['data']['harga_kios'] = $data->harga_kios;
                     $kios['data']['harga'] = $data->sub_total ?? '0';
                     $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '-';
-                    dd($asd, $kios);
-
                     if($kios['rc'] == '00')
                     {
                         if(str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL'))
