@@ -770,7 +770,7 @@ class TravShopController extends Controller
 
     public function statusPayment(Request $request, $id)
     {
-        
+        dd('cek');
        $this->kiosBankService->cekDeposit();
 
         dd($this->cek());
