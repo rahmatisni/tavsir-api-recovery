@@ -735,8 +735,8 @@ class TravShopController extends Controller
          /*
             SESUAIKAN IP DAN PORT
         */
-        $ip_interface='development.kiosbank.com';
-        $port_interface='4432';
+        $ip_interface='transaksi.kiosbank.com';
+        $port_interface='17409';
         
         $full_url='https://'.$ip_interface.':'.$port_interface.'/Services/getCurrentDeposit';
         $sign_on_response=$this->post($full_url,'');
