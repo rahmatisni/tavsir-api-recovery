@@ -199,8 +199,6 @@ class KiosBankService
                     }
                 }
             }
-
-            dd($data->groupBy('sub_kategori'));
             return $data->groupBy('sub_kategori');
         }else{
             return $product;
