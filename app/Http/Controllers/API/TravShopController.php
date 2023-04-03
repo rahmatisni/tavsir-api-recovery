@@ -757,10 +757,10 @@ class TravShopController extends Controller
              SESUAIKAN INI
         */
         $body_params=array(
-            'sessionID'=>'58AF525549A33026E1F8E502FEE72721',
+            'sessionID'=>'B8BE35B117D0AF762A84766D5F07FA89',
             'mitra'=>'DJI',
-            'accountID'=>'ujicoba',
-            'merchantID'=>'DJI000343',
+            'accountID'=>'085640224722',
+            'merchantID'=>'DJI000472',
             'counterID'=>'1'
         );
         $post_response=$this->post($full_url,$post_header,$body_params);
