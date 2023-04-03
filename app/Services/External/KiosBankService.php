@@ -126,7 +126,7 @@ class KiosBankService
                 throw new Exception("Error Processing Request", 1);
                 break;
         }
-        Log::info([$http->getHeader(),$payload,$http->json()]);
+        Log::info([$http->getHeader('Authorization'),$payload,$http->json()]);
         return $http;
     }
 
