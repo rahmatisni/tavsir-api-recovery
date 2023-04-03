@@ -761,6 +761,7 @@ class TravShopController extends Controller
             'mitra'=>'DJI',
             'accountID'=>'085640224722',
             'merchantID'=>'DJI000472',
+            'merchantName' => 'PT Jasamarga Tollroad Operator',
             'counterID'=>'1'
         );
         $post_response=$this->post($full_url,$post_header,$body_params);
