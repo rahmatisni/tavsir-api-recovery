@@ -88,13 +88,17 @@ class KiosBankService
             SESUAIKAN INI
         */
         $nc = Redis::get('nc'); //berurutan 1,2,3..dst sesuai request
+        dump($nc);
         if($nc){
-            $nc = $nc++;
+            $nc = $nc+1;
             Redis::set('nc',$nc);
+            dump('null',$nc);
         }else{
             $nc = 1;
             Redis::set('nc',$nc);
         }
+
+        dump($nc);
         $cnonce = uniqid();
 
         $a1 = md5($this->username . ':' . $params['Digest realm'] . ':' . $this->password);
