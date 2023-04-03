@@ -112,6 +112,7 @@ class KiosBankService
     function http($method, $path , $payload=[])
     {
         $digest = $this->generateDigest(method: $method, path: $path);
+        Log::info('Digest: '.$digest);
         $http = $this->http->withHeaders(['Authorization' => 'Digest '.$digest]);
         switch ($method) {
             case 'POST':
@@ -126,7 +127,7 @@ class KiosBankService
                 throw new Exception("Error Processing Request", 1);
                 break;
         }
-        Log::info([$http->getHeader('Authorization'),$payload,$http->json()]);
+        Log::info([$payload,$http->json()]);
         return $http;
     }
 
