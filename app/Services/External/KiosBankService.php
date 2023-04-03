@@ -193,8 +193,8 @@ class KiosBankService
                        {
                          $v->status = true;
                        }
-                       else {
-                        unset($data[$k]);
+                       if($v->status != true) {
+                        unset($v);
                        }
                     }
                 }
