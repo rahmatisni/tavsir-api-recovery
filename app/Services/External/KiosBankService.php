@@ -115,7 +115,6 @@ class KiosBankService
         $digest = $this->generateDigest(method: $method, path: $path);
         Log::info('2 Digest: '.$digest);
         $http = $this->http->withHeaders(['Authorization' => 'Digest '.$digest]);
-       Log::info('http dd', [$this->http]);
         switch ($method) {
             case 'POST':
                 $http = $http->post($path, $payload);
@@ -129,7 +128,7 @@ class KiosBankService
                 throw new Exception("Error Processing Request", 1);
                 break;
         }
-        Log::info([
+        Log::info('3 done',[
             'method' => $method,
             'path' => $path,
             'payload', $payload,

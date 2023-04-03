@@ -704,8 +704,9 @@ class TravShopController extends Controller
 
     public function statusPayment(Request $request, $id)
     {
-       $deposit = $this->kiosBankService->cekDeposit();
-        dd($deposit);
+       $deposit1 = $this->kiosBankService->cekDeposit();
+       $deposit2 = $this->kiosBankService->cekDeposit();
+        dd($deposit1, $deposit2);
         $data = TransOrder::with('payment_method')->findOrfail($id);
         try {
             DB::beginTransaction();
