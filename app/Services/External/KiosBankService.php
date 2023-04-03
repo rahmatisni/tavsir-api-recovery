@@ -128,10 +128,10 @@ class KiosBankService
                 throw new Exception("Error Processing Request", 1);
                 break;
         }
-        Log::info('3 done',[
+        Log::info([
             'method' => $method,
             'path' => $path,
-            'payload', $payload,
+            'payload' => $payload,
             'respons' => $http->json()
         ]);
         return $http;
