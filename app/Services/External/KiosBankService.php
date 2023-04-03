@@ -109,9 +109,7 @@ class KiosBankService
 
     function http($method, $path , $payload=[])
     {
-        Log::info('1 generate Digest');
         $digest = $this->generateDigest(method: $method, path: $path);
-        Log::info('2 Digest: '.$digest);
         $http = Http::kiosbank()->withHeaders(['Authorization' => 'Digest '.$digest]);
         switch ($method) {
             case 'POST':
