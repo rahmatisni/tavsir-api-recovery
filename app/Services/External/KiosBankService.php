@@ -196,12 +196,12 @@ class KiosBankService
                     }
                 }
 
-                foreach ($data as $x => $z){
-                    if($z->status == false){
-                        unset($data[$x]);
-                    }
+                // foreach ($data as $x => $z){
+                //     if($z->status == false){
+                //         unset($data[$x]);
+                //     }
 
-                }
+                // }
             }
 
             return $data->groupBy('sub_kategori');
