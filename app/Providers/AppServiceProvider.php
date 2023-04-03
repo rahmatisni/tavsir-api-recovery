@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -25,5 +26,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Blade::directive('rp', function ( $expression ) { return "<?php echo number_format($expression,0,',','.'); ?>"; });
+
+        Http::macro('kiosbank', function () {
+            return Http::baseUrl(env('KIOSBANK_URL'))->withOptions(["verify"=>false]);
+        });
     }
 }

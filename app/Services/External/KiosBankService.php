@@ -17,7 +17,6 @@ class KiosBankService
     protected $baseUrl;
     protected $accountKiosBank;
     protected $operatorPulsa;
-    protected $http;
     protected $username;
     protected $password;
 
@@ -38,8 +37,6 @@ class KiosBankService
         $this->username = env('KIOSBANK_USERNAME');
         $this->password = env('KIOSBANK_PASSWORD');
         $this->baseUrl = env('KIOSBANK_URL');
-        $this->http = Http::dd()->baseUrl($this->baseUrl)
-                        ->withOptions(["verify"=>false]);
         $this->accountKiosBank = [
             'mitra' => env('KIOSBANK_MITRA'),
             'accountID' => env('KIOSBANK_ACCOUNT_ID'),
@@ -77,7 +74,7 @@ class KiosBankService
 
     function generateDigest($method = 'POST', $path)
     {
-        $digest = $this->http->post($path)->header('WWW-Authenticate');
+        $digest = Http::kiosbank()->post($path)->header('WWW-Authenticate');
         Log::info($digest);
         $auth_arr = explode(',', $digest);
         $params = array();
@@ -115,7 +112,7 @@ class KiosBankService
         Log::info('1 generate Digest');
         $digest = $this->generateDigest(method: $method, path: $path);
         Log::info('2 Digest: '.$digest);
-        $http = $this->http->withHeaders(['Authorization' => 'Digest '.$digest]);
+        $http = Http::kiosbank()->withHeaders(['Authorization' => 'Digest '.$digest]);
         switch ($method) {
             case 'POST':
                 $http = $http->post($path, $payload);
