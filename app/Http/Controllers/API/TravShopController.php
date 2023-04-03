@@ -959,7 +959,7 @@ class TravShopController extends Controller
                 return response()->json($res->json(), 400);
             }
 
-            dd($data_payment);
+            // dd($data_payment);
             $res = PgJmto::vaStatus(
                 $data_payment['sof_code'],
                 $data_payment['bill_id'],

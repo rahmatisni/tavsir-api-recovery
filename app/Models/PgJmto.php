@@ -235,6 +235,7 @@ class PgJmto extends Model
         }
 
         $res = self::service('POST','/va/cekstatus', $payload);
+        dd ($res);
         Log::info('Va status', $res->json());
         return $res->json();
     }
