@@ -733,51 +733,37 @@ class TravShopController extends Controller
                             $data->status = TransOrder::DONE;
                         }
                     }
+                    if(!$kios['rc'] || $kios['rc'] == '01' || $kios['rc'] == '03' || $kios['rc'] == '04' || $kios['rc'] == '05' || $kios['rc'] == '14' || $kios['rc'] == '19' || $kios['rc'] == '38' || $kios['rc'] == '39' || $kios['rc'] == '67' | $kios['rc'] == '71') {
+
+                        // if(str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL'))
+                        // {
+                        //     $data->status = TransOrder::DONE;
+                        // }
+                        // if(str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES'))
+                        // {
+                        //     $data->status = TransOrder::DONE;
+                        // }
+                        // else 
+                        // {
+                            $data->status = TransOrder::READY;
+                        // }
+                    }
                   
-                    // if($kios['rc'] == '19'){
-                      
-
-                    // $kios = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id, $adminBank, $data->harga_kios);
-
-                    //     $ref = explode('-', $data->order_id);
-                    //     $random_id = rand(900000000000,999999999999);
-                    //     $data->order_id = $ref[0].'-'.$ref[1].'-'.$random_id.'-'.Carbon::now()->timestamp;
-                        
-                    //     // $payload = [
-                    //     //     'sessionID'=> $this->kiosBankService->getSeesionId(),
-                    //     //     'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
-                    //     //     'productID'=>$ref[0],
-                    //     //     'customerID'=>$ref[1],
-                    //     //     'referenceID'=>(string)$random_id,
-                    //     // ];
-                    //     $productId = $ref[0];
-                    //     $customerID = $ref[1];
-                    //     $referenceID = (string)$random_id;
-
-
-
-                    //     // $res_json = $res_json->json();
-                    // }
                     else{
                         //inquiry ulang
                         $ref = explode('-', $data->order_id);
                         $random_id = rand(900000000000,999999999999);
                         $data->order_id = $ref[0].'-'.$ref[1].'-'.$random_id.'-'.Carbon::now()->timestamp;
                         
-                        // $payload = [
-                        //     'sessionID'=> $this->kiosBankService->getSeesionId(),
-                        //     'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
-                        //     'productID'=>$ref[0],
-                        //     'customerID'=>$ref[1],
-                        //     'referenceID'=>(string)$random_id,
-                        // ];
                         $productId = $ref[0];
                         $customerID = $ref[1];
                         $referenceID = (string)$random_id;
 
-                        $res_json = $this->kiosBankService->reinquiry($productId, $customerID, $referenceID);
-                        $res_json = $res_json->json();
 
+                        if ($data->description == 'dual'){
+                            $res_json = $this->kiosBankService->reinquiry($productId, $customerID, $referenceID);
+                            $res_json = $res_json->json();
+                        }
                         if($res_json['rc'] == '00')
                         {
                             if ($res_json['productID'] == '520021' || $res_json['productID'] == '520011') {
@@ -817,6 +803,9 @@ class TravShopController extends Controller
                             }
 
                             //pay ulang
+                            if ($data->description == 'single'){
+                                $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
+                            }
                             if ($data->description == 'dual'){
                                 $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
                                 $tagihan = $datalog['data']['data']['tagihan'] ?? $datalog['data']['data']['harga_kios'];
