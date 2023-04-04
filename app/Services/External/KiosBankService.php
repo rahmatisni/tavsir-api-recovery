@@ -109,6 +109,7 @@ class KiosBankService
 
     function http($method, $path , $payload=[])
     {
+        log::info(['Mulai'])
         $digest = $this->generateDigest(method: $method, path: $path);
         $http = Http::kiosbank()->withHeaders(['Authorization' => 'Digest '.$digest]);
         switch ($method) {
@@ -372,7 +373,7 @@ class KiosBankService
            
             if($data){
                 DB::beginTransaction();
-                Log::info($request);
+                Log::info(['callback',$request]);
                
                 $request['description'] =  $request['description'] ?? ($request['data']['status'] ?? '-');
                 $request['data']['harga_kios'] = $request['data']['harga'];
