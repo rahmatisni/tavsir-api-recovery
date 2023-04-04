@@ -733,7 +733,7 @@ class TravShopController extends Controller
                             $data->status = TransOrder::DONE;
                         }
                     }
-                    if(!$kios['rc'] || $kios['rc'] == '01' || $kios['rc'] == '03' || $kios['rc'] == '04' || $kios['rc'] == '05' || $kios['rc'] == '14' || $kios['rc'] == '19' || $kios['rc'] == '38' || $kios['rc'] == '39' || $kios['rc'] == '67' | $kios['rc'] == '71') {
+                    else if(!$kios['rc'] || $kios['rc'] == '01' || $kios['rc'] == '03' || $kios['rc'] == '04' || $kios['rc'] == '05' || $kios['rc'] == '14' || $kios['rc'] == '19' || $kios['rc'] == '38' || $kios['rc'] == '39' || $kios['rc'] == '67' | $kios['rc'] == '71') {
                         // if(str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL'))
                         // {
                         //     $data->status = TransOrder::DONE;
@@ -758,10 +758,11 @@ class TravShopController extends Controller
                         $customerID = $ref[1];
                         $referenceID = (string)$random_id;
                         
-                        dd($kios['rc']);
+                        dump($kios['rc']);
 
 
                         if ($data->description == 'dual'){
+                            dd('shit');
                             $res_json = $this->kiosBankService->reinquiry($productId, $customerID, $referenceID);
                             $res_json = $res_json->json();
                         }
