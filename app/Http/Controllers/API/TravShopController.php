@@ -745,7 +745,6 @@ class TravShopController extends Controller
                         $referenceID = (string) $random_id;
 
                         if ($data->description == 'dual') {
-                            dd($kios['rc']);
                             $res_json = $this->kiosBankService->reinquiry($productId, $customerID, $referenceID);
                             $res_json = $res_json->json();
                         }
