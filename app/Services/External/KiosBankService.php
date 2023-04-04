@@ -109,7 +109,7 @@ class KiosBankService
 
     function http($method, $path , $payload=[])
     {
-        Log::info(['Mulai'])
+        Log::info(['Mulai']);
         $digest = $this->generateDigest(method: $method, path: $path);
         $http = Http::kiosbank()->withHeaders(['Authorization' => 'Digest '.$digest]);
         switch ($method) {
