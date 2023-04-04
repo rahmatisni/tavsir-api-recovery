@@ -124,7 +124,7 @@ class TravShopController extends Controller
             $data = new TransOrder;
             $tenant = Tenant::find($request->tenant_id);
             $data->order_type = TransOrder::ORDER_TAKE_N_GO;
-            $data->order_id = ($tenant->rest_area_id ?? '0').'-'.($tenant->id ?? '0').'-TNG-' . date('YmdHis');
+            $data->order_id = ($tenant->rest_area_id ?? '0') . '-' . ($tenant->id ?? '0') . '-TNG-' . date('YmdHis');
             $data->rest_area_id = $tenant->rest_area_id;
             $data->tenant_id = $request->tenant_id;
             $data->business_id = $tenant->business_id;
@@ -138,7 +138,7 @@ class TravShopController extends Controller
 
             $sub_total = 0;
             foreach ($request->product as $k => $v) {
-              
+
                 $product = Product::find($v['product_id']);
                 $order_detil = new TransOrderDetil();
                 $order_detil->trans_order_id = $data->id;
@@ -158,7 +158,7 @@ class TravShopController extends Controller
                                 'customize_name' => $customize_y->name,
                                 'pilihan_id' => $pilihan->id,
                                 'pilihan_name' => $pilihan->name,
-                                'pilihan_price' => (int)$pilihan->price,
+                                'pilihan_price' => (int) $pilihan->price,
                             ];
                             $customize_x[] = $customize_z;
                             $order_detil->price += $pilihan->price;
@@ -215,56 +215,55 @@ class TravShopController extends Controller
         $tanggal_sub = null;
         $tanggal_end = null;
 
-        if($request->hari){
+        if ($request->hari) {
             $now = CarbonImmutable::now();
             $tanggal_sub = $now->subDay($request->hari);
             $tanggal_end = $now->endOfDay();
         }
 
         $kategori = [];
-        if($request->kategori){
+        if ($request->kategori) {
             $kategori = ProductKiosBank::where('sub_kategori', $request->kategori)->pluck('kode')->toArray();
         }
-        
+
         $data = TransOrder::with('detil')->where('customer_id', $id)
             ->when($status = request()->status, function ($q) use ($status) {
                 return $q->where('status', $status);
             })->when($order_id = request()->order_id, function ($q) use ($order_id) {
-                return $q->where('order_id', 'like', "%$order_id%");
-            })->when($order_type = request()->order_type, function ($q) use ($order_type) {
-                return $q->where('order_type', $order_type);
-            })->when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
-                return $q->where('tenant_id', $tenant_id);
-            })->when(($tanggal_awal && $tanggal_akhir), function ($q) use ($tanggal_awal, $tanggal_akhir) {
-                return $q->whereBetween(
-                    'created_at',
-                    [
-                        $tanggal_awal,
-                        $tanggal_akhir . ' 23:59:59'
-                    ]
-                );
-            })->when($request->hari, function ($q) use ($tanggal_sub, $tanggal_end) {
-                return $q->whereBetween(
-                    'created_at',
-                    [
-                        $tanggal_sub,
-                        $tanggal_end,
-                    ]
-                );
-            })
+            return $q->where('order_id', 'like', "%$order_id%");
+        })->when($order_type = request()->order_type, function ($q) use ($order_type) {
+            return $q->where('order_type', $order_type);
+        })->when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
+            return $q->where('tenant_id', $tenant_id);
+        })->when(($tanggal_awal && $tanggal_akhir), function ($q) use ($tanggal_awal, $tanggal_akhir) {
+            return $q->whereBetween(
+                'created_at',
+                [
+                    $tanggal_awal,
+                    $tanggal_akhir . ' 23:59:59'
+                ]
+            );
+        })->when($request->hari, function ($q) use ($tanggal_sub, $tanggal_end) {
+            return $q->whereBetween(
+                'created_at',
+                [
+                    $tanggal_sub,
+                    $tanggal_end,
+                ]
+            );
+        })
             ->orderByDesc('created_at')->get();
 
-            if(count($kategori) > 0)
-            {
-                $data = $data->filter(function($item)use ($kategori){
-                    if($item->order_type == TransOrder::ORDER_TRAVOY){
-                        $kategori_id = explode('-',$item->order_id)[0];
-                        if(in_array($kategori_id, $kategori)){
-                            return $item;
-                        }
+        if (count($kategori) > 0) {
+            $data = $data->filter(function ($item) use ($kategori) {
+                if ($item->order_type == TransOrder::ORDER_TRAVOY) {
+                    $kategori_id = explode('-', $item->order_id)[0];
+                    if (in_array($kategori_id, $kategori)) {
+                        return $item;
                     }
-                });
-            }
+                }
+            });
+        }
         return response()->json(TsOrderResource::collection($data));
     }
 
@@ -304,23 +303,19 @@ class TravShopController extends Controller
         $paymentMethods = PaymentMethod::all();
         $removes = [];
 
-        if($request->trans_order_id)
-        {
+        if ($request->trans_order_id) {
             $trans_order = TransOrder::with('tenant')->findOrfail($request->trans_order_id);
             $tenant = $trans_order->tenant;
             $tenant_is_verified = $tenant?->is_verified;
 
-            if($tenant_is_verified === false && $trans_order->order_type != TransOrder::ORDER_TRAVOY)
-            {
+            if ($tenant_is_verified === false && $trans_order->order_type != TransOrder::ORDER_TRAVOY) {
                 $merchant = PgJmto::listSubMerchant();
-                if($merchant->successful())
-                {
+                if ($merchant->successful()) {
                     $merchant = $merchant->json();
-                    if($merchant['status'] == 'success'){
+                    if ($merchant['status'] == 'success') {
                         $merchant = $merchant['responseData'];
                         foreach ($merchant as $key => $value) {
-                            if($value['email'] == $tenant->email)
-                            {
+                            if ($value['email'] == $tenant->email) {
                                 $trans_order->tenant()->update([
                                     'is_verified' => 1,
                                     'sub_merchant_id' => $value['merchant_id']
@@ -331,19 +326,16 @@ class TravShopController extends Controller
                 }
             }
 
-            foreach ($paymentMethods as $value) 
-            {
+            foreach ($paymentMethods as $value) {
                 $value->platform_fee = env('PLATFORM_FEE');
                 $value->fee = 0;
 
-                if($value->sof_id)
-                {
-                    if($tenant_is_verified || $trans_order->order_type == TransOrder::ORDER_TRAVOY)
-                    {
-                        $data = PgJmto::tarifFee($value->sof_id,$value->payment_method_id, $value->sub_merchant_id,$trans_order->sub_total);
+                if ($value->sof_id) {
+                    if ($tenant_is_verified || $trans_order->order_type == TransOrder::ORDER_TRAVOY) {
+                        $data = PgJmto::tarifFee($value->sof_id, $value->payment_method_id, $value->sub_merchant_id, $trans_order->sub_total);
                         // log::info($data);
                         $value->fee = $data;
-                    }else{
+                    } else {
                         $removes[] = $value->id;
                     }
                 }
@@ -351,7 +343,7 @@ class TravShopController extends Controller
         }
         $merchant = PgJmto::listSubMerchant();
         // log::info($merchant);
-        $paymentMethods = $paymentMethods->whereNotIn('id',$removes);
+        $paymentMethods = $paymentMethods->whereNotIn('id', $removes);
         return response()->json($paymentMethods);
     }
 
@@ -362,7 +354,7 @@ class TravShopController extends Controller
 
         try {
             DB::beginTransaction();
-            if (request()->order_from_qr == true) { 
+            if (request()->order_from_qr == true) {
                 if ($data->status == TransOrder::CART || $data->status == TransOrder::PENDING || $data->status == null) {
                     $data->status = TransOrder::WAITING_PAYMENT;
                     $data->customer_id = $request->customer_id;
@@ -374,15 +366,13 @@ class TravShopController extends Controller
                 return response()->json(['info' => $data->status], 422);
             }
             //Cek deposit
-            if($data->order_type == TransOrder::ORDER_TRAVOY)
-            {
+            if ($data->order_type == TransOrder::ORDER_TRAVOY) {
                 $deposit = $this->kiosBankService->cekDeposit();
-                if($deposit['rc'] == '00')
-                {
-                    if((int) $deposit['deposit'] < $data->sub_total){
-                        return response()->json(['info' => 'Deposit '.$deposit['deposit'].' < '.$data->sub_total], 422);
+                if ($deposit['rc'] == '00') {
+                    if ((int) $deposit['deposit'] < $data->sub_total) {
+                        return response()->json(['info' => 'Deposit ' . $deposit['deposit'] . ' < ' . $data->sub_total], 422);
                     }
-                }else{
+                } else {
                     return response()->json(['info' => 'Deposit ', 'data' => $deposit], 422);
                 }
             }
@@ -400,19 +390,19 @@ class TravShopController extends Controller
             switch ($payment_method->code_name) {
                 case 'pg_va_mandiri':
                     $payment_payload = [
-                        "sof_code" =>  $payment_method->code,
+                        "sof_code" => $payment_method->code,
                         'bill_id' => $data->order_id,
                         'bill_name' => 'Take N Go',
                         'amount' => (string) $data->total,
                         'desc' => $data->tenant->name ?? 'Travoy',
-                        "exp_date" =>  Carbon::now()->addMinutes(5)->format('Y-m-d H:i:s'),
-                        "va_type" =>  "close",
+                        "exp_date" => Carbon::now()->addMinutes(5)->format('Y-m-d H:i:s'),
+                        "va_type" => "close",
                         'phone' => $request->customer_phone,
                         'email' => $request->customer_email,
                         'customer_name' => $request->customer_name,
                         "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id ?? '',
                     ];
-                    
+
                     $res = PgJmto::vaCreate(
                         $payment_method->code,
                         $data->order_id,
@@ -445,13 +435,13 @@ class TravShopController extends Controller
                     break;
                 case 'pg_va_bri':
                     $payment_payload = [
-                        "sof_code" =>  $payment_method->code,
+                        "sof_code" => $payment_method->code,
                         'bill_id' => $data->order_id,
                         'bill_name' => 'Take N Go',
                         'amount' => (string) $data->total,
                         'desc' => $data->tenant->name ?? 'Travoy',
-                        "exp_date" =>  Carbon::now()->addMinutes(5)->format('Y-m-d H:i:s'),
-                        "va_type" =>  "close",
+                        "exp_date" => Carbon::now()->addMinutes(5)->format('Y-m-d H:i:s'),
+                        "va_type" => "close",
                         'phone' => $request->customer_phone,
                         'email' => $request->customer_email,
                         'customer_name' => $request->customer_name,
@@ -489,19 +479,19 @@ class TravShopController extends Controller
                     break;
                 case 'pg_va_bni':
                     $payment_payload = [
-                        "sof_code" =>  $payment_method->code,
+                        "sof_code" => $payment_method->code,
                         'bill_id' => $data->order_id,
                         'bill_name' => 'Take N Go',
                         'amount' => (string) $data->total,
                         'desc' => $data->tenant->name ?? 'Travoy',
-                        "exp_date" =>  Carbon::now()->addMinutes(5)->format('Y-m-d H:i:s'),
-                        "va_type" =>  "close",
+                        "exp_date" => Carbon::now()->addMinutes(5)->format('Y-m-d H:i:s'),
+                        "va_type" => "close",
                         'phone' => $request->customer_phone,
                         'email' => $request->customer_email,
                         'customer_name' => $request->customer_name,
                         "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id ?? '',
                     ];
-                    
+
                     $res = PgJmto::vaCreate(
                         $payment_method->code,
                         $data->order_id,
@@ -594,21 +584,20 @@ class TravShopController extends Controller
                 case 'pg_dd_bri':
                     $bind = Bind::where('id', $request->card_id)->first();
                     $bind_before = TransPayment::where('trans_order_id', $data->id)->first();
-                  
+
                     if (!$bind && $request->card_id) {
                         return response()->json(['message' => 'Card Not Found'], 404);
                     }
-                    if ($bind)
-                    {
+                    if ($bind) {
                         if (!$bind->is_valid) {
                             return response()->json(['message' => 'Card Not Valid'], 404);
                         }
                     }
-                    
+
 
                     $payment_payload = [
                         "sof_code" => $bind->sof_code ?? $bind_before->data['sof_code'],
-                        "bind_id" => (string)($bind?->bind_id ?? $bind_before->data['bind_id']),
+                        "bind_id" => (string) ($bind?->bind_id ?? $bind_before->data['bind_id']),
                         "refnum" => $bind->refnum ?? $bind_before->data['refnum'],
                         "card_no" => $bind->card_no ?? $bind_before->data['card_no'],
                         "amount" => (string) $data->total,
@@ -617,8 +606,8 @@ class TravShopController extends Controller
                         "phone" => $bind->phone ?? $bind_before->data['phone'],
                         "email" => $bind->email ?? $bind_before->data['email'],
                         "customer_name" => $bind->customer_name ?? $bind_before->data['customer_name'],
-                        "bill" => (string)$data->sub_total,
-                        "fee" => (string)$data->fee,
+                        "bill" => (string) $data->sub_total,
+                        "fee" => (string) $data->fee,
                     ];
                     $respon = PgJmto::inquiryDD($payment_payload);
                     log::info($respon);
@@ -670,32 +659,34 @@ class TravShopController extends Controller
         return response()->json(new TsPaymentresource($data->payment));
     }
 
-    function post($url,$header,$params=false){
-        $curl=curl_init();
-    
-        if($params===false)
-            $query='';
-        else 
-            $query=json_encode($params);
-    
-        curl_setopt_array($curl,array(
+    function post($url, $header, $params = false)
+    {
+        $curl = curl_init();
+
+        if ($params === false)
+            $query = '';
+        else
+            $query = json_encode($params);
+
+        curl_setopt_array($curl, array(
             CURLOPT_URL => $url,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT => 800,
-            CURLOPT_HEADER=>true,
+            CURLOPT_HEADER => true,
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS => $query,
             CURLOPT_HTTPHEADER => array(
                 $header,
                 'content-type:application/json'
             ),
-            CURLOPT_SSL_VERIFYHOST=>0,
-            CURLOPT_SSL_VERIFYPEER=>0
-        ));
-        $response=curl_exec($curl);
-        $err=curl_error($curl);
+            CURLOPT_SSL_VERIFYHOST => 0,
+            CURLOPT_SSL_VERIFYPEER => 0
+        )
+        );
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
         curl_close($curl);
-        if($err){
+        if ($err) {
             return $err;
         } else {
             return $response;
@@ -709,25 +700,20 @@ class TravShopController extends Controller
             DB::beginTransaction();
             if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::DONE || $data->status == TransOrder::READY) {
                 $kios = [];
-                if($data->order_type == TransOrder::ORDER_TRAVOY){
+                if ($data->order_type == TransOrder::ORDER_TRAVOY) {
                     $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
                     $adminBank = $datalog['data']['data']['adminBank'] ?? '000000000000';
                     $kios = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id, $adminBank, $data->harga_kios);
                     $kios['data']['harga_kios'] = $data->harga_kios;
                     $kios['data']['harga'] = $data->sub_total ?? '0';
                     $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '-';
-                    if($kios['rc'] == '00' || $kios['rc'] == "00" || $kios['rc'] == 00)
-                    {
-                        if(str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL'))
-                        {
+                    if ($kios['rc'] == '00' || $kios['rc'] == "00" || $kios['rc'] == 00) {
+                        if (str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL')) {
                             $data->status = TransOrder::DONE;
                         }
-                        if(str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES'))
-                        {
+                        if (str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES')) {
                             $data->status = TransOrder::DONE;
-                        }
-                        else 
-                        {
+                        } else {
                             $data->status = TransOrder::DONE;
                         }
                     }
@@ -746,100 +732,135 @@ class TravShopController extends Controller
                     //     // }
                     // }
 
-                    $rc_coll = ['2',
-                    '10',
-                    '12',
-                    '15',
-                    '17',
-                    '18',
-                    '27',
-                    '34',
-                    '37',
-                    '40',
-                    '41',
-                    '42',
-                    '46',
-                    '60',
-                    '61',
-                    '62',
-                    '64',
-                    '65',
-                    '68',
-                    '69',
-                    '70',
-                    '72',
-                    '73',
-                    '74',
-                    '75',
-                    '78',
-                    '79',
-                    '80',
-                    '83',
-                    '85',
-                    '86'];
+                    $rc_retry = [
+                        '2',
+                        '10',
+                        '12',
+                        '15',
+                        '17',
+                        '18',
+                        '27',
+                        '34',
+                        '37',
+                        '40',
+                        '41',
+                        '42',
+                        '46',
+                        '60',
+                        '61',
+                        '62',
+                        '64',
+                        '65',
+                        '68',
+                        '69',
+                        '70',
+                        '72',
+                        '73',
+                        '74',
+                        '75',
+                        '78',
+                        '79',
+                        '80',
+                        '83',
+                        '85',
+                        '86',
+                        '19'
+                    ];
+                    $rc_coll = [
+                        '2',
+                        '10',
+                        '12',
+                        '15',
+                        '17',
+                        '18',
+                        '27',
+                        '34',
+                        '37',
+                        '40',
+                        '41',
+                        '42',
+                        '46',
+                        '60',
+                        '61',
+                        '62',
+                        '64',
+                        '65',
+                        '68',
+                        '69',
+                        '70',
+                        '72',
+                        '73',
+                        '74',
+                        '75',
+                        '78',
+                        '79',
+                        '80',
+                        '83',
+                        '85',
+                        '86',
+                        '19'
+                    ];
 
-                    if (in_array($kios['rc'], $rc_coll))
-                    {                        
+                    if (in_array($kios['rc'], $rc_coll)) {
                         //inquiry ulang
                         $ref = explode('-', $data->order_id);
-                        $random_id = rand(900000000000,999999999999);
-                        $data->order_id = $ref[0].'-'.$ref[1].'-'.$random_id.'-'.Carbon::now()->timestamp;
-                        
+                        $random_id = rand(900000000000, 999999999999);
+                        $data->order_id = $ref[0] . '-' . $ref[1] . '-' . $random_id . '-' . Carbon::now()->timestamp;
+
                         $productId = $ref[0];
                         $customerID = $ref[1];
-                        $referenceID = (string)$random_id;
-                        
+                        $referenceID = (string) $random_id;
+
                         // dump($kios['rc']);
 
 
-                        if ($data->description == 'dual'){
+                        if ($data->description == 'dual') {
                             dd($kios['rc']);
                             $res_json = $this->kiosBankService->reinquiry($productId, $customerID, $referenceID);
                             $res_json = $res_json->json();
                         }
-                        if($res_json['rc'] == '00')
-                        {
+                        if ($res_json['rc'] == '00') {
                             if ($res_json['productID'] == '520021' || $res_json['productID'] == '520011') {
                                 $data->harga_kios = $res_json['data']['total'];
                                 //harga jual
-    
-                                $harga_jual_kios = ProductKiosBank::where('kode',$res_json['productID'])->first() ?? $res_json['data']['total'];
+
+                                $harga_jual_kios = ProductKiosBank::where('kode', $res_json['productID'])->first() ?? $res_json['data']['total'];
                                 $data->sub_total = ($harga_jual_kios?->harga ?? 0) + $res_json['data']['total'];
-    
-    
+
+
                                 $data->total = $data->sub_total + $data->fee;
-                            
+
                                 $res_json['data']['harga_kios'] = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
-                                $res_json['data']['harga'] =  $data->sub_total;
+                                $res_json['data']['harga'] = $data->sub_total;
                                 $res_json['description'] = 'INQUIRY';
-                            
+
                                 $data->save();
-                                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
+                                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                                     'data' => $res_json
                                 ]);
                             } else {
                                 $data->harga_kios = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
                                 //harga jual
-                                $harga_jual_kios = ProductKiosBank::where('kode',$res_json['productID'])->first();
+                                $harga_jual_kios = ProductKiosBank::where('kode', $res_json['productID'])->first();
                                 // $order->sub_total = $harga_jual_kios?->harga ?? $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
                                 $data->sub_total = ($harga_jual_kios?->harga ?? 0) + $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
-    
+
                                 $data->total = $data->sub_total + $data->fee;
-    
+
                                 $res_json['data']['harga_kios'] = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
-                                $res_json['data']['harga'] =  $data->sub_total;
+                                $res_json['data']['harga'] = $data->sub_total;
                                 $res_json['description'] = 'INQUIRY';
                                 $data->save();
-                                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
+                                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                                     'data' => $res_json
                                 ]);
                             }
 
                             //pay ulang
-                            if ($data->description == 'single'){
+                            if ($data->description == 'single') {
                                 $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
                             }
-                            if ($data->description == 'dual'){
+                            if ($data->description == 'dual') {
                                 $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
                                 $tagihan = $datalog['data']['data']['tagihan'] ?? $datalog['data']['data']['harga_kios'];
                                 $admin = $datalog['data']['data']['adminBank'] ?? '000000000000';
@@ -853,52 +874,46 @@ class TravShopController extends Controller
                             $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '';
                             $kios['data']['harga_kios'] = $data->harga_kios;
                             $kios['data']['harga'] = $data->sub_total ?? '0';
-    
-                            if($kios['rc'] == '00')
-                            {
-                                if(str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL'))
-                                {
-                                    $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
-                                        'data' => $kios, 
-                                        'payment' => $kios,
-    
-                                    ]);
-                                    $data->status = TransOrder::DONE;
-                                    $data->save();
-                                    DB::commit();
-                                    return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
-                                }
-                                if(str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES'))
-                                {
-                                    $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
+
+                            if ($kios['rc'] == '00') {
+                                if (str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL')) {
+                                    $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                                         'data' => $kios,
                                         'payment' => $kios,
-    
+
                                     ]);
                                     $data->status = TransOrder::DONE;
                                     $data->save();
                                     DB::commit();
                                     return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                                 }
-                                else 
-                                {
+                                if (str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES')) {
+                                    $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
+                                        'data' => $kios,
+                                        'payment' => $kios,
+
+                                    ]);
+                                    $data->status = TransOrder::DONE;
+                                    $data->save();
+                                    DB::commit();
+                                    return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
+                                } else {
                                     $kios['description'] = $kios['description'] ?? $kios['data']['description'];
-                                    $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
+                                    $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                                         'data' => $kios,
                                         'payment' => $kios,
-    
+
                                     ]);
                                     $data->status = TransOrder::READY;
                                     $data->save();
                                     DB::commit();
                                     return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                                 }
-                            }
-                            else {
-                                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
-                                    'data' => $kios, 
+                            } else {
+                                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
+                                    'data' => $kios,
                                     'payment' => $kios,
-    
+
                                 ]);
                                 $data->status = TransOrder::PAYMENT_SUCCESS;
                                 $data->save();
@@ -910,7 +925,7 @@ class TravShopController extends Controller
                         // end inquiry ulang
                     }
 
-                    $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
+                    $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                         'data' => $kios
                     ]);
                     $data->save();
@@ -950,7 +965,7 @@ class TravShopController extends Controller
                         return response()->json([
                             "message" => "ERROR!",
                             "errors" => [
-                               $res
+                                $res
                             ]
                         ], 422);
                     }
@@ -991,7 +1006,7 @@ class TravShopController extends Controller
                 $data_payment['customer_name'],
                 // $data_payment['submerchant_id']
                 $data->sub_merchant_id
-                
+
             );
             if ($res['status'] == 'success') {
                 $res_data = $res['responseData'];
@@ -1005,11 +1020,11 @@ class TravShopController extends Controller
                         $data->status = TransOrder::DONE;
                     }
                     $data->save();
-                    if($data->order_type == TransOrder::ORDER_TRAVOY && $data->status != TransOrder::DONE){
-                        if ($data->description == 'single'){
+                    if ($data->order_type == TransOrder::ORDER_TRAVOY && $data->status != TransOrder::DONE) {
+                        if ($data->description == 'single') {
                             $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
                         }
-                        if ($data->description == 'dual'){
+                        if ($data->description == 'dual') {
                             $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
                             $tagihan = $datalog['data']['data']['tagihan'] ?? $datalog['data']['data']['harga_kios'];
                             $admin = $datalog['data']['data']['adminBank'] ?? '000000000000';
@@ -1024,23 +1039,9 @@ class TravShopController extends Controller
                         $kios['data']['harga_kios'] = $data->harga_kios;
                         $kios['data']['harga'] = $data->sub_total ?? '0';
 
-                        if($kios['rc'] == '00')
-                        {
-                            if(str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL'))
-                            {
-                                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
-                                    'data' => $kios, 
-                                    'payment' => $kios,
-
-                                ]);
-                                $data->status = TransOrder::DONE;
-                                $data->save();
-                                DB::commit();
-                                return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
-                            }
-                            if(str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES'))
-                            {
-                                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
+                        if ($kios['rc'] == '00') {
+                            if (str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL')) {
+                                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                                     'data' => $kios,
                                     'payment' => $kios,
 
@@ -1050,10 +1051,19 @@ class TravShopController extends Controller
                                 DB::commit();
                                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                             }
-                            else 
-                            {
+                            if (str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES')) {
+                                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
+                                    'data' => $kios,
+                                    'payment' => $kios,
+
+                                ]);
+                                $data->status = TransOrder::DONE;
+                                $data->save();
+                                DB::commit();
+                                return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
+                            } else {
                                 $kios['description'] = $kios['description'] ?? $kios['data']['description'];
-                                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
+                                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                                     'data' => $kios,
                                     'payment' => $kios,
 
@@ -1067,10 +1077,9 @@ class TravShopController extends Controller
                             // $data->save();
                             // DB::commit();
                             // return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
-                        }
-                        else {
-                            $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id],[
-                                'data' => $kios, 
+                        } else {
+                            $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
+                                'data' => $kios,
                                 'payment' => $kios,
 
                             ]);
@@ -1104,10 +1113,10 @@ class TravShopController extends Controller
             ->when($username = request()->username, function ($q) use ($username) {
                 return $q->where('username', $username);
             })->when($customer_id = request()->customer_id, function ($q) use ($customer_id) {
-                return $q->where('customer_id', $customer_id);
-            })->when($phone = request()->phone, function ($q) use ($phone) {
-                return $q->where('phone', $phone);
-            })->get();
+            return $q->where('customer_id', $customer_id);
+        })->when($phone = request()->phone, function ($q) use ($phone) {
+            return $q->where('phone', $phone);
+        })->get();
         return response()->json(SaldoResource::collection($data));
     }
 
