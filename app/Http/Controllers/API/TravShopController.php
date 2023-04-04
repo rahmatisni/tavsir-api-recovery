@@ -795,6 +795,8 @@ class TravShopController extends Controller
                                 $admin = $datalog['data']['data']['adminBank'] ?? '000000000000';
                                 $total = $datalog['data']['data']['total'] ?? $datalog['data']['data']['harga_kios'] ?? $tagihan;
                                 $kios = $this->kiosBankService->dualPayment($data->sub_total, $data->order_id, $tagihan, $admin, $total);
+                                log::info('bayar susulan');
+
                             }
                             $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
                             $kios['data']['harga'] = $kios['data']['harga'] ?? ($data->sub_total ?? '0');
@@ -959,6 +961,7 @@ class TravShopController extends Controller
                             $admin = $datalog['data']['data']['adminBank'] ?? '000000000000';
                             $total = $datalog['data']['data']['total'] ?? $datalog['data']['data']['harga_kios'] ?? $tagihan;
                             $kios = $this->kiosBankService->dualPayment($data->sub_total, $data->order_id, $tagihan, $admin, $total);
+                            log::info('bayar depan');
                         }
                         $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
                         $kios['data']['harga'] = $kios['data']['harga'] ?? ($data->sub_total ?? '0');
