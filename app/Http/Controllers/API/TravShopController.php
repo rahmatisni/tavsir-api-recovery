@@ -713,12 +713,10 @@ class TravShopController extends Controller
                     $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
                     $adminBank = $datalog['data']['data']['adminBank'] ?? '000000000000';
                     $kios = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id, $adminBank, $data->harga_kios);
-                    // sleep(30);
-                    // $kios = $this->kiosBankService->cekDeposit();
                     $kios['data']['harga_kios'] = $data->harga_kios;
                     $kios['data']['harga'] = $data->sub_total ?? '0';
                     $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '-';
-                    if($kios['rc'] == '00')
+                    if($kios['rc'] == '00' || $kios['rc'] == "00" || $kios['rc'] == 00)
                     {
                         if(str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL'))
                         {
@@ -758,11 +756,11 @@ class TravShopController extends Controller
                         $customerID = $ref[1];
                         $referenceID = (string)$random_id;
                         
-                        dump($kios['rc']);
+                        // dump($kios['rc']);
 
 
                         if ($data->description == 'dual'){
-                            dd('shit');
+                            dd($kios['rc']);
                             $res_json = $this->kiosBankService->reinquiry($productId, $customerID, $referenceID);
                             $res_json = $res_json->json();
                         }
