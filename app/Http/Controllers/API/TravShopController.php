@@ -731,20 +731,20 @@ class TravShopController extends Controller
                             $data->status = TransOrder::DONE;
                         }
                     }
-                    if(!$kios['rc'] || $kios['rc'] == '01' || $kios['rc'] == '03' || $kios['rc'] == '04' || $kios['rc'] == '05' || $kios['rc'] == '14' || $kios['rc'] == '19' || $kios['rc'] == '38' || $kios['rc'] == '39' || $kios['rc'] == '67' | $kios['rc'] == '71') {
-                        // if(str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL'))
-                        // {
-                        //     $data->status = TransOrder::DONE;
-                        // }
-                        // if(str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES'))
-                        // {
-                        //     $data->status = TransOrder::DONE;
-                        // }
-                        // else 
-                        // {
-                            $data->status = TransOrder::READY;
-                        // }
-                    }
+                    // if(!$kios['rc'] || $kios['rc'] == '01' || $kios['rc'] == '03' || $kios['rc'] == '04' || $kios['rc'] == '05' || $kios['rc'] == '14' || $kios['rc'] == '19' || $kios['rc'] == '38' || $kios['rc'] == '39' || $kios['rc'] == '67' | $kios['rc'] == '71') {
+                    //     // if(str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL'))
+                    //     // {
+                    //     //     $data->status = TransOrder::DONE;
+                    //     // }
+                    //     // if(str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES'))
+                    //     // {
+                    //     //     $data->status = TransOrder::DONE;
+                    //     // }
+                    //     // else 
+                    //     // {
+                    //         $data->status = TransOrder::READY;
+                    //     // }
+                    // }
 
                     $rc_coll = ['2',
                     '10',
