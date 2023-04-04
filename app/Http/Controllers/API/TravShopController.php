@@ -798,7 +798,7 @@ class TravShopController extends Controller
                         '83',
                         '85',
                         '86',
-                        '19'
+                        19
                     ];
 
                     if (in_array($kios['rc'], $rc_coll)) {
