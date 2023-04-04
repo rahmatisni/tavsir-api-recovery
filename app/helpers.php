@@ -38,6 +38,7 @@ function  codefikasiNomor($phone)
             '0821' => 'TELKOMSEL',
             '0822' => 'TELKOMSEL',
             '0851' => 'TELKOMSEL',
+            '0858' => 'INDOSAT',
             '0857' => 'INDOSAT',
             '0856' => 'INDOSAT',
             '0895' => 'THREE',
