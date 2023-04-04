@@ -718,9 +718,8 @@ class TravShopController extends Controller
                     $kios['data']['harga_kios'] = $data->harga_kios;
                     $kios['data']['harga'] = $data->sub_total ?? '0';
                     $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '-';
-                    if($kios['rc'] == "00")
+                    if($kios['rc'] == '00')
                     {
-                        Log::info($kios['rc']);
                         if(str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL'))
                         {
                             $data->status = TransOrder::DONE;
@@ -735,9 +734,6 @@ class TravShopController extends Controller
                         }
                     }
                     if(!$kios['rc'] || $kios['rc'] == '01' || $kios['rc'] == '03' || $kios['rc'] == '04' || $kios['rc'] == '05' || $kios['rc'] == '14' || $kios['rc'] == '19' || $kios['rc'] == '38' || $kios['rc'] == '39' || $kios['rc'] == '67' | $kios['rc'] == '71') {
-                        // dd('true');
-                        Log::info($kios['rc']);
-
                         // if(str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL'))
                         // {
                         //     $data->status = TransOrder::DONE;
@@ -753,8 +749,6 @@ class TravShopController extends Controller
                     }
                   
                     else{
-                        Log::info($kios['rc']);
-
                         //inquiry ulang
                         $ref = explode('-', $data->order_id);
                         $random_id = rand(900000000000,999999999999);
@@ -763,6 +757,8 @@ class TravShopController extends Controller
                         $productId = $ref[0];
                         $customerID = $ref[1];
                         $referenceID = (string)$random_id;
+                        
+                        dd($kios['rc']);
 
 
                         if ($data->description == 'dual'){
