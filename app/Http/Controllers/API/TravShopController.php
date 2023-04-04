@@ -798,10 +798,10 @@ class TravShopController extends Controller
                         '83',
                         '85',
                         '86',
-                        19
+                        '19'
                     ];
 
-                    if (in_array($kios['rc'], $rc_coll)) {
+                    if (in_array($rc_coll, $kios['rc'])) {
                         //inquiry ulang
                         $ref = explode('-', $data->order_id);
                         $random_id = rand(900000000000, 999999999999);
