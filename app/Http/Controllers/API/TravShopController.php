@@ -718,7 +718,7 @@ class TravShopController extends Controller
                     $kios['data']['harga_kios'] = $data->harga_kios;
                     $kios['data']['harga'] = $data->sub_total ?? '0';
                     $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '-';
-                    dd($kios['rc']== '00');
+                    dd($kios['rc']);
                     if($kios['rc'] == '00')
                     {
                         if(str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL'))
