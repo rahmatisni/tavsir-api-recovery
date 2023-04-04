@@ -731,7 +731,7 @@ class TravShopController extends Controller
                             $data->status = TransOrder::DONE;
                         }
                     }
-                    else if(!$kios['rc'] || $kios['rc'] == '01' || $kios['rc'] == '03' || $kios['rc'] == '04' || $kios['rc'] == '05' || $kios['rc'] == '14' || $kios['rc'] == '19' || $kios['rc'] == '38' || $kios['rc'] == '39' || $kios['rc'] == '67' | $kios['rc'] == '71') {
+                    if(!$kios['rc'] || $kios['rc'] == '01' || $kios['rc'] == '03' || $kios['rc'] == '04' || $kios['rc'] == '05' || $kios['rc'] == '14' || $kios['rc'] == '19' || $kios['rc'] == '38' || $kios['rc'] == '39' || $kios['rc'] == '67' | $kios['rc'] == '71') {
                         // if(str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL'))
                         // {
                         //     $data->status = TransOrder::DONE;
@@ -745,8 +745,41 @@ class TravShopController extends Controller
                             $data->status = TransOrder::READY;
                         // }
                     }
-                  
-                    else{
+
+                    $rc_coll = ['2',
+                    '10',
+                    '12',
+                    '15',
+                    '17',
+                    '18',
+                    '27',
+                    '34',
+                    '37',
+                    '40',
+                    '41',
+                    '42',
+                    '46',
+                    '60',
+                    '61',
+                    '62',
+                    '64',
+                    '65',
+                    '68',
+                    '69',
+                    '70',
+                    '72',
+                    '73',
+                    '74',
+                    '75',
+                    '78',
+                    '79',
+                    '80',
+                    '83',
+                    '85',
+                    '86'];
+
+                    if (in_array($kios['rc'], $rc_coll))
+                    {                        
                         //inquiry ulang
                         $ref = explode('-', $data->order_id);
                         $random_id = rand(900000000000,999999999999);
