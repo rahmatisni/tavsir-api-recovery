@@ -167,7 +167,7 @@ class KiosBankService
         return $res_json;
     }
 
-    public function getProduct($kategori_pulsa = null, $kategori, $sub_kategori)
+    public function getProduct($kategori_pulsa = null, $kategori = null, $sub_kategori=null)
     {
         $product = $this->cekStatusProduct();
         $status_respon = $product['rc'] ?? '';
