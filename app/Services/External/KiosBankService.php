@@ -463,9 +463,9 @@ class KiosBankService
         ];
         $current_date_time = Carbon::now()->toDateTimeString();
         
-        clock()->event('Importing tweets')->color('purple')->begin();
+        clock()->event('inquiry kios')->color('purple')->begin();
         $res_json =  $this->http('POST',self::INQUIRY,$payload);
-        clock()->event('Importing tweets')->end();
+        clock()->event('inquiry kios')->end();
 
         $res_json = $res_json->json();
         $current_date_times = Carbon::now()->toDateTimeString();
