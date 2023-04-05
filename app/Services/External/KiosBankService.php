@@ -463,9 +463,10 @@ class KiosBankService
         $res_json =  $this->http('POST',self::INQUIRY,$payload);
         $res_json = $res_json->json();
         $current_date_times = Carbon::now()->toDateTimeString();
-        Log::info(
-        'REQ'.$current_date_time,
-        'RESP'.$current_date_times
+        Log::info([
+        'REQ' => $current_date_time,
+        'RESP' => $current_date_times
+        ]
         );
 
         if($res_json['rc'] == '00')
