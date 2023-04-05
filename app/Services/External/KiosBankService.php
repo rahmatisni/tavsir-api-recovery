@@ -462,8 +462,11 @@ class KiosBankService
             'referenceID'=>$ref[2],
         ];
         $current_date_time = Carbon::now()->toDateTimeString();
-
+        
+        clock()->event('Importing tweets')->color('purple')->begin();
         $res_json =  $this->http('POST',self::INQUIRY,$payload);
+        clock()->event('Importing tweets')->end();
+
         $res_json = $res_json->json();
         $current_date_times = Carbon::now()->toDateTimeString();
         Log::info([
