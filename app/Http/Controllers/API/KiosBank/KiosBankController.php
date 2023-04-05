@@ -20,11 +20,13 @@ class KiosBankController extends Controller
     {
         $kategori_pulsa = codefikasiNomor($request->nomor_hp);
         $kategori = ($request?->kategori);
+        $sub_kategori = ($request?->sub_kategori);
+
         if($request->nomor_hp && !$kategori_pulsa){
             return response()->json(['message' => 'Nomor Salah'], 422);
         }
 
-        $data = $this->service->getProduct($kategori_pulsa, $kategori);
+        $data = $this->service->getProduct($kategori_pulsa, $kategori, $sub_kategori);
         return response()->json($data);
     }
 

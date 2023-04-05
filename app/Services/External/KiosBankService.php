@@ -167,7 +167,7 @@ class KiosBankService
         return $res_json;
     }
 
-    public function getProduct($kategori_pulsa = null, $kategori)
+    public function getProduct($kategori_pulsa = null, $kategori, $sub_kategori)
     {
         $product = $this->cekStatusProduct();
         $status_respon = $product['rc'] ?? '';
@@ -176,7 +176,14 @@ class KiosBankService
 
             if ($kategori){
                 $data = ProductKiosBank::when($kategori, function($q)use($kategori){
-                    return $q->where('sub_kategori',$kategori);
+                    return $q->where('kategori',$kategori);
+                })->where('is_active', 1)
+                ->orderBy('kode', 'asc')
+                ->get();
+            }
+            else if ($sub_kategori){
+                $data = ProductKiosBank::when($sub_kategori, function($q)use($sub_kategori){
+                    return $q->where('sub_kategori',$sub_kategori);
                 })->where('is_active', 1)
                 ->orderBy('kode', 'asc')
                 ->get();
