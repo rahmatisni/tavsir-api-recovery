@@ -262,7 +262,7 @@ Route::get('cek', function(Request $request){
     $kios = new KiosBankService();
     $data = $kios->cek();
     $current_date_times = Carbon::now()->toDateTimeString();
-    Log::info($current_date_time.'-'.$current_date_times);
+    Log::info($current_date_time.' | '.$current_date_times);
 
     return response()->json($data);
 });
