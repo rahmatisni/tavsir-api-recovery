@@ -256,7 +256,7 @@ class TravShopController extends Controller
 
         if (count($kategori) > 0) {
             $data = $data->filter(function ($item) use ($kategori) {
-                if ($item->order_type == TransOrder::ORDER_TRAVOY && $item->payment_method) {
+                if ($item->order_type == TransOrder::ORDER_TRAVOY && $item->payment_method != null) {
                     $kategori_id = explode('-', $item->order_id)[0];
                     if (in_array($kategori_id, $kategori)) {
                         return $item;
