@@ -109,7 +109,10 @@ class KiosBankService
 
     function http($method, $path , $payload=[])
     {
-        Log::info(['Mulai']);
+        $current_date_time = Carbon::now()->toDateTimeString();
+        Log::info("REQ".$current_date_time);    
+       
+    
         $digest = $this->generateDigest(method: $method, path: $path);
         $http = Http::kiosbank()->withHeaders(['Authorization' => 'Digest '.$digest]);
         switch ($method) {
@@ -125,11 +128,15 @@ class KiosBankService
                 throw new Exception("Error Processing Request", 1);
                 break;
         }
+        $current_date_times = Carbon::now()->toDateTimeString();
+
         Log::info([
             'method' => $method,
             'path' => $path,
             'payload' => $payload,
-            'respons' => $http->json()
+            'respons' => $http->json(),
+            'REQ' => $current_date_time,
+            'RESP' => $current_date_times
         ]);
         return $http;
     }
