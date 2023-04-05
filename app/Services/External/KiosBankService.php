@@ -173,11 +173,11 @@ class KiosBankService
         $status_respon = $product['rc'] ?? '';
         if($status_respon == '00')
         {
+            // return $q->where('kategori','LIKE','%'.$kategori.'%');
 
             if ($kategori){
-                $data = ProductKiosBank::when($kategori, function($q)use($kategori){
-                    return $q->where('kategori','LIKE','%'.$kategori.'%');
-                })->where('is_active', 1)
+                $data = ProductKiosBank::where('LIKE','%'.$kategori.'%')
+                ->where('is_active', 1)
                 ->orderBy('kode', 'asc')
                 ->get();
             
