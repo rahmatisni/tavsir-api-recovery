@@ -176,7 +176,7 @@ class KiosBankService
             // return $q->where('kategori','LIKE','%'.$kategori.'%');
 
             if ($kategori){
-                $data = ProductKiosBank::where('LIKE','%'.$kategori.'%')
+                $data = ProductKiosBank::where('kategori','LIKE','%'.$kategori.'%')
                 ->where('is_active', 1)
                 ->orderBy('kode', 'asc')
                 ->get();
