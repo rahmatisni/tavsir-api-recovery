@@ -232,7 +232,12 @@ class TravShopController extends Controller
             })->when($order_id = request()->order_id, function ($q) use ($order_id) {
             return $q->where('order_id', 'like', "%$order_id%");
         })->when($order_type = request()->order_type, function ($q) use ($order_type) {
-            return $q->where('order_type', $order_type);
+            if(request()->order_type == 'ORDER_TRAVOY'){
+                return $q->where('order_type', $order_type)->whereNotNull('payment_method_id');
+            }
+            else {
+                return $q->where('order_type', $order_type);
+            }
         })->when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
             return $q->where('tenant_id', $tenant_id);
         })->when(($tanggal_awal && $tanggal_akhir), function ($q) use ($tanggal_awal, $tanggal_akhir) {
@@ -256,7 +261,7 @@ class TravShopController extends Controller
 
         if (count($kategori) > 0) {
             $data = $data->filter(function ($item) use ($kategori) {
-                if ($item->order_type == TransOrder::ORDER_TRAVOY && $item->payment_method == null) {
+                if ($item->order_type == TransOrder::ORDER_TRAVOY) {
                     $kategori_id = explode('-', $item->order_id)[0];
                     if (in_array($kategori_id, $kategori)) {
                         return $item;
