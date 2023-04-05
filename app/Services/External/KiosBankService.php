@@ -173,6 +173,7 @@ class KiosBankService
         $status_respon = $product['rc'] ?? '';
         if($status_respon == '00')
         {
+            dump($kategori);
 
             if ($kategori){
                 $data = ProductKiosBank::when($kategori, function($q)use($kategori){
@@ -180,6 +181,7 @@ class KiosBankService
                 })->where('is_active', 1)
                 ->orderBy('kode', 'asc')
                 ->get();
+            
             }
             else if ($sub_kategori){
                 $data = ProductKiosBank::when($sub_kategori, function($q)use($sub_kategori){
