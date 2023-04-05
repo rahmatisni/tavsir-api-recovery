@@ -167,18 +167,29 @@ class KiosBankService
         return $res_json;
     }
 
-    public function getProduct($kategori_pulsa = null)
+    public function getProduct($kategori_pulsa = null, $kategori)
     {
         $product = $this->cekStatusProduct();
         $status_respon = $product['rc'] ?? '';
         if($status_respon == '00')
         {
-            $data = ProductKiosBank::when($kategori_pulsa, function($q)use($kategori_pulsa){
-                return $q->where('kategori',$kategori_pulsa);
-            })->where('is_active', 1)
-            // ->orderBy('name', 'asc')
-            ->orderBy('kode', 'asc')
-            ->get();
+
+            if ($kategori){
+                $data = ProductKiosBank::when($kategori, function($q)use($kategori){
+                    return $q->where('sub_kategori',$kategori);
+                })->where('is_active', 1)
+                ->orderBy('kode', 'asc')
+                ->get();
+            }
+            else {
+                $data = ProductKiosBank::when($kategori_pulsa, function($q)use($kategori_pulsa){
+                    return $q->where('kategori',$kategori_pulsa);
+                })->where('is_active', 1)
+                // ->orderBy('name', 'asc')
+                ->orderBy('kode', 'asc')
+                ->get();
+            }
+           
 
             $active = $product['active'];
             $active =  explode(',',$active);

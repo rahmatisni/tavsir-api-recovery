@@ -19,11 +19,12 @@ class KiosBankController extends Controller
     public function index(Request $request)
     {
         $kategori_pulsa = codefikasiNomor($request->nomor_hp);
+        $kategori = ($request?->kategori);
         if($request->nomor_hp && !$kategori_pulsa){
             return response()->json(['message' => 'Nomor Salah'], 422);
         }
 
-        $data = $this->service->getProduct($kategori_pulsa);
+        $data = $this->service->getProduct($kategori_pulsa, $kategori);
         return response()->json($data);
     }
 
