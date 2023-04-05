@@ -173,7 +173,6 @@ class KiosBankService
         $status_respon = $product['rc'] ?? '';
         if($status_respon == '00')
         {
-            dd($kategori);
 
             if ($kategori){
                 $data = ProductKiosBank::when($kategori, function($q)use($kategori){
