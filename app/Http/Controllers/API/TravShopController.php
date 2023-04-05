@@ -708,6 +708,8 @@ class TravShopController extends Controller
                 if ($data->order_type == TransOrder::ORDER_TRAVOY) {
                     $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
                     $adminBank = $datalog['data']['data']['adminBank'] ?? '000000000000';
+                    $refid = $datalog['data']['referenceID'];
+
                     $kios = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id, $adminBank, $data->harga_kios);
                     $kios['data']['harga_kios'] = $data->harga_kios;
                     $kios['data']['harga'] = $data->sub_total ?? '0';
@@ -748,6 +750,9 @@ class TravShopController extends Controller
                         $productId = $ref[0];
                         $customerID = $ref[1];
                         $referenceID = (string) $random_id;
+                        $data->save();
+                        DB::commit();
+                        Log::info($random_id.'/'.$referenceID);
 
                         if ($data->description == 'dual') {
                             $res_json = $this->kiosBankService->reinquiry($productId, $customerID, $referenceID);
@@ -785,6 +790,7 @@ class TravShopController extends Controller
                                 $res_json['data']['harga'] = $data->sub_total;
                                 $res_json['description'] = 'INQUIRY';
                                 $data->save();
+                                Log::info($data);
                                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                                     'data' => $res_json
                                 ]);
@@ -793,6 +799,8 @@ class TravShopController extends Controller
                             //pay ulang
                             if ($data->description == 'single') {
                                 $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
+                                Log::info('bayar susulan => '.$kios);
+
                             }
                             if ($data->description == 'dual') {
                                 $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
@@ -800,7 +808,7 @@ class TravShopController extends Controller
                                 $admin = $datalog['data']['data']['adminBank'] ?? '000000000000';
                                 $total = $datalog['data']['data']['total'] ?? $datalog['data']['data']['harga_kios'] ?? $tagihan;
                                 $kios = $this->kiosBankService->dualPayment($data->sub_total, $data->order_id, $tagihan, $admin, $total);
-                                log::info('bayar susulan => '.$kios);
+                                Log::info('bayar susulan => '.$kios);
 
                             }
                             $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
@@ -959,6 +967,7 @@ class TravShopController extends Controller
                     if ($data->order_type == TransOrder::ORDER_TRAVOY && $data->status != TransOrder::DONE) {
                         if ($data->description == 'single') {
                             $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
+                            Log::info('bayar Depan => '.$kios);
                         }
                         if ($data->description == 'dual') {
                             $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
@@ -966,7 +975,7 @@ class TravShopController extends Controller
                             $admin = $datalog['data']['data']['adminBank'] ?? '000000000000';
                             $total = $datalog['data']['data']['total'] ?? $datalog['data']['data']['harga_kios'] ?? $tagihan;
                             $kios = $this->kiosBankService->dualPayment($data->sub_total, $data->order_id, $tagihan, $admin, $total);
-                            log::info('bayar depan => '.$kios);
+                            Log::info('bayar Depan => '.$kios);
                         }
                         $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
                         $kios['data']['harga'] = $kios['data']['harga'] ?? ($data->sub_total ?? '0');
