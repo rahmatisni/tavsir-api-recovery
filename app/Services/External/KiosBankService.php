@@ -337,7 +337,9 @@ class KiosBankService
             'customerID'=>$order[1] ?? ''
         ];
 
+        clock()->event('singlepayment kios')->color('purple')->begin();
         $res_json =  $this->http('POST',self::SINGLE_PAYMENT,$payload)->json();
+        clock()->event('singlepayment kios')->end();
         return $res_json;
     }
 
@@ -355,8 +357,10 @@ class KiosBankService
             'customerID'=>$order[1] ?? ''
         ];
 
-
+        clock()->event('dualpayment kios')->color('purple')->begin();
         $res_json =  $this->http('POST',self::DUAL_PAYMENT,$payload)->json();
+        clock()->event('dualpayment kios')->end();
+
         return $res_json;
     }
 
@@ -373,7 +377,11 @@ class KiosBankService
             'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
             'customerID'=>$order[1]
         ];
+
+        clock()->event('cek status payment kios')->color('purple')->begin();
         $res_json =  $this->http('POST',self::CEK_STATUS,$payload)->json();
+        clock()->event('cek status kios')->end();
+
         return $res_json;
     }
     public function reinquiry($productId, $customerID, $referenceID)
@@ -386,7 +394,9 @@ class KiosBankService
             'customerID'=>$customerID,
             'referenceID'=>$referenceID,
         ];
+        clock()->event('re-inquiry kios')->color('purple')->begin();
         $res_json =  $this->http('POST',self::INQUIRY,$payload);
+        clock()->event('re-inquiry kios')->end();
         return $res_json;
     }
 
