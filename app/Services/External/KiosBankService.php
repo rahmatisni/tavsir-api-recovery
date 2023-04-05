@@ -108,11 +108,7 @@ class KiosBankService
     }
 
     function http($method, $path , $payload=[])
-    {
-        $current_date_time = Carbon::now()->toDateTimeString();
-        Log::info("REQ".$current_date_time);    
-       
-    
+    {       
         $digest = $this->generateDigest(method: $method, path: $path);
         $http = Http::kiosbank()->withHeaders(['Authorization' => 'Digest '.$digest]);
         switch ($method) {
@@ -134,9 +130,7 @@ class KiosBankService
             'method' => $method,
             'path' => $path,
             'payload' => $payload,
-            'respons' => $http->json(),
-            'REQ' => $current_date_time,
-            'RESP' => $current_date_times
+            'respons' => $http->json()
         ]);
         return $http;
     }
@@ -464,8 +458,15 @@ class KiosBankService
             'customerID'=>$data['phone'],
             'referenceID'=>$ref[2],
         ];
+        $current_date_time = Carbon::now()->toDateTimeString();
+
         $res_json =  $this->http('POST',self::INQUIRY,$payload);
         $res_json = $res_json->json();
+        $current_date_times = Carbon::now()->toDateTimeString();
+        Log::info(
+        'REQ'.$current_date_time,
+        'RESP'.$current_date_times
+        );
 
         if($res_json['rc'] == '00')
         {
