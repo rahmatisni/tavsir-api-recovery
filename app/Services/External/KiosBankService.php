@@ -109,6 +109,7 @@ class KiosBankService
 
     function http($method, $path , $payload=[])
     {       
+        $current_date_time = Carbon::now()->toDateTimeString();
         $digest = $this->generateDigest(method: $method, path: $path);
         $http = Http::kiosbank()->withHeaders(['Authorization' => 'Digest '.$digest]);
         switch ($method) {
@@ -130,7 +131,9 @@ class KiosBankService
             'method' => $method,
             'path' => $path,
             'payload' => $payload,
-            'respons' => $http->json()
+            'respons' => $http->json(),
+            'start' => $current_date_time,
+            'end' => $current_date_times
         ]);
         return $http;
     }
