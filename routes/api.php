@@ -259,10 +259,13 @@ Route::get('test-notif', function () {
 Route::get('cek', function(Request $request){
 
     $current_date_time = Carbon::now()->toDateTimeString();
+    Log::info("REQ".$current_date_time);
     $kios = new KiosBankService();
     $data = $kios->cek();
+    Log::info("RESP".$current_date_time);
+
     $current_date_times = Carbon::now()->toDateTimeString();
-    Log::info($current_date_time.' | '.$current_date_times);
+    Log::info('REQ =>'.$current_date_time.' | RESP=>'.$current_date_times);
 
     return response()->json($data);
 });
