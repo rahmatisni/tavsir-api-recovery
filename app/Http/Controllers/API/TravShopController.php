@@ -269,18 +269,6 @@ class TravShopController extends Controller
                 }
             });
         }
-
-       
-        $unpaid = TransOrder::WAITING_PAYMENT;
-        if (request()->order_type == TransOrder::ORDER_TRAVOY){
-            $data = $data->filter(function ($item) use ($unpaid) {
-                if ($item->order_type == TransOrder::ORDER_TRAVOY && $item->status == $unpaid) {
-                    if ($item->payment->exp_date) {
-                        return $item;
-                    }
-                }
-            });        }
-        return response()->json(TsOrderResource::collection($data));
     }
 
     public function orderById($id)
