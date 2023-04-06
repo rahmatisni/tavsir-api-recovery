@@ -37,6 +37,12 @@ class LogCron extends Command
      */
     public function handle()
     {
-        return 0;
+        // return 0;
+        Log::info("Cron is working fine!");
+      
+        /*
+           Write your database logic we bellow:
+           Item::create(['name'=>'hello new']);
+        */
     }
 }
