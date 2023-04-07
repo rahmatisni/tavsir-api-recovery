@@ -220,7 +220,7 @@ class TravShopController extends Controller
             $tanggal_sub = $now->subDay($request->hari);
             $tanggal_end = $now->endOfDay();
         }
-
+        
         $kategori = [];
         if ($request->kategori) {
             $kategori = ProductKiosBank::where('sub_kategori', $request->kategori)->pluck('kode')->toArray();
@@ -269,6 +269,8 @@ class TravShopController extends Controller
                 }
             });
         }
+
+        return response()->json(TsOrderResource::collection($data));
     }
 
     public function orderById($id)
