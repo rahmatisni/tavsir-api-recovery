@@ -226,7 +226,7 @@ class TravShopController extends Controller
             $kategori = ProductKiosBank::where('sub_kategori', $request->kategori)->pluck('kode')->toArray();
         }
 
-        $data = TransOrder::with(['detil','tenant','rest_area','payment']->where('customer_id', $id)
+        $data = TransOrder::with(['detil','tenant','rest_area','payment'])->where('customer_id', $id)
             ->when($status = request()->status, function ($q) use ($status) {
                 return $q->where('status', $status);
             })->when($order_id = request()->order_id, function ($q) use ($order_id) {
