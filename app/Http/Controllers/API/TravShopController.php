@@ -69,7 +69,7 @@ class TravShopController extends Controller
 
     public function tenant(Request $request)
     {
-        $data = Tenant::when($rest_area_id = $request->rest_area_id, function ($q) use ($rest_area_id) {
+        $data = Tenant::with('order','category_tenant')->when($rest_area_id = $request->rest_area_id, function ($q) use ($rest_area_id) {
             return $q->where('rest_area_id', $rest_area_id);
         })->when($category = $request->category, function ($q) use ($category) {
             return $q->where('category', $category);
@@ -93,7 +93,7 @@ class TravShopController extends Controller
 
     public function tenantByCategory()
     {
-        $data = Tenant::get()->groupBy('category')->map(function ($item, $key) {
+        $data = Tenant::with('category','order')->get()->groupBy('category')->map(function ($item, $key) {
             return TsTenantResource::collection($item);
         });
         return response()->json($data);
@@ -101,7 +101,7 @@ class TravShopController extends Controller
 
     public function product(Request $request)
     {
-        $data = Product::when($name = $request->name, function ($q) use ($name) {
+        $data = Product::with('customize','category')->when($name = $request->name, function ($q) use ($name) {
             return $q->where('name', 'like', "%$name%");
         })->when($tenant_id = $request->tenant_id, function ($q) use ($tenant_id) {
             return $q->where('tenant_id', $tenant_id);

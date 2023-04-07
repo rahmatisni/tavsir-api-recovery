@@ -86,12 +86,12 @@ class Tenant extends BaseModel
 
     public function getRatingAttribute()
     {
-        return $this->order() ? $this->order()->average('rating') : 0;
+        return $this->order?->average('rating') ?? 0;
     }
 
     public function getTotalRatingAttribute()
     {
-        return $this->order() ? $this->order()->where('rating', '>', 0)->count() : 0;
+        return $this->order?->where('rating', '>', 0)->count() ?? 0;
     }
 
     public function scopeCategoryCount($query)
