@@ -93,7 +93,10 @@ class TravShopController extends Controller
 
     public function tenantByCategory()
     {
-        $data = Tenant::with('category','order')->get()->groupBy('category')->map(function ($item, $key) {
+        $data = Tenant::with('category_tenant','order')
+        ->get()
+        ->groupBy('category_tenant.name')
+        ->map(function ($item, $key) {
             return TsTenantResource::collection($item);
         });
         return response()->json($data);
@@ -283,6 +286,13 @@ class TravShopController extends Controller
     public function orderById($id)
     {
         $data = TransOrder::findOrfail($id);
+        $product_kios = ProductKiosBank::select(
+            'kategori',
+            'sub_kategori',
+            'kode',
+            'name'
+        )->get();
+        $data->getProductKios = $product_kios;
         return response()->json(new TsOrderResource($data));
     }
 
