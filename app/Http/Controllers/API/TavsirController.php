@@ -29,6 +29,7 @@ use App\Http\Resources\Tavsir\TrOrderSupertenantResource;
 use App\Models\Bank;
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\KiosBank\ProductKiosBank;
 use App\Models\TransOrder;
 use App\Models\TransOrderDetil;
 use App\Models\PaymentMethod;
@@ -608,6 +609,13 @@ class TavsirController extends Controller
         $data->save();
 
         $data = TransOrder::findOrfail($id);
+        $product_kios = ProductKiosBank::select(
+            'kategori',
+            'sub_kategori',
+            'kode',
+            'name'
+        )->get();
+        $data->map(function($i) use($product_kios) { $i->getProductKios = $product_kios ; });
         return response()->json(new TsOrderResource($data));
     }
 

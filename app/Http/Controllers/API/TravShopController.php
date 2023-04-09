@@ -203,6 +203,14 @@ class TravShopController extends Controller
                 $result = sendNotif($ids, 'Info', 'Pemberitahuan order baru TAKE N GO ' . $data->order_id, $payload);
             }
 
+            $product_kios = ProductKiosBank::select(
+                'kategori',
+                'sub_kategori',
+                'kode',
+                'name'
+            )->get();
+            $data->map(function($i) use($product_kios) { $i->getProductKios = $product_kios ; });
+
             return response()->json(new TsOrderResource($data));
         } catch (\Throwable $th) {
             DB::rollback();
@@ -307,6 +315,13 @@ class TravShopController extends Controller
         $data->save();
 
         $data = TransOrder::findOrfail($id);
+        $product_kios = ProductKiosBank::select(
+            'kategori',
+            'sub_kategori',
+            'kode',
+            'name'
+        )->get();
+        $data->map(function($i) use($product_kios) { $i->getProductKios = $product_kios ; });
         return response()->json(new TsOrderResource($data));
     }
 
