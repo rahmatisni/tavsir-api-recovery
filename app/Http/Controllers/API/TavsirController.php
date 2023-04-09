@@ -609,13 +609,16 @@ class TavsirController extends Controller
         $data->save();
 
         $data = TransOrder::findOrfail($id);
-        $product_kios = ProductKiosBank::select(
-            'kategori',
-            'sub_kategori',
-            'kode',
-            'name'
-        )->get();
-        $data->map(function($i) use($product_kios) { $i->getProductKios = $product_kios ; });
+        if($data->order_type == TransOrder::ORDER_TRAVOY)
+        {
+            $product_kios = ProductKiosBank::select(
+                'kategori',
+                'sub_kategori',
+                'kode',
+                'name'
+            )->get();
+            $data->map(function($i) use($product_kios) { $i->getProductKios = $product_kios ; });
+        }
         return response()->json(new TsOrderResource($data));
     }
 

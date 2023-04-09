@@ -202,14 +202,16 @@ class TravShopController extends Controller
                 );
                 $result = sendNotif($ids, 'Info', 'Pemberitahuan order baru TAKE N GO ' . $data->order_id, $payload);
             }
-
-            $product_kios = ProductKiosBank::select(
-                'kategori',
-                'sub_kategori',
-                'kode',
-                'name'
-            )->get();
-            $data->map(function($i) use($product_kios) { $i->getProductKios = $product_kios ; });
+            if($data->order_type == TransOrder::ORDER_TRAVOY)
+            {
+                $product_kios = ProductKiosBank::select(
+                    'kategori',
+                    'sub_kategori',
+                    'kode',
+                    'name'
+                )->get();
+                $data->map(function($i) use($product_kios) { $i->getProductKios = $product_kios ; });
+            }
 
             return response()->json(new TsOrderResource($data));
         } catch (\Throwable $th) {
@@ -280,13 +282,17 @@ class TravShopController extends Controller
                 }
             });
         }
-        $product_kios = ProductKiosBank::select(
-            'kategori',
-            'sub_kategori',
-            'kode',
-            'name'
-        )->get();
-        $data->map(function($i) use($product_kios) { $i->getProductKios = $product_kios ; });
+        if($data->contains('order_type',TransOrder::ORDER_TRAVOY))
+        {
+            $product_kios = ProductKiosBank::select(
+                'kategori',
+                'sub_kategori',
+                'kode',
+                'name'
+            )->get();
+            $data->map(function($i) use($product_kios) { $i->getProductKios = $product_kios ; });
+        }
+       
         $resource = TsOrderResource::collection($data);
         return response()->json($resource);
     }
@@ -294,13 +300,17 @@ class TravShopController extends Controller
     public function orderById($id)
     {
         $data = TransOrder::findOrfail($id);
-        $product_kios = ProductKiosBank::select(
-            'kategori',
-            'sub_kategori',
-            'kode',
-            'name'
-        )->get();
-        $data->getProductKios = $product_kios;
+        if($data->order_type == TransOrder::ORDER_TRAVOY)
+        {
+            $product_kios = ProductKiosBank::select(
+                'kategori',
+                'sub_kategori',
+                'kode',
+                'name'
+            )->get();
+            $data->getProductKios = $product_kios;
+        }
+       
         return response()->json(new TsOrderResource($data));
     }
 
@@ -315,13 +325,16 @@ class TravShopController extends Controller
         $data->save();
 
         $data = TransOrder::findOrfail($id);
-        $product_kios = ProductKiosBank::select(
-            'kategori',
-            'sub_kategori',
-            'kode',
-            'name'
-        )->get();
-        $data->map(function($i) use($product_kios) { $i->getProductKios = $product_kios ; });
+        if($data->order_type == TransOrder::ORDER_TRAVOY)
+        {
+            $product_kios = ProductKiosBank::select(
+                'kategori',
+                'sub_kategori',
+                'kode',
+                'name'
+            )->get();
+            $data->getProductKios = $product_kios;
+        }
         return response()->json(new TsOrderResource($data));
     }
 
@@ -332,6 +345,17 @@ class TravShopController extends Controller
         $data->canceled_by = TransOrder::CANCELED_BY_CUSTOMER;
         $data->canceled_name = request()->name;
         $data->save();
+
+        if($data->order_type == TransOrder::ORDER_TRAVOY)
+        {
+            $product_kios = ProductKiosBank::select(
+                'kategori',
+                'sub_kategori',
+                'kode',
+                'name'
+            )->get();
+            $data->getProductKios = $product_kios;
+        }
 
         return response()->json(new TsOrderResource($data));
     }
