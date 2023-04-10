@@ -64,7 +64,7 @@ class OrderExpireCommand extends Command
 
         foreach ($data as $value) {
             $expire_data = Carbon::create($value->payment->data['exp_date'])->addHours(24);
-            if ($value->payment->data['exp_date'] <= $expire_data) 
+            if (Carbon::now() <= $expire_data) 
             {
                 $res = PgJmto::vaStatus(
                     $value->payment->data['sof_code'],
