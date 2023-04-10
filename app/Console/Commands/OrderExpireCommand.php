@@ -44,11 +44,11 @@ class OrderExpireCommand extends Command
         Log::info("Cron order expire is working fine!");
         // 1. order->type :: ORDER_TRAVOY
         // 2. order->status :: WAITING_PAYMENT
-        // 3. order->payment->exp_date        >         curr_date  => lebih dari 1 hari
+        // 3. order->payment->exp_date        <         curr_date  => lebih dari 1 hari
         // 3. order->payment do cek status PG
 
         // TRUE (pay_status = 1)
-        // 4. set order->status :: ready
+        // 4. set order->status :: payment success
         // FALSE (pay_status = 0)
         // 4. set order->status::cancel
 
@@ -60,8 +60,11 @@ class OrderExpireCommand extends Command
             })
             ->get();
 
+        
+
         foreach ($data as $value) {
-            if ($value->payment->data['exp_date'] > Carbon::now()->tomorrow()) 
+            $expire_data = Carbon::create($value->payment->data['exp_date'])->addHours(24);
+            if ($value->payment->data['exp_date'] <= $expire_data) 
             {
                 $res = PgJmto::vaStatus(
                     $value->payment->data['sof_code'],
@@ -79,7 +82,7 @@ class OrderExpireCommand extends Command
                     $res_data = $res['responseData'];
                     if ($res_data['pay_status'] == '1') {
                         Log::info("Order $data->id pay status 1");
-                        $data->status = TransOrder::READY;
+                        $data->status = TransOrder::PAYMENT_SUCCESS;
                     }
 
                     if ($res_data['pay_status'] == '0') {
