@@ -21,7 +21,7 @@ class TenantController extends Controller
      */
     public function index()
     {
-        return response()->json(TenantResource::collection(Tenant::all()));
+        return response()->json(TenantResource::collection(Tenant::with('business','rest_area','ruas','order','category_tenant')->get()));
     }
 
     /**
