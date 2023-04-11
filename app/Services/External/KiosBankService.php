@@ -75,7 +75,6 @@ class KiosBankService
     function generateDigest($method = 'POST', $path)
     {
         $digest = Http::kiosbank()->post($path)->header('WWW-Authenticate');
-        Log::info($digest);
         $auth_arr = explode(',', $digest);
         $params = array();
         foreach ($auth_arr as $auth) {
@@ -109,23 +108,26 @@ class KiosBankService
 
     function http($method, $path , $payload=[])
     {       
-        $current_date_time = Carbon::now()->toDateTimeString();
         $digest = $this->generateDigest(method: $method, path: $path);
+        clock()->event("kiosbank {$path}")->color('purple')->begin();
         $http = Http::kiosbank()->withHeaders(['Authorization' => 'Digest '.$digest]);
         switch ($method) {
             case 'POST':
                 $http = $http->post($path, $payload);
+                clock()->event("kiosbank {$path}")->end();
+
                 break;
 
             case 'GET':
                 $http = $http->get($path, $payload);
+                clock()->event("kiosbank {$path}")->end();
+
                 break;
             
             default:
                 throw new Exception("Error Processing Request", 1);
                 break;
         }
-        $current_date_times = Carbon::now()->toDateTimeString();
 
         Log::info([
             'method' => $method,

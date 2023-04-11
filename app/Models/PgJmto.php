@@ -33,7 +33,7 @@ class PgJmto extends Model
             //end fake
         }
 
-        clock()->event('oauth token')->begin();
+        clock()->event('oauth token')->color('purple')->begin();
         $response = Http::withHeaders([
             'Accept' => 'application/json',
             'Authorization' => 'Basic ' . base64_encode(env('PG_CLIENT_ID') . ':' . env('PG_CLIENT_SECRET')),
@@ -81,7 +81,7 @@ class PgJmto extends Model
         $signature = self::generateSignature($method, $path, $token, $timestamp, $payload);
         switch ($method) {
             case 'POST':
-                clock()->event("pg{$path}")->begin();
+                clock()->event("pg{$path}")->color('purple')->begin();
                 $response = Http::withHeaders([
                     'JMTO-TIMESTAMP' => $timestamp,
                     'JMTO-SIGNATURE' => $signature,
