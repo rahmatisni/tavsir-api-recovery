@@ -40,6 +40,7 @@ class PgJmto extends Model
         ])
             ->withoutVerifying()
             ->post(env('PG_BASE_URL') . '/oauth/token', ['grant_type' => 'client_credentials']);
+            Log::info($response->json());
         return $response->json();
     }
 

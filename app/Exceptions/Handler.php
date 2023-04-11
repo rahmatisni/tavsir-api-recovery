@@ -41,7 +41,7 @@ class Handler extends ExceptionHandler
             if($e->getCode() == 9)
                 return false;
         });
-        
+
         $this->reportable(function (Throwable $e) {
             if (app()->bound('sentry')) {
                 app('sentry')->captureException($e);
@@ -55,10 +55,6 @@ class Handler extends ExceptionHandler
     
     public function handleException($request, Exception $exception)
     {
-        if($exception instanceof NotFoundException) {
-            return response(['message' => 'Url Not Found'], 404);
-        }
-
         if($exception instanceof NotFoundHttpException) {
             return response(['message' => 'Not Found.'], 404);
         }
