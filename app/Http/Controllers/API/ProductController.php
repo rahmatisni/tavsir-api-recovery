@@ -19,7 +19,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $data = Product::when($name = request()->name, function ($q) use ($name) {
+        $data = Product::with('category','customize','tenant')->when($name = request()->name, function ($q) use ($name) {
             $q->where('name', 'like', '%' . $name . '%');
         })->when($sku = request()->sku, function ($q) use ($sku) {
             $q->where('sku', 'like', '%' . $sku . '%');
