@@ -539,11 +539,11 @@ class KiosBankService
     }
     public function cek()
     {
-        // $cek = $this->cekDeposit();
-        // return $cek;
+        $cek = $this->cekDeposit();
+        return $cek;
 
-        return Http::withOptions(["verify"=>false])
-            ->withDigestAuth($this->username,$this->password)
-            ->post($this->baseUrl.self::CEK_DEPOSIT)->json();
+        // return Http::withOptions(["verify"=>false])
+        //     ->withDigestAuth($this->username,$this->password)
+        //     ->post($this->baseUrl.self::CEK_DEPOSIT)->json();
     }
 }
