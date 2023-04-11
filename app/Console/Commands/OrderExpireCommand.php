@@ -77,16 +77,16 @@ class OrderExpireCommand extends Command
                     $value->sub_merchant_id
                 );
                 if ($res['status'] == 'success') {
-                    Log::info("Order $data->id status success");
+                    Log::info("Order $value->id status success");
 
                     $res_data = $res['responseData'];
                     if ($res_data['pay_status'] == '1') {
-                        Log::info("Order $data->id pay status 1");
+                        Log::info("Order $value->id pay status 1");
                         $data->status = TransOrder::PAYMENT_SUCCESS;
                     }
 
                     if ($res_data['pay_status'] == '0') {
-                        Log::info("Order $data->id pay status 0");
+                        Log::info("Order $value->id pay status 0");
                         $data->status = TransOrder::CANCEL;
                     }
                     $data->save();
