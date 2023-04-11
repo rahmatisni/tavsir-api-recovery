@@ -33,6 +33,7 @@ class PgJmto extends Model
             //end fake
         }
 
+        clock()->event('oauth token')->begin();
         $response = Http::withHeaders([
             'Accept' => 'application/json',
             'Authorization' => 'Basic ' . base64_encode(env('PG_CLIENT_ID') . ':' . env('PG_CLIENT_SECRET')),
@@ -41,6 +42,7 @@ class PgJmto extends Model
             ->withoutVerifying()
             ->post(env('PG_BASE_URL') . '/oauth/token', ['grant_type' => 'client_credentials']);
             Log::info($response->json());
+        clock()->event("ioauth token")->end();
         return $response->json();
     }
 
@@ -76,6 +78,7 @@ class PgJmto extends Model
         $signature = self::generateSignature($method, $path, $token, $timestamp, $payload);
         switch ($method) {
             case 'POST':
+                clock()->event("pg{$path}")->begin();
                 $response = Http::withHeaders([
                     'JMTO-TIMESTAMP' => $timestamp,
                     'JMTO-SIGNATURE' => $signature,
@@ -91,6 +94,8 @@ class PgJmto extends Model
                     ->retry(1, 100)
                     ->withoutVerifying()
                     ->post(env('PG_BASE_URL') . $path, $payload);
+                clock()->event("pg{$path}")->end();
+
                 return $response;
                 break;
             case 'GET':
