@@ -37,6 +37,11 @@ class Handler extends ExceptionHandler
      */
     public function register()
     {
+        $this->reportable(function (\League\OAuth2\Server\Exception\OAuthServerException $e) {
+            if($e->getCode() == 9)
+                return false;
+        });
+        
         $this->reportable(function (Throwable $e) {
             if (app()->bound('sentry')) {
                 app('sentry')->captureException($e);
