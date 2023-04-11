@@ -41,7 +41,6 @@ class PgJmto extends Model
         ])
             ->withoutVerifying()
             ->post(env('PG_BASE_URL') . '/oauth/token', ['grant_type' => 'client_credentials']);
-            Log::info($response->json());
         clock()->event("oauth token")->end();
         return $response->json();
     }
@@ -73,7 +72,11 @@ class PgJmto extends Model
             throw new Exception("token not found");
         }
 
-        $token = $data['access_token'];
+        if(!isset($data['access_token'])){
+            Log::info($data);
+        }
+
+        $token = $data['access_token'] ?? '';
         $timestamp = Carbon::now()->format('c');
         $signature = self::generateSignature($method, $path, $token, $timestamp, $payload);
         switch ($method) {
