@@ -50,15 +50,22 @@ class KiosBankController extends Controller
             $data['record'] = [];
         }
         $harga = $data['record'];
-        $product = ProductKiosBank::get();
+        // $product = ProductKiosBank::get();
         foreach($harga as $key => $val) 
         {
-            $harga_jual = $product->where('kode', $val['code'])
-                ->only([
-                    'kode',
-                    'harga'
-                ])
-                ->first();
+            // $harga_jual = $product->where('kode', $val['code'])
+            //     ->only([
+            //         'kode',
+            //         'harga'
+            //     ])
+            //     ->first();
+
+            $harga_jual = ProductKiosBank::where('kode', $val['code'])
+            ->select([
+                'kode',
+               'harga'
+            ])
+            ->first();
             $data['record'][$key]['price_jmto'] = $data['record'][$key]['price']+ $harga_jual['harga'];
         }
 
