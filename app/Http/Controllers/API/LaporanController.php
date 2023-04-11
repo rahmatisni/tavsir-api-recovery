@@ -177,12 +177,9 @@ class LaporanController extends Controller
         })->with('product.category')->get()
             ->groupBy('product.name')
             ->map(function ($item) {
-                if (!$item->first()->product) {
-                    dd($item);
-                }
                 return [
                     'qty' => $item->sum('qty'),
-                    'category' => $item->first()->product->category->name ?? '',
+                    'category' => $item->first()->product?->category?->name ?? '',
                     'sku' => $item->first()->product->sku ?? ''
                 ];
             });

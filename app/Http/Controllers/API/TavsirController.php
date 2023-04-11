@@ -651,9 +651,7 @@ class TavsirController extends Controller
 
     public function orderList(Request $request)
     {
-        DB::enableQueryLog();
-        $json = array();
-        $data = TransOrder::when($status = request()->status, function ($q) use ($status) {
+        $data = TransOrder::with('payment_method','payment','detil','tenant')->when($status = request()->status, function ($q) use ($status) {
             if (is_array($status)) {
                 $q->whereIn('status', $status);
             } else {
@@ -691,7 +689,6 @@ class TavsirController extends Controller
             $data = $data->orderBy('created_at', 'desc');
         }
         $data = $data->get();
-        // return response()->json([DB::getQueryLog(), $request->order, $json]);
         return response()->json(TrOrderResource::collection($data));
     }
 
