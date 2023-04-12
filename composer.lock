@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ecedb0777d941f56951f9be1f68fee3b",
+    "content-hash": "4dd55f4775d30367629554387aa7b9e0",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -4013,20 +4013,20 @@
         },
         {
             "name": "opcodesio/log-viewer",
-            "version": "v1.9.1",
+            "version": "v1.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/opcodesio/log-viewer.git",
-                "reference": "947070f0551fa2d5bc1423c0ef35c8e56a1fe01f"
+                "reference": "daef552e593d4253caed938348781944fe6a293e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opcodesio/log-viewer/zipball/947070f0551fa2d5bc1423c0ef35c8e56a1fe01f",
-                "reference": "947070f0551fa2d5bc1423c0ef35c8e56a1fe01f",
+                "url": "https://api.github.com/repos/opcodesio/log-viewer/zipball/daef552e593d4253caed938348781944fe6a293e",
+                "reference": "daef552e593d4253caed938348781944fe6a293e",
                 "shasum": ""
             },
             "require": {
-                "illuminate/contracts": "^8.0|^9.0|^10.0",
+                "illuminate/contracts": "^8.0|^9.0",
                 "livewire/livewire": "^2.10",
                 "php": "^8.0"
             },
@@ -4037,7 +4037,7 @@
                 "itsgoingd/clockwork": "^5.1",
                 "laravel/pint": "^1.0",
                 "nunomaduro/collision": "^6.0",
-                "orchestra/testbench": "^7.6|^8.0",
+                "orchestra/testbench": "^7.6",
                 "pestphp/pest": "^1.21",
                 "pestphp/pest-plugin-laravel": "^1.1",
                 "phpunit/phpunit": "^9.5",
@@ -4082,9 +4082,9 @@
             ],
             "support": {
                 "issues": "https://github.com/opcodesio/log-viewer/issues",
-                "source": "https://github.com/opcodesio/log-viewer/tree/v1.9.1"
+                "source": "https://github.com/opcodesio/log-viewer/tree/v1.6.0"
             },
-            "time": "2023-02-22T06:07:53+00:00"
+            "time": "2022-10-11T05:36:25+00:00"
         },
         {
             "name": "opis/closure",
