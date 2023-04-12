@@ -49,7 +49,7 @@ return [
     |
     */
 
-    'middleware' => env('LOG_VIEWER_AUTH') === true ? ['auth.basic'] : ['web'],
+    'middleware' => ['web'],
 
     /*
     |--------------------------------------------------------------------------

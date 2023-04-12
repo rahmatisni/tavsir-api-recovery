@@ -36,22 +36,22 @@ class AppServiceProvider extends ServiceProvider
             return Http::baseUrl(env('KIOSBANK_URL'))->withOptions(["verify"=>false]);
         });
         
-        if(env('LOG_VIEWER_AUTH') === true)
-        {
-            LogViewer::auth(function ($request) {
-                $auth = $request->header('authorization');
-                if($auth)
-                {
-                    $token = explode(' ',$auth);
-                    $token = $token[1] ?? '';
-                    $basic = base64_decode($token);
-                    $basic = explode(':',$basic);
-                    $email = $basic[0] ?? '';
-                    $user_role = User::where('email', $email)->first()?->role;
-                    return ($user_role == User::ADMIN);
-                }
-                return false;
-            });
-        }
+        // if(env('LOG_VIEWER_AUTH') === true)
+        // {
+        //     LogViewer::auth(function ($request) {
+        //         $auth = $request->header('authorization');
+        //         if($auth)
+        //         {
+        //             $token = explode(' ',$auth);
+        //             $token = $token[1] ?? '';
+        //             $basic = base64_decode($token);
+        //             $basic = explode(':',$basic);
+        //             $email = $basic[0] ?? '';
+        //             $user_role = User::where('email', $email)->first()?->role;
+        //             return ($user_role == User::ADMIN);
+        //         }
+        //         return false;
+        //     });
+        // }
     }
 }
