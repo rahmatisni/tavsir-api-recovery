@@ -82,7 +82,7 @@ class KiosBankService
             $params[$key] = substr($val, 1, strlen($val) - 2);
         }
         /*
-            SESUAIKAN INI
+        SESUAIKAN INI
         */
         $nc = 1;
         $cnonce = uniqid();
@@ -106,11 +106,11 @@ class KiosBankService
         return $query_str;
     }
 
-    function http($method, $path , $payload=[])
-    {       
+    function http($method, $path, $payload = [])
+    {
         $digest = $this->generateDigest(method: $method, path: $path);
         clock()->event("kiosbank {$path}")->color('purple')->begin();
-        $http = Http::kiosbank()->withHeaders(['Authorization' => 'Digest '.$digest]);
+        $http = Http::kiosbank()->withHeaders(['Authorization' => 'Digest ' . $digest]);
         switch ($method) {
             case 'POST':
                 $http = $http->post($path, $payload);
@@ -123,7 +123,7 @@ class KiosBankService
                 clock()->event("kiosbank {$path}")->end();
 
                 break;
-            
+
             default:
                 throw new Exception("Error Processing Request", 1);
                 break;
@@ -140,9 +140,9 @@ class KiosBankService
         return $http;
     }
 
-    public function signOn() : string
-    {   
-        $res_json =  $this->http('POST',self::SIGN_ON,$this->accountKiosBank);
+    public function signOn(): string
+    {
+        $res_json = $this->http('POST', self::SIGN_ON, $this->accountKiosBank);
         $res_json = $res_json->json();
         return $res_json['SessionID'];
     }
@@ -150,14 +150,13 @@ class KiosBankService
     public function getSeesionId()
     {
         $session = Redis::get('session_kios_bank');
-        if(!$session)
-        {
+        if (!$session) {
             $now = Carbon::now();
             $tomorrow = Carbon::tomorrow()->setMinute(15);
             $diff = $now->diffInMinutes($tomorrow) * 60;
             $session = $this->signOn();
-            Redis::set('session_kios_bank',$session);
-            Redis::expire('session_kios_bank',$diff);
+            Redis::set('session_kios_bank', $session);
+            Redis::expire('session_kios_bank', $diff);
         }
 
         return $session;
@@ -166,64 +165,58 @@ class KiosBankService
     public function cekStatusProduct()
     {
         $payload = [
-            'sessionID'=> $this->getSeesionId(),
+            'sessionID' => $this->getSeesionId(),
             ...$this->accountKiosBank
         ];
-        $res_json =  $this->http('POST',self::ACTIVE_PRODUCT,$payload)->json();
+        $res_json = $this->http('POST', self::ACTIVE_PRODUCT, $payload)->json();
         return $res_json;
     }
 
-    public function getProduct($kategori_pulsa = null, $kategori = null, $sub_kategori=null)
+    public function getProduct($kategori_pulsa = null, $kategori = null, $sub_kategori = null)
     {
         $product = $this->cekStatusProduct();
         $status_respon = $product['rc'] ?? '';
-        if($status_respon == '00')
-        {
-            if ($kategori && $sub_kategori){
+        if ($status_respon == '00') {
+            if ($kategori && $sub_kategori) {
                 $data = ProductKiosBank::where('kategori', strtoupper($kategori))
-                ->where('sub_kategori', ucwords($sub_kategori))
-                ->where('is_active', 1)
-                ->orderBy('kode', 'asc')
-                ->get();
-            }
-            else if ($kategori){
+                    ->where('sub_kategori', ucwords($sub_kategori))
+                    ->where('is_active', 1)
+                    ->orderBy('kode', 'asc')
+                    ->get();
+            } else if ($kategori) {
                 $data = ProductKiosBank::where('kategori', strtoupper($kategori))
-                ->where('is_active', 1)
-                ->orderBy('kode', 'asc')
-                ->get();
-            
-            }
-            else if ($sub_kategori){
-                $data = ProductKiosBank::when($sub_kategori, function($q)use($sub_kategori){
-                    return $q->where('sub_kategori',$sub_kategori);
+                    ->where('is_active', 1)
+                    ->orderBy('kode', 'asc')
+                    ->get();
+
+            } else if ($sub_kategori) {
+                $data = ProductKiosBank::when($sub_kategori, function ($q) use ($sub_kategori) {
+                    return $q->where('sub_kategori', $sub_kategori);
                 })->where('is_active', 1)
-                ->orderBy('kode', 'asc')
-                ->get();
-            }
-            else {
-                $data = ProductKiosBank::when($kategori_pulsa, function($q)use($kategori_pulsa){
-                    return $q->where('kategori',$kategori_pulsa);
+                    ->orderBy('kode', 'asc')
+                    ->get();
+            } else {
+                $data = ProductKiosBank::when($kategori_pulsa, function ($q) use ($kategori_pulsa) {
+                    return $q->where('kategori', $kategori_pulsa);
                 })->where('is_active', 1)
-                // ->orderBy('name', 'asc')
-                ->orderBy('kode', 'asc')
-                ->get();
+                    // ->orderBy('name', 'asc')
+                    ->orderBy('kode', 'asc')
+                    ->get();
             }
-           
+
 
             $active = $product['active'];
-            $active =  explode(',',$active);
+            $active = explode(',', $active);
             foreach ($data as $key => $value) {
                 $value->status = false;
             }
 
-            if(count($active) > 1)
-            {
+            if (count($active) > 1) {
                 foreach ($active as $key => $value) {
                     foreach ($data as $k => $v) {
-                       if($value == $v->kode)
-                       {
-                         $v->status = true;
-                       }
+                        if ($value == $v->kode) {
+                            $v->status = true;
+                        }
                     }
                 }
 
@@ -236,20 +229,20 @@ class KiosBankService
             }
 
             return $data->groupBy('sub_kategori');
-        }else{
+        } else {
             return $product;
         }
     }
-    
+
     public function showProduct($id)
     {
-        $product = 
-        ProductKiosBank::where('id',$id)
-        ->where('is_active',1);
+        $product =
+            ProductKiosBank::where('id', $id)
+                ->where('is_active', 1);
         // ProductKiosBank::findOrFail($id);
-      
 
-       
+
+
         return $product;
     }
 
@@ -261,20 +254,20 @@ class KiosBankService
     public function listProductOperatorPulsa($prefix_id)
     {
         $payload = [
-            'sessionID'=> $this->getSeesionId(),
-            'prefixID'=> $prefix_id,
+            'sessionID' => $this->getSeesionId(),
+            'prefixID' => $prefix_id,
             'merchantID' => env('KIOSBANK_MERCHANT_ID')
         ];
-        $res_json =  $this->http('POST',self::PULSA_PRABAYAR,$payload)->json();
+        $res_json = $this->http('POST', self::PULSA_PRABAYAR, $payload)->json();
         return $res_json;
     }
 
     public function showProductPulsa($id)
     {
-        $product_pulsa = ProductKiosBank::where('id',$id)
-                                    ->where('sub_kategori','PULSA')
-                                    ->where('is_active',1)
-                                    ->whereNotNull('prefix_id')->first();
+        $product_pulsa = ProductKiosBank::where('id', $id)
+            ->where('sub_kategori', 'PULSA')
+            ->where('is_active', 1)
+            ->whereNotNull('prefix_id')->first();
         return $product_pulsa;
     }
 
@@ -282,7 +275,7 @@ class KiosBankService
     {
         $order = new TransOrder();
         $order->order_type = TransOrder::ORDER_TRAVOY;
-        $order->order_id = $data['code'].'-'.$data['phone'].'-'.rand(900000000000,999999999999).'-'.Carbon::now()->timestamp;
+        $order->order_id = $data['code'] . '-' . $data['phone'] . '-' . rand(900000000000, 999999999999) . '-' . Carbon::now()->timestamp;
         $order->rest_area_id = 0;
         $order->tenant_id = 0;
         $order->business_id = 0;
@@ -290,7 +283,7 @@ class KiosBankService
         $order->customer_name = $data['customer_name'];
         $order->customer_phone = $data['customer_phone'];
         $order->merchant_id = '';
-        $order->sub_merchant_id = env('MERCHANT_KIOS','');
+        $order->sub_merchant_id = env('MERCHANT_KIOS', '');
         $order->sub_total = $data['price_jmto'];
         $order->status = TransOrder::WAITING_PAYMENT;
         $order->fee = env('PLATFORM_FEE');
@@ -305,83 +298,102 @@ class KiosBankService
         // $nom = preg_replace('/[^0-9]/', '', $nom);
 
         $request = [
-            'referenceID'=>'-',
+            'referenceID' => '-',
             'data' => [
-                'noHandphone'=>$data['phone'],
-                'harga_kios'=>$data['price'],
-                'harga'=>$data['price_jmto']
+                'noHandphone' => $data['phone'],
+                'harga_kios' => $data['price'],
+                'harga' => $data['price_jmto']
             ],
-            'description'=>'INQUIRY'
+            'description' => 'INQUIRY'
         ];
 
         $Postdata->log_kiosbank()->updateOrCreate([
             'trans_order_id' => $Postdata->id
-        ],[
-            'data' => $request
-        ]);
+        ], [
+                'data' => $request
+            ]);
 
         //minta tambah updateOrCreate ke column inquiry
 
         return $order;
     }
 
-    public function singlePayment($sub_total,$order_id,$harga_kios)
+    public function singlePayment($sub_total, $order_id, $harga_kios)
     {
         $order = explode('-', $order_id);
         $payload = [
-            'total'=>$harga_kios,
-            'admin'=>'000000000000',
-            'tagihan'=>$harga_kios,
-            'sessionID'=> $this->getSeesionId(),
-            'productID'=>$order[0] ?? '',
-            'referenceID'=>$order[2] ?? '',
-            'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
-            'customerID'=>$order[1] ?? ''
+            'total' => $harga_kios,
+            'admin' => '000000000000',
+            'tagihan' => $harga_kios,
+            'sessionID' => $this->getSeesionId(),
+            'productID' => $order[0] ?? '',
+            'referenceID' => $order[2] ?? '',
+            'merchantID' => env('KIOSBANK_MERCHANT_ID'),
+            'customerID' => $order[1] ?? ''
         ];
 
         clock()->event('singlepayment kios')->color('purple')->begin();
-        $res_json =  $this->http('POST',self::SINGLE_PAYMENT,$payload)->json();
+        $res_json = $this->http('POST', self::SINGLE_PAYMENT, $payload)->json();
         clock()->event('singlepayment kios')->end();
         return $res_json;
     }
 
-    public function dualPayment($sub_total,$order_id,$tagihan,$admin, $total)
+    public function dualPayment($sub_total, $order_id, $tagihan, $admin, $total)
     {
+
+        $adminparam = ['753001', '753011', '753021', '753031', '753041', '753051', '753061', '753071', '753081', '753091'];
+
         $order = explode('-', $order_id);
-        $payload = [
-            'total'=>$total,
-            'admin'=> $admin,
-            'tagihan'=>$tagihan,
-            'sessionID'=> $this->getSeesionId(),
-            'productID'=>$order[0] ?? '',
-            'referenceID'=>$order[2] ?? '',
-            'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
-            'customerID'=>$order[1] ?? ''
-        ];
+
+        if (in_array($order[0], $adminparam)) {
+
+            $payload = [
+                'total' => $total,
+                'admin' => $admin,
+                'tagihan' => $tagihan,
+                'sessionID' => $this->getSeesionId(),
+                'productID' => $order[0] ?? '',
+                'referenceID' => $order[2] ?? '',
+                'merchantID' => env('KIOSBANK_MERCHANT_ID'),
+                'customerID' => $order[1] ?? ''
+            ];
+        }
+        else {
+            $payload = [
+                'total' => $total,
+                'adminBank' => $admin,
+                'sessionID' => $this->getSeesionId(),
+                'productID' => $order[0] ?? '',
+                'referenceID' => $order[2] ?? '',
+                'merchantID' => env('KIOSBANK_MERCHANT_ID'),
+                'customerID' => $order[1] ?? ''
+            ];
+        }
+      
 
         clock()->event('dualpayment kios')->color('purple')->begin();
-        $res_json =  $this->http('POST',self::DUAL_PAYMENT,$payload)->json();
+        $res_json = $this->http('POST', self::DUAL_PAYMENT, $payload)->json();
         clock()->event('dualpayment kios')->end();
 
         return $res_json;
     }
 
-    public function cekStatus($sub_total,$order_id,$admin,$harga_kios)
+    public function cekStatus($sub_total, $order_id, $admin, $harga_kios)
     {
         $order = explode('-', $order_id);
         $payload = [
-            'total'=>$harga_kios,
-            'admin'=>$admin,
-            'tagihan'=>$harga_kios,
-            'sessionID'=> $this->getSeesionId(),
-            'productID'=>$order[0],
-            'referenceID'=>$order[2],
-            'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
-            'customerID'=>$order[1]
+            'total' => $harga_kios,
+            'admin' => $admin,
+            'tagihan' => $harga_kios,
+            'sessionID' => $this->getSeesionId(),
+            'productID' => $order[0],
+            'referenceID' => $order[2],
+            'merchantID' => env('KIOSBANK_MERCHANT_ID'),
+            'customerID' => $order[1]
         ];
 
         clock()->event('cek status payment kios')->color('purple')->begin();
-        $res_json =  $this->http('POST',self::CEK_STATUS,$payload)->json();
+        $res_json = $this->http('POST', self::CEK_STATUS, $payload)->json();
         clock()->event('cek status kios')->end();
 
         return $res_json;
@@ -390,14 +402,14 @@ class KiosBankService
     {
 
         $payload = [
-            'sessionID'=> $this->getSeesionId(),
-            'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
-            'productID'=>$productId,
-            'customerID'=>$customerID,
-            'referenceID'=>$referenceID,
+            'sessionID' => $this->getSeesionId(),
+            'merchantID' => env('KIOSBANK_MERCHANT_ID'),
+            'productID' => $productId,
+            'customerID' => $customerID,
+            'referenceID' => $referenceID,
         ];
         clock()->event('re-inquiry kios')->color('purple')->begin();
-        $res_json =  $this->http('POST',self::INQUIRY,$payload);
+        $res_json = $this->http('POST', self::INQUIRY, $payload);
         clock()->event('re-inquiry kios')->end();
         return $res_json;
     }
@@ -408,26 +420,26 @@ class KiosBankService
             $kode = $request['productID'];
             $customer = $request['customerID'];
             $referensi = $request['referenceID'];
-            $id = $kode.'-'.$customer.'-'.$referensi;            
-            $data = TransOrder::where('order_id','LIKE','%'.$id.'%')->first();
-           
-            if($data){
+            $id = $kode . '-' . $customer . '-' . $referensi;
+            $data = TransOrder::where('order_id', 'LIKE', '%' . $id . '%')->first();
+
+            if ($data) {
                 DB::beginTransaction();
-                Log::info(['callback',$request]);
-               
-                $request['description'] =  $request['description'] ?? ($request['data']['status'] ?? '-');
+                Log::info(['callback', $request]);
+
+                $request['description'] = $request['description'] ?? ($request['data']['status'] ?? '-');
                 $request['data']['harga_kios'] = $request['data']['harga'];
                 $request['data']['harga'] = $data->sub_total;
 
-                if ($request['rc'] == '00'){
+                if ($request['rc'] == '00') {
                     $data->status = TransOrder::DONE;
                     $data->save();
                 }
                 $data->log_kiosbank()->updateOrCreate([
                     'trans_order_id' => $data->id
-                ],[
-                    'data' => $request
-                ]);
+                ], [
+                        'data' => $request
+                    ]);
                 DB::commit();
             }
         } catch (\Throwable $th) {
@@ -436,14 +448,14 @@ class KiosBankService
             return response()->json(['error' => (string) $th], 500);
         }
     }
-    
+
     public function cekDeposit()
     {
         $payload = [
-            'sessionID'=> $this->getSeesionId(),
+            'sessionID' => $this->getSeesionId(),
             ...$this->accountKiosBank
         ];
-        $res_json =  $this->http('POST',self::CEK_DEPOSIT,$payload);
+        $res_json = $this->http('POST', self::CEK_DEPOSIT, $payload);
         $res_json = $res_json->json();
         return $res_json;
     }
@@ -452,7 +464,7 @@ class KiosBankService
     {
         $order = new TransOrder();
         $order->order_type = TransOrder::ORDER_TRAVOY;
-        $order->order_id = $data['code'].'-'.$data['phone'].'-'.rand(900000000000,999999999999).'-'.Carbon::now()->timestamp;
+        $order->order_id = $data['code'] . '-' . $data['phone'] . '-' . rand(900000000000, 999999999999) . '-' . Carbon::now()->timestamp;
         $order->rest_area_id = 0;
         $order->tenant_id = 0;
         $order->business_id = 0;
@@ -460,51 +472,51 @@ class KiosBankService
         $order->customer_name = $data['customer_name'];
         $order->customer_phone = $data['customer_phone'];
         $order->merchant_id = '';
-        $order->sub_merchant_id = env('MERCHANT_KIOS','');
+        $order->sub_merchant_id = env('MERCHANT_KIOS', '');
         $order->fee = env('PLATFORM_FEE');
         $order->description = 'dual';
         $order->status = TransOrder::WAITING_PAYMENT;
 
         $ref = explode('-', $order->order_id);
         $payload = [
-            'sessionID'=> $this->getSeesionId(),
-            'merchantID'=>env('KIOSBANK_MERCHANT_ID'),
-            'productID'=>$data['code'],
-            'customerID'=>$data['phone'],
-            'referenceID'=>$ref[2],
+            'sessionID' => $this->getSeesionId(),
+            'merchantID' => env('KIOSBANK_MERCHANT_ID'),
+            'productID' => $data['code'],
+            'customerID' => $data['phone'],
+            'referenceID' => $ref[2],
         ];
         $current_date_time = Carbon::now()->toDateTimeString();
-        
+
         clock()->event('inquiry kios')->color('purple')->begin();
-        $res_json =  $this->http('POST',self::INQUIRY,$payload);
+        $res_json = $this->http('POST', self::INQUIRY, $payload);
         clock()->event('inquiry kios')->end();
 
         $res_json = $res_json->json();
         $current_date_times = Carbon::now()->toDateTimeString();
-        Log::info([
-        'REQ' => $current_date_time,
-        'RESP' => $current_date_times
-        ]
+        Log::info(
+            [
+                'REQ' => $current_date_time,
+                'RESP' => $current_date_times
+            ]
         );
 
-        if($res_json['rc'] == '00')
-        {
+        if ($res_json['rc'] == '00') {
             if ($res_json['productID'] == '520021' || $res_json['productID'] == '520011') {
                 $order->harga_kios = $res_json['data']['total'];
                 //harga jual
 
-                $harga_jual_kios = ProductKiosBank::where('kode',$res_json['productID'])->first() ?? $res_json['data']['total'];
+                $harga_jual_kios = ProductKiosBank::where('kode', $res_json['productID'])->first() ?? $res_json['data']['total'];
                 $order->sub_total = ($harga_jual_kios?->harga ?? 0) + $res_json['data']['total'];
 
 
                 $order->total = $order->sub_total + $order->fee;
-              
+
                 $res_json['data']['harga_kios'] = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
-                $res_json['data']['harga'] =  $order->sub_total;
+                $res_json['data']['harga'] = $order->sub_total;
                 $res_json['description'] = 'INQUIRY';
-              
+
                 $order->save();
-                $order->log_kiosbank()->updateOrCreate(['trans_order_id' => $order->id],[
+                $order->log_kiosbank()->updateOrCreate(['trans_order_id' => $order->id], [
                     'data' => $res_json
                 ]);
 
@@ -512,31 +524,30 @@ class KiosBankService
 
                 return $order;
 
-            }
-            else {
+            } else {
                 $order->harga_kios = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
                 //harga jual
-                $harga_jual_kios = ProductKiosBank::where('kode',$res_json['productID'])->first();
+                $harga_jual_kios = ProductKiosBank::where('kode', $res_json['productID'])->first();
                 // $order->sub_total = $harga_jual_kios?->harga ?? $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
                 $order->sub_total = ($harga_jual_kios?->harga ?? 0) + ($res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan']);
 
                 $order->total = $order->sub_total + $order->fee;
 
                 $res_json['data']['harga_kios'] = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
-                $res_json['data']['harga'] =  $order->sub_total;
+                $res_json['data']['harga'] = $order->sub_total;
                 $res_json['description'] = 'INQUIRY';
                 $order->save();
-                $order->log_kiosbank()->updateOrCreate(['trans_order_id' => $order->id],[
+                $order->log_kiosbank()->updateOrCreate(['trans_order_id' => $order->id], [
                     'data' => $res_json
                 ]);
-                               
+
                 //minta tambah updateOrCreate ke column inquiry
 
                 return $order;
             }
         }
 
-        
+
         return $res_json;
     }
     public function cek()
