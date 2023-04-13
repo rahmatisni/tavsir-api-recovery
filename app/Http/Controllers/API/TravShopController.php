@@ -135,7 +135,7 @@ class TravShopController extends Controller
             $data->customer_name = $request->customer_name;
             $data->customer_phone = $request->customer_phone;
             $data->merchant_id = $request->merchant_id;
-            $data->sub_merchant_id = 13;
+            $data->sub_merchant_id = $request->sub_merchant_id;
             $order_detil_many = [];
             $data->save();
 
@@ -462,7 +462,7 @@ class TravShopController extends Controller
                         'phone' => $request->customer_phone,
                         'email' => $request->customer_email,
                         'customer_name' => $request->customer_name,
-                        "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id ?? "13",
+                        "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id ,
                     ];
 
                     $res = PgJmto::vaCreate(
@@ -507,7 +507,7 @@ class TravShopController extends Controller
                         'phone' => $request->customer_phone,
                         'email' => $request->customer_email,
                         'customer_name' => $request->customer_name,
-                        "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id ?? "13",
+                        "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id,
                     ];
                     $res = PgJmto::vaCreate(
                         $payment_method->code,
@@ -551,7 +551,7 @@ class TravShopController extends Controller
                         'phone' => $request->customer_phone,
                         'email' => $request->customer_email,
                         'customer_name' => $request->customer_name,
-                        "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id ?? "13",
+                        "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id,
                     ];
 
                     $res = PgJmto::vaCreate(

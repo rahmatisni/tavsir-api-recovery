@@ -74,7 +74,7 @@ class OrderExpireCommand extends Command
                     $value->payment->data['phone'],
                     $value->payment->data['email'],
                     $value->payment->data['customer_name'],
-                    $value->sub_merchant_id ?? '13'
+                    $value->sub_merchant_id
                 );
                 if ($res['status'] == 'success') {
                     Log::info("Order $value->id status success");
