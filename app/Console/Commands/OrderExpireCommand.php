@@ -90,8 +90,6 @@ class OrderExpireCommand extends Command
                         $value->status = TransOrder::CANCEL;
                     }
                     $value->save();
-                    $data->save();
-
                 }
                 Log::info("Order $value->id status not success");
             }
