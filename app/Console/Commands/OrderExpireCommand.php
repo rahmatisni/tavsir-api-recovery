@@ -89,9 +89,11 @@ class OrderExpireCommand extends Command
                         Log::info("Order $value->id pay status 0");
                         $value->status = TransOrder::CANCEL;
                     }
-                    $value->save();
+                }else if ($res['rc'] == '0030') {
+                    $value->status = TransOrder::CANCEL;
                 }
-                Log::info("Order $value->id status not success");
+                $value->save();
+                Log::info("Order $value->id status not success status terakhir $value->status");
             }
         }
     }

@@ -443,12 +443,6 @@ class TravShopController extends Controller
 
             $res = 'Invalid';
             $payment_method = PaymentMethod::find($request->payment_method_id);
-            $payment_method_fee = PgJmto::tarifFee(
-                $payment_method->sof_id,
-                $payment_method->payment_method_id,
-                $payment_method->sub_merchant_id,
-                $data->sub_total
-            );
             switch ($payment_method->code_name) {
                 case 'pg_va_mandiri':
                     $payment_payload = [
@@ -474,8 +468,7 @@ class TravShopController extends Controller
                         $request->customer_phone,
                         $request->customer_email,
                         $request->customer_name,
-                        $data->sub_merchant_id
-
+                        $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
                     );
                     if ($res['status'] == 'success') {
                         $pay = null;
@@ -518,8 +511,7 @@ class TravShopController extends Controller
                         $request->customer_phone,
                         $request->customer_email,
                         $request->customer_name,
-                        $data->sub_merchant_id
-
+                        $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
                     );
                     if ($res['status'] == 'success') {
                         $pay = null;
@@ -563,8 +555,7 @@ class TravShopController extends Controller
                         $request->customer_phone,
                         $request->customer_email,
                         $request->customer_name,
-                        $data->sub_merchant_id
-
+                        $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id,
                     );
                     if ($res['status'] == 'success') {
                         $pay = null;
