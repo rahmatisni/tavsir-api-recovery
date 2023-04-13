@@ -349,6 +349,17 @@ class KiosBankService
 
             $payload = [
                 'total' => $total,
+                'adminBank' => $admin,
+                'sessionID' => $this->getSeesionId(),
+                'productID' => $order[0] ?? '',
+                'referenceID' => $order[2] ?? '',
+                'merchantID' => env('KIOSBANK_MERCHANT_ID'),
+                'customerID' => $order[1] ?? ''
+            ];
+
+        } else {
+            $payload = [
+                'total' => $total,
                 'admin' => $admin,
                 'tagihan' => $tagihan,
                 'sessionID' => $this->getSeesionId(),
@@ -357,19 +368,9 @@ class KiosBankService
                 'merchantID' => env('KIOSBANK_MERCHANT_ID'),
                 'customerID' => $order[1] ?? ''
             ];
+
         }
-        else {
-            $payload = [
-                'total' => $total,
-                'adminBank' => $admin,
-                'sessionID' => $this->getSeesionId(),
-                'productID' => $order[0] ?? '',
-                'referenceID' => $order[2] ?? '',
-                'merchantID' => env('KIOSBANK_MERCHANT_ID'),
-                'customerID' => $order[1] ?? ''
-            ];
-        }
-      
+
 
         clock()->event('dualpayment kios')->color('purple')->begin();
         $res_json = $this->http('POST', self::DUAL_PAYMENT, $payload)->json();
