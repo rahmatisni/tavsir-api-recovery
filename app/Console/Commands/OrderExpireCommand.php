@@ -82,12 +82,12 @@ class OrderExpireCommand extends Command
                     $res_data = $res['responseData'];
                     if ($res_data['pay_status'] == '1') {
                         Log::info("Order $value->id pay status 1");
-                        $data->status = TransOrder::PAYMENT_SUCCESS;
+                        $value->status = TransOrder::PAYMENT_SUCCESS;
                     }
 
                     if ($res_data['pay_status'] == '0') {
                         Log::info("Order $value->id pay status 0");
-                        $data->status = TransOrder::CANCEL;
+                        $value->status = TransOrder::CANCEL;
                     }
                     $value->save();
                     $data->save();
