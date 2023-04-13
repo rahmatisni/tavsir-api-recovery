@@ -39,6 +39,7 @@ class TransOrder extends BaseModel
         'cosume_type',
         'nomor_name',
         'sub_total',
+        'sub_merchant_id',
         'fee',
         'total',
         'business_id',
