@@ -6,6 +6,7 @@ use App\Models\PgJmto;
 use App\Services\External\KiosBankService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -225,7 +226,17 @@ Route::get('/pg-cek', function (Request $request) {
         "customer_name" => "travoy customer test",
         "submerchant_id" => ""
     ];
-    return PgJmto::vaCreate($payload['sof_code'], $payload['bill_id'], $payload['bill_name'], $payload['amount'], $payload['desc'], $payload['phone'], $payload['email'], $payload['customer_name']);
+    return PgJmto::vaCreate(
+        $payload['sof_code'],
+        $payload['bill_id'], 
+        $payload['bill_name'], 
+        $payload['amount'], 
+        $payload['desc'], 
+        $payload['phone'], 
+        $payload['email'], 
+        $payload['customer_name'],
+        ''
+    );
 });
 
 Route::get('/pg-tarif', function () {
