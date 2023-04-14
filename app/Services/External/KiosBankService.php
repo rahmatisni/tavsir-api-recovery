@@ -349,14 +349,14 @@ class KiosBankService
 
             $payload = [
                 'total' => $total,
-                'adminBank' => $admin,
+                'admin' => $admin,
+                'tagihan' => $total-$admin,
                 'sessionID' => $this->getSeesionId(),
                 'productID' => $order[0] ?? '',
                 'referenceID' => $order[2] ?? '',
                 'merchantID' => env('KIOSBANK_MERCHANT_ID'),
                 'customerID' => $order[1] ?? ''
             ];
-
         } else {
             $payload = [
                 'total' => $total,
