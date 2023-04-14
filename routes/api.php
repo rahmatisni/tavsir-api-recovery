@@ -293,6 +293,7 @@ Route::prefix('kios-bank')->group(function(){
         Route::get('/product','index');
         Route::get('/product/{id}','show');
         Route::get('/product/{id}','show');
+        Route::get('/product-sub-kategori','getSubKategoriProduct');
     });
 
     Route::prefix('pulsa')->controller(KiosBankController::class)->group(function(){

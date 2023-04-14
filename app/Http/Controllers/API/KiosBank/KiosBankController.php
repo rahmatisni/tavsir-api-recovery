@@ -123,5 +123,10 @@ class KiosBankController extends Controller
         return response()->json($data);
     }
 
+    public function getSubKategoriProduct()
+    {
+        $data = $this->service->getSubKategoriProduct();
+        return response()->json($data);
+    }
     
 }

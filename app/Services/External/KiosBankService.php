@@ -172,6 +172,10 @@ class KiosBankService
         return $res_json;
     }
 
+    public function getSubKategoriProduct(){
+        return ProductKiosBank::select('sub_kategori')->distinct()->get();
+    }
+
     public function getProduct($kategori_pulsa = null, $kategori = null, $sub_kategori = null)
     {
         $product = $this->cekStatusProduct();
@@ -515,6 +519,7 @@ class KiosBankService
                 $res_json['data']['harga_kios'] = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
                 $res_json['data']['harga'] = $order->sub_total;
                 $res_json['description'] = 'INQUIRY';
+                $res_json['status'] = 'INQUIRY';
 
                 $order->save();
                 $order->log_kiosbank()->updateOrCreate(['trans_order_id' => $order->id], [
