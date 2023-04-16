@@ -804,7 +804,14 @@ class TravShopController extends Controller
                             $res_json = $this->kiosBankService->reinquiry($productId, $customerID, $referenceID);
                             $res_json = $res_json->json();
                         }
-                        if (($kios['rc'] == '17' && $data->description == 'single') || $res_json['rc'] == '00') {
+                        if($kios['rc'] == '17' && $data->description == 'single'){
+                            if ($data->description == 'single') {
+                                $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
+                                Log::info(['bayar susulan => ', $kios]);
+
+                            }
+                        }
+                        if ($res_json['rc'] == '00') {
                             if ($res_json['productID'] == '520021' || $res_json['productID'] == '520011') {
                                 $data->harga_kios = $res_json['data']['total'];
                                 //harga jual
