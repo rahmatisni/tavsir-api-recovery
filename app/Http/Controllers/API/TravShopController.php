@@ -754,6 +754,8 @@ class TravShopController extends Controller
             if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::DONE || $data->status == TransOrder::READY) {
                 $kios = [];
                 if ($data->order_type == TransOrder::ORDER_TRAVOY) {
+                    dd('test');
+
                     $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
                     $adminBank = $datalog['data']['data']['adminBank'] ?? '000000000000';
                     $refid = $datalog['data']['referenceID'];
@@ -772,7 +774,6 @@ class TravShopController extends Controller
                             $data->status = TransOrder::DONE;
                         }
                     }
-                    dd('test');
 
                     // if(!$kios['rc'] || $kios['rc'] == '01' || $kios['rc'] == '03' || $kios['rc'] == '04' || $kios['rc'] == '05' || $kios['rc'] == '14' || $kios['rc'] == '19' || $kios['rc'] == '38' || $kios['rc'] == '39' || $kios['rc'] == '67' | $kios['rc'] == '71') {
                     //     // if(str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL'))
