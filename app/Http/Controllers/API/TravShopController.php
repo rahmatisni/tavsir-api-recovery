@@ -799,7 +799,7 @@ class TravShopController extends Controller
                         $referenceID = (string) $random_id;
                         $data->save();
                         DB::commit();
-                        Log::info($random_id . '/' . $referenceID);
+                        Log::info($random_id . '/' . $referenceID . '/'. $kios['rc']);
 
                         if ($data->description == 'dual') {
                             $res_json = $this->kiosBankService->reinquiry($productId, $customerID, $referenceID);
