@@ -806,6 +806,10 @@ class TravShopController extends Controller
                             $res_json = $this->kiosBankService->reinquiry($productId, $customerID, $referenceID);
                             $res_json = $res_json->json();
                         }
+                        if ($data->description == 'single') {
+                            $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
+                            Log::info(['bayar susulan => ', $kios]);
+                        }
                         if ($res_json['rc'] == '00') {
                             if ($res_json['productID'] == '520021' || $res_json['productID'] == '520011') {
                                 $data->harga_kios = $res_json['data']['total'];
@@ -845,11 +849,11 @@ class TravShopController extends Controller
                             }
 
                             //pay ulang
-                            if ($data->description == 'single') {
-                                $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
-                                Log::info(['bayar susulan => ', $kios]);
+                            // if ($data->description == 'single') {
+                            //     $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
+                            //     Log::info(['bayar susulan => ', $kios]);
 
-                            }
+                            // }
                             if ($data->description == 'dual') {
                                 $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
                                 $tagihan = $datalog['data']['data']['tagihan'] ?? $datalog['data']['data']['harga_kios'];
