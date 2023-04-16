@@ -69,7 +69,7 @@ class TravShopController extends Controller
 
     public function tenant(Request $request)
     {
-        $data = Tenant::with('order','category_tenant')->when($rest_area_id = $request->rest_area_id, function ($q) use ($rest_area_id) {
+        $data = Tenant::with('order', 'category_tenant')->when($rest_area_id = $request->rest_area_id, function ($q) use ($rest_area_id) {
             return $q->where('rest_area_id', $rest_area_id);
         })->when($category = $request->category, function ($q) use ($category) {
             return $q->where('category', $category);
@@ -93,18 +93,18 @@ class TravShopController extends Controller
 
     public function tenantByCategory()
     {
-        $data = Tenant::with('category_tenant','order')
-        ->get()
-        ->groupBy('category_tenant.name')
-        ->map(function ($item, $key) {
-            return TsTenantResource::collection($item);
-        });
+        $data = Tenant::with('category_tenant', 'order')
+            ->get()
+            ->groupBy('category_tenant.name')
+            ->map(function ($item, $key) {
+                return TsTenantResource::collection($item);
+            });
         return response()->json($data);
     }
 
     public function product(Request $request)
     {
-        $data = Product::with('customize','category')->when($name = $request->name, function ($q) use ($name) {
+        $data = Product::with('customize', 'category')->when($name = $request->name, function ($q) use ($name) {
             return $q->where('name', 'like', "%$name%");
         })->when($tenant_id = $request->tenant_id, function ($q) use ($tenant_id) {
             return $q->where('tenant_id', $tenant_id);
@@ -202,15 +202,15 @@ class TravShopController extends Controller
                 );
                 $result = sendNotif($ids, 'Info', 'Pemberitahuan order baru TAKE N GO ' . $data->order_id, $payload);
             }
-            if($data->order_type == TransOrder::ORDER_TRAVOY)
-            {
+            if ($data->order_type == TransOrder::ORDER_TRAVOY) {
                 $product_kios = ProductKiosBank::select(
                     'kategori',
                     'sub_kategori',
                     'kode',
                     'name'
                 )->get();
-                $data->map(function($i) use($product_kios) { $i->getProductKios = $product_kios ; });
+                $data->map(function ($i) use ($product_kios) {
+                    $i->getProductKios = $product_kios; });
             }
 
             return response()->json(new TsOrderResource($data));
@@ -233,22 +233,21 @@ class TravShopController extends Controller
             $tanggal_sub = $now->subDay($request->hari);
             $tanggal_end = $now->endOfDay();
         }
-        
+
         $kategori = [];
         if ($request->kategori) {
             $kategori = ProductKiosBank::where('sub_kategori', $request->kategori)->pluck('kode')->toArray();
         }
 
-        $data = TransOrder::with(['detil','tenant','rest_area','payment','log_kiosbank','payment_method'])->where('customer_id', $id)
+        $data = TransOrder::with(['detil', 'tenant', 'rest_area', 'payment', 'log_kiosbank', 'payment_method'])->where('customer_id', $id)
             ->when($status = request()->status, function ($q) use ($status) {
                 return $q->where('status', $status);
             })->when($order_id = request()->order_id, function ($q) use ($order_id) {
             return $q->where('order_id', 'like', "%$order_id%");
         })->when($order_type = request()->order_type, function ($q) use ($order_type) {
-            if(request()->order_type == 'ORDER_TRAVOY'){
+            if (request()->order_type == 'ORDER_TRAVOY') {
                 return $q->where('order_type', $order_type)->whereNotNull('payment_method_id');
-            }
-            else {
+            } else {
                 return $q->where('order_type', $order_type);
             }
         })->when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
@@ -282,17 +281,17 @@ class TravShopController extends Controller
                 }
             });
         }
-        if($data->contains('order_type',TransOrder::ORDER_TRAVOY))
-        {
+        if ($data->contains('order_type', TransOrder::ORDER_TRAVOY)) {
             $product_kios = ProductKiosBank::select(
                 'kategori',
                 'sub_kategori',
                 'kode',
                 'name'
             )->get();
-            $data->map(function($i) use($product_kios) { $i->getProductKios = $product_kios ; });
+            $data->map(function ($i) use ($product_kios) {
+                $i->getProductKios = $product_kios; });
         }
-       
+
         $resource = TsOrderResource::collection($data);
         return response()->json($resource);
     }
@@ -300,8 +299,7 @@ class TravShopController extends Controller
     public function orderById($id)
     {
         $data = TransOrder::findOrfail($id);
-        if($data->order_type == TransOrder::ORDER_TRAVOY)
-        {
+        if ($data->order_type == TransOrder::ORDER_TRAVOY) {
             $product_kios = ProductKiosBank::select(
                 'kategori',
                 'sub_kategori',
@@ -310,7 +308,7 @@ class TravShopController extends Controller
             )->get();
             $data->getProductKios = $product_kios;
         }
-       
+
         return response()->json(new TsOrderResource($data));
     }
 
@@ -325,8 +323,7 @@ class TravShopController extends Controller
         $data->save();
 
         $data = TransOrder::findOrfail($id);
-        if($data->order_type == TransOrder::ORDER_TRAVOY)
-        {
+        if ($data->order_type == TransOrder::ORDER_TRAVOY) {
             $product_kios = ProductKiosBank::select(
                 'kategori',
                 'sub_kategori',
@@ -346,8 +343,7 @@ class TravShopController extends Controller
         $data->canceled_name = request()->name;
         $data->save();
 
-        if($data->order_type == TransOrder::ORDER_TRAVOY)
-        {
+        if ($data->order_type == TransOrder::ORDER_TRAVOY) {
             $product_kios = ProductKiosBank::select(
                 'kategori',
                 'sub_kategori',
@@ -456,7 +452,7 @@ class TravShopController extends Controller
                         'phone' => $request->customer_phone,
                         'email' => $request->customer_email,
                         'customer_name' => $request->customer_name,
-                        "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id ,
+                        "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id,
                     ];
 
                     $res = PgJmto::vaCreate(
@@ -721,20 +717,22 @@ class TravShopController extends Controller
         else
             $query = json_encode($params);
 
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => 800,
-            CURLOPT_HEADER => true,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => $query,
-            CURLOPT_HTTPHEADER => array(
-                $header,
-                'content-type:application/json'
-            ),
-            CURLOPT_SSL_VERIFYHOST => 0,
-            CURLOPT_SSL_VERIFYPEER => 0
-        )
+        curl_setopt_array(
+            $curl,
+            array(
+                CURLOPT_URL => $url,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_TIMEOUT => 800,
+                CURLOPT_HEADER => true,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => $query,
+                CURLOPT_HTTPHEADER => array(
+                    $header,
+                    'content-type:application/json'
+                ),
+                CURLOPT_SSL_VERIFYHOST => 0,
+                CURLOPT_SSL_VERIFYPEER => 0
+            )
         );
         $response = curl_exec($curl);
         $err = curl_error($curl);
@@ -762,6 +760,7 @@ class TravShopController extends Controller
                     $kios['data']['harga_kios'] = $data->harga_kios;
                     $kios['data']['harga'] = $data->sub_total ?? '0';
                     $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '-';
+
                     if ($kios['rc'] == '00' || $kios['rc'] == "00" || $kios['rc'] == 00) {
                         if (str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL')) {
                             $data->status = TransOrder::DONE;
@@ -787,7 +786,7 @@ class TravShopController extends Controller
                     //     // }
                     // }
 
-                    $rc_coll = array('2','10','12','15','17','18','27','34','37','40','41','42','46','60','61','62','64','65','68','69','70','72','73','74','75','78','79','80','83','85','86','19');
+                    $rc_coll = array('2', '10', '12', '15', '17', '18', '27', '34', '37', '40', '41', '42', '46', '60', '61', '62', '64', '65', '68', '69', '70', '72', '73', '74', '75', '78', '79', '80', '83', '85', '86', '19');
 
                     if (in_array($kios['rc'], $rc_coll)) {
                         //inquiry ulang
@@ -800,11 +799,16 @@ class TravShopController extends Controller
                         $referenceID = (string) $random_id;
                         $data->save();
                         DB::commit();
-                        Log::info($random_id.'/'.$referenceID);
+                        Log::info($random_id . '/' . $referenceID);
 
                         if ($data->description == 'dual') {
                             $res_json = $this->kiosBankService->reinquiry($productId, $customerID, $referenceID);
                             $res_json = $res_json->json();
+                        }
+                        //pay ulang
+                        if ($data->description == 'single' && $kios['rc'] == '17') {
+                            $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
+                            Log::info(['bayar susulan => ', $kios]);
                         }
                         if ($res_json['rc'] == '00') {
                             if ($res_json['productID'] == '520021' || $res_json['productID'] == '520011') {
@@ -844,12 +848,7 @@ class TravShopController extends Controller
                                 ]);
                             }
 
-                            //pay ulang
-                            if ($data->description == 'single') {
-                                $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
-                                Log::info(['bayar susulan => ', $kios]);
 
-                            }
                             if ($data->description == 'dual') {
                                 $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
                                 $tagihan = $datalog['data']['data']['tagihan'] ?? $datalog['data']['data']['harga_kios'];
