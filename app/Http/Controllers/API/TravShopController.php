@@ -807,6 +807,7 @@ class TravShopController extends Controller
                             $res_json = $res_json->json();
                         }
                         if ($data->description == 'single') {
+                            dd(test);
                             $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
                             Log::info(['bayar susulan => ', $kios]);
                         }
