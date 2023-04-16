@@ -790,6 +790,8 @@ class TravShopController extends Controller
                     $rc_coll = array('2','10','12','15','17','18','27','34','37','40','41','42','46','60','61','62','64','65','68','69','70','72','73','74','75','78','79','80','83','85','86','19');
 
                     if (in_array($kios['rc'], $rc_coll)) {
+                        dd('test');
+
                         //inquiry ulang
                         $ref = explode('-', $data->order_id);
                         $random_id = rand(900000000000, 999999999999);
@@ -807,7 +809,6 @@ class TravShopController extends Controller
                             $res_json = $res_json->json();
                         }
                         if ($data->description == 'single') {
-                            dd(test);
                             $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
                             Log::info(['bayar susulan => ', $kios]);
                         }
