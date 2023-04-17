@@ -17,14 +17,14 @@ use Illuminate\Support\Str;
 class PgJmto extends Model
 {
 
-    public function getToken()
+    public static function getToken()
     {
         $token = Redis::get('token_pg');
         if (!$token) {
             $now = Carbon::now();
             $hours = Carbon::now()->addMinute(59);
             $diff = $now->diffInMinutes($hours) * 60;
-            $token = $this->generateToken()['access_token'] ?? '';
+            $token = self::generateToken()['access_token'] ?? '';
             if($token == ''){
                 throw new Exception("token not found",422);
             }
