@@ -16,7 +16,25 @@ use Illuminate\Support\Str;
 
 class PgJmto extends Model
 {
-    public static function getToken()
+
+    public function getToken()
+    {
+        $token = Redis::get('token_pg');
+        if (!$token) {
+            $now = Carbon::now();
+            $hours = Carbon::now()->addMinute(59);
+            $diff = $now->diffInMinutes($hours) * 60;
+            $token = $this->generateToken()['access_token'] ?? '';
+            if($token == ''){
+                throw new Exception("token not found",422);
+            }
+            Redis::set('token_pg', $token);
+            Redis::expire('token_pg', $diff);
+        }
+        return $token;
+    }
+    
+    public static function generateToken()
     {
         if (env('PG_FAKE_RESPON') === true) {
             //for fake
@@ -67,16 +85,7 @@ class PgJmto extends Model
 
     public static function service($method, $path, $payload)
     {
-        $data = self::getToken();
-        if (!$data) {
-            throw new Exception("token not found",422);
-        }
-
-        if(!isset($data['access_token'])){
-            Log::info($data);
-        }
-
-        $token = $data['access_token'] ?? '';
+        $token = self::getToken();
         $timestamp = Carbon::now()->format('c');
         $signature = self::generateSignature($method, $path, $token, $timestamp, $payload);
         switch ($method) {
