@@ -69,7 +69,7 @@ class PgJmto extends Model
     {
         $data = self::getToken();
         if (!$data) {
-            throw new Exception("token not found");
+            throw new Exception("token not found",422);
         }
 
         if(!isset($data['access_token'])){
