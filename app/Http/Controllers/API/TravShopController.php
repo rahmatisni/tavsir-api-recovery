@@ -448,7 +448,7 @@ class TravShopController extends Controller
                     $payment_payload = [
                         "sof_code" => $payment_method->code,
                         'bill_id' => $data->order_id,
-                        'bill_name' => 'Take N Go',
+                        'bill_name' => 'Get Pay',
                         'amount' => (string) $data->total,
                         'desc' => $data->tenant->name ?? 'Travoy',
                         "exp_date" => Carbon::now()->addMinutes(5)->format('Y-m-d H:i:s'),
@@ -462,7 +462,7 @@ class TravShopController extends Controller
                     $res = PgJmto::vaCreate(
                         $payment_method->code,
                         $data->order_id,
-                        'Take N Go',
+                        'Get Pay',
                         $data->sub_total + $data->fee,
                         $data->tenant->name ?? 'Travoy',
                         $request->customer_phone,
@@ -492,7 +492,7 @@ class TravShopController extends Controller
                     $payment_payload = [
                         "sof_code" => $payment_method->code,
                         'bill_id' => $data->order_id,
-                        'bill_name' => 'Take N Go',
+                        'bill_name' => 'Get Pay',
                         'amount' => (string) $data->total,
                         'desc' => $data->tenant->name ?? 'Travoy',
                         "exp_date" => Carbon::now()->addMinutes(5)->format('Y-m-d H:i:s'),
@@ -505,7 +505,7 @@ class TravShopController extends Controller
                     $res = PgJmto::vaCreate(
                         $payment_method->code,
                         $data->order_id,
-                        'Take N Go',
+                        'Get Pay',
                         $data->sub_total + $data->fee,
                         $data->tenant->name ?? 'Travoy',
                         $request->customer_phone,
@@ -535,7 +535,7 @@ class TravShopController extends Controller
                     $payment_payload = [
                         "sof_code" => $payment_method->code,
                         'bill_id' => $data->order_id,
-                        'bill_name' => 'Take N Go',
+                        'bill_name' => 'Get Pay',
                         'amount' => (string) $data->total,
                         'desc' => $data->tenant->name ?? 'Travoy',
                         "exp_date" => Carbon::now()->addMinutes(5)->format('Y-m-d H:i:s'),
@@ -549,7 +549,7 @@ class TravShopController extends Controller
                     $res = PgJmto::vaCreate(
                         $payment_method->code,
                         $data->order_id,
-                        'Take N Go',
+                        'Get Pay',
                         $data->sub_total + $data->fee,
                         $data->tenant->name ?? 'Travoy',
                         $request->customer_phone,
@@ -611,7 +611,7 @@ class TravShopController extends Controller
 
                     $payment_payload = [
                         'order_id' => $data->order_id,
-                        'order_name' => 'Take N Go',
+                        'order_name' => 'Get Pay',
                         'amount' => $data->total,
                         'desc' => $data->tenant->name ?? 'Travoy',
                         'phone' => $request->customer_phone,
