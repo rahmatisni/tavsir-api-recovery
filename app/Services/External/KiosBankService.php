@@ -491,7 +491,9 @@ class KiosBankService
             'referenceID' => $ref[2],
         ];
         $current_date_time = Carbon::now()->toDateTimeString();
-
+        if ((str_contains(substr($data['code'],  0, 3), '753')) && (strlen($data['phone']) == 16)) {
+            dd('cek');
+        }
         clock()->event('inquiry kios')->color('purple')->begin();
         $res_json = $this->http('POST', self::INQUIRY, $payload);
         clock()->event('inquiry kios')->end();
