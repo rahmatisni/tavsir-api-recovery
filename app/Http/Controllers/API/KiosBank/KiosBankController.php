@@ -113,6 +113,14 @@ class KiosBankController extends Controller
 
     public function orderUangElektronik(UangElektronikRequest $request)
     {
+        
+        if ((substr($request['code'],  0, 3) == '753') && (strlen($request['phone']) != 16)) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Nomor Kartu Anda Tidak Valid'
+        ], 422);
+    }
+        
         $data = $this->service->uangelEktronik($request->validated());
         
         // dd($data['rc']);
