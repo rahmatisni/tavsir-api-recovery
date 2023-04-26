@@ -492,7 +492,10 @@ class KiosBankService
         ];
         $current_date_time = Carbon::now()->toDateTimeString();
         if ((substr($data['code'],  0, 3) == '753') && (strlen($data['phone']) != 16)) {
-            dd('cek');
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Nomor Kartu Anda Tidak Valid'
+            ], 422);
         }
         clock()->event('inquiry kios')->color('purple')->begin();
         $res_json = $this->http('POST', self::INQUIRY, $payload);
