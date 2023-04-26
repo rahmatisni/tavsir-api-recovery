@@ -120,7 +120,7 @@ class KiosBankController extends Controller
         //     'message' => 'Nomor Kartu Anda Tidak Valid'
         // ], 422);
 
-        return response()->json(['message' => 'Nomor Kartu Anda Tidak Valid', 'errors' => 'Nomor Tidak Sesuai Dengan Produk!'], 422);
+        return response()->json(['message' => 'Nomor Kartu Anda Tidak Valid', 'errors' => 'Nomor Kartu Anda Tidak Valid'], 422);
 
     }
         
