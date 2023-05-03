@@ -105,8 +105,8 @@ class KiosBankController extends Controller
             return response()->json(['message' => 'Nomor Tidak Sesuai Dengan Produk!', 'errors' => 'Nomor Tidak Sesuai Dengan Produk!'], 422);
         }
 
-        $product_kios = $this->service->listProductOperatorPulsa($reqest->code);
         $product_jmto = ProductKiosBank::where('kode',$reqest->code)->first();
+        $product_kios = $this->service->listProductOperatorPulsa($product_jmto->prefix_id);
         if($product_kios['rc'] != '00')
         {
             return response()->json(['message' => 'Product Tidak ditemukan!', 'errors' => 'Product Tidak ditemukan!'], 422);
@@ -115,7 +115,8 @@ class KiosBankController extends Controller
         {
             return response()->json(['message' => 'Product maintenance', 'errors' => 'Product maintenance'], 422);
         }
-        $harga_kios = $product_kios['record'][0]['price'];
+        $product_kios = collect($product_kios)->firstWhere('code', $reqest->code);
+        $harga_kios = $product_kios->price;
         $harga_final =  $harga_kios + ($product_jmto->harga ?? 0);
 
         $data = $this->service->orderPulsa($reqest->validated(), $harga_kios, $harga_final);
