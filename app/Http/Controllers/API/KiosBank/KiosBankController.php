@@ -116,7 +116,7 @@ class KiosBankController extends Controller
             return response()->json(['message' => 'Product maintenance', 'errors' => 'Product maintenance'], 422);
         }
         $product_kios = collect($product_kios)->firstWhere('code', $reqest->code);
-        $harga_kios = $product_kios->price;
+        $harga_kios = $product_kios['price'];
         $harga_final =  $harga_kios + ($product_jmto->harga ?? 0);
 
         $data = $this->service->orderPulsa($reqest->validated(), $harga_kios, $harga_final);
