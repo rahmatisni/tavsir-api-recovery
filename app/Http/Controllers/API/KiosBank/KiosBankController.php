@@ -88,7 +88,7 @@ class KiosBankController extends Controller
             $validatorpulsa = json_decode($datax['Pulsa']);
         }
 
-        if(isset($datax['Pulsa']))
+        if(isset($datax['Paket Data']))
         {
             $validatordata = json_decode($datax['Paket Data']);
         }
