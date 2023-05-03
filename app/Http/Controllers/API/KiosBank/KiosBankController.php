@@ -115,8 +115,12 @@ class KiosBankController extends Controller
         {
             return response()->json(['message' => 'Product maintenance', 'errors' => 'Product maintenance'], 422);
         }
-        $product_kios = collect($product_kios)->firstWhere('code', $reqest->code);
-        dd($product_kios);
+        $product_kios = collect($product_kios['record'])->firstWhere('code', $reqest->code);
+        if(!$product_kios)
+        {
+            return response()->json(['message' => 'Product Tidak ditemukan!', 'errors' => 'Product Tidak ditemukan!'], 422);
+        }
+
         $harga_kios = $product_kios['price'];
         $harga_final =  $harga_kios + ($product_jmto->harga ?? 0);
 
