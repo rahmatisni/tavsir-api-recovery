@@ -275,7 +275,7 @@ class KiosBankService
         return $product_pulsa;
     }
 
-    public function orderPulsa($data)
+    public function orderPulsa($data, $harga_kios, $harga_final)
     {
         $order = new TransOrder();
         $order->order_type = TransOrder::ORDER_TRAVOY;
@@ -288,31 +288,26 @@ class KiosBankService
         $order->customer_phone = $data['customer_phone'];
         $order->merchant_id = '';
         $order->sub_merchant_id = env('MERCHANT_KIOS', '');
-        $order->sub_total = $data['price_jmto'];
+        $order->sub_total = $harga_final;
         $order->status = TransOrder::WAITING_PAYMENT;
         $order->fee = env('PLATFORM_FEE');
         $order->total = $order->sub_total + $order->fee;
         $order->description = 'single';
-        $order->harga_kios = $data['price'];
+        $order->harga_kios = $harga_kios;
         $order->save();
-
-        $Postdata = TransOrder::where('order_id', $order->order_id)->first();
-        $orders = explode('-', $order->order_id);
-        $nom = $data['description'];
-        // $nom = preg_replace('/[^0-9]/', '', $nom);
 
         $request = [
             'referenceID' => '-',
             'data' => [
                 'noHandphone' => $data['phone'],
-                'harga_kios' => $data['price'],
-                'harga' => $data['price_jmto']
+                'harga_kios' => $harga_kios,
+                'harga' => $harga_final
             ],
             'description' => 'INQUIRY'
         ];
 
-        $Postdata->log_kiosbank()->updateOrCreate([
-            'trans_order_id' => $Postdata->id
+        $order->log_kiosbank()->updateOrCreate([
+            'trans_order_id' => $order->id
         ], [
                 'data' => $request
             ]);
