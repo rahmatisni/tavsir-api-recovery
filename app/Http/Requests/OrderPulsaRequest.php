@@ -35,6 +35,7 @@ class OrderPulsaRequest extends FormRequest
                     if($v){
                         $barier = TransOrder::where('order_id','LIKE','%'.$v.'%')
                         ->where('created_at', '>=', Carbon::today())
+                        ->where('description','single')
                         ->whereIn('status', array('DONE','READY', 'PAYMENT_SUCCESS'))
                         ->count();
                         if ($barier >= 3) {
