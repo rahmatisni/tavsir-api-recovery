@@ -23,6 +23,7 @@ class TsProductResource extends JsonResource
             "stock" => $this->stock,
             "is_active" => $this->is_active,
             "category" => $this->category->name ?? '',
+            "description" => $this->description,
             "customize" => CustomizeResource::collection($this->customize),
         ];
     }
