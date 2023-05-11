@@ -17,6 +17,7 @@ use App\Http\Resources\TravShop\TsTenantResource;
 use App\Http\Resources\TravShop\TsRestAreaResource;
 use App\Http\Resources\TsPaymentresource;
 use App\Models\Bind;
+use App\Models\Category;
 use App\Models\KiosBank\ProductKiosBank;
 use App\Models\PaymentMethod;
 use App\Models\PgJmto;
@@ -89,6 +90,12 @@ class TravShopController extends Controller
         $data = Tenant::findOrFail($id);
 
         return response()->json(new TsTenantResource($data));
+    }
+
+    public function categoryProductTenant($tenant_id)
+    {
+        $data = Category::where('tenant_id', $tenant_id)->select('id','name','tenant_id')->get();
+        return response()->json($data);
     }
 
     public function tenantByCategory()
