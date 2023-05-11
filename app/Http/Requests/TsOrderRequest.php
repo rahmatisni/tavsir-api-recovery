@@ -27,10 +27,10 @@ class TsOrderRequest extends FormRequest
     {
         return [
             'tenant_id' => 'required|exists:ref_tenant,id,deleted_at,NULL',
-            'business_id' => 'required|exists:ref_business,id',
+            // 'business_id' => 'required|exists:ref_business,id',
             'customer_id' => 'required',
-            'merchant_id' => 'required',
-            'sub_merchant_id' => 'required',
+            // 'merchant_id' => 'required',
+            // 'sub_merchant_id' => 'required',
             'product' => 'required|array',
             'product.*.product_id' => 'required|integer|exists:ref_product,id,deleted_at,NULL',
             'product.*.customize' => 'array',
