@@ -112,7 +112,7 @@ class DashboardController extends Controller
             $restarea = RestArea::find($key);
             $top_rest_area[] = [
                 'name' => $restarea->name ?? '',
-                'photo' => $restarea->photo != null  ? asset($restarea->photo) : null,
+                'photo' => $restarea?->photo != null  ? asset($restarea->photo) : null,
                 'total_transaksi' => $value,
             ];
         }
