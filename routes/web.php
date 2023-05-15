@@ -2,6 +2,7 @@
 
 use App\Events\StatusOrderEvent;
 use App\Models\TransOrder;
+use App\Services\External\JatelindoService;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
+    dd(JatelindoService::signIn());
     return view('welcome');
 });
 
