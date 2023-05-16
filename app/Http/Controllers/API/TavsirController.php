@@ -354,8 +354,10 @@ class TavsirController extends Controller
     public function productList(Request $request)
     {
         $data = Product::byTenant()->with('tenant')->when($filter = $request->filter, function ($q) use ($filter) {
-            return $q->where('name', 'like', "%$filter%")
+            $q->where(function($qq) use ($filter){
+                return $qq->where('name', 'like', "%$filter%")
                 ->orwhere('sku', 'like', "%$filter%");
+            });
         })->when($category_id = $request->category_id, function ($q) use ($category_id) {
             return $q->where('category_id', $category_id);
         })->when($tenant_id = $request->tenant_id, function ($q) use ($tenant_id) {
