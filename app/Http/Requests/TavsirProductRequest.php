@@ -30,7 +30,7 @@ class TavsirProductRequest extends FormRequest
             'photo' => 'nullable|max:5000',
             'price' => 'required|numeric|min:100|max:1000000',
             'is_active' => 'required|boolean',
-            'description' => 'nullable|string|max:255',
+            'description' => 'nullable|string|max:100',
             'customize' => 'nullable|array',
             'customize.*.customize_id' => 'nullable|integer|exists:ref_customize,id',
             'customize.*.must_choose' => 'nullable|boolean',

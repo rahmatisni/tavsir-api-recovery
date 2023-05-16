@@ -32,16 +32,8 @@ class TavsirChangeStatusProductRequest extends FormRequest
     public function attributes()
     {
         return [
-            'category_id' => 'Category',
-            'sku' => 'SKU',
-            'name' => 'Name',
-            'photo' => 'Photo',
-            'price' => 'Price',
+            'product_id' => 'Product',
             'is_active' => 'Is Active',
-            'description' => 'Description',
-            'customize' => 'List Customize',
-            'customize.*.customize_id' => 'Customize',
-            'customize.*.must_choose' => 'Must Choose',
         ];
     }
 }
