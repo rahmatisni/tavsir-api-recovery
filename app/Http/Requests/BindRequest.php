@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class BindRequest extends FormRequest
 {
@@ -21,13 +23,15 @@ class BindRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(Request $request)
     {
         return [
             'customer_id' => 'required',
             'sof_code' => 'required',
             'customer_name' => 'required',
-            'card_no' => 'required',
+            'card_no' => ['required',Rule::unique('ref_bind')->where(function ($query) use ($request) {
+                return $query->where('customer_id', $request->customer_id);
+            })],
             'phone' => 'required',
             'email' => 'required',
         ];
