@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTransOrder extends Migration
+class CreateTransOrderArsipTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,13 @@ class CreateTransOrder extends Migration
      */
     public function up()
     {
-        Schema::create('trans_order', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+        Schema::create('trans_order_arsip', function (Blueprint $table) {
+            $table->id();
+            $table->string('trans_order_id');
             $table->string('order_id');
             $table->string('order_type');
-            $table->string('consume_type')->comment('dine_in or take_away')->nullable();
-            $table->string('nomor_name')->comment('nomor meja atau nama customer')->nullable();
+            $table->string('consume_type')->nullable();
+            $table->string('nomor_name')->nullable();
             $table->integer('sub_total')->unsigned();
             $table->integer('fee')->unsigned();
             $table->integer('service_fee')->unsigned();
@@ -34,9 +35,8 @@ class CreateTransOrder extends Migration
             $table->integer('merchant_id')->unsigned()->nullable();
             $table->integer('sub_merchant_id')->unsigned()->nullable();
             $table->string('paystation_id')->nullable();
-            $table->string('customer_id')->nullable()->comment('customer_id from id user travoy');
-            $table->string('customer_name')->nullable()->comment('customer_name from id user travoy');
-            $table->string('customer_phone')->nullable()->comment('customer_phone from id user travoy');
+            $table->string('customer_id')->nullable();
+            $table->string('customer_name')->nullable();
             $table->integer('payment_method_id')->unsigned()->nullable();
             $table->integer('payment_id')->unsigned()->nullable();
             $table->integer('discount')->unsigned()->nullable();
@@ -54,22 +54,7 @@ class CreateTransOrder extends Migration
             $table->string('description')->nullable();
             $table->integer('harga_kios')->nullable();
             $table->date('settlement_at')->nullable();
-
             $table->timestamps();
-        });
-
-        Schema::create('trans_order_detil', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('trans_order_id');
-            $table->integer('product_id')->unsigned();
-            $table->string('product_name');
-            $table->text('customize')->nullable();
-            $table->integer('base_price')->unsigned();
-            $table->integer('price')->unsigned();
-            $table->tinyInteger('qty')->unsigned();
-            $table->integer('total_price')->unsigned();
-            $table->string('note')->nullable();
-            $table->string('status')->nullable();
         });
     }
 
@@ -80,7 +65,6 @@ class CreateTransOrder extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('trans_order_detil');
-        Schema::dropIfExists('trans_order');
+        Schema::dropIfExists('trans_order_arsip');
     }
 }
