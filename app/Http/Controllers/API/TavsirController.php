@@ -37,6 +37,7 @@ use App\Models\PgJmto;
 use App\Models\RestArea;
 use App\Models\Tenant;
 use App\Models\TransEdc;
+use App\Models\TransOrderArsip;
 use App\Models\TransPayment;
 use App\Models\TransSaldo;
 use App\Models\TransSharing;
@@ -232,13 +233,14 @@ class TavsirController extends Controller
     {
         $tenant_user = auth()->user()->tenant;
         $data = TransOrder::with('detil.product.tenant')
-        ->whereIn('status', [TransOrder::PAYMENT_SUCCESS, TransOrder::DONE])
+        ->whereIn('status', [TransOrder::CART, TransOrder::PAYMENT_SUCCESS, TransOrder::DONE])
         ->where('supertenant_id', $tenant_user->supertenant_id ?? 0)
         ->whereHas('detil', function($q) use ($tenant_user){
             $q->whereHas('product', function($qq) use ($tenant_user){
                 $qq->where('tenant_id', $tenant_user->id ?? 0);
             });
         })
+        ->orderBy('created_at','desc')
         ->get();
         return response()->json(TrOrderSupertenantResource::collection($data));
     }
@@ -247,7 +249,7 @@ class TavsirController extends Controller
     {
         $tenant_user = auth()->user()->tenant;
         $data = TransOrder::with('detil.product.tenant')
-        ->whereIn('status', [TransOrder::PAYMENT_SUCCESS, TransOrder::DONE])
+        ->whereIn('status', [TransOrder::CART,TransOrder::PAYMENT_SUCCESS, TransOrder::DONE])
         ->where('supertenant_id', $tenant_user->supertenant_id ?? 0)
         ->whereHas('detil', function($q) use ($tenant_user){
             $q->whereHas('product', function($qq) use ($tenant_user){
@@ -368,7 +370,11 @@ class TavsirController extends Controller
         } else if ($request->is_active == '1') {
             $data->where('is_active', '1');
         }
-        $data = $data->orderBy('updated_at', 'desc')->get();
+        $data = $data
+        ->orderBy('updated_at', 'desc')
+        ->orderBy('name')
+        ->orderBy('stock','desc')
+        ->get();
         return response()->json(TrProductResource::collection($data));
     }
 
@@ -857,6 +863,43 @@ class TavsirController extends Controller
 
         $data->save();
 
+        return response()->json($data);
+    }
+
+    public function settlement(Request $request)
+    {
+        $tanggal = null;
+        if($request->request){
+            $tanggal = Carbon::parse($request->tanggal);
+        }
+        TransOrder::fromTravoy()
+        ->when($tanggal, function($q) use ($tanggal){
+            $q->whereYear('created_at', '=', $tanggal->format('y'))
+            ->whereMonth('created_at', '=', $tanggal->format('m'))
+            ->get();
+        });
+    }
+
+
+    public function manualArsip($id, Request $request)
+    {
+        $data = TransOrder::fromTravoy()->findOrfail($id);
+
+        $result = DB::transaction(function()use($request,$data){
+            $arsip = $data->toArray();
+            $explode = explode('-',$data->order_id);
+            $data->order_id = $explode[0].'-'.$request->phone.'-'.$request->number.'-'.$explode[3];
+            $data->save();
+            $data->trans_order_arsip()->create($arsip);
+            return $data;
+        });
+        
+        return response()->json($result);
+    }
+
+    public function logArsip($id)
+    {
+        $data = TransOrderArsip::where('trans_order_id',$id)->get();
         return response()->json($data);
     }
 }

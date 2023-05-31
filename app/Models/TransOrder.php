@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\BaseModel;
+use App\Models\KiosBank\ProductKiosBank;
 use App\Models\Traits\Uuid;
 use Illuminate\Support\Facades\DB;
 
@@ -55,6 +56,11 @@ class TransOrder extends BaseModel
         'description',
     ];
 
+    public function trans_order_arsip()
+    {
+        return $this->hasMany(TransOrderArsip::class, 'trans_order_id');
+    }
+
     public function detil()
     {
         return $this->hasMany(TransOrderDetil::class, 'trans_order_id');
@@ -98,6 +104,11 @@ class TransOrder extends BaseModel
     public function scopeFromTavsir($query)
     {
         return $query->where('order_type', self::ORDER_TAVSIR);
+    }
+
+    public function scopeFromTravoy($query)
+    {
+        return $query->where('order_type', self::ORDER_TRAVOY);
     }
 
     public function scopeDone($query)
@@ -181,8 +192,31 @@ class TransOrder extends BaseModel
         return $query->whereIn('tenant_id', $tenant);
     }
 
-    public function isHaveOrderCancel()
+    public function codeProductKiosbank()
     {
-        
+        if($this->order_type == self::ORDER_TRAVOY)
+        {
+            return explode('-',$this->order_id)[0] ?? '';
+        }
+        return null;
+    }
+
+    public function productKiosbank()
+    {
+        if($this->order_type == self::ORDER_TRAVOY)
+        {
+            $kode = explode('-',$this->order_id)[0] ?? '';
+            return ProductKiosBank::where('kode', $kode)->first();
+        }
+        return null;
+    }
+
+    public function getMargin()
+    {
+        if($this->order_type == self::ORDER_TRAVOY)
+        {
+            return $this->sub_total - $this->harga_kios;   
+        }
+        return 0;
     }
 }

@@ -166,6 +166,11 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/order-verif/{id}', [App\Http\Controllers\API\TavsirTnGController::class, 'orderVerification']);
     });
 });
+
+Route::post('/tavsir/manual/{id}', [App\Http\Controllers\API\TavsirController::class, 'manualArsip']);
+Route::post('/tavsir/log-order/{id}', [App\Http\Controllers\API\TavsirController::class, 'logArsip']);
+
+
 Route::post('/login', [App\Http\Controllers\API\AuthController::class, 'login']);
 
 Route::prefix('travshop')->group(function () {
