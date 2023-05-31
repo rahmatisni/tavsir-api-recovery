@@ -1059,6 +1059,59 @@ class TravShopController extends Controller
                 return response()->json($res->json(), 400);
             }
 
+            if ($data->payment_method->code_name == 'pg_dd_mandiri') {
+                if (!$request->otp) {
+                    return response()->json([
+                        "message" => "The given data was invalid.",
+                        "errors" => [
+                            "otp" => [
+                                "The otp field is required."
+                            ]
+                        ]
+                    ], 422);
+                }
+                $payload = $data_payment;
+                $payload['otp'] = $request->otp;
+                $res = PgJmto::paymentDD($payload);
+                log::info($res);
+                if ($res->successful()) {
+                    $res = $res->json();
+
+                    if ($res['status'] == 'ERROR') {
+                        return response()->json([
+                            "message" => "ERROR!",
+                            "errors" => [
+                                $res
+                            ]
+                        ], 422);
+                    }
+
+                    $respon = $res['responseData'];
+                    if ($data->payment === null) {
+                        $payment = new TransPayment();
+                        $payment->data = $respon;
+                        $data->payment()->save($payment);
+                    } else {
+                        $pay = TransPayment::where('trans_order_id', $data->id)->first();
+                        $pay->data = $respon;
+                        $pay->save();
+                    }
+
+                    $data->status = TransOrder::PAYMENT_SUCCESS;
+                    if ($data->order_type == TransOrder::ORDER_TAVSIR) {
+                        $data->status = TransOrder::DONE;
+                    }
+                    $data->save();
+                    foreach ($data->detil as $key => $value) {
+                        $this->stock_service->updateStockProduct($value);
+                    }
+                    $this->trans_sharing_service->calculateSharing($data);
+                    DB::commit();
+                    return $data;
+                }
+                return response()->json($res->json(), 400);
+            }
+
             $res = PgJmto::vaStatus(
                 $data_payment['sof_code'],
                 $data_payment['bill_id'],
