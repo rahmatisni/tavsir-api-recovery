@@ -697,6 +697,63 @@ class TravShopController extends Controller
                     return response()->json($respon->json(), 400);
                     break;
 
+
+                    case 'pg_dd_mandiri':
+                        $bind = Bind::where('id', $request->card_id)->first();
+                        $bind_before = TransPayment::where('trans_order_id', $data->id)->first();
+    
+                        if (!$bind && $request->card_id) {
+                            return response()->json(['message' => 'Card Not Found'], 404);
+                        }
+                        if ($bind) {
+                            if (!$bind->is_valid) {
+                                return response()->json(['message' => 'Card Not Valid'], 404);
+                            }
+                        }
+    
+    
+                        $payment_payload = [
+                            "sof_code" => $bind->sof_code ?? $bind_before->data['sof_code'],
+                            "bind_id" => (string) ($bind?->bind_id ?? $bind_before->data['bind_id']),
+                            "refnum" => $bind->refnum ?? $bind_before->data['refnum'],
+                            "card_no" => $bind->card_no ?? $bind_before->data['card_no'],
+                            "amount" => (string) $data->total,
+                            "trxid" => $data->order_id,
+                            "remarks" => $data->tenant->name ?? 'Travoy',
+                            "phone" => $bind->phone ?? $bind_before->data['phone'],
+                            "email" => $bind->email ?? $bind_before->data['email'],
+                            "customer_name" => $bind->customer_name ?? $bind_before->data['customer_name'],
+                            "bill" => (string) $data->sub_total,
+                            "fee" => (string) $data->fee,
+                        ];
+                        $respon = PgJmto::inquiryDD($payment_payload);
+                        log::info($respon);
+                        if ($respon->successful()) {
+                            $res = $respon->json();
+                            if ($res['status'] == 'ERROR') {
+                                return response()->json($res, 400);
+                            }
+                            $res['responseData']['bind_id'] = $bind->bind_id;
+                            $respon = $res['responseData'];
+                            if ($data->payment === null) {
+                                $payment = new TransPayment();
+                                $payment->data = $respon;
+                                $payment->trans_order_id = $data->id;
+                                $payment->save();
+                            } else {
+                                $tans_payment = TransPayment::where('trans_order_id', $data->id)->first();
+                                $tans_payment->data = $respon;
+                                $tans_payment->save();
+                            }
+                            $data->service_fee = $payment_method->fee;
+                            $data->total = $data->sub_total + $data->service_fee;
+                            $data->save();
+                            DB::commit();
+                            return response()->json($res);
+                        }
+                        return response()->json($respon->json(), 400);
+                        break;
+
                 default:
                     return response()->json(['error' => $payment_method->name . ' Coming Soon'], 500);
 
