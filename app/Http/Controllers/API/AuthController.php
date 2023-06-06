@@ -156,7 +156,7 @@ class AuthController extends Controller
                 }
 
                 $count_periode = TransOperational::where('casheer_id', $user->id)
-                    ->where('tenant_id', $user->tenant_id)
+                    ->where('tenant_id', $user->tenant_id ?? $user->supertenant_id )
                     ->whereDate('start_date', '=', date('Y-m-d'))
                     ->latest()->first();
                 if ($count_periode) {
@@ -169,7 +169,7 @@ class AuthController extends Controller
                 $trans_cashbox = new TransCashbox();
                 $trans_cashbox->initial_cashbox = $request->cashbox;
 
-                $trans_op->tenant_id = $user->tenant_id;
+                $trans_op->tenant_id = $user->tenant_id ?? $user->supertenant_id;
                 $trans_op->casheer_id = $user->id;
                 $trans_op->periode = $count_periode;
                 $trans_op->start_date = Carbon::now();
