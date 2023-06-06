@@ -134,7 +134,7 @@ class AuthController extends Controller
     {
         DB::beginTransaction();
         $user = auth()->user();
-        $tenant = Tenant::find($user->tenant_id);
+        $tenant = Tenant::find($user->tenant_id ?? $user->supertenant_id);
         if (!$tenant) {
             return response()->json([
                 'status' => 'error',
