@@ -20,7 +20,8 @@ class ChatController extends Controller
      */
     public function index()
     {
-        $chats = Chat::orderBy('id')->get();
+        $chats = Chat::all();
+        dd($chats);
         return response()->json(ChatResource::collection($chats));
     }
 
