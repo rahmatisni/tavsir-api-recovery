@@ -48,7 +48,7 @@ class Product extends BaseModel
 
     public function tenant()
     {
-        return $this->belongsTo(Tenant::class, 'tenant_id')->orderByRaw('stock = 0')->orderBy('name', 'asc');
+        return $this->belongsTo(Tenant::class, 'tenant_id');
     }
 
     public function customize()
@@ -73,7 +73,7 @@ class Product extends BaseModel
 
     public function last_stock()
     {
-        return $this->trans_stock();
+        return $this->trans_stock()->orderByRaw('stock = 0')->orderBy('name', 'asc');
     }
 
     public function scopeBySupertenant($query)
