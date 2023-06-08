@@ -76,6 +76,11 @@ class Product extends BaseModel
         return $this->trans_stock();
     }
 
+    public function order() 
+    {
+        return $this->orderByRaw('stock = 0')->orderBy('name', 'asc');
+    }
+
     public function scopeBySupertenant($query)
     {
         $tenant = Tenant::where('supertenant_id',auth()->user()->supertenant_id)->pluck('id');
