@@ -69,11 +69,11 @@ class TavsirController extends Controller
     public function closeTenantSupertenant(CloseTenantSupertenantRequest $request)
     {
         $data = auth()->user()->supertenant?->tenant;
-        if(count($data) > 0){
-            if($request->tenant_id != 'all'){
-                $data = $data->where('id',$request->tenant_id);
+        if (count($data) > 0) {
+            if ($request->tenant_id != 'all') {
+                $data = $data->where('id', $request->tenant_id);
             }
-            $data->each(function($item){
+            $data->each(function ($item) {
                 $item->is_open = 0;
                 $item->save();
                 //SEND NOTIF
@@ -111,7 +111,7 @@ class TavsirController extends Controller
             if (!$data) {
                 $data = new TransOrder();
                 $data->order_type = TransOrder::POS;
-                $data->order_id = (auth()->user()->supertenant?->rest_area_id ?? '0').'-'. (auth()->user()->supertenant_id ?? '0').'-STAV-' . date('YmdHis');
+                $data->order_id = (auth()->user()->supertenant?->rest_area_id ?? '0') . '-' . (auth()->user()->supertenant_id ?? '0') . '-STAV-' . date('YmdHis');
                 $data->status = TransOrder::CART;
             }
             if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::DONE) {
@@ -205,17 +205,17 @@ class TavsirController extends Controller
             ->when($filter = request()->filter, function ($q) use ($filter) {
                 return $q->where('order_id', 'like', "%$filter%");
             })->when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
-                $q->where('tenant_id', $tenant_id);
-            })->when($order_type = request()->order_type, function ($q) use ($order_type) {
-                $q->where('order_type', $order_type);
-            })->when($sort = request()->sort, function ($q) use ($sort) {
-                if (is_array($sort)) {
-                    foreach ($sort as $val) {
-                        $jsonx = explode("&", $val);
-                        $q->orderBy($jsonx[0], $jsonx[1]);
-                    }
+            $q->where('tenant_id', $tenant_id);
+        })->when($order_type = request()->order_type, function ($q) use ($order_type) {
+            $q->where('order_type', $order_type);
+        })->when($sort = request()->sort, function ($q) use ($sort) {
+            if (is_array($sort)) {
+                foreach ($sort as $val) {
+                    $jsonx = explode("&", $val);
+                    $q->orderBy($jsonx[0], $jsonx[1]);
                 }
-            });
+            }
+        });
         if (!request()->sort) {
             $data = $data->orderBy('created_at', 'desc');
         }
@@ -233,15 +233,15 @@ class TavsirController extends Controller
     {
         $tenant_user = auth()->user()->tenant;
         $data = TransOrder::with('detil.product.tenant')
-        ->whereIn('status', [TransOrder::CART, TransOrder::PAYMENT_SUCCESS, TransOrder::DONE])
-        ->where('supertenant_id', $tenant_user->supertenant_id ?? 0)
-        ->whereHas('detil', function($q) use ($tenant_user){
-            $q->whereHas('product', function($qq) use ($tenant_user){
-                $qq->where('tenant_id', $tenant_user->id ?? 0);
-            });
-        })
-        ->orderBy('created_at','desc')
-        ->get();
+            ->whereIn('status', [TransOrder::CART, TransOrder::PAYMENT_SUCCESS, TransOrder::DONE])
+            ->where('supertenant_id', $tenant_user->supertenant_id ?? 0)
+            ->whereHas('detil', function ($q) use ($tenant_user) {
+                $q->whereHas('product', function ($qq) use ($tenant_user) {
+                    $qq->where('tenant_id', $tenant_user->id ?? 0);
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
         return response()->json(TrOrderSupertenantResource::collection($data));
     }
 
@@ -249,95 +249,90 @@ class TavsirController extends Controller
     {
         $tenant_user = auth()->user()->tenant;
         $data = TransOrder::with('detil.product.tenant')
-        ->whereIn('status', [TransOrder::CART,TransOrder::PAYMENT_SUCCESS, TransOrder::DONE])
-        ->where('supertenant_id', $tenant_user->supertenant_id ?? 0)
-        ->whereHas('detil', function($q) use ($tenant_user){
-            $q->whereHas('product', function($qq) use ($tenant_user){
-                $qq->where('tenant_id', $tenant_user->id ?? 0);
-            });
-        })
-        ->findOrfail($id);
+            ->whereIn('status', [TransOrder::CART, TransOrder::PAYMENT_SUCCESS, TransOrder::DONE])
+            ->where('supertenant_id', $tenant_user->supertenant_id ?? 0)
+            ->whereHas('detil', function ($q) use ($tenant_user) {
+                $q->whereHas('product', function ($qq) use ($tenant_user) {
+                    $qq->where('tenant_id', $tenant_user->id ?? 0);
+                });
+            })
+            ->findOrfail($id);
         return response()->json(new TrOrderSupertenantResource($data));
     }
 
     public function confirmOrderMemberSupertenant(ConfirmOrderMemberSupertenantRequest $request)
     {
         $tenant_user = auth()->user()->tenant;
-        $data = TransOrderDetil::whereHas('product', function($qq) use ($tenant_user){
+        $data = TransOrderDetil::whereHas('product', function ($qq) use ($tenant_user) {
             $qq->where('tenant_id', $tenant_user->id ?? 0);
-        })->where('id',$request->detil_id)->first();
-        if(!$data){
+        })->where('id', $request->detil_id)->first();
+        if (!$data) {
             return response()->json([
                 'message' => 'Data Not Found'
-            ],404);
+            ], 404);
         }
-        if($data->status != TransOrderDetil::STATUS_WAITING)
-        {
+        if ($data->status != TransOrderDetil::STATUS_WAITING) {
             return response()->json([
-                'message' => 'Cant change Status order not '.TransOrderDetil::STATUS_WAITING
-            ],400);
+                'message' => 'Cant change Status order not ' . TransOrderDetil::STATUS_WAITING
+            ], 400);
         }
         $data->status = $request->status;
         $data->save();
 
         return response()->json([
-            'message' => 'Succes confirm '.$data->status
+            'message' => 'Succes confirm ' . $data->status
         ]);
     }
 
     public function doneOrderMemberSupertenant($id)
     {
         $tenant_user = auth()->user()->tenant;
-        $data = TransOrderDetil::whereHas('product', function($qq) use ($tenant_user){
+        $data = TransOrderDetil::whereHas('product', function ($qq) use ($tenant_user) {
             $qq->where('tenant_id', $tenant_user->id ?? 0);
-        })->where('id',$id)->first();
-        if(!$data){
-            return response()->json(404,[
+        })->where('id', $id)->first();
+        if (!$data) {
+            return response()->json(404, [
                 'message' => 'Data Not Found'
             ]);
         }
-        if($data->status != TransOrderDetil::STATUS_READY)
-        {
+        if ($data->status != TransOrderDetil::STATUS_READY) {
             return response()->json([
-                'message' => 'Cant change Status order not '.TransOrderDetil::STATUS_READY
-            ],400);
+                'message' => 'Cant change Status order not ' . TransOrderDetil::STATUS_READY
+            ], 400);
         }
         $data->status = TransOrderDetil::STATUS_DONE;
         $data->save();
         return response()->json([
-            'message' => 'Succes order '.$data->status
+            'message' => 'Succes order ' . $data->status
         ]);
     }
 
     public function orderRefund($id)
     {
         $data = TransOrder::byRole()->findOrfail($id);
-        if($data->is_refund)
-        {
+        if ($data->is_refund) {
             return response()->json([
                 'message' => 'Order sudah di refund'
-            ],400);
+            ], 400);
         }
         $status = $data->detil->pluck('status')->toArray();
-        $result = array_intersect($status,[null,TransOrderDetil::STATUS_WAITING]);
-        if(!empty($result)){
+        $result = array_intersect($status, [null, TransOrderDetil::STATUS_WAITING]);
+        if (!empty($result)) {
             return response()->json([
                 'message' => 'Terdapat order yang belum dikonfirmasi tenant'
-            ],400);
+            ], 400);
         }
         $total_refund = 0;
-        $order_refund = $data->detil->where('status',TransOrderDetil::STATUS_CANCEL);
-        if($order_refund->count() == 0)
-        {
+        $order_refund = $data->detil->where('status', TransOrderDetil::STATUS_CANCEL);
+        if ($order_refund->count() == 0) {
             return response()->json([
                 'message' => 'Tidak ada order yang di Cancel'
-            ],400);
+            ], 400);
         }
-        foreach($order_refund as $v)
-        {
+        foreach ($order_refund as $v) {
             $total_refund += $v->total_price;
         }
-        $data->sub_total =  $data->sub_total - $total_refund;
+        $data->sub_total = $data->sub_total - $total_refund;
         $data->total = $data->sub_total + $data->fee;
         $data->is_refund = 1;
         $data->save();
@@ -347,18 +342,18 @@ class TavsirController extends Controller
             'kembalian' => $data->pay_amount - $data->total
         ];
         $data->payment->save();
-        
+
         return response()->json([
-            'message' => 'Refund sebesar '.$total_refund
+            'message' => 'Refund sebesar ' . $total_refund
         ]);
     }
 
     public function productList(Request $request)
     {
         $data = Product::byTenant()->with('tenant')->when($filter = $request->filter, function ($q) use ($filter) {
-            $q->where(function($qq) use ($filter){
+            $q->where(function ($qq) use ($filter) {
                 return $qq->where('name', 'like', "%$filter%")
-                ->orwhere('sku', 'like', "%$filter%");
+                    ->orwhere('sku', 'like', "%$filter%");
             });
         })->when($category_id = $request->category_id, function ($q) use ($category_id) {
             return $q->where('category_id', $category_id);
@@ -370,16 +365,13 @@ class TavsirController extends Controller
         } else if ($request->is_active == '1') {
             $data->where('is_active', '1');
         }
-        $data = $data
-        ->orderByRaw('stock = 0')
-        ->orderBy('name', 'asc')
-        ->get();
+        $data = $data->orderBy('name', 'asc')->orderByRaw('stock = 0')->get();
         return response()->json(TrProductResource::collection($data));
     }
 
     public function productStore(TavsirProductRequest $request)
     {
-        try {                         
+        try {
             DB::beginTransaction();
             $data = new Product();
             $data->tenant_id = auth()->user()->tenant_id;
@@ -481,8 +473,8 @@ class TavsirController extends Controller
     public function categoryDestroy(Category $category)
     {
         $data = Product::where('category_id', $category->id)->count();
-        if($data > 0){
-            return response()->json(['message'=>'Kategori tidak dapat dihapus karna sudah digunakan pada produk'], 422);
+        if ($data > 0) {
+            return response()->json(['message' => 'Kategori tidak dapat dihapus karna sudah digunakan pada produk'], 422);
         }
         $category->delete();
         return response()->json($category);
@@ -497,7 +489,7 @@ class TavsirController extends Controller
             if (!$data) {
                 $data = new TransOrder();
                 $data->order_type = TransOrder::POS;
-                $data->order_id = (auth()->user()->tenant->rest_area_id ?? '0').'-'. (auth()->user()->tenant_id ?? '0').'-POS-' . date('YmdHis');
+                $data->order_id = (auth()->user()->tenant->rest_area_id ?? '0') . '-' . (auth()->user()->tenant_id ?? '0') . '-POS-' . date('YmdHis');
                 $data->status = TransOrder::CART;
             }
             if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::DONE) {
@@ -616,15 +608,15 @@ class TavsirController extends Controller
         $data->save();
 
         $data = TransOrder::findOrfail($id);
-        if($data->order_type == TransOrder::ORDER_TRAVOY)
-        {
+        if ($data->order_type == TransOrder::ORDER_TRAVOY) {
             $product_kios = ProductKiosBank::select(
                 'kategori',
                 'sub_kategori',
                 'kode',
                 'name'
             )->get();
-            $data->map(function($i) use($product_kios) { $i->getProductKios = $product_kios ; });
+            $data->map(function ($i) use ($product_kios) {
+                $i->getProductKios = $product_kios; });
         }
         return response()->json(new TsOrderResource($data));
     }
@@ -638,8 +630,8 @@ class TavsirController extends Controller
     {
         //$reques->trans_order_Id
         // if(!$data->is_verified){
-            //cek ke PG
-            //set verified
+        //cek ke PG
+        //set verified
         // }
 
         //if(verified)
@@ -647,9 +639,8 @@ class TavsirController extends Controller
 
         $paymentMethods = PaymentMethod::all();
         foreach ($paymentMethods as $key => $value) {
-            if($value->sof_id && $request->amount)
-            {
-                $data = PgJmto::tarifFee($value->sof_id,$value->payment_method_id, $value->sub_merchant_id,$request->amount);
+            if ($value->sof_id && $request->amount) {
+                $data = PgJmto::tarifFee($value->sof_id, $value->payment_method_id, $value->sub_merchant_id, $request->amount);
                 $value->fee = $data;
             }
         }
@@ -658,7 +649,7 @@ class TavsirController extends Controller
 
     public function orderList(Request $request)
     {
-        $data = TransOrder::with('payment_method','payment','detil.product','tenant','casheer')->when($status = request()->status, function ($q) use ($status) {
+        $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer')->when($status = request()->status, function ($q) use ($status) {
             if (is_array($status)) {
                 $q->whereIn('status', $status);
             } else {
@@ -681,17 +672,17 @@ class TavsirController extends Controller
             ->when($filter = request()->filter, function ($q) use ($filter) {
                 return $q->where('order_id', 'like', "%$filter%");
             })->when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
-                $q->where('tenant_id', $tenant_id);
-            })->when($order_type = request()->order_type, function ($q) use ($order_type) {
-                $q->where('order_type', $order_type);
-            })->when($sort = request()->sort, function ($q) use ($sort) {
-                if (is_array($sort)) {
-                    foreach ($sort as $val) {
-                        $jsonx = explode("&", $val);
-                        $q->orderBy($jsonx[0], $jsonx[1]);
-                    }
+            $q->where('tenant_id', $tenant_id);
+        })->when($order_type = request()->order_type, function ($q) use ($order_type) {
+            $q->where('order_type', $order_type);
+        })->when($sort = request()->sort, function ($q) use ($sort) {
+            if (is_array($sort)) {
+                foreach ($sort as $val) {
+                    $jsonx = explode("&", $val);
+                    $q->orderBy($jsonx[0], $jsonx[1]);
                 }
-            });
+            }
+        });
         if (!request()->sort) {
             $data = $data->orderBy('created_at', 'desc');
         }
@@ -711,7 +702,7 @@ class TavsirController extends Controller
         if ($data->status == TransOrder::DONE || $data->status == TransOrder::CANCEL) {
             return response()->json(['message' => 'Order Status ' . $data->statusLabel()], 400);
         }
-        
+
         $payment_method = PaymentMethod::findOrFail($request->payment_method_id);
         try {
             DB::beginTransaction();
@@ -732,7 +723,7 @@ class TavsirController extends Controller
                     $data->payment()->save($payment);
                     $data->payment_method_id = $request->payment_method_id;
                     $data->payment_id = $payment->id;
-                    $data->pay_amount =  $request->cash;
+                    $data->pay_amount = $request->cash;
                     $data->total = $data->total;
                     $data->status = TransOrder::DONE;
                     $data->save();
@@ -815,21 +806,21 @@ class TavsirController extends Controller
                     $data->save();
                     break;
 
-                    case 'edc':
-                        $data->payment_method_id = $request->payment_method_id;
-                        $edc = new TransEdc();
-                        $edc->trans_order_id = $data->id;
-                        $edc->bank_id = $request->bank_id;
-                        $edc->card_nomor = $request->card_nomor;
-                        $edc->ref_nomor = $request->ref_nomor;
-                        $data->trans_edc()->save($edc);
-                        $data->status = TransOrder::DONE;
-                        $data->save();
-                        foreach ($data->detil as $key => $value) {
-                            $this->stock_service->updateStockProduct($value);
-                        }
-                        $this->trans_sharing_service->calculateSharing($data);
-                        break;
+                case 'edc':
+                    $data->payment_method_id = $request->payment_method_id;
+                    $edc = new TransEdc();
+                    $edc->trans_order_id = $data->id;
+                    $edc->bank_id = $request->bank_id;
+                    $edc->card_nomor = $request->card_nomor;
+                    $edc->ref_nomor = $request->ref_nomor;
+                    $data->trans_edc()->save($edc);
+                    $data->status = TransOrder::DONE;
+                    $data->save();
+                    foreach ($data->detil as $key => $value) {
+                        $this->stock_service->updateStockProduct($value);
+                    }
+                    $this->trans_sharing_service->calculateSharing($data);
+                    break;
 
                 default:
                     return response()->json(['message' => $payment_method->name . ' Coming Soon'], 500);
@@ -868,15 +859,15 @@ class TavsirController extends Controller
     public function settlement(Request $request)
     {
         $tanggal = null;
-        if($request->request){
+        if ($request->request) {
             $tanggal = Carbon::parse($request->tanggal);
         }
         TransOrder::fromTravoy()
-        ->when($tanggal, function($q) use ($tanggal){
-            $q->whereYear('created_at', '=', $tanggal->format('y'))
-            ->whereMonth('created_at', '=', $tanggal->format('m'))
-            ->get();
-        });
+            ->when($tanggal, function ($q) use ($tanggal) {
+                $q->whereYear('created_at', '=', $tanggal->format('y'))
+                    ->whereMonth('created_at', '=', $tanggal->format('m'))
+                    ->get();
+            });
     }
 
 
@@ -884,21 +875,21 @@ class TavsirController extends Controller
     {
         $data = TransOrder::fromTravoy()->findOrfail($id);
 
-        $result = DB::transaction(function()use($request,$data){
+        $result = DB::transaction(function () use ($request, $data) {
             $arsip = $data->toArray();
-            $explode = explode('-',$data->order_id);
-            $data->order_id = $explode[0].'-'.$request->phone.'-'.$request->number.'-'.$explode[3];
+            $explode = explode('-', $data->order_id);
+            $data->order_id = $explode[0] . '-' . $request->phone . '-' . $request->number . '-' . $explode[3];
             $data->save();
             $data->trans_order_arsip()->create($arsip);
             return $data;
         });
-        
+
         return response()->json($result);
     }
 
     public function logArsip($id)
     {
-        $data = TransOrderArsip::where('trans_order_id',$id)->get();
+        $data = TransOrderArsip::where('trans_order_id', $id)->get();
         return response()->json($data);
     }
 }
