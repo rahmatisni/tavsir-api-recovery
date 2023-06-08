@@ -13,6 +13,7 @@ class Chat extends BaseModel
     protected $table = 'trans_chat';
     public $timestamps = false;
     protected $fillable = [
+        'id',
         'trans_order_id',
         'chat',
     ];
