@@ -373,7 +373,8 @@ class TavsirController extends Controller
         $data = $data
         ->orderBy('updated_at', 'desc')
         ->orderBy('name')
-        ->orderBy('stock','desc')
+        ->orderByRaw('stock = 0')
+        ->orderByRaw('is_active = 0')
         ->get();
         return response()->json(TrProductResource::collection($data));
     }
