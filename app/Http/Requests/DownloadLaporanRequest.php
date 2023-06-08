@@ -31,14 +31,14 @@ class DownloadLaporanRequest extends FormRequest
             'rest_area_id' => 'nullable|exists:ref_rest_area,id',
             'business_id' => 'nullable|exists:ref_business,id',
             'payment_method_id' => 'nullable|exists:ref_payment_method,id',
-            'order_type' => 'nullable|in:' . TransOrder::ORDER_TAKE_N_GO . ',' . TransOrder::ORDER_TAVSIR
+            'order_type' => 'nullable|in:' . TransOrder::ORDER_TAKE_N_GO . ',' . TransOrder::POS
         ];
     }
 
     public function messages()
     {
         return [
-            'order_type.in' =>  'The selected :attribute is invalid. Value must be ' . TransOrder::ORDER_TAKE_N_GO . ' or ' . TransOrder::ORDER_TAVSIR,
+            'order_type.in' =>  'The selected :attribute is invalid. Value must be ' . TransOrder::ORDER_TAKE_N_GO . ' or ' . TransOrder::POS,
         ];
     }
 }

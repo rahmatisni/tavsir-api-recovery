@@ -43,7 +43,7 @@ class DashboardController extends Controller
         $all2 = $order;
         $all3 = $order;
         $takengo_count = $all2->where('order_type', TransOrder::ORDER_TAKE_N_GO)->count();
-        $tavsir = $all3->where('order_type', TransOrder::ORDER_TAVSIR)->count();
+        $tavsir = $all3->where('order_type', TransOrder::POS)->count();
 
         $rest_area = RestArea::when($rest_area_id = $request->rest_area_id, function ($q) use ($rest_area_id) {
             $q->where('id', $rest_area_id);

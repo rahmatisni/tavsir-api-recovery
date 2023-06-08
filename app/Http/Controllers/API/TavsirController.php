@@ -110,7 +110,7 @@ class TavsirController extends Controller
             DB::beginTransaction();
             if (!$data) {
                 $data = new TransOrder();
-                $data->order_type = TransOrder::ORDER_TAVSIR;
+                $data->order_type = TransOrder::POS;
                 $data->order_id = (auth()->user()->supertenant?->rest_area_id ?? '0').'-'. (auth()->user()->supertenant_id ?? '0').'-STAV-' . date('YmdHis');
                 $data->status = TransOrder::CART;
             }
@@ -497,8 +497,8 @@ class TavsirController extends Controller
             DB::beginTransaction();
             if (!$data) {
                 $data = new TransOrder();
-                $data->order_type = TransOrder::ORDER_TAVSIR;
-                $data->order_id = (auth()->user()->tenant->rest_area_id ?? '0').'-'. (auth()->user()->tenant_id ?? '0').'-TAV-' . date('YmdHis');
+                $data->order_type = TransOrder::POS;
+                $data->order_id = (auth()->user()->tenant->rest_area_id ?? '0').'-'. (auth()->user()->tenant_id ?? '0').'-POS-' . date('YmdHis');
                 $data->status = TransOrder::CART;
             }
             if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::DONE) {
@@ -577,7 +577,7 @@ class TavsirController extends Controller
     public function countCarSaved()
     {
         $data = TransOrder::byRole()
-            ->where('order_type', '=', TransOrder::ORDER_TAVSIR)
+            ->where('order_type', '=', TransOrder::POS)
             ->where('status', '=', TransOrder::CART)
             ->count();
 
@@ -588,7 +588,7 @@ class TavsirController extends Controller
     {
         $data = TransOrder::whereIn('id', $request->id)
             ->where('tenant_id', '=', auth()->user()->tenant_id)
-            ->where('order_type', '=', TransOrder::ORDER_TAVSIR)
+            ->where('order_type', '=', TransOrder::POS)
             ->where('status', '=', TransOrder::CART)
             ->get();
 

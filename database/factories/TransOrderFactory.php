@@ -17,7 +17,7 @@ class TransOrderFactory extends Factory
      */
     public function definition()
     {
-        $order_type = $this->faker->randomElement([TransOrder::ORDER_TAKE_N_GO, TransOrder::ORDER_TAVSIR]);
+        $order_type = $this->faker->randomElement([TransOrder::ORDER_TAKE_N_GO, TransOrder::POS]);
         $tenant = Tenant::get()->random();
         $status = $this->faker->randomElement([
             'CART',
@@ -50,7 +50,7 @@ class TransOrderFactory extends Factory
         $total = $sub_total + $fee + $service_fee;
         return [
             'order_type' => $order_type,
-            'order_id' => $order_type == TransOrder::ORDER_TAKE_N_GO ? 'TNG-'.$this->faker->date('YmdHis') : 'TAV-'.$this->faker->date('YmdHis'),
+            'order_id' => $order_type == TransOrder::ORDER_TAKE_N_GO ? 'TNG-'.$this->faker->date('YmdHis') : 'POS-'.$this->faker->date('YmdHis'),
             'tenant_id' => $tenant->id,
             'rest_area_id' => $tenant->rest_area_id,
             'business_id' => $tenant->business_id,

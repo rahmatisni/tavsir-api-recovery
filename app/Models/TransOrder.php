@@ -25,7 +25,7 @@ class TransOrder extends BaseModel
     public const CANCEL = 'CANCEL';
 
     public const ORDER_TAKE_N_GO = 'TAKE_N_GO';
-    public const ORDER_TAVSIR = 'ORDER_TAVSIR';
+    public const POS = 'POS';
     public const ORDER_TRAVOY = 'ORDER_TRAVOY';
 
     public const DINE_IN = 'dine_in';
@@ -103,7 +103,7 @@ class TransOrder extends BaseModel
 
     public function scopeFromTavsir($query)
     {
-        return $query->where('order_type', self::ORDER_TAVSIR);
+        return $query->where('order_type', self::POS);
     }
 
     public function scopeFromTravoy($query)
@@ -135,7 +135,7 @@ class TransOrder extends BaseModel
     {
         if ($this->order_type == self::ORDER_TAKE_N_GO) {
             return 'Take N Go';
-        } elseif ($this->order_type == self::ORDER_TAVSIR) {
+        } elseif ($this->order_type == self::POS) {
             return 'Tavsir';
         } else {
             return $this->order_type;

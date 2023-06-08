@@ -1043,7 +1043,7 @@ class TravShopController extends Controller
                     }
 
                     $data->status = TransOrder::PAYMENT_SUCCESS;
-                    if ($data->order_type == TransOrder::ORDER_TAVSIR) {
+                    if ($data->order_type == TransOrder::POS) {
                         $data->status = TransOrder::DONE;
                     }
                     $data->save();
@@ -1096,7 +1096,7 @@ class TravShopController extends Controller
                     }
 
                     $data->status = TransOrder::PAYMENT_SUCCESS;
-                    if ($data->order_type == TransOrder::ORDER_TAVSIR) {
+                    if ($data->order_type == TransOrder::POS) {
                         $data->status = TransOrder::DONE;
                     }
                     $data->save();
@@ -1130,7 +1130,7 @@ class TravShopController extends Controller
 
                 if ($res_data['pay_status'] == '1') {
                     $data->status = TransOrder::PAYMENT_SUCCESS;
-                    if ($data->order_type == TransOrder::ORDER_TAVSIR) {
+                    if ($data->order_type == TransOrder::POS) {
                         $data->status = TransOrder::DONE;
                     }
                     $data->save();
