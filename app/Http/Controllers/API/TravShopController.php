@@ -117,7 +117,7 @@ class TravShopController extends Controller
             return $q->where('tenant_id', $tenant_id);
         })->when($category_id = $request->category_id, function ($q) use ($category_id) {
             return $q->where('category_id', $category_id);
-        })->orderByRaw('is_active = 0')->orderByRaw('stock = 0')->orderBy('name', 'asc')->get();
+        })->get();
         return response()->json(TsProductResource::collection($data));
     }
 

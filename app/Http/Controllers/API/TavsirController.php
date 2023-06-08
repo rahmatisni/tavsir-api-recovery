@@ -371,7 +371,6 @@ class TavsirController extends Controller
             $data->where('is_active', '1');
         }
         $data = $data
-        ->orderBy('updated_at', 'desc')
         ->orderByRaw('stock = 0')
         ->orderBy('name', 'asc')
         ->get();
