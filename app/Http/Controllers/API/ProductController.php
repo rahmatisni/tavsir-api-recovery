@@ -25,7 +25,7 @@ class ProductController extends Controller
             $q->where('sku', 'like', '%' . $sku . '%');
         })->when($category_id = request()->category_id, function ($q) use ($category_id) {
             return $q->where('category_id', $category_id);
-        })->orderByRaw('stock = 0')->orderBy('name', 'asc')->get();
+        })->get();
         return response()->json(ProductResource::collection($data));
     }
 
