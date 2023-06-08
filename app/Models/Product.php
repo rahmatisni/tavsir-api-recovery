@@ -58,7 +58,7 @@ class Product extends BaseModel
 
     public function scopeByTenant($query)
     {
-        return $query->where('tenant_id', auth()->user()->tenant_id);
+        return $query->where('tenant_id', auth()->user()->tenant_id)->orderByRaw('is_active = 0')->orderByRaw('stock = 0')->orderBy('name', 'asc')->get();
     }
 
     public function category()
@@ -73,7 +73,7 @@ class Product extends BaseModel
 
     public function last_stock()
     {
-        return $this->trans_stock()->orderBy('name', 'asc');
+        return $this->trans_stock();
     }
 
     public function scopeBySupertenant($query)
