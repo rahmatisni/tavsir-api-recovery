@@ -365,7 +365,7 @@ class TavsirController extends Controller
         } else if ($request->is_active == '1') {
             $data->where('is_active', '1');
         }
-        $data = $data->orderBy('name', 'asc')->orderByRaw('stock = 0')->get();
+        $data = $data->orderByRaw('stock = 0')->orderBy('name', 'asc')->get();
         return response()->json(TrProductResource::collection($data));
     }
 
