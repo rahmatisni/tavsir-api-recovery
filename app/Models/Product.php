@@ -73,7 +73,7 @@ class Product extends BaseModel
 
     public function last_stock()
     {
-        return $this->trans_stock()->orderByRaw('stock = 0')->orderBy('name', 'asc');
+        return $this->trans_stock()->orderBy('name', 'asc');
     }
 
     public function scopeBySupertenant($query)
