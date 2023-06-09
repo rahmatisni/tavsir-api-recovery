@@ -21,8 +21,7 @@ class ChatController extends Controller
     public function index()
     {
         // $chats = Chat::all();
-        $chats= Chat::join('trans_order', 'trans_order_id', '=', 'trans_order.id')
-        ->select('trans_chat.*', 'trans_order.order_id as uid')->whereNot('trans_order_id.status','DONE')->orderby('id','desc')->get();
+        $chats= Chat::join('trans_order', 'trans_order_id', '=', 'trans_order.id')->select('trans_chat.*', 'trans_order.order_id as uid')->orderby('id','desc')->whereNotIn('trans_order.status',['DONE'])->get();
         return response()->json(ChatResource::collection($chats));
     }
 
