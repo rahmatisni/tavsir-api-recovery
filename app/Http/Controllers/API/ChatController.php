@@ -22,7 +22,7 @@ class ChatController extends Controller
     {
         // $chats = Chat::all();
         $chats= Chat::join('trans_order', 'trans_order_id', '=', 'trans_order.id')
-        ->select('trans_chat.*', 'trans_order.order_id as uid')->get();
+        ->select('trans_chat.*', 'trans_order.order_id as uid')->orderby('id','desc')->get();
         return response()->json(ChatResource::collection($chats));
     }
 
