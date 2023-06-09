@@ -21,7 +21,7 @@ class Chat extends BaseModel
     {
         return $this->belongsTo(TransOrder::class, 'trans_order_id', 'order_id');
     }
-
+  
     public function setChatAttribute($value)
     {
         $this->attributes['chat'] = json_encode($value);

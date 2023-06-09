@@ -16,7 +16,7 @@ class ChatResource extends JsonResource
     {
         return [
             'id' => $this->id ?? null,
-            'order_id' => $this->order_id ?? null,
+            'order_id' => $this->uid ?? null,
             'trans_order_id' => $this->trans_order_id ?? null,
             'chat' => $this->chat ?? []
         ];
