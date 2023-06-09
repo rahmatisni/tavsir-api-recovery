@@ -41,7 +41,7 @@ class TrOrderRequest extends FormRequest
                     $id = $this->product[$index]['product_id'];
                     $p = Product::find($id);
                     if($p){
-                        if ($value < $p->stock) {
+                        if ($value > $p->stock) {
                             $fail('The '.$attribute.' is invalid. stock available is '. $p->stock);
                         }
                     }
