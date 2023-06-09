@@ -28,7 +28,7 @@ class TrOrderRequest extends FormRequest
         return [
             'id' => 'nullable',
             'product' => 'required|array',
-            'product.*.product_id' => 'required|integer|exists:ref_product,id',
+            'product.*.product_id' => 'required|integer|exists:ref_product,id,is_active,1',
             'product.*.customize' => 'nullable|array',
             'product.*.pilihan' => 'nullable|array',
             'product.*.note' => 'nullable|string|max:100',
