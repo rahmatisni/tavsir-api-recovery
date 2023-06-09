@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Product;
 use Illuminate\Foundation\Http\FormRequest;
 
 class TavsirProductRequest extends FormRequest
@@ -25,7 +26,13 @@ class TavsirProductRequest extends FormRequest
     {
         return [
             'category_id' => 'required|exists:ref_category,id',
-            'sku' => 'required|string|max:5|unique:ref_product,sku,NULL,id,tenant_id,'.auth()->user()->tenant_id,
+            'sku' => ['required','string','max:255',function($attribute, $value, $fail){
+                $cek = Product::where('tenant_id',auth()->user()->tenant_id)
+                ->where('sku',$value)->exists();
+                if($cek){
+                    $fail('The '.$attribute.' has been take');
+                }
+            }],
             'name' => 'required|string|max:50',
             'photo' => 'nullable|max:5000',
             'price' => 'required|numeric|min:100|max:1000000',
