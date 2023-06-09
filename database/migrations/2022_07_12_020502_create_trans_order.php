@@ -56,6 +56,7 @@ class CreateTransOrder extends Migration
             $table->date('settlement_at')->nullable();
 
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('trans_order_detil', function (Blueprint $table) {

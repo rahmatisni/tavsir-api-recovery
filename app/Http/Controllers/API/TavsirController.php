@@ -699,6 +699,11 @@ class TavsirController extends Controller
 
     public function paymentOrder(PaymentOrderRequest $request)
     {
+        $cek_data_softdelete = TransOrder::withTrashed()->where('id',$request->id)->exists();
+        if($cek_data_softdelete){
+            return response()->json(['message' => 'Order has ben delete'], 422);
+        }
+        
         $data = TransOrder::findOrFail($request->id);
         if ($data->status == TransOrder::DONE || $data->status == TransOrder::CANCEL) {
             return response()->json(['message' => 'Order Status ' . $data->statusLabel()], 400);

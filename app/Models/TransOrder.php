@@ -6,11 +6,11 @@ use App\Models\BaseModel;
 use App\Models\KiosBank\ProductKiosBank;
 use App\Models\Traits\Uuid;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
 class TransOrder extends BaseModel
 {
-    use Uuid;
-
+    use Uuid, SoftDeletes;
+    
     protected $table = 'trans_order';
     public const CART = 'CART';
     public const PENDING = 'PENDING';
