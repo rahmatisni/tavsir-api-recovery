@@ -719,7 +719,7 @@ class TavsirController extends Controller
         $error = [];
         foreach ($data->detil as $value) {
             if($value->product){
-                if ($value->product->stock < $value->qty) {
+                if ($value->product->stock > $value->qty) {
                     $error['product'][] = $value->qty.' qty order '.$value->product->name.' is invalid. stock available is '. $value->product->stock;
                 }
 
