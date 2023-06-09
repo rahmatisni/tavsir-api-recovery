@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    dd(JatelindoService::signIn());
+    // dd(JatelindoService::signIn());
     return view('welcome');
 });
 
