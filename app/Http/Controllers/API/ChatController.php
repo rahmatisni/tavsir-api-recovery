@@ -43,7 +43,7 @@ class ChatController extends Controller
         $chat = [
             "user_type" => $request->user_type,
             'user_id' => $request->user_id,
-            'tenant_id' => $user->tenant_id ?? '',
+            'tenant_id' => $user->tenant_id ?? $request->tenant_id ?? '',
             'user_name' => $request->user_name,
             'text'  => $request->text ?? '-',
             'date' => date('Y-m-d H:i:s'),
