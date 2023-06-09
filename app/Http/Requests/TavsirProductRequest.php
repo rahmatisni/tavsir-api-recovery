@@ -25,7 +25,7 @@ class TavsirProductRequest extends FormRequest
     {
         return [
             'category_id' => 'required|exists:ref_category,id',
-            'sku' => 'required|string|max:5',
+            'sku' => 'required|string|max:5|unique:ref_product,sku,NULL,id,tenant_id,'.auth()->user()->tenant_id,
             'name' => 'required|string|max:50',
             'photo' => 'nullable|max:5000',
             'price' => 'required|numeric|min:100|max:1000000',
