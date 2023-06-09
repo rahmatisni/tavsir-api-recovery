@@ -703,7 +703,7 @@ class TavsirController extends Controller
         if($cek_data_softdelete){
             return response()->json(['message' => 'Order has ben delete'], 422);
         }
-        
+
         $data = TransOrder::findOrFail($request->id);
         if ($data->status == TransOrder::DONE || $data->status == TransOrder::CANCEL) {
             return response()->json(['message' => 'Order Status ' . $data->statusLabel()], 400);
@@ -721,6 +721,10 @@ class TavsirController extends Controller
             if($value->product){
                 if ($value->product->stock < $value->qty) {
                     $error['product'][] = $value->qty.' qty order '.$value->product->name.' is invalid. stock available is '. $value->product->stock;
+                }
+
+                if (!$value->product->is_active) {
+                    $error['product'][] = $value->product->name.' is not active';
                 }
             }else{
                 $error[]['Product '] = 'Product not availabel';
