@@ -548,6 +548,7 @@ class TavsirController extends Controller
 
             $data->save();
             $data->detil()->saveMany($order_detil_many);
+            dd('cek');
 
             DB::commit();
             return response()->json(TransOrder::with('detil')->find($data->id));
