@@ -734,7 +734,6 @@ class TavsirController extends Controller
         {
             throw ValidationException::withMessages($error);
         }
-        dd('cek');
         $payment_method = PaymentMethod::findOrFail($request->payment_method_id);
         try {
             DB::beginTransaction();
