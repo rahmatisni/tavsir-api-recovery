@@ -48,6 +48,7 @@ use App\Services\TransSharingServices;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class TavsirController extends Controller
 {
@@ -703,6 +704,29 @@ class TavsirController extends Controller
             return response()->json(['message' => 'Order Status ' . $data->statusLabel()], 400);
         }
 
+        //Cek Order detail kosong
+        if(!$data->detil->count() == 0 && $data->order_type == TransOrder::ORDER_TRAVOY)
+        {
+            return response()->json(['message' => 'Order not valid, detail is Empty '], 400);
+        }
+
+        //Cek stok
+        $error = [];
+        foreach ($data->detil as $value) {
+            if($value->product){
+                if ($value->product->stock < $value->qty) {
+                    $error['product'][] = $value->qty.' qty order '.$value->product->name.' is invalid. stock available is '. $value->product->stock;
+                }
+            }else{
+                $error[]['Product '] = 'Product not availabel';
+            }
+        }
+
+        if(count($error) > 0)
+        {
+            throw ValidationException::withMessages($error);
+        }
+        
         $payment_method = PaymentMethod::findOrFail($request->payment_method_id);
         try {
             DB::beginTransaction();
