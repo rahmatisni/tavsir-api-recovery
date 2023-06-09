@@ -119,16 +119,14 @@ class AuthController extends Controller
     public function checkOpenCashier()
     {
         $user = auth()->user();
-        $cek = TransOperational::where('casheer_id', $user->id)
-            ->where('tenant_id', $user->tenant_id)
+        $cek = TransOperational::where('tenant_id', $user->tenant_id)
             ->whereNull('end_date')
-            ->get();
-        if ($cek->count() > 0) {
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Status chasier is open'
-            ], 200);
-        }
+            ->exists();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $cek
+        ]);
     }
     public function openCashier(PinRequest $request)
     {
