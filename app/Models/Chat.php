@@ -19,7 +19,7 @@ class Chat extends BaseModel
 
     public function trans_order()
     {
-        return $this->belongsTo(TransOrder::class, 'trans_order_id');
+        return $this->belongsTo(TransOrder::class, 'trans_order_id', 'order_id');
     }
 
     public function setChatAttribute($value)
