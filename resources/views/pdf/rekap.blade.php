@@ -34,7 +34,7 @@
         <tbody style="font-weight: bold;">
             <tr>
                 <td>
-                    <img style="width: 200px;" src="{{ public_path().'/img/tavsir-logo.png' }}" alt="logo">
+                    <img style="width: 200px;" src="{{ url('/img/getpay-logo.png') }}" alt="logo">
                 </td>
             </tr>
             <br>
