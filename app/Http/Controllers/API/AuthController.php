@@ -119,7 +119,7 @@ class AuthController extends Controller
     public function checkOpenCashier()
     {
         $user = auth()->user();
-        $cek = TransOperational::where('tenant_id', $user->tenant_id)
+        $cek = TransOperational::where('tenant_id', $user->tenant_id)->where('user_id', $user->id)
             ->whereNull('end_date')
             ->exists();
 
