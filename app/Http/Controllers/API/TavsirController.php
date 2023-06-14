@@ -643,6 +643,12 @@ class TavsirController extends Controller
                 $data = PgJmto::tarifFee($value->sof_id, $value->payment_method_id, $value->sub_merchant_id, $request->amount);
                 $value->fee = $data;
             }
+            if ($value->sof_id == (0||null)) {
+                $value->status = false;
+            }
+            if ($value->sof_id != 0) {
+                $value->status = true;
+            }
         }
         return response()->json($paymentMethods);
     }
