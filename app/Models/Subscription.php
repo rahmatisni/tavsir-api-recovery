@@ -7,17 +7,24 @@ use App\Models\BaseModel;
 class Subscription extends BaseModel
 {
     protected $table = 'trans_subscription';
-    public const ACTIVE = 'ACTIVE';
-    public const INACTIVE = 'INACTIVE';
+    public const AKTIF = 'AKTIF';
+    public const TIDAK_AKTIF = 'TIDAK AKTIF';
+
+    public const PKS = 'PKS';
+    public const BUKTI_BAYAR = 'BUKTI_BAYAR';
 
     public const JMRB = 'JMRB';
     public const OWNER = 'OWNER';
+
+    public const TERKONFIRMASI = 'TERKONFIRMASI';
+    public const MENUNGGU_KONFIRMASI = 'MENUNGGU KONFIRMASI';
 
     protected $fillable = [
         'type',
         'super_merchant_id',
         'masa_aktif',
         'limit_cashier',
+        'document_type',
         'file',
     ];
 
@@ -34,7 +41,7 @@ class Subscription extends BaseModel
     {
         $file = request()->file('file');
         if (is_file($file)) {
-            $file = request()->file('file')->store('images');
+            $file = request()->file('file')->store('public/'.request()->document_type);
             if (file_exists($this->file)) {
                 unlink($this->file);
             }
@@ -53,12 +60,12 @@ class Subscription extends BaseModel
         return $remaining < 0 ? 0 : $remaining;
     }
 
-    public function getStatusAttribute()
+    public function getStatusAktivasiAttribute()
     {
         if ($this->remaining > 0) {
-            return self::ACTIVE;
+            return self::AKTIF;
         } else {
-            return self::INACTIVE;
+            return self::TIDAK_AKTIF;
         }
     }
 }

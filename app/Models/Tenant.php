@@ -119,6 +119,11 @@ class Tenant extends BaseModel
         return $this->belongsTo(CategoryTenant::class, 'category_tenant_id');
     }
 
+    public function cashear()
+    {
+        return $this->hasMany(User::class, 'tenant_id')->where('role',User::CASHIER);
+    }
+
 
     //Product
     public function category()

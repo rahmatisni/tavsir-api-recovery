@@ -37,6 +37,7 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('rest-area', App\Http\Controllers\API\RestAreaController::class);
     Route::apiResource('business', App\Http\Controllers\API\BusinessController::class);
     Route::apiResource('tenant', App\Http\Controllers\API\TenantController::class);
+    Route::apiResource('supertenant', App\Http\Controllers\API\SupertenantController::class);
 
     Route::prefix('category-tenant')->controller(CategoryTenantController::class)->group(function(){
         Route::get('/','index');
@@ -142,7 +143,14 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/invoice/{id}', [App\Http\Controllers\API\InvoiceController::class, 'show']);
         Route::post('/invoice', [App\Http\Controllers\API\InvoiceController::class, 'store']);
         Route::post('/invoice-paid/{id}', [App\Http\Controllers\API\InvoiceController::class, 'paid']);
-        Route::apiResource('subscription', App\Http\Controllers\API\SubscriptionController::class);
+
+        Route::get('/subscription', [App\Http\Controllers\API\SubscriptionController::class, 'index']);
+        Route::get('/subscription/{id}', [App\Http\Controllers\API\SubscriptionController::class, 'show']);
+        Route::post('/subscription', [App\Http\Controllers\API\SubscriptionController::class, 'store']);
+        Route::post('/subscription/{id}/extend', [App\Http\Controllers\API\SubscriptionController::class, 'extend']);
+        Route::get('/subscription/{id}/price', [App\Http\Controllers\API\SubscriptionController::class, 'price']);
+        Route::post('/subscription/{id}/document', [App\Http\Controllers\API\SubscriptionController::class, 'document']);
+
         Route::prefix('stock')->group(function () {
             Route::get('/kartu-stock', [App\Http\Controllers\API\StockController::class, 'indexKartu']);
             Route::get('/kartu-stock/{id}', [App\Http\Controllers\API\StockController::class, 'kartuShow']);

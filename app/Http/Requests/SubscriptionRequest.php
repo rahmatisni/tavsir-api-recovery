@@ -26,7 +26,9 @@ class SubscriptionRequest extends FormRequest
     public function rules()
     {
         $rule['type'] = 'required|in:' . Subscription::JMRB . ',' . Subscription::OWNER;
+        $rule['document_type'] = 'required|in:' . Subscription::PKS . ',' . Subscription::BUKTI_BAYAR;
         $rule['aktif_awal'] = 'required|date_format:Y-m-d';
+        $rule['document_type'] = 'required|in:' . Subscription::PKS . ',' . Subscription::BUKTI_BAYAR;
         $rule['file'] = 'required|max:5000';
         if ($this->type == Subscription::JMRB) {
             $rule['pic'] = 'required|string|max:255';
@@ -46,19 +48,11 @@ class SubscriptionRequest extends FormRequest
                         if (!$sub) {
                             return true;
                         }
-                        $sub_aktif = $sub->created_at->addMonths($this->masa_aktif);
-                        if ($sub_aktif >= now()) {
-                            $remaining_active = $sub->created_at->addMonths($this->masa_aktif)->diffInDays(now());
-                            if ($remaining_active > 0) {
-                                $this->aktif_awal = $sub_aktif;
-                            }
-                            // $fail('Subscription is still ' . $remaining_active . ' day');
-                        }
+                        $fail('Subscription already create');
                     }
                 },
             ];
             $rule['masa_aktif'] = 'required_if:type,' . Subscription::OWNER . '.|integer|min:1|max:12';
-            $rule['limit_cashier'] = 'required|integer|min:1';
         }
 
         return $rule;
@@ -68,6 +62,7 @@ class SubscriptionRequest extends FormRequest
     {
         return [
             'type.in' => 'Type must be ' . Subscription::JMRB . ' or ' . Subscription::OWNER,
+            'document_type.in' => 'Type must be ' . Subscription::PKS . ' or ' . Subscription::BUKTI_BAYAR,
         ];
     }
 }

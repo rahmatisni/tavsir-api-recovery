@@ -28,6 +28,6 @@ class DatabaseSeeder extends Seeder
         $this->call(PaymentMethodSeeder::class);
         $this->call(VoucherSeeder::class);
         $this->call(ProductKiosBankSeeder::class);
-        // $this->call(TransOrderSeeder::class);
+        $this->call(PriceSubscriptionSeeder::class);
     }
 }

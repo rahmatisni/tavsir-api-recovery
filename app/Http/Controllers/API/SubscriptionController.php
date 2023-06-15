@@ -5,12 +5,17 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\Business;
 use App\Http\Requests\BusinessRequest;
+use App\Http\Requests\DocumentSubscriptionRequest;
+use App\Http\Requests\ExtendRequest;
 use App\Http\Requests\SubscriptionChangeStatusRequest;
 use App\Http\Requests\SubscriptionRequest;
+use App\Http\Resources\SubscriptionCalculationResource;
 use App\Http\Resources\SubscriptionDetilResource;
 use App\Http\Resources\SubscriptionResource;
 use App\Models\Jmrb;
+use App\Models\PriceSubscription;
 use App\Models\Subscription;
+use Clockwork\Request\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -23,8 +28,8 @@ class SubscriptionController extends Controller
         })->get();
         $record = [
             'total_data' => $data->count(),
-            'total_active' => $data->where('status', Subscription::ACTIVE)->count(),
-            'total_inactive' => $data->where('status', Subscription::INACTIVE)->count(),
+            'total_active' => $data->where('status', Subscription::AKTIF)->count(),
+            'total_inactive' => $data->where('status', Subscription::TIDAK_AKTIF)->count(),
             'detil' => SubscriptionResource::collection($data)
         ];
         return response()->json($record);
@@ -53,7 +58,9 @@ class SubscriptionController extends Controller
             if ($request->type == Subscription::OWNER) {
                 $data->super_merchant_id = $request->business_id;
                 $data->masa_aktif = $request->masa_aktif;
-                $data->limit_cashier = $request->limit_cashier;
+                $data->limit_cashier = 1;
+                $data->limit_tenant = 1;
+                $data->document_type = $request->document_type;
                 $data->created_at = $request->aktif_awal;
             }
             $data->save();
@@ -71,18 +78,38 @@ class SubscriptionController extends Controller
         return response()->json(new SubscriptionDetilResource($data));
     }
 
-    public function update(SubscriptionRequest $request, $id)
+    public function extend($id, ExtendRequest $request)
     {
         $data = Subscription::findOrfail($id);
-        $data->fill($request->all());
-        $data->save();
-        return response()->json($data);
+        $new_subscription = new Subscription();
+        $new_subscription->id_activation = Str::lower(Str::random(10));
+        $new_subscription->type = $data->type;
+        $new_subscription->super_merchant_id = $data->super_merchant_id;
+        $new_subscription->limit_tenant = $request->limit_tenant;
+        $new_subscription->limit_cashier = $request->limit_cashier;
+        $new_subscription->masa_aktif = $request->masa_aktif;
+        $new_subscription->created_at = $request->aktif_awal;
+        $new_subscription->save();
+
+        return response()->json(new SubscriptionDetilResource($new_subscription));
     }
 
-    public function destroy($id)
+    public function price($id)
     {
         $data = Subscription::findOrfail($id);
-        $data->delete();
-        return response()->noContent();
+        $price = PriceSubscription::first();
+        $resource = (new SubscriptionCalculationResource($data))->price($price);
+        return response()->json($resource);
+    }
+
+    public function document($id, DocumentSubscriptionRequest $request)
+    {
+        $data = Subscription::findOrfail($id);
+        $data->file = $request->file;
+        $data->document_type = $request->document_type;
+        $data->detail_aktivasi = Subscription::MENUNGGU_KONFIRMASI;
+        $data->save();
+
+        return response()->json(new SubscriptionDetilResource($data));
     }
 }

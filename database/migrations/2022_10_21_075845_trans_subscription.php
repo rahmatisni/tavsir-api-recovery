@@ -18,9 +18,16 @@ class TransSubscription extends Migration
             $table->string('id_activation');
             $table->string('type');
             $table->integer('super_merchant_id')->unsigned();
-            $table->integer('masa_aktif')->unsigned()->nullable();
+            $table->integer('masa_aktif')->unsigned();
             $table->integer('limit_cashier')->unsigned();
+            $table->integer('limit_tenant')->unsigned();
+            $table->string('document_type')->nullable();
             $table->string('file')->nullable();
+
+            $table->integer('price_tenant')->unsigned()->nullable();
+            $table->integer('price_cashier')->unsigned()->nullable();
+            $table->integer('price_total')->unsigned()->nullable();
+            $table->string('detail_aktivasi')->nullable();
 
             $table->timestamps();
         });
