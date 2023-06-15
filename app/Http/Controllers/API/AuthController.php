@@ -234,7 +234,7 @@ class AuthController extends Controller
                 $total_order = $total_order->where('payment_method.code_name', 'cash')->sum('sub_total');
 
                 $trans_cashbox->rp_cash = $total_order;
-                $trans_cashbox->different_cashbox = ($request->cashbox - $total_order ) + $request->pengeluaran_cashbox;
+                $trans_cashbox->different_cashbox = $total_order - $request->pengeluaran_cashbox;
                 $trans_cashbox->input_cashbox_date = Carbon::now();
 
                 $rp_va_bri = $data_all;

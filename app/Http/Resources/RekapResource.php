@@ -21,6 +21,7 @@ class RekapResource extends JsonResource
             'start_date' => (string) $this->start_date,
             'metode_tunai' => [
                 'total_tunai' => $this->trans_cashbox->rp_cash ?? 0,
+                'cashbox' => $this->trans_cashbox->cashbox ?? 0,
                 'uang_kembalian' => $this->trans_cashbox->initial_cashbox ?? 0,
                 'selisih' => $this->trans_cashbox->different_cashbox ?? 0,
                 'nominal_koreksi' => $this->trans_cashbox->pengeluaran_cashbox ?? 0,
