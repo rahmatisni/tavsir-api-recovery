@@ -58,9 +58,30 @@ class TsOrderResource extends JsonResource
                 // dd($temps);
                 foreach($temp as $key => $val) {
                     $key = ucwords(preg_replace("/(?<=[a-zA-Z])(?=[A-Z])/", "_", $key));
-                   
+                    switch ($key) {
+                        case ($key == "A_B"):
+                            $key = 'Admin_Bank';
+                            break;
+                        case ($key == "D_Y"):
+                                $key = 'Daya';
+                            break;
+                        case ($key == "I_D"):
+                                $key = 'ID_Pelanggan';
+                            break;
+                        case ($key == "M_N"):
+                                $key = 'Nomor_meter';
+                            break;
+                        case ($key == "N_M"):
+                                $key = 'Nama';
+                            break;
+                        case ($key == "T_F"):
+                                $key = 'Tarif';
+                            break;
+                        default:
+                            $key = $key;
+                        }
                     if (in_array($key, $param))
-                    {
+                    { 
                         // $temps['data'][$key] = 1;
                         $temps['data'][$key] = rupiah((int)$val);
 
