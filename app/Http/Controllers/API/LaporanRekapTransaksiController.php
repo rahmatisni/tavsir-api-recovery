@@ -83,7 +83,7 @@ class LaporanRekapTransaksiController extends Controller
                 $q->where('order_type', $order_type);
             })
             ->when($order_id = request('order_id'), function ($q) use ($order_id) {
-                $q->where('order_id', $order_id);
+                $q->where('order_id', 'like', $order_id);
             })
             ->orderBy('created_at', 'desc')->get();
 
