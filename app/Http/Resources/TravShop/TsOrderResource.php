@@ -20,6 +20,15 @@ function rupiah($angka)
 
 }
 
+function cleansings($angka)
+{
+
+    $variable = $str = ltrim($angka, "0"); 
+    ;
+    return $variable;
+
+}
+
 class TsOrderResource extends JsonResource
 {
     /**
@@ -53,21 +62,22 @@ class TsOrderResource extends JsonResource
                 // $slice = ['harga_kios'];
                 $param = ['Admin_Bank', 'Total', 'Jumlah_Pembayaran'];
                 $slice = ['Harga_kios'];
+                $cleansing = ['Daya'];
                 // dd($temps);
                 foreach ($temp as $key => $val) {
                     $key = ucwords(preg_replace("/(?<=[a-zA-Z])(?=[A-Z])/", "_", $key));
                     switch ($key) {
                         case ($key == "A_B"):
-                            $key = 'AdminBank';
+                            $key = 'Admin_Bank';
                             break;
                         case ($key == "D_Y"):
                             $key = 'Daya';
                             break;
                         case ($key == "I_D"):
-                            $key = 'IDPelanggan';
+                            $key = 'ID_Pelanggan';
                             break;
                         case ($key == "M_N"):
-                            $key = 'NomorMeter';
+                            $key = 'Nomor_Meter';
                             break;
                         case ($key == "N_M"):
                             $key = 'Nama';
@@ -79,16 +89,16 @@ class TsOrderResource extends JsonResource
                             $key = 'Angsuran';
                             break;
                         case ($key == "I_F"):
-                            $key = 'InfoText';
+                            $key = 'Info_Text';
                             break;
                         case ($key == "K_H"):
-                            $key = 'JumlahKwh';
+                            $key = 'Jumlah_KWH';
                             break;
                         case ($key == "M_T"):
                             $key = 'Materai';
                             break;
                         case ($key == "P_B"):
-                            $key = 'PembelianToken';
+                            $key = 'Pembelian_Token';
                             break;
                         case ($key == "P_J"):
                             $key = 'PPJ';
@@ -97,16 +107,16 @@ class TsOrderResource extends JsonResource
                             $key = 'PPN';
                             break;
                         case ($key == "R_F"):
-                            $key = 'NoRef';
+                            $key = 'No_Ref';
                             break;
                         case ($key == "R_S"):
-                            $key = 'RpStroom/token';
+                            $key = 'Rp_Stroom/token';
                             break;
                         case ($key == "T_K"):
                             $key = 'Token';
                             break;
                         case ($key == "T_T"):
-                            $key = 'TotalPembayaran	';
+                            $key = 'Total_Pembayaran';
                             break;
                         default:
                             $key = $key;
@@ -118,7 +128,11 @@ class TsOrderResource extends JsonResource
                     } elseif (in_array($key, $slice)) {
                         // $temps['data'][$key] =1;
 
-                    } else {
+                    } 
+                 elseif (in_array($key, $cleansing)) {
+                    $temps['data'][$key] = cleansings($val);
+                }
+                    else {
                         // if ( $temps['data'][$key] == 'Harga_kios'){
                         //     $temps['data'][$key] = 2;
                         // }
