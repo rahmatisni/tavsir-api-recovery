@@ -25,6 +25,8 @@ class StockController extends Controller
     {
         $data = Product::byTenant()->when($name = request()->name, function ($q) use ($name) {
             $q->where('name', 'like', '%' . $name . '%');
+        })->when($sku = request()->sku, function ($q) use ($sku) {
+            $q->where('sku', 'like', '%' . $sku . '%');
         })->when($category_id = request()->category_id, function ($q) use ($category_id) {
             return $q->where('category_id', $category_id);
         });

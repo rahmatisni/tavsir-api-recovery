@@ -69,7 +69,7 @@ class TsOrderResource extends JsonResource
                                 $key = 'ID_Pelanggan';
                             break;
                         case ($key == "M_N"):
-                                $key = 'Nomor_meter';
+                                $key = 'Nomor_Meter';
                             break;
                         case ($key == "N_M"):
                                 $key = 'Nama';
