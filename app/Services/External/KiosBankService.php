@@ -347,15 +347,17 @@ class KiosBankService
         if (in_array($order[0], $adminparam)) {
 
             $payload = [
-                'total' => $total,
+                'total' => sprintf("%012d", $total),
                 'admin' => $admin,
-                'tagihan' => $total-$admin,
+                'tagihan' => sprintf("%012d", $total-$admin),
                 'sessionID' => $this->getSeesionId(),
                 'productID' => $order[0] ?? '',
                 'referenceID' => $order[2] ?? '',
                 'merchantID' => env('KIOSBANK_MERCHANT_ID'),
                 'customerID' => $order[1] ?? ''
             ];
+
+            // dd($payload);
         } else {
             $payload = [
                 'total' => $total,
