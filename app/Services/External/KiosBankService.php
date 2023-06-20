@@ -340,7 +340,7 @@ class KiosBankService
     public function dualPayment($sub_total, $order_id, $tagihan, $admin, $total)
     {
 
-        $adminparam = ['753001', '753011', '753021', '753031', '753041', '753051', '753061', '753071', '753081', '753091'];
+        $adminparam = ['753001', '753011', '753021', '753031', '753041', '753051', '753061', '753071', '753081', '753091', '100302'];
 
         $order = explode('-', $order_id);
 
