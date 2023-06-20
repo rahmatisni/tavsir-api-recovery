@@ -137,7 +137,7 @@ class SubscriptionController extends Controller
 
     public function aktivasi($id)
     {
-        $data = Subscription::byOwner()->whereNull('start_date')->where('id',$id)->first();
+        $data = Subscription::whereNull('start_date')->where('id',$id)->first();
         if(!$data){
             return  response()->json(['message' => 'Subscription not found'], 422);
         }
