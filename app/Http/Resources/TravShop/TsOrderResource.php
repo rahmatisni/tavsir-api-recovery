@@ -60,16 +60,16 @@ class TsOrderResource extends JsonResource
                     $key = ucwords(preg_replace("/(?<=[a-zA-Z])(?=[A-Z])/", "_", $key));
                     switch ($key) {
                         case ($key == "A_B"):
-                            $key = 'Admin_Bank';
+                            $key = 'AdminBank';
                             break;
                         case ($key == "D_Y"):
                                 $key = 'Daya';
                             break;
                         case ($key == "I_D"):
-                                $key = 'ID_Pelanggan';
+                                $key = 'IDPelanggan';
                             break;
                         case ($key == "M_N"):
-                                $key = 'Nomor_Meter';
+                                $key = 'NomorMeter';
                             break;
                         case ($key == "N_M"):
                                 $key = 'Nama';
