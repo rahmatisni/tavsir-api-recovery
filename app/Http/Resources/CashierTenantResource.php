@@ -20,6 +20,7 @@ class CashierTenantResource extends JsonResource
             'id' => $this->id,
             'role' => $this->role,
             'name' => $this->name,
+            'email' => $this->email,
             'is_subscription' => $this->is_subscription,
         ];
         return $data;

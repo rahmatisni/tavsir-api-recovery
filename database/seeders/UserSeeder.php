@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\RestArea;
 use App\Models\Supertenant;
 use App\Models\Tenant;
 use App\Models\User;
@@ -41,6 +42,18 @@ class UserSeeder extends Seeder
                 'tenant_id' => Tenant::first()->id,
                 'rest_area_id' => 0,
                 'paystation_id' => 1,
+            ],
+            [
+                'name' => 'User Owner 1',
+                'email' => 'owner_1@email.com',
+                'role' => User::OWNER,
+                'password' => bcrypt('password'),
+                'business_id' => 1,
+                'merchant_id' => 1,
+                'sub_merchant_id' => 1,
+                'tenant_id' => null,
+                'rest_area_id' => RestArea::first()->id,
+                'paystation_id' => null,
             ],
             [
                 'name' => 'User Tenant 1',

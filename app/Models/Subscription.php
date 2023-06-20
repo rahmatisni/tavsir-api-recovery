@@ -85,13 +85,13 @@ class Subscription extends BaseModel
         return $query->where('super_merchant_id', $business_id ?? auth()->user()->business_id);
     }
 
-    public function scopelimitTenantCount($query)
+    public function scopelimitTenant($query)
     {
-        return $query->where('status_aktivasi', Subscription::AKTIF)->sum('limit_tenant');
+        return $query->sum('limit_tenant');
     }
 
-    public function scopelimitCashierCount($query)
+    public function scopelimitKasir($query)
     {
-        return $query->where('status_aktivasi', Subscription::AKTIF)->sum('limit_cashier');
+        return $query->sum('limit_cashier');
     }
 }

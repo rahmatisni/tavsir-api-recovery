@@ -14,6 +14,7 @@ class User extends Authenticatable
     use HasFactory;
     use Notifiable;
 
+    public const SUPERADMIN = 'SUPERADMIN';
     public const ADMIN = 'ADMIN';
     public const USER = 'USER';
     public const PAYSTATION = 'PAYSTATION';
