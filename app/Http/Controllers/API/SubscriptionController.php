@@ -142,6 +142,7 @@ class SubscriptionController extends Controller
             return  response()->json(['message' => 'Subscription not found'], 422);
         }
         $data->start_date = Carbon::now();
+        $data->detail_aktivasi = Subscription::TERKONFIRMASI;
         $data->save();
         return response()->json(['message' => 'Subscription aktif '.$data->aktif_awal]);
     }
