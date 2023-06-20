@@ -30,6 +30,7 @@ class CreateUsersTable extends Migration
             $table->string('pin')->nullable();
             $table->string('reset_pin')->nullable();
             $table->string('fcm_token',255)->nullable();
+            $table->boolean('is_subscription')->default(0);
             $table->string('status')->default('ACTIVE')->comment('ACTIVE, INACTIVE');
             $table->rememberToken();
             $table->timestamps();

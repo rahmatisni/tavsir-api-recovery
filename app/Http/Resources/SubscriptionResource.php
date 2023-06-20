@@ -36,7 +36,9 @@ class SubscriptionResource extends JsonResource
             'start_date' => (string) $this->created_at,
             'end_date' => (string) $this->end_date,
             'remaining' => $this->remaining,
-            'status' => $this->status,
+            'document_type' => $this->document_type,
+            'status_aktivasi' => $this->status_aktivasi,
+            'detail_aktivasi' => $this->detail_aktivasi,
         ];
         return $data;
     }
