@@ -36,7 +36,8 @@ class Tenant extends BaseModel
         'in_takengo',
         'created_by',
         'created_at',
-        'updated_at'
+        'updated_at',
+        'is_subscription'
     ];
 
     public function setPhotoUrlAttribute($value)
@@ -129,5 +130,10 @@ class Tenant extends BaseModel
     public function category()
     {
         return $this->hasMany(Category::class, 'tenant_id');
+    }
+
+    public function scopeByOwner($query)
+    {
+        return $query->where('business_id', auth()->user()->business_id);
     }
 }

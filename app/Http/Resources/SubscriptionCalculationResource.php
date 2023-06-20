@@ -34,7 +34,6 @@ class SubscriptionCalculationResource extends JsonResource
             'price_cashear' => $this->price->price_cashier,
             'total_price_cashear' => $this->limit_cashier * $this->price->price_cashier,
             'masa_aktif' => $this->masa_aktif,
-            'end_date' => (string) $this->end_date,
             'detail_aktivasi' => $this->detail_aktivasi,
         ];
         return $data;

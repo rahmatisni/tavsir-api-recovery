@@ -24,18 +24,9 @@ class ExtendRequest extends FormRequest
      */
     public function rules()
     {
-        // $rule['document_type'] = 'required|in:' . Subscription::PKS . ',' . Subscription::BUKTI_BAYAR;
-        $rule['aktif_awal'] = 'required|date_format:Y-m-d';
         $rule['limit_tenant'] = 'min:1';
         $rule['limit_cashier'] = 'min:1';
 
         return $rule;
     }
-
-    // public function messages()
-    // {
-    //     return [
-    //         'document_type.in' => 'Type must be ' . Subscription::PKS . ' or ' . Subscription::BUKTI_BAYAR,
-    //     ];
-    // }
 }

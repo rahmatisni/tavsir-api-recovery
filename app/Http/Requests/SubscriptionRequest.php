@@ -27,8 +27,6 @@ class SubscriptionRequest extends FormRequest
     {
         $rule['type'] = 'required|in:' . Subscription::JMRB . ',' . Subscription::OWNER;
         $rule['document_type'] = 'required|in:' . Subscription::PKS . ',' . Subscription::BUKTI_BAYAR;
-        $rule['aktif_awal'] = 'required|date_format:Y-m-d';
-        $rule['document_type'] = 'required|in:' . Subscription::PKS . ',' . Subscription::BUKTI_BAYAR;
         $rule['file'] = 'required|max:5000';
         if ($this->type == Subscription::JMRB) {
             $rule['pic'] = 'required|string|max:255';

@@ -3,15 +3,17 @@
 namespace App\Models;
 
 use App\Models\BaseModel;
+use Carbon\Carbon;
 
 class Subscription extends BaseModel
 {
     protected $table = 'trans_subscription';
     public const AKTIF = 'AKTIF';
     public const TIDAK_AKTIF = 'TIDAK AKTIF';
+    public const WAITING_ACTIVATION = 'WAITING AKTIVASI';
 
     public const PKS = 'PKS';
-    public const BUKTI_BAYAR = 'BUKTI_BAYAR';
+    public const BUKTI_BAYAR = 'BUKTI BAYAR';
 
     public const JMRB = 'JMRB';
     public const OWNER = 'OWNER';
@@ -26,6 +28,10 @@ class Subscription extends BaseModel
         'limit_cashier',
         'document_type',
         'file',
+    ];
+
+    protected $date = [
+        'start_date'
     ];
 
     public function superMerchant()
@@ -51,21 +57,41 @@ class Subscription extends BaseModel
 
     public function getEndDateAttribute()
     {
-        return $this->created_at->addMonths($this->masa_aktif);
+        return $this->start_date ? Carbon::parse($this->start_date)->addMonths($this->masa_aktif) : null;
     }
 
     public function getRemainingAttribute()
     {
-        $remaining = now()->diffInDays($this->created_at->addMonths($this->masa_aktif), false);
+        $remaining = $this->end_date ? now()->diffInDays($this->end_date, false) : 0;
         return $remaining < 0 ? 0 : $remaining;
     }
 
     public function getStatusAktivasiAttribute()
     {
-        if ($this->remaining > 0) {
-            return self::AKTIF;
-        } else {
-            return self::TIDAK_AKTIF;
+        if($this->end_date){
+            if ($this->remaining > 0) {
+                return self::AKTIF;
+            } else {
+                return self::TIDAK_AKTIF;
+            }
+        }else{
+            return self::WAITING_ACTIVATION;
         }
+    }
+
+
+    public function scopeByOwner($query, $business_id = null)
+    {
+        return $query->where('super_merchant_id', $business_id ?? auth()->user()->business_id);
+    }
+
+    public function scopelimitTenantCount($query)
+    {
+        return $query->where('status_aktivasi', Subscription::AKTIF)->sum('limit_tenant');
+    }
+
+    public function scopelimitCashierCount($query)
+    {
+        return $query->where('status_aktivasi', Subscription::AKTIF)->sum('limit_cashier');
     }
 }
