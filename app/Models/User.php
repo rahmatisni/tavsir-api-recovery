@@ -16,6 +16,7 @@ class User extends Authenticatable
 
     public const SUPERADMIN = 'SUPERADMIN';
     public const ADMIN = 'ADMIN';
+    public const AREA = 'AREA';
     public const USER = 'USER';
     public const PAYSTATION = 'PAYSTATION';
     public const JMRB = 'JMRB';
