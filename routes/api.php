@@ -144,6 +144,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/invoice', [App\Http\Controllers\API\InvoiceController::class, 'store']);
         Route::post('/invoice-paid/{id}', [App\Http\Controllers\API\InvoiceController::class, 'paid']);
 
+        Route::post('/subscription/aktivasi/{id}', [App\Http\Controllers\API\SubscriptionController::class, 'aktivasi']);
         Route::post('/subscription/kuota-kasir', [App\Http\Controllers\API\SubscriptionController::class, 'kuotaKasirTenant']);
         Route::get('/subscription/tenant-owner', [App\Http\Controllers\API\SubscriptionController::class, 'showMemberTenantOwner']);
         Route::get('/subscription/tenant-cashier', [App\Http\Controllers\API\SubscriptionController::class, 'showKasirTenant']);
