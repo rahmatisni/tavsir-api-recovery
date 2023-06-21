@@ -684,7 +684,7 @@ class TravShopController extends Controller
                             $tans_payment->data = $respon;
                             $tans_payment->save();
                         }
-                        $data->service_fee = $respon->fee;
+                        $data->service_fee = $respon['fee'];
                         $data->total = $data->sub_total + $data->service_fee;
                         $data->save();
                         DB::commit();
@@ -741,7 +741,7 @@ class TravShopController extends Controller
                             $tans_payment->data = $respon;
                             $tans_payment->save();
                         }
-                        $data->service_fee = $respon->fee;
+                        $data->service_fee = $respon['fee'];
                         $data->total = $data->sub_total + $data->service_fee;
                         $data->save();
                         DB::commit();
