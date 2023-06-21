@@ -405,7 +405,7 @@ class TravShopController extends Controller
                         {
                             $value->fee = $data['value'] ?? null;
                         }
-                       else {
+                        if ($value->is_presentage == true)
                             $value->fee = ($data['value']/100 * $trans_order->sub_total) ?? null;
                         }
                         $value->percentage = $data['is_presentage'] ?? null;
