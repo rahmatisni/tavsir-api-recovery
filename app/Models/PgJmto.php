@@ -290,7 +290,7 @@ class PgJmto extends Model
                 Log::warning('PG Tarif Fee', $res->json());
                 return null;
             }
-            return $res->json()['responseData']['value'];
+            return $res->json()['responseData'];
         }
 
         return null;
