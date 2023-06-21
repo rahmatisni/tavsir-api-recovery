@@ -401,7 +401,7 @@ class TravShopController extends Controller
                         // log::info($data);
                         
 
-                        if ($value->is_presentage == (false || null))
+                        if ($data['is_presentage'] == (false || null))
                         {
                             $value->fee = $data['value'] ?? null;
                         }
