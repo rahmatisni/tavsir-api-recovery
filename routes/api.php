@@ -99,6 +99,13 @@ Route::middleware('auth:api')->group(function () {
     Route::get('trans-sharing', [App\Http\Controllers\API\TransSharingController::class, 'index']);
     Route::get('trans-sharing/{id}', [App\Http\Controllers\API\TransSharingController::class, 'show']);
 
+    Route::get('extra-price', [App\Http\Controllers\API\ExtraPriceController::class,'index']);
+    Route::get('extra-price/{id}', [App\Http\Controllers\API\ExtraPriceController::class,'show']);
+    Route::post('extra-price/{id}/status', [App\Http\Controllers\API\ExtraPriceController::class, 'changeStatus']);
+    Route::post('extra-price', [App\Http\Controllers\API\ExtraPriceController::class,'store']);
+    Route::post('extra-price/{id}', [App\Http\Controllers\API\ExtraPriceController::class,'update']);
+    Route::delete('extra-price/{id}', [App\Http\Controllers\API\ExtraPriceController::class,'destroy']);
+
     Route::prefix('tavsir')->group(function () {
         #Supertenant
         Route::get('/tenant-supertenant', [App\Http\Controllers\API\TavsirController::class, 'tenantSupertenantList']);
