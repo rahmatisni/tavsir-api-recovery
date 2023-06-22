@@ -419,8 +419,8 @@ class TravShopController extends Controller
             }
         }
         $merchant = PgJmto::listSubMerchant();
-        $paymentMethods = $paymentMethods->whereNotNull('sof_id');
-
+        // log::info($merchant);
+        $paymentMethods = $paymentMethods->whereNotIn('id', $removes);
         return response()->json($paymentMethods);
     }
 
