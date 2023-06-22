@@ -396,7 +396,8 @@ class TravShopController extends Controller
                 $value->fee = 0;
 
                 if ($value->sof_id) {
-                    if ($tenant_is_verified || $trans_order->order_type == TransOrder::ORDER_TRAVOY) {
+                    // tenant_is_verified
+                    // if ($tenant_is_verified || $trans_order->order_type == TransOrder::ORDER_TRAVOY) {
                         $data = PgJmto::tarifFee($value->sof_id, $value->payment_method_id, $value->sub_merchant_id, $trans_order->sub_total);
                         // log::info($data);
                         $value->percentage = $data['is_presentage'] ?? null;
@@ -412,9 +413,9 @@ class TravShopController extends Controller
                             $value->fee = (int)ceil((float)$x/100 * $trans_order->sub_total);
                         }
 
-                    } else {
-                        $removes[] = $value->id;
-                    }
+                    // } else {
+                    //     $removes[] = $value->id;
+                    // }
                 }
             }
         }
