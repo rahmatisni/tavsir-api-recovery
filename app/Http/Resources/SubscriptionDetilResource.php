@@ -65,6 +65,7 @@ class SubscriptionDetilResource extends JsonResource
             'detail_aktivasi' => $this->detail_aktivasi,
             'count_limit_tenant' => $count_limit_tenant,
             'count_limit_cashier' => $count_limit_cashier,
+            'note' => $this->note,
         ];
         return $data;
     }
