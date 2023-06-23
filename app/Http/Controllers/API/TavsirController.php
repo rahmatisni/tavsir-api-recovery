@@ -690,10 +690,10 @@ class TavsirController extends Controller
             }
         });
         if (!request()->sort) {
-            $data = $data->orderBy('updated_at', 'asc');
+            $data = $data->orderBy('created_at', 'asc');
 
         }
-        $data = $data->orderByRaw("FIELD(status , 'WAITING_OPEN', 'READY',  'PAYMENT_SUCCESS', 'DONE', 'CANCEL') ASC")->get();
+        // $data = $data->orderByRaw("FIELD(status , 'WAITING_OPEN', 'READY',  'PAYMENT_SUCCESS', 'DONE', 'CANCEL') ASC")->get();
         return response()->json(TrOrderResource::collection($data));
     }
 
