@@ -142,7 +142,7 @@ class KiosBankController extends Controller
 
     public function orderUangElektronik(UangElektronikRequest $request)
     {
-        $mandiri = ['6032','5893','6221'];        
+        $mandiri = array('6032','5893','6221');        
         if ((substr($request['code'],  0, 3) == '753') && (strlen($request['phone']) != 16) && (!in_array(substr($request['phone'],  0, 3), $mandiri))) {
         // return response()->json([
         //     'status' => 'error',
