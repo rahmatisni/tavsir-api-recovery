@@ -495,7 +495,14 @@ class KiosBankService
         //     ], 422);
         // }
         clock()->event('inquiry kios')->color('purple')->begin();
+
+        try{
         $res_json = $this->http('POST', self::INQUIRY, $payload);
+    } catch (\Throwable $th) {
+        // dd($th instanceof \Exception);
+        // throw new \Exception();
+        return $th;
+        }
         clock()->event('inquiry kios')->end();
 
         $res_json = $res_json->json();

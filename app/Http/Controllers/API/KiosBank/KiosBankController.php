@@ -154,12 +154,14 @@ class KiosBankController extends Controller
     }
         
         $data = $this->service->uangelEktronik($request->validated());
-        dd($data);
-        // dd($data['rc']);
+        if($data instanceof \Exception) {
+            return response()->json(['message' => 'Silahkan Coba Kembali', 'errors' => 'Silahkan Coba Kembali'], 500);
+        }
 
         if ($data['rc']) {
             return response()->json(['message' => $data['description'], 'errors' => $data['description']], 422);
         }
+
 
        
         return response()->json($data);
