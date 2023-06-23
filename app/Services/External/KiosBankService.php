@@ -605,6 +605,8 @@ class KiosBankService
             }
         }
 
+        dd($res_json);
+
 
         return $res_json;
     }
