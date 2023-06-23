@@ -20,6 +20,7 @@ class Subscription extends BaseModel
 
     public const TERKONFIRMASI = 'TERKONFIRMASI';
     public const MENUNGGU_KONFIRMASI = 'MENUNGGU KONFIRMASI';
+    public const DITOLAK = 'DITOLAK';
 
     protected $fillable = [
         'type',

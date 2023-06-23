@@ -18,6 +18,7 @@ use App\Models\Subscription;
 use App\Models\Tenant;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -38,7 +39,11 @@ class SubscriptionController extends Controller
         $record = [
             'total_data' => $data->count(),
             'total_active' => $data->where('status_aktivasi', Subscription::AKTIF)->count(),
-            'total_inactive' => $data->where('status_aktivasi', Subscription::WAITING_ACTIVATION)->count(),
+            'total_inactive' => $data->where('status_aktivasi', Subscription::TIDAK_AKTIF)->count(),
+
+            'total_aktivasi_terkonfirimasi' => $data->where('detail_aktivasi', Subscription::TERKONFIRMASI)->count(),
+            'total_aktivasi_waiting_konfirmasi' => $data->where('detail_aktivasi', Subscription::MENUNGGU_KONFIRMASI)->count(),
+            'total_aktivasi_ditolak' => $data->where('detail_aktivasi', Subscription::DITOLAK)->count(),
             'detil' => SubscriptionResource::collection($data)
         ];
         return response()->json($record);
@@ -121,7 +126,7 @@ class SubscriptionController extends Controller
 
     }
 
-    public function aktivasi($id)
+    public function aktivasi($id, Request $request)
     {
         $data = Subscription::whereNull('start_date')->where('id',$id)->first();
         if(!$data){
@@ -129,8 +134,24 @@ class SubscriptionController extends Controller
         }
         $data->start_date = Carbon::now();
         $data->detail_aktivasi = Subscription::TERKONFIRMASI;
+        $data->note = $request->note;
         $data->save();
         return response()->json(['message' => 'Subscription aktif '.$data->aktif_awal]);
+    }
+
+    public function reject($id, Request $request)
+    {
+        $data = Subscription::whereNull('start_date')->where('id',$id)->first();
+        if(!$data){
+            return  response()->json(['message' => 'Subscription invalid'], 422);
+        }
+        if($data->detail_aktivasi == Subscription::TERKONFIRMASI){
+            return  response()->json(['message' => 'Subscription tidak bnisa di tolak karena sudah dikonfirmasi'], 422);
+        }
+        $data->detail_aktivasi = Subscription::DITOLAK;
+        $data->note = $request->note;
+        $data->save();
+        return response()->json(['message' => 'Subscription reject ']);
     }
 
 

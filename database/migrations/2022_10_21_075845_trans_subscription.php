@@ -29,6 +29,7 @@ class TransSubscription extends Migration
             $table->integer('price_cashier')->unsigned()->nullable();
             $table->integer('price_total')->unsigned()->nullable();
             $table->string('detail_aktivasi')->nullable();
+            $table->text('note')->nullable();
 
             $table->timestamps();
         });

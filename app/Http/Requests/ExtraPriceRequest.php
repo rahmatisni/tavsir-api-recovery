@@ -26,7 +26,7 @@ class ExtraPriceRequest extends FormRequest
     {
         return [
             'name' => 'required|unique:ref_extra_price,name,'.request()->id.',id,tenant_id,'.auth()->user()->tenant_id,
-            'percent' => 'required|min:0,max:100',
+            'percent' => 'required|min:0|max:100',
             'status' => 'required|in:'.ExtraPrice::AKTIF.','.ExtraPrice::NONAKTIF
         ];
     }
