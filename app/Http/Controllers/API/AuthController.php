@@ -196,6 +196,39 @@ class AuthController extends Controller
         }
     }
 
+    public function cekPin(Request $request)
+    {
+
+        DB::beginTransaction();
+        $user = auth()->user();
+        $tenant = Tenant::find($user->tenant_id ?? $user->supertenant_id);
+        if (!$tenant) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'User Tenant ID ' . $user->tenant_id . ' invalid'
+            ], 400);
+        }
+        try {
+            // dd($request->pin, $user->pin);
+            if (Hash::check($request->pin, $user->pin)) {
+            //    dd($request->pin);
+               return response()->json([
+                'status' => 'success',
+                'message' => 'PIN verification success'
+            ], 200);
+            }
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'PIN verification failed'
+            ], 422);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            Log::error($th);
+            return response()->json($th->getMessage(), 500);
+        }
+    }
+
     public function closeCashier(CloseCashierRequest $request)
     {
         $user = auth()->user();
