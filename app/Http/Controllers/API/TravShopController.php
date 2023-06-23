@@ -873,33 +873,35 @@ class TravShopController extends Controller
 
                         //inquiry ulang
                         $ref = explode('-', $data->order_id);
-                        $random_id = rand(900000000000, 999999999999);
+                        $random_id = rand(100000000000, 999999999999);
                         $data->order_id = $ref[0] . '-' . $ref[1] . '-' . $random_id . '-' . Carbon::now()->timestamp;
+                        Log::info('REPROCESS --> BEFORE=>' .$ref[2] . 'AFTER=>' . $random_id);
 
                         $productId = $ref[0];
                         $customerID = $ref[1];
                         $referenceID = (string) $random_id;
                         $data->save();
                         DB::commit();
-                        Log::info($random_id . '/' . $referenceID);
 
-                        if ($data->description == 'dual') {
-                            $res_json = $this->kiosBankService->reinquiry($productId, $customerID, $referenceID);
-                            $res_json = $res_json->json();
-                        }
+
                         if ($data->description == 'single') {
                             $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
                             Log::info(['bayar susulan => ', $kios]);
                         }
+                        
+                        if ($data->description == 'dual') {
+                            $res_json = $this->kiosBankService->reinquiry($productId, $customerID, $referenceID);
+                            $res_json = $res_json->json();
+                        }
+                     
                         if ($data->description == 'dual' && $res_json['rc'] == '00') {
                             if ($res_json['productID'] == '520021' || $res_json['productID'] == '520011') {
                                 $data->harga_kios = $res_json['data']['total'];
+                               
                                 //harga jual
 
                                 $harga_jual_kios = ProductKiosBank::where('kode', $res_json['productID'])->first() ?? $res_json['data']['total'];
                                 $data->sub_total = ($harga_jual_kios?->harga ?? 0) + $res_json['data']['total'];
-
-
                                 $data->total = $data->sub_total + $data->fee;
 
                                 $res_json['data']['harga_kios'] = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
@@ -916,7 +918,6 @@ class TravShopController extends Controller
                                 $harga_jual_kios = ProductKiosBank::where('kode', $res_json['productID'])->first();
                                 // $order->sub_total = $harga_jual_kios?->harga ?? $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
                                 $data->sub_total = ($harga_jual_kios?->harga ?? 0) + $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
-
                                 $data->total = $data->sub_total + $data->fee;
 
                                 $res_json['data']['harga_kios'] = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
@@ -952,7 +953,7 @@ class TravShopController extends Controller
                             $kios['data']['harga_kios'] = $data->harga_kios;
                             $kios['data']['harga'] = $data->sub_total ?? '0';
 
-                            if ($kios['rc'] == '00') {
+                            if ($kios['rc'] == '00' || $kios['rc'] == "00" || $kios['rc'] == 00) {
                                 if (str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL')) {
                                     $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                                         'data' => $kios,
