@@ -39,7 +39,11 @@ class SubscriptionController extends Controller
         $record = [
             'total_data' => $data->count(),
             'total_active' => $data->where('status_aktivasi', Subscription::AKTIF)->count(),
-            'total_inactive' => $data->where('status_aktivasi', Subscription::WAITING_ACTIVATION)->count(),
+            'total_inactive' => $data->where('status_aktivasi', Subscription::TIDAK_AKTIF)->count(),
+
+            'total_aktivasi_terkonfirimasi' => $data->where('detail_aktivasi', Subscription::TERKONFIRMASI)->count(),
+            'total_aktivasi_waiting_konfirmasi' => $data->where('detail_aktivasi', Subscription::MENUNGGU_KONFIRMASI)->count(),
+            'total_aktivasi_ditolak' => $data->where('detail_aktivasi', Subscription::DITOLAK)->count(),
             'detil' => SubscriptionResource::collection($data)
         ];
         return response()->json($record);
