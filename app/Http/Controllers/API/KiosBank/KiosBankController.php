@@ -154,7 +154,7 @@ class KiosBankController extends Controller
     }
         
         $data = $this->service->uangelEktronik($request->validated());
-        
+        dd($data);
         // dd($data['rc']);
 
         if ($data['rc']) {
