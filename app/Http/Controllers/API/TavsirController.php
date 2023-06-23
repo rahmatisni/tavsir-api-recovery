@@ -690,7 +690,7 @@ class TavsirController extends Controller
             }
         });
         if (!request()->sort) {
-            $data = $data->orderBy('updated_at', 'desc');
+            $data = $data->orderBy('updated_at', 'asc');
 
         }
         $data = $data->orderByRaw("FIELD(status , 'WAITING_OPEN', 'READY',  'PAYMENT_SUCCESS', 'DONE', 'CANCEL') DESC")->get();
