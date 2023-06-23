@@ -213,6 +213,7 @@ Route::prefix('travshop')->group(function () {
     Route::post('/create-payment/{id}', [App\Http\Controllers\API\TravShopController::class, 'createPayment']);
     Route::get('/payment-order/{id}', [App\Http\Controllers\API\TravShopController::class, 'paymentByOrderId']);
     Route::get('/payment-status/{id}', [App\Http\Controllers\API\TravShopController::class, 'statusPayment']);
+    Route::get('/payment-status-manual/{id}', [App\Http\Controllers\API\TravShopController::class, 'statusPaymentManual']);
     Route::post('/saldo', [App\Http\Controllers\API\TravShopController::class, 'saldo']);
     Route::post('/rating/{id}', [App\Http\Controllers\API\RatingController::class, 'store']);
     Route::post('/order-verification/{id}', [App\Http\Controllers\API\TravShopController::class, 'verifikasiOrder']);
