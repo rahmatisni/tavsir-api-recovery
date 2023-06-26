@@ -141,6 +141,7 @@ class TravShopController extends Controller
             $data->customer_id = $request->customer_id;
             $data->customer_name = $request->customer_name;
             $data->customer_phone = $request->customer_phone;
+            $data->nomor_name = $request->nomor_name;
             $data->merchant_id = $tenant->merchant_id;
             $data->sub_merchant_id = $tenant->sub_merchant_id;
             $order_detil_many = [];
@@ -227,6 +228,13 @@ class TravShopController extends Controller
         }
     }
 
+
+    public function orderByMeja($id, Request $request)
+    {
+        // dd($request->id);
+        $data = TransOrder::where('nomor_name',$request->no_meja)->where('status', 'cart')->where('rest_area_id', $request->rest_area_id)->get();
+        return response()->json($data);
+    }
     public function orderCustomer($id, Request $request)
     {
         $tanggal_awal = $request->tanggal_awal;
