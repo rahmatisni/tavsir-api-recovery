@@ -669,7 +669,7 @@ class TravShopController extends Controller
                         "bind_id" => (string) ($bind?->bind_id ?? $bind_before->data['bind_id']),
                         "refnum" => $bind->refnum ?? $bind_before->data['refnum'],
                         "card_no" => $bind->card_no ?? $bind_before->data['card_no'],
-                        "amount" => (string) $data->total,
+                        "amount" => (string) $data->sub_total + $data->service_fee,
                         "trxid" => $data->order_id,
                         "remarks" => $data->tenant->name ?? 'Travoy',
                         "phone" => $bind->phone ?? $bind_before->data['phone'],
@@ -726,7 +726,7 @@ class TravShopController extends Controller
                         "bind_id" => (string) ($bind?->bind_id ?? $bind_before->data['bind_id']),
                         "refnum" => $bind->refnum ?? $bind_before->data['refnum'],
                         "card_no" => $bind->card_no ?? $bind_before->data['card_no'],
-                        "amount" => (string) $data->total,
+                        "amount" => (string) $data->sub_total + $data->service_fee,
                         "trxid" => $data->order_id,
                         "remarks" => $data->tenant->name ?? 'Travoy',
                         "phone" => $bind->phone ?? $bind_before->data['phone'],
@@ -875,7 +875,7 @@ class TravShopController extends Controller
                         $ref = explode('-', $data->order_id);
                         $random_id = rand(100000000000, 999999999999);
                         $data->order_id = $ref[0] . '-' . $ref[1] . '-' . $random_id . '-' . Carbon::now()->timestamp;
-                        Log::info('REPROCESS --> BEFORE=>' .$ref[2] . 'AFTER=>' . $random_id);
+                        Log::info('REPROCESS --> BEFORE => ' .$ref[2] . 'AFTER=>' . $random_id);
 
                         $productId = $ref[0];
                         $customerID = $ref[1];
