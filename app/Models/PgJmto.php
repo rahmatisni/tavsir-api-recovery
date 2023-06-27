@@ -26,7 +26,7 @@ class PgJmto extends Model
             $diff = $now->diffInMinutes($hours) * 60;
             $token = self::generateToken()['access_token'] ?? '';
             if($token == ''){
-                throw new Exception("token not found",422);
+                // throw new Exception("token not found",422);
             }
             Redis::set('token_pg', $token);
             Redis::expire('token_pg', $diff);
