@@ -1059,7 +1059,7 @@ class TravShopController extends Controller
                 $payload = $data_payment;
                 $payload['otp'] = $request->otp;
                 $res = PgJmto::paymentDD($payload);
-                log::info($res);
+                log::info('Payload => '.$payload.'cek otp => '.$res);
                 if ($res->successful()) {
                     $res = $res->json();
 
