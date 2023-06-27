@@ -522,7 +522,7 @@ class TravShopController extends Controller
                             $pay->save();
                         }
                         $data->service_fee = $pay->data['fee'];
-                        $data->total = $data->total + $data->service_fee;
+                        $data->total = $data->total + $data->service_fee + $data->addon_total;
                         $data->save();
                     } else {
                         return response()->json([$res], 500);
@@ -609,7 +609,7 @@ class TravShopController extends Controller
                             $pay->save();
                         }
                         $data->service_fee = $pay->data['fee'];
-                        $data->total = $data->total + $data->service_fee;
+                        $data->total = $data->total + $data->service_fee + $data->addon_total;
                         $data->save();
                     } else {
                         return response()->json([$res], 500);
@@ -663,7 +663,7 @@ class TravShopController extends Controller
                     $payment->trans_order_id = $data->id;
                     $payment->data = $payment_payload;
                     $data->payment()->save($payment);
-                    $data->total = $data->total + $data->service_fee;
+                    $data->total = $data->total + $data->service_fee + $data->addon_total;
                     $data->status = TransOrder::PAYMENT_SUCCESS;
                     $data->save();
                     foreach ($data->detil as $key => $value) {
@@ -722,7 +722,7 @@ class TravShopController extends Controller
                             $tans_payment->save();
                         }
                         $data->service_fee = $respon['fee'];
-                        $data->total = $data->sub_total + $data->service_fee;
+                        $data->total = $data->sub_total + $data->service_fee + $data->addon_total;
                         $data->save();
                         DB::commit();
                         return response()->json($res);
@@ -779,7 +779,7 @@ class TravShopController extends Controller
                             $tans_payment->save();
                         }
                         $data->service_fee = $respon['fee'];
-                        $data->total = $data->sub_total + $data->service_fee;
+                        $data->total = $data->sub_total + $data->service_fee + $data->addon_total;
                         $data->save();
                         DB::commit();
                         return response()->json($res);
