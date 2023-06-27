@@ -53,6 +53,8 @@ class TrOrderResource extends JsonResource
             'payment' => $this->payment,
             'code_verif' => $this->code_verif,
             'rating' => $this->rating,
+            'addon_total' => $this->addon_total,
+            'addon_price' => $this->addon_price,
             'detil' => TrOrderDetilResource::collection($this->detil),
         ];
     }

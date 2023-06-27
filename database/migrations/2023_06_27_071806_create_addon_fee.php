@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRefExtraPriceTable extends Migration
+class CreateAddonFee extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,11 @@ class CreateRefExtraPriceTable extends Migration
      */
     public function up()
     {
-        Schema::create('ref_extra_price', function (Blueprint $table) {
+        Schema::create('trans_addon_fee', function (Blueprint $table) {
             $table->id();
-            $table->integer('tenant_id')->unsigned();
+            $table->string('trans_order_id');
             $table->string('name');
-            $table->boolean('is_percent');
             $table->unsignedInteger('price');
-            $table->string('status');
             $table->timestamps();
         });
     }
@@ -31,6 +29,6 @@ class CreateRefExtraPriceTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ref_extra_price');
+        Schema::dropIfExists('addon_fee');
     }
 }

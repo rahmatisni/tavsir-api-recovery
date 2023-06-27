@@ -61,6 +61,11 @@ class TransOrder extends BaseModel
         return $this->hasMany(TransOrderArsip::class, 'trans_order_id');
     }
 
+    public function addon_price()
+    {
+        return $this->hasMany(AddonPrice::class, 'trans_order_id');
+    }
+
     public function detil()
     {
         return $this->hasMany(TransOrderDetil::class, 'trans_order_id');

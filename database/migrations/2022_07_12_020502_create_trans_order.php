@@ -54,6 +54,7 @@ class CreateTransOrder extends Migration
             $table->string('description')->nullable();
             $table->integer('harga_kios')->nullable();
             $table->date('settlement_at')->nullable();
+            $table->integer('addon_total')->unsigned()->default(0);
 
             $table->timestamps();
             $table->softDeletes();

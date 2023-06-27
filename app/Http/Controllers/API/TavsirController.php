@@ -26,9 +26,11 @@ use App\Http\Resources\Tavsir\TrOrderResource;
 use App\Http\Resources\TravShop\TsOrderResource;
 use App\Http\Resources\Tavsir\TrCategoryResource;
 use App\Http\Resources\Tavsir\TrOrderSupertenantResource;
+use App\Models\AddonPrice;
 use App\Models\Bank;
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\ExtraPrice;
 use App\Models\KiosBank\ProductKiosBank;
 use App\Models\TransOrder;
 use App\Models\TransOrderDetil;
@@ -543,8 +545,23 @@ class TavsirController extends Controller
                 $order_detil_many[] = $order_detil;
             }
 
+            $extra_price = ExtraPrice::byTenant($data->tenant_id)->aktif()->get();
+            foreach ($extra_price as $value) {
+                $addon = new AddonPrice();
+                $addon->trans_order_id = $data->id;
+                $addon->name = $value->name;
+                $addon->price = $value->price;
+                if($value->is_percent == 1){
+                    $addon->name = $value->name." ".$value->price."%";
+                    $addon->price = ($sub_total * $value->price) / 100;
+                }
+
+                $addon->save();
+                $data->addon_total += $addon->price;
+            }
+
             $data->sub_total = $sub_total;
-            $data->total = $data->sub_total + $data->fee + $data->service_fee;
+            $data->total = $data->sub_total + $data->fee + $data->service_fee + $data->addon_total;
 
             $data->save();
             $data->detil()->saveMany($order_detil_many);

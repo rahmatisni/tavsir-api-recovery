@@ -17,12 +17,19 @@ class ExtraPrice extends Model
     protected $fillable = [
         'tenant_id',
         'name',
-        'percent',
+        'is_percent',
+        'price',
         'status',
     ];
 
-    public function scopeByTenant($q)
+    public function scopeByTenant($q, $tenant_id = null)
     {
-        return $q->where('tenant_id', auth()->user()->tenant_id);
+        $id = $tenant_id ?? auth()->user()->tenant_id;
+        return $q->where('tenant_id', $id);
+    }
+
+    public function scopeAktif($q)
+    {
+        return $q->where('status', self::AKTIF);
     }
 }

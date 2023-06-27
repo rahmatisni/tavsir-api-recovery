@@ -24,10 +24,16 @@ class ExtraPriceRequest extends FormRequest
      */
     public function rules()
     {
-        return [
+        $rule =  [
             'name' => 'required|unique:ref_extra_price,name,'.request()->id.',id,tenant_id,'.auth()->user()->tenant_id,
-            'percent' => 'required|min:0|max:100',
+            'is_percent' => 'required|boolean',
+            'price' => 'required|numeric',
             'status' => 'required|in:'.ExtraPrice::AKTIF.','.ExtraPrice::NONAKTIF
         ];
+        if(request()->is_percent == 1){
+            $rule['price'] = 'required|numeric|min:0|max:100';
+        }
+
+        return $rule;
     }
 }
