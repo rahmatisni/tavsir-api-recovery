@@ -72,8 +72,9 @@ class KiosBankService
         ];
     }
 
-    function generateDigest($method = 'POST', $path)
+    function generateDigest($method, $path)
     {
+        $method = 'POST';
         $digest = Http::kiosbank()->post($path)->header('WWW-Authenticate');
         $auth_arr = explode(',', $digest);
         $params = array();

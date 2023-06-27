@@ -391,6 +391,8 @@ class TravShopController extends Controller
     {
         $paymentMethods = PaymentMethod::all();
         $removes = [];
+        $self_order = ['5','6'];
+        $travshop = ['5','6','7','8','9','10'];
 
         if ($request->trans_order_id) {
             $trans_order = TransOrder::with('tenant')->findOrfail($request->trans_order_id);
@@ -418,6 +420,22 @@ class TravShopController extends Controller
             foreach ($paymentMethods as $value) {
                 $value->platform_fee = env('PLATFORM_FEE');
                 $value->fee = 0;
+                $value->self_order = false;
+                $value->travshop = false;
+
+
+
+
+                if (in_array($value->id, $self_order)){
+                    $value->self_order = true;
+                }
+                
+                if (in_array($value->id, $travshop)){
+                    $value->travshop = true;
+                }
+                
+
+                
 
                 if ($value->sof_id) {
                     // tenant_is_verified
