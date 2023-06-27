@@ -232,7 +232,7 @@ class TravShopController extends Controller
     public function orderByMeja($id, Request $request)
     {
         // dd($request->id);
-        $data = TransOrder::where('nomor_name',$request->no_meja)->where('status', 'cart')->where('rest_area_id', $request->rest_area_id)->get();
+        $data = TransOrder::where('nomor_name', $request->no_meja)->where('status', 'cart')->where('rest_area_id', $request->rest_area_id)->where('business_id', $request->business_id)->get();
         return response()->json($data);
     }
     public function orderCustomer($id, Request $request)
