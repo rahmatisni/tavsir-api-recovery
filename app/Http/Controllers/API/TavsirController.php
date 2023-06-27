@@ -552,7 +552,6 @@ class TavsirController extends Controller
                 $addon->name = $value->name;
                 $addon->price = $value->price;
                 if($value->is_percent == 1){
-                    $addon->name = $value->name." ".$value->price."%";
                     $addon->price = ($sub_total * $value->price) / 100;
                 }
 
