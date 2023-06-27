@@ -687,10 +687,10 @@ class TravShopController extends Controller
                         }
                     }
 
-
+                    // dd($bind_before);
                     $payment_payload = [
                         "sof_code" => $bind->sof_code ?? $bind_before->data['sof_code'],
-                        "bind_id" => (string) ($bind?->bind_id ?? $bind_before->data['bind_id']),
+                        "bind_id" => $bind->bind_id ?? $bind_before->data['bind_id'],
                         "refnum" => $bind->refnum ?? $bind_before->data['refnum'],
                         "card_no" => $bind->card_no ?? $bind_before->data['card_no'],
                         "amount" => (string) $data->sub_total,
@@ -703,7 +703,9 @@ class TravShopController extends Controller
                         "fee" => (string) $data->fee,
                     ];
                     $respon = PgJmto::inquiryDD($payment_payload);
-                    log::info($respon);
+                    // log::info($respon);
+                    log::info('Payload => '.$respon.'inquiry');
+
                     if ($respon->successful()) {
                         $res = $respon->json();
                         if ($res['status'] == 'ERROR') {

@@ -494,6 +494,8 @@ class TavsirController extends Controller
                 $data->order_type = TransOrder::POS;
                 $data->order_id = (auth()->user()->tenant->rest_area_id ?? '0') . '-' . (auth()->user()->tenant_id ?? '0') . '-POS-' . date('YmdHis');
                 $data->status = TransOrder::CART;
+                $data->nomor_name = $request->nomor_name;
+
             }
             if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::DONE) {
                 return response()->json(['message' => 'Order status ' . $data->statusLabel()], 400);
