@@ -65,9 +65,7 @@ class TsOrderResource extends JsonResource
                 $cleansing = ['Daya', 'Jumlah_KWH'];
                 // dd($temps);
                 foreach ($temp as $key => $val) {
-                    if($key == 'diskon'){
-                        $temps['data'][$key] = 'asd'; 
-                    }
+                   
                     $key = ucwords(preg_replace("/(?<=[a-zA-Z])(?=[A-Z])/", "_", $key));
                     switch ($key) {
                         case ($key == "A_B"):
@@ -121,10 +119,16 @@ class TsOrderResource extends JsonResource
                         case ($key == "T_T"):
                             $key = 'Total_Pembayaran';
                             break;
+                        case ($key == "diskon"):
+                            $key = 'Diskon';
+                            break;
                         default:
                             $key = $key;
                     }
                  
+                    if($key == 'Diskon'){
+                        $temps['data'][$key] = 'asd'; 
+                    }
                     if (in_array($key, $param)) {
                         // $temps['data'][$key] = 1;
                         $temps['data'][$key] = rupiah((int) $val);
