@@ -557,6 +557,7 @@ class KiosBankService
                 $res_json['data']['harga'] = $order->sub_total;
                 $res_json['description'] = 'INQUIRY';
                 $res_json['status'] = 'INQUIRY';
+                $res_json['diskon'] = $disc;
 
                 $order->save();
                 $order->log_kiosbank()->updateOrCreate(['trans_order_id' => $order->id], [
