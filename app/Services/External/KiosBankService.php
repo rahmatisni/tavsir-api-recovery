@@ -517,12 +517,16 @@ class KiosBankService
 
         if ($res_json['rc'] == '00') {
             if ($res_json['productID'] == '520021' || $res_json['productID'] == '520011') {
+                $disc = 0;
                 $order->harga_kios = $res_json['data']['total'];
+              
                 //harga jual
 
                 $harga_jual_kios = ProductKiosBank::where('kode', $res_json['productID'])->first() ?? $res_json['data']['total'];
-                $order->sub_total = ($harga_jual_kios?->harga ?? 0) + $res_json['data']['total'];
+                $order->sub_total = ($harga_jual_kios?->harga ?? 0) + $res_json['data']['total'] - $disc;
 
+                $order->margin = $harga_jual_kios?->harga + $harga_jual_kios?->fee_admin_bank ?? 0;
+                $order->net_margin =  $order->margin - $disc;
 
                 $order->total = $order->sub_total + $order->fee;
 
