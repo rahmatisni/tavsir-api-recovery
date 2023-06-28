@@ -603,8 +603,8 @@ class KiosBankService
                 $order->sub_total = ($harga_jual_kios?->harga ?? 0) + ($res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan']) - $disc ;
                 $order->total = $order->sub_total + $order->fee;
               
-                $order->margin = $harga_jual_kios?->harga ?? 0;
-                $order->net_margin = $harga_jual_kios?->harga ?? 0 - $disc;
+                $order->margin = $harga_jual_kios?->harga + $harga_jual_kios?->fee_admin_bank ?? 0;
+                $order->net_margin =  $order->margin - $disc;
 
                 $res_json['data']['harga_kios'] = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
                 $res_json['data']['harga'] = $order->sub_total;
