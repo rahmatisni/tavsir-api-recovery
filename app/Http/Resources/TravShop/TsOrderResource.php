@@ -63,6 +63,8 @@ class TsOrderResource extends JsonResource
                 $param = ['Admin_Bank', 'Total', 'Jumlah_Pembayaran','Angsuran','Materai', 'Pembelian_Token','PPJ','PPN','Rp_Stroom/token','Total_Pembayaran'];
                 $slice = ['Harga_kios'];
                 $cleansing = ['Daya', 'Jumlah_KWH'];
+                $minus = ['Diskon'];
+
                 // dd($temps);
                 foreach ($temp as $key => $val) {
                    
@@ -126,16 +128,14 @@ class TsOrderResource extends JsonResource
                             $key = $key;
                     }
                  
-                    if($key == 'Diskon'){
-                        $temps['data'][$key] = 'asd'; 
-                    }
                     if (in_array($key, $param)) {
                         // $temps['data'][$key] = 1;
                         $temps['data'][$key] = rupiah((int) $val);
-
-                    } elseif (in_array($key, $slice)) {
-                        // $temps['data'][$key] =1;
-
+                    } 
+                    elseif (in_array($key, $minus)) {
+                        $temps['data'][$key] = '-'.rupiah((int) $val);
+                    } 
+                    elseif (in_array($key, $slice)) {
                     } 
                  elseif (in_array($key, $cleansing)) {
                     $temps['data'][$key] = cleansings($val);
