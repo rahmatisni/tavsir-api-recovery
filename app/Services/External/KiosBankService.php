@@ -553,6 +553,8 @@ class KiosBankService
                 // dd($tes);
                 $order->sub_total = $temp_harga;
                 $order->harga_kios = $temp_harga;
+                $order->discount = 2500;
+
 
                 $order->total = $order->sub_total + $order->fee;
 
