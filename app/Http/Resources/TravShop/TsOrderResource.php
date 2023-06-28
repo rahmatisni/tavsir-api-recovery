@@ -121,6 +121,9 @@ class TsOrderResource extends JsonResource
                         default:
                             $key = $key;
                     }
+                    if($key == 'diskon'){
+                        $temps['data'][$key] = '-'.$val; 
+                    }
                     if (in_array($key, $param)) {
                         // $temps['data'][$key] = 1;
                         $temps['data'][$key] = rupiah((int) $val);
