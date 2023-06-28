@@ -278,6 +278,7 @@ class KiosBankService
 
     public function orderPulsa($data, $harga_kios, $harga_final)
     {
+        $disc = 0;
         $order = new TransOrder();
         $order->order_type = TransOrder::ORDER_TRAVOY;
         $order->order_id = $data['code'] . '-' . $data['phone'] . '-' . rand(900000000000, 999999999999) . '-' . Carbon::now()->timestamp;
@@ -289,13 +290,24 @@ class KiosBankService
         $order->customer_phone = $data['customer_phone'];
         $order->merchant_id = '';
         $order->sub_merchant_id = env('MERCHANT_KIOS', '');
-        $order->sub_total = $harga_final;
+        $order->sub_total = $harga_final - $disc;
         $order->status = TransOrder::WAITING_PAYMENT;
         $order->fee = env('PLATFORM_FEE');
         $order->total = $order->sub_total + $order->fee;
         $order->description = 'single';
         $order->harga_kios = $harga_kios;
+        $order->discount = $disc;
+
+        $harga_jual_kios = ProductKiosBank::where('kode', $data['code'])->first();
+        $order->margin = $harga_jual_kios?->harga + ($harga_jual_kios?->fee_admin_bank ?? 0);
+        $order->net_margin =  $order->margin - $disc;
+
         $order->save();
+        // $order->sub_total = ($harga_jual_kios?->harga ?? 0) + ($res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan']) - $disc ;
+        // $order->total = $order->sub_total + $order->fee;
+      
+       
+        
 
         $request = [
             'referenceID' => '-',
