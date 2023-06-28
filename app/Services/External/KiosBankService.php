@@ -551,6 +551,9 @@ class KiosBankService
                 $order->sub_total = $temp_harga - $disc ;
 
                 $order->total = $order->sub_total + $order->fee;
+                $order->margin = $harga_jual_kios->fee_admin_bank ?? $order->sub_total - $harga_jual_kios->harga;
+                $order->net_margin = ($harga_jual_kios->fee_admin_bank ?? $order->sub_total - $harga_jual_kios->harga) - $disc;
+
                 // $order->total = $order->sub_total + $order->fee;s
 
                 $res_json['description'] = 'INQUIRY';
