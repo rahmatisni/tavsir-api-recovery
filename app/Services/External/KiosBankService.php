@@ -593,16 +593,23 @@ class KiosBankService
             }
             
             else {
+                $disc = 0;
                 $order->harga_kios = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'] ?? $res_json;
                 //harga jual
                 $harga_jual_kios = ProductKiosBank::where('kode', $res_json['productID'])->first();
+                
                 // $order->sub_total = $harga_jual_kios?->harga ?? $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
-                $order->sub_total = ($harga_jual_kios?->harga ?? 0) + ($res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan']);
-
+                $order->discount = $disc;
+                $order->sub_total = ($harga_jual_kios?->harga ?? 0) + ($res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan']) - $disc ;
                 $order->total = $order->sub_total + $order->fee;
+              
+                $order->margin = $harga_jual_kios?->harga ?? 0;
+                $order->net_margin = $harga_jual_kios?->harga ?? 0 - $disc;
 
                 $res_json['data']['harga_kios'] = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
                 $res_json['data']['harga'] = $order->sub_total;
+                $res_json['data']['diskon'] = $disc;
+                $res_json['diskon'] = $disc;
                 $res_json['description'] = 'INQUIRY';
                 $order->save();
                 $order->log_kiosbank()->updateOrCreate(['trans_order_id' => $order->id], [
