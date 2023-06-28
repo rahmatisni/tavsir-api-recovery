@@ -13,6 +13,7 @@ class ExtraPriceController extends Controller
     public function __construct()
     {
         $this->middleware('role:'.User::CASHIER);
+        $this->middleware('role:'.User::TENANT);
     }
     /**
      * Display a listing of the resource.
