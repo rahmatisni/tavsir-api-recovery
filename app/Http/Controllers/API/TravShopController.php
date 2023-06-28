@@ -919,7 +919,7 @@ class TravShopController extends Controller
                         $ref = explode('-', $data->order_id);
                         $random_id = rand(100000000000, 999999999999);
                         $data->order_id = $ref[0] . '-' . $ref[1] . '-' . $random_id . '-' . Carbon::now()->timestamp;
-                        Log::info('REPROCESS --> BEFORE => ' .$ref[2] . 'AFTER=>' . $random_id);
+                        Log::info('REPROCESS --> BEFORE => ' .$ref[2] . 'AFTER => ' . $random_id);
 
                         $productId = $ref[0];
                         $customerID = $ref[1];
@@ -1079,7 +1079,7 @@ class TravShopController extends Controller
                 $payload = $data_payment;
                 $payload['otp'] = $request->otp;
                 $res = PgJmto::paymentDD($payload);
-                log::info('Payload => '.$payload.'cek otp => '.$res);
+                log::info('Payload => '.$payload.'Response => '.$res);
                 if ($res->successful()) {
                     $res = $res->json();
 
