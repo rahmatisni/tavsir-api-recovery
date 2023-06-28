@@ -556,7 +556,7 @@ class KiosBankService
                 $res_json['description'] = 'INQUIRY';
                 $res_json['status'] = 'INQUIRY';
                 $res_json['data']['harga_kios'] = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'] ?? $temp_harga;
-                $res_json['data']['harga'] = $order;
+                $res_json['data']['harga'] = $temp_harga;
                 $res_json['data']['diskon'] = $disc;
                 $res_json['diskon'] = $disc;
 
