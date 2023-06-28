@@ -550,7 +550,7 @@ class KiosBankService
                 $order->discount = $disc;
                 $order->sub_total = $temp_harga - $disc ;
 
-                $order->total = $order->sub_total + $order->fee - $order->discount;
+                $order->total = $order->sub_total + $order->fee;
                 // $order->total = $order->sub_total + $order->fee;s
 
                 $res_json['description'] = 'INQUIRY';
