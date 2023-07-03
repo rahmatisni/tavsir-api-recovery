@@ -562,6 +562,15 @@ class TavsirController extends Controller
                     $addon->save();
                     $data->addon_total += $addon->price;
                 }
+            }else{
+                $data->addon_total = 0;
+                foreach ($data->addon_price as $value) {
+                    if($value->is_percent == 1){
+                        $value->price = ($sub_total * $value->price) / 100;
+                    }
+                    $value->save();
+                    $data->addon_total += $value->price;
+                }
             }
            
             $data->sub_total = $sub_total;
