@@ -719,6 +719,8 @@ class TravShopController extends Controller
                         "customer_name" => $bind->customer_name ?? $bind_before->data['customer_name'],
                         "bill" => (string) $data->sub_total,
                         "fee" => (string) $data->fee,
+                        "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
+
                     ];
                     $respon = PgJmto::inquiryDD($payment_payload);
                     // log::info($respon);
@@ -778,6 +780,7 @@ class TravShopController extends Controller
                         "customer_name" => $bind->customer_name ?? $bind_before->data['customer_name'],
                         "bill" => (string) $data->sub_total,
                         "fee" => (string) $data->fee,
+                        "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
                     ];
                     $respon = PgJmto::inquiryDD($payment_payload);
                     log::info($respon);
