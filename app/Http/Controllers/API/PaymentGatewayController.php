@@ -30,4 +30,16 @@ class PaymentGatewayController extends Controller
         $res = PgJmto::service('POST','/va/delete', request()->all());
         return $res->json();
     }
+
+    public function ddInquiry()
+    {
+        $res = PgJmto::service('POST','/directdebit/inquiry', request()->all());
+        return $res->json();
+    }
+
+    public function ddPayment()
+    {
+        $res = PgJmto::service('POST','/directdebit/payment', request()->all());
+        return $res->json();
+    }
 }

@@ -238,6 +238,8 @@ Route::post('payment-gateway/sof/list', [App\Http\Controllers\API\PaymentGateway
 Route::post('payment-gateway/va/create', [App\Http\Controllers\API\PaymentGatewayController::class, 'vaCreate']);
 Route::post('payment-gateway/va/cekstatus', [App\Http\Controllers\API\PaymentGatewayController::class, 'vaStatus']);
 Route::post('payment-gateway/va/delete', [App\Http\Controllers\API\PaymentGatewayController::class, 'vaDelete']);
+Route::post('payment-gateway/dd/inquiry', [App\Http\Controllers\API\PaymentGatewayController::class, 'ddInquiry']);
+Route::post('payment-gateway/dd/payment', [App\Http\Controllers\API\PaymentGatewayController::class, 'ddPayment']);
 
 
 
