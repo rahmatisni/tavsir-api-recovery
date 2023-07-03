@@ -486,12 +486,10 @@ class TavsirController extends Controller
     public function order(TrOrderRequest $request)
     {
         try {
-            $is_new = false;
             $data = TransOrder::find($request->id);
 
             DB::beginTransaction();
             if (!$data) {
-                $is_new = true;
                 $data = new TransOrder();
                 $data->order_type = TransOrder::POS;
                 $data->order_id = (auth()->user()->tenant->rest_area_id ?? '0') . '-' . (auth()->user()->tenant_id ?? '0') . '-POS-' . date('YmdHis');
@@ -548,29 +546,20 @@ class TavsirController extends Controller
 
                 $order_detil_many[] = $order_detil;
             }
-
-            if($is_new){
-                $extra_price = ExtraPrice::byTenant($data->tenant_id)->aktif()->get();
-                foreach ($extra_price as $value) {
-                    $addon = new AddonPrice();
-                    $addon->trans_order_id = $data->id;
-                    $addon->name = $value->name;
-                    $addon->price = $value->price;
-                    if($value->is_percent == 1){
-                        $addon->price = ($sub_total * $value->price) / 100;
-                    }
-                    $addon->save();
-                    $data->addon_total += $addon->price;
+            
+            $extra_price = ExtraPrice::byTenant($data->tenant_id)->aktif()->get();
+            $data->addon_total = 0;
+            $data->addon_price()->delete();
+            foreach ($extra_price as $value) {
+                $addon = new AddonPrice();
+                $addon->trans_order_id = $data->id;
+                $addon->name = $value->name;
+                $addon->price = $value->price;
+                if($value->is_percent == 1){
+                    $addon->price = ($sub_total * $value->price) / 100;
                 }
-            }else{
-                $data->addon_total = 0;
-                foreach ($data->addon_price as $value) {
-                    if($value->is_percent == 1){
-                        $value->price = ($sub_total * $value->price) / 100;
-                    }
-                    $value->save();
-                    $data->addon_total += $value->price;
-                }
+                $addon->save();
+                $data->addon_total += $addon->price;
             }
            
             $data->sub_total = $sub_total;
