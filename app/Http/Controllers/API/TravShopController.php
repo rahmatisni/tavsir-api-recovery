@@ -1081,6 +1081,10 @@ class TravShopController extends Controller
                 }
                 $payload = $data_payment;
                 $payload['otp'] = $request->otp;
+                $payload['submerchant_id'] = $data->sub_merchant_id;
+
+                // dd($payload);
+
                 $res = PgJmto::paymentDD($payload);
                 log::info('Payload => '.$payload.'OTP'.$request->otp.'Response => '.$res);
                 if ($res->successful()) {
@@ -1502,6 +1506,8 @@ class TravShopController extends Controller
                 }
                 $payload = $data_payment;
                 $payload['otp'] = $request->otp;
+                $payload['submerchant_id'] = $data->sub_merchant_id;
+                // dd($payload);
                 $res = PgJmto::paymentDD($payload);
                 log::info('Payload => '.$payload.'OTP'.$request->otp.'Response => '.$res);
                 if ($res->successful()) {
