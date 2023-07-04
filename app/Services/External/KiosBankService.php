@@ -364,7 +364,7 @@ class KiosBankService
                 'admin' => $admin,
                 'tagihan' => sprintf("%012d", $total-$admin),
                 'sessionID' => $this->getSeesionId(),
-                'productID' => $order[0] ?? '',
+                'productID' => substr($order[0], 0, 6) ?? '',
                 'referenceID' => $order[2] ?? '',
                 'merchantID' => env('KIOSBANK_MERCHANT_ID'),
                 'customerID' => $order[1] ?? ''
