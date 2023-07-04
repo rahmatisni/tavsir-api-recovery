@@ -496,7 +496,7 @@ class KiosBankService
         $payload = [
             'sessionID' => $this->getSeesionId(),
             'merchantID' => env('KIOSBANK_MERCHANT_ID'),
-            'productID' => $data['code'],
+            'productID' => substr($data['code'], 0, 6),
             'customerID' => $data['phone'],
             'referenceID' => $ref[2],
         ];
