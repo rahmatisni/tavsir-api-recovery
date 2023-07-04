@@ -496,7 +496,7 @@ class KiosBankService
         $payload = [
             'sessionID' => $this->getSeesionId(),
             'merchantID' => env('KIOSBANK_MERCHANT_ID'),
-            'productID' => $data['code'],
+            'productID' => $ref[0],
             'customerID' => $data['phone'],
             'referenceID' => $ref[2],
         ];
@@ -561,7 +561,7 @@ class KiosBankService
                 // $disc = 2500;
                 $disc = 0;
 
-                $harga_jual_kios = ProductKiosBank::where('kode', $res_json['productID'])->first() ?? preg_replace('/[^0-9]/', '', $harga_jual_kios['name']) ?? $res_json['data']['total'] ?? ;
+                $harga_jual_kios = ProductKiosBank::where('kode', $res_json['productID'])->first() ?? $res_json['data']['total'];
                 $temp_harga = preg_replace('/[^0-9]/', '', $harga_jual_kios['name']) + $res_json['data']['AB'];
                 
                 $order->harga_kios = $temp_harga;
