@@ -47,7 +47,7 @@ class TsOrderResource extends JsonResource
         if ($this->order_type == TransOrder::ORDER_TRAVOY) {
             $product = explode('-', $this->order_id);
 
-            $product_kios = $this->getProductKios->where('kode', $request->code)->first();
+            $product_kios = $this->getProductKios->where('kode', $product[0])->first();
 
             if ($product_kios) {
                 $product_kios = $product_kios->toArray();
@@ -129,25 +129,26 @@ class TsOrderResource extends JsonResource
                     }
                  
                     if (in_array($key, $param)) {
+                        // $temps['data'][$key] = 1;
                         $temps['data'][$key] = rupiah((int) $val);
                     } 
-                    // elseif (in_array($key, $minus)) {
-                    //     $temps['data'][$key] = '-'.rupiah((int) $val);
-                    // } 
+                    elseif (in_array($key, $minus)) {
+                        $temps['data'][$key] = '-'.rupiah((int) $val);
+                    } 
                     elseif (in_array($key, $slice)) {
                     } 
                  elseif (in_array($key, $cleansing)) {
                     $temps['data'][$key] = cleansings($val);
                 }
                     else {
-                      
+                        // if ( $temps['data'][$key] == 'Harga_kios'){
+                        //     $temps['data'][$key] = 2;
+                        // }
                         $temps['data'][$key] = $val;
 
                     }
                 }
             }
-            $temps['data']['Discount'] = '-'.rupiah((int) $this->discount);
-
 
             $rest_area_name = 'Travoy';
             $tenant_name = 'Multibiller';
