@@ -479,7 +479,7 @@ class KiosBankService
     {
         $order = new TransOrder();
         $order->order_type = TransOrder::ORDER_TRAVOY;
-        $order->order_id = substr($data['code'], 0, 6) . '-' . $data['phone'] . '-' . rand(900000000000, 999999999999) . '-' . Carbon::now()->timestamp;
+        $order->order_id = $data['code'] . '-' . $data['phone'] . '-' . rand(900000000000, 999999999999) . '-' . Carbon::now()->timestamp;
         $order->rest_area_id = 0;
         $order->tenant_id = 0;
         $order->business_id = 0;
@@ -496,7 +496,7 @@ class KiosBankService
         $payload = [
             'sessionID' => $this->getSeesionId(),
             'merchantID' => env('KIOSBANK_MERCHANT_ID'),
-            'productID' => $ref[0],
+            'productID' =>  substr($ref[0], 0, 6),
             'customerID' => $data['phone'],
             'referenceID' => $ref[2]
             // 'productIDPLN' => $data['code']
