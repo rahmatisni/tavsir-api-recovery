@@ -401,7 +401,7 @@ class KiosBankService
             'admin' => $admin,
             'tagihan' => $harga_kios,
             'sessionID' => $this->getSeesionId(),
-            'productID' => $order[0],
+            'productID' => substr($order[0], 0, 6) ?? '',
             'referenceID' => $order[2],
             'merchantID' => env('KIOSBANK_MERCHANT_ID'),
             'customerID' => $order[1]
@@ -419,7 +419,7 @@ class KiosBankService
         $payload = [
             'sessionID' => $this->getSeesionId(),
             'merchantID' => env('KIOSBANK_MERCHANT_ID'),
-            'productID' => $productId,
+            'productID' => substr($productId, 0, 6) ?? '',
             'customerID' => $customerID,
             'referenceID' => $referenceID,
         ];
