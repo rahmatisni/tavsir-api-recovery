@@ -968,7 +968,7 @@ class TravShopController extends Controller
                                 // $res_json['data']['harga_kios'] = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
                                 $res_json['data']['harga'] = $data->sub_total;
                                 $res_json['description'] = 'INQUIRY';
-                                $res_json['data']['adminBank'] = $res_json['data']['adminBank']??$res_json['data']['AB'];
+                                $res_json['data']['adminBank'] = $res_json['data']['adminBank'] ?? $res_json['data']['AB'] ?? '000000000000';
 
                                 $data->save();
                                 Log::info($data);
@@ -1333,47 +1333,45 @@ class TravShopController extends Controller
                     //     // }
                     // }
 
-                    $rc_coll = array('2', '10', '12', '15', '17', '18', '27', '34', '37', '40', '41', '42', '46', '60', '61', '62', '64', '65', '68', '69', '70', '72', '73', '74', '75', '78', '79', '80', '83', '85', '86', '19');
+                    $rc_coll = array('2', '10', '12', '15', '17', '18', '27', '34', '37', '40', '41', '42', '46', '60', '61', '62', '64', '65', '68', '69', '70', '72', '73', '74', '75', '78', '79', '80', '83', '85', '86','19');
 
 
                     // $rc_coll = array('9999');
 
-                    if (in_array($kios['rc'], $rc_coll)) {
+                    if (in_array($kios['rc'], $rc_coll)) {  
 
                         //inquiry ulang
                         $ref = explode('-', $data->order_id);
-                        // $random_id = rand(900000000000, 999999999999);
-                        // $data->order_id = $ref[0] . '-' . $ref[1] . '-' . $random_id . '-' . Carbon::now()->timestamp;
+                        $random_id = rand(100000000000, 999999999999);
+                        $data->order_id = $ref[0] . '-' . $ref[1] . '-' . $random_id . '-' . Carbon::now()->timestamp;
+                        Log::info('REPROCESS --> BEFORE => ' .$ref[2] . 'AFTER => ' . $random_id);
 
                         $productId = $ref[0];
                         $customerID = $ref[1];
-                        // $referenceID = (string) $random_id;
-                        $referenceID =  $ref[2];
-
-                       
+                        $referenceID = (string) $random_id;
                         $data->save();
                         DB::commit();
-                        Log::info('Reprocess' . $referenceID);
 
-                        if ($data->description == 'dual') {
-                            $res_json = $this->kiosBankService->reinquiry($productId, $customerID, $referenceID);
-                            $res_json = $res_json->json();
-                        }
+
                         if ($data->description == 'single') {
                             $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
                             Log::info(['bayar susulan => ', $kios]);
                         }
+                        
+                        if ($data->description == 'dual') {
+                            $res_json = $this->kiosBankService->reinquiry($productId, $customerID, $referenceID);
+                            $res_json = $res_json->json();
+                        }
+                     
                         if ($data->description == 'dual' && $res_json['rc'] == '00') {
                             if ($res_json['productID'] == '520021' || $res_json['productID'] == '520011') {
                                 $data->harga_kios = $res_json['data']['total'];
+                               
                                 //harga jual
 
                                 $harga_jual_kios = ProductKiosBank::where('kode', $res_json['productID'])->first() ?? $res_json['data']['total'];
                                 $data->sub_total = ($harga_jual_kios?->harga ?? 0) + $res_json['data']['total'];
-
-
                                 $data->total = $data->sub_total + $data->fee;
-
                                 $res_json['data']['harga_kios'] = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
                                 $res_json['data']['harga'] = $data->sub_total;
                                 $res_json['description'] = 'INQUIRY';
@@ -1383,17 +1381,17 @@ class TravShopController extends Controller
                                     'data' => $res_json
                                 ]);
                             } else {
-                                $data->harga_kios = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
+                                $data->harga_kios = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'] ?? $data->harga_kios;
                                 //harga jual
-                                $harga_jual_kios = ProductKiosBank::where('kode', $res_json['productID'])->first();
+                                $harga_jual_kios = ProductKiosBank::where('kode', $ref[0])->first();
                                 // $order->sub_total = $harga_jual_kios?->harga ?? $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
-                                $data->sub_total = ($harga_jual_kios?->harga ?? 0) + $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
-
                                 $data->total = $data->sub_total + $data->fee;
-
-                                $res_json['data']['harga_kios'] = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
+                                $res_json['data']['harga_kios'] = $data->harga_kios;
+                                // $res_json['data']['harga_kios'] = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
                                 $res_json['data']['harga'] = $data->sub_total;
                                 $res_json['description'] = 'INQUIRY';
+                                $res_json['data']['adminBank'] = $res_json['data']['adminBank']??$res_json['data']['AB'];
+
                                 $data->save();
                                 Log::info($data);
                                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
@@ -1424,7 +1422,7 @@ class TravShopController extends Controller
                             $kios['data']['harga_kios'] = $data->harga_kios;
                             $kios['data']['harga'] = $data->sub_total ?? '0';
 
-                            if ($kios['rc'] == '00') {
+                            if ($kios['rc'] == '00' || $kios['rc'] == "00" || $kios['rc'] == 00) {
                                 if (str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL')) {
                                     $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                                         'data' => $kios,
@@ -1506,9 +1504,9 @@ class TravShopController extends Controller
                 $payload = $data_payment;
                 $payload['otp'] = $request->otp;
                 $payload['submerchant_id'] = $data->sub_merchant_id;
+
                 $res = PgJmto::paymentDD($payload);
                 log::info($res);
-
                 if ($res->successful()) {
                     $res = $res->json();
 
