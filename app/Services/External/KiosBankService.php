@@ -357,7 +357,7 @@ class KiosBankService
 
         $order = explode('-', $order_id);
 
-        if (in_array($order[0], $adminparam)) {
+        if (in_array(substr($order[0], 0, 6), $adminparam)) {
 
             $payload = [
                 'total' => sprintf("%012d", $total),
@@ -371,7 +371,23 @@ class KiosBankService
             ];
 
             // dd($payload);
-        } else {
+        }
+        // else if(substr($order[0], 0, 6)  == '100302') {
+
+        //     dd($admin);
+        //     $payload = [
+
+        //     'total' => sprintf("%012d", $total),
+        //     'admin' => $admin,
+        //     'tagihan' => sprintf("%012d", $total-$admin),
+        //     'sessionID' => $this->getSeesionId(),
+        //     'productID' => substr($order[0], 0, 6) ?? '',
+        //     'referenceID' => $order[2] ?? '',
+        //     'merchantID' => env('KIOSBANK_MERCHANT_ID'),
+        //     'customerID' => $order[1] ?? ''
+        //     ];
+        // }
+        else {
             $payload = [
                 'total' => $total,
                 'admin' => $admin,
