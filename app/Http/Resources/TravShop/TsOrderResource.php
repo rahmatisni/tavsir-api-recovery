@@ -149,10 +149,10 @@ class TsOrderResource extends JsonResource
                     }
                 }
             }
-            if (!$temps['data']['Diskon'])
-            {
-                $temps['data']['Diskon'] = '-'.rupiah((int) $this->discount);
-            }
+            // if (!$temps['data']['Diskon'])
+            // {
+            //     $temps['data']['Diskon'] = '-'.rupiah((int) $this->discount);
+            // }
 
 
             $rest_area_name = 'Travoy';
