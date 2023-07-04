@@ -121,9 +121,9 @@ class TsOrderResource extends JsonResource
                         case ($key == "T_T"):
                             $key = 'Total_Pembayaran';
                             break;
-                        // case ($key == "diskon"):
-                        //     $key = 'Diskon';
-                        //     break;
+                        case ($key == "diskon"):
+                            $key = 'Diskon';
+                            break;
                         default:
                             $key = $key;
                     }
@@ -149,7 +149,10 @@ class TsOrderResource extends JsonResource
                     }
                 }
             }
-            $temps['data']['Discount'] = '-'.rupiah((int) $this->discount);
+            if (!$temps['data']['Diskon'])
+            {
+                $temps['data']['Diskon'] = '-'.rupiah((int) $this->discount);
+            }
 
 
             $rest_area_name = 'Travoy';
