@@ -47,7 +47,7 @@ class TsOrderResource extends JsonResource
         if ($this->order_type == TransOrder::ORDER_TRAVOY) {
             $product = explode('-', $this->order_id);
 
-            $product_kios = $this->getProductKios->where('kode', $product[0])->first();
+            $product_kios = $this->getProductKios->where('kode', $request->code)->first();
 
             if ($product_kios) {
                 $product_kios = $product_kios->toArray();
