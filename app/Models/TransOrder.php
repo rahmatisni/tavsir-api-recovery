@@ -141,7 +141,7 @@ class TransOrder extends BaseModel
         if ($this->order_type == self::ORDER_TAKE_N_GO) {
             return 'Take N Go';
         } elseif ($this->order_type == self::POS) {
-            return 'Tavsir';
+            return 'POS';
         } else {
             return $this->order_type;
         }
