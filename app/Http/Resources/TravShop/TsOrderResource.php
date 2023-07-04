@@ -151,7 +151,7 @@ class TsOrderResource extends JsonResource
             }
             // if (!$temps['data']['Diskon'])
             // {
-            //     $temps['data']['Diskon'] = '-'.rupiah((int) $this->discount);
+                $temps['data']['Diskon'] = '-'.rupiah((int) $this->discount);
             // }
 
 
