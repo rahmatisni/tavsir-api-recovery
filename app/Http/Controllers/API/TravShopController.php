@@ -1390,7 +1390,7 @@ class TravShopController extends Controller
                                 // $res_json['data']['harga_kios'] = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
                                 $res_json['data']['harga'] = $data->sub_total;
                                 $res_json['description'] = 'INQUIRY';
-                                $res_json['data']['adminBank'] = $res_json['data']['adminBank']??$res_json['data']['AB'];
+                                $res_json['data']['adminBank'] = $res_json['data']['adminBank'] ?? $res_json['data']['AB'] ?? '000000000000';
 
                                 $data->save();
                                 Log::info($data);
