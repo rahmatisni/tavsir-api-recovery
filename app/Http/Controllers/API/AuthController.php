@@ -45,10 +45,10 @@ class AuthController extends Controller
                     ], 200);
                 }
                 // if ($user->role == User::TENANT) {
-                    if($user->is_subscription == 0){
-                        $response = ["message" => "Not Subscription"];
-                        return response($response, 422);
-                    }
+                    // if($user->is_subscription == 0){
+                    //     $response = ["message" => "Not Subscription"];
+                    //     return response($response, 422);
+                    // }
                     if ($count > 0) {
                         if ($user->fcm_token) {
                             sendNotif($user->fcm_token, 'Login di perangkat lain', []);
