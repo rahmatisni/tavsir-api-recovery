@@ -575,8 +575,9 @@ class KiosBankService
 
             }
             else if ($res_json['productID'] == '100302') {
-                // $disc = 2500;
-                $disc = 0;
+                // $disc = 0;
+                $disc = 1850;
+
 
                 $harga_jual_kios = ProductKiosBank::where('kode', $res_json['productID'])->first() ??  ProductKiosBank::where('kode', $data['code'])->first() ?? $res_json['data']['total'];
                 $temp_harga = preg_replace('/[^0-9]/', '', $harga_jual_kios['name']) + $res_json['data']['AB'];
