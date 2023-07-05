@@ -44,7 +44,7 @@ class AuthController extends Controller
                         'login_count' => $count
                     ], 200);
                 }
-                if ($user->role == User::TENANT) {
+                // if ($user->role == User::TENANT) {
                     if($user->is_subscription == 0){
                         $response = ["message" => "Not Subscription"];
                         return response($response, 422);
@@ -55,7 +55,7 @@ class AuthController extends Controller
                         }
                     }
                     $user->accessTokens()->delete();
-                }
+                // }
                 $tokenResult = $user->createToken('Personal');
                 $token = $tokenResult->accessToken;
 
