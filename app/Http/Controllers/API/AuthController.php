@@ -44,18 +44,24 @@ class AuthController extends Controller
                         'login_count' => $count
                     ], 200);
                 }
-                // if ($user->role == User::TENANT) {
-                    // if($user->is_subscription == 0){
-                    //     $response = ["message" => "Not Subscription"];
-                    //     return response($response, 422);
-                    // }
+                if ($user->role == User::TENANT) {
+                    if($user->tenant->is_subscription == 0){
+                        $response = ["message" => 'Tenant not subscription'];
+                        return response($response, 422);
+                    }
+                }
+                if ($user->role == User::CASHIER) { 
+                    if($user->is_subscription == 0){
+                        $response = ["message" => "Not Subscription"];
+                        return response($response, 422);
+                    }
                     if ($count > 0) {
                         if ($user->fcm_token) {
                             sendNotif($user->fcm_token, 'Login di perangkat lain', []);
                         }
                     }
                     $user->accessTokens()->delete();
-                // }
+                }
                 $tokenResult = $user->createToken('Personal');
                 $token = $tokenResult->accessToken;
 
