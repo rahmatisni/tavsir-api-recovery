@@ -71,6 +71,7 @@ class RekapPendapatanController extends Controller
         $digital = $mandiri_va + $mandiri_dd + $bri_va + $bri_dd + $link_aja + $bni_va;
 
         $total_pendapatan = $total_pendapatan->sum('sub_total');
+        $total_addon = $total_pendapatan->sum('addon_total');
 
         $periode_berjalan = $periode_berjalan;
         $periode_berjalan = [
@@ -88,6 +89,7 @@ class RekapPendapatanController extends Controller
             'total_link_aja' => $link_aja,
             'total_bni_va' => $bni_va,
             'total_digital' => $digital,
+            'total_addon' => $total_addon,
             'total_pendapatan' => $total_pendapatan,
             'detil' => RekapTransOrderResource::collection($data_all)
         ];

@@ -2,24 +2,35 @@
 
 namespace App\Services\External;
 
-use Andromeda\ISO8583\Parser;
-use App\Models\Jatelindo\AuthJatelindo;
+use App\Models\Constanta\PLNAREA;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Http;
 
 class JatelindoService
 {
-    public static function signIn()
+    public static function inuqiry(PLNAREA $pln_area, string $id_pelanggan)
     {
-        $message = new AuthJatelindo();
-        $isoMaker = new Parser($message);
-        $isoMaker->addMTI('0800');
-        $isoMaker->addData(7, date('Ymdhms'));
-        $isoMaker->addData(11, '123456');
-        $isoMaker->addData(33, '1');
-        $isoMaker->addData(39, '00');
-        $isoMaker->addData(42, 'abc123');
-        $isoMaker->addData(70, '301');
-        $isoMaker->getISO();
+        $date = Carbon::now();
+        $md = $date->format('md');
+        $his = $date->format('his');
+        $payload = [
+            'mti' => 200,
+            "bit2" => $pln_area,
+            "bit3" => "380000",
+            "bit7" => $md.$his,
+            "bit11" => $his,
+            "bit12" => $his,
+            "bit13" => $md,
+            "bit15" => $md,
+            "bit18" => config('jatelindo.bit_18'),
+            "bit32" => config('jatelindo.bit_32'),
+            "bit37" => "000000{$his}",
+            "bit41" => config('jatelindo.bit_41'),
+            "bit42" => config('jatelindo.bit_42'),
+            "bit48" => $id_pelanggan,
+            "bit49" => "360", // COUNTRY CURRENCY CODE NUMBER IDR 
+        ];
 
-        return $isoMaker->getISO();
+        return Http::post(config('jatelindo.url'), $payload);
     }
 }
