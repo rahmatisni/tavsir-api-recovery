@@ -128,7 +128,7 @@ class SubscriptionController extends Controller
 
     public function aktivasi($id, Request $request)
     {
-        $data = Subscription::whereNull('start_date')->where('id',$id)->first();
+        $data = Subscription::where('id',$id)->first();
         if(!$data){
             return  response()->json(['message' => 'Subscription invalid'], 422);
         }
