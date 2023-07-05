@@ -44,7 +44,7 @@ class AuthController extends Controller
                         'login_count' => $count
                     ], 200);
                 }
-                if ($user->role == User::TENANT || $user->role == User::CASHIER) {
+                if ($user->role == User::TENANT) {
                     if($user->is_subscription == 0){
                         $response = ["message" => "Not Subscription"];
                         return response($response, 422);
