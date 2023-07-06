@@ -391,7 +391,7 @@ class TravShopController extends Controller
     {
         $paymentMethods = PaymentMethod::all();
         $removes = [];
-        $self_order = ['5','7'];
+        $self_order = ['5','7','9'];
         $travshop = ['5','6','7','8','9','10'];
 
         if ($request->trans_order_id) {
