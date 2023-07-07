@@ -15,6 +15,7 @@ class LaporanOperationalResource extends JsonResource
     public function toArray($request)
     {
         return [
+            'id' => $this->id,
             'periode' => $this->periode,
             'waktu_buka' => $this->start_date,
             'waktu_tutup' => $this->end_date,
