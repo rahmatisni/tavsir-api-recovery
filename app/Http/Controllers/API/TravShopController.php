@@ -1087,7 +1087,7 @@ class TravShopController extends Controller
                 // log::info('DD REQ PAYMENT => '.$payload->all());
 
                 $res = PgJmto::paymentDD($payload);
-                log::info('DD RESP PAYMENT => '.$res);
+                // log::info('DD RESP PAYMENT => '.$res);
                 if ($res->successful()) {
                     $res = $res->json();
 
@@ -1511,7 +1511,7 @@ class TravShopController extends Controller
                 // log::info('DD REQ PAYMENT => '.$payload->all());
 
                 $res = PgJmto::paymentDD($payload);
-                log::info('DD RESP PAYMENT => '.$res);
+                // log::info('DD RESP PAYMENT => '.$res);
 
                 
                 if ($res->successful()) {
