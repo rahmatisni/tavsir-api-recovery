@@ -471,9 +471,9 @@ class PgJmto extends Model
             ]);
             //end fake
         }
-        Log::info('DD Request', $payload);
+        Log::info('DD Payment Request', $payload);
         $res = self::service('POST','/directdebit/payment', $payload);
-        Log::info('DD payment', $res->json());
+        Log::info('DD payment Response', $res->json());
         return $res;
     }
 
