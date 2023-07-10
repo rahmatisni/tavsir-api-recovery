@@ -204,6 +204,7 @@ Route::prefix('travshop')->group(function () {
     Route::get('/product-category-tenant/{tenant_id}', [App\Http\Controllers\API\TravShopController::class, 'categoryProductTenant']);
     Route::post('/tenant', [App\Http\Controllers\API\TravShopController::class, 'tenant']);
     Route::post('/product', [App\Http\Controllers\API\TravShopController::class, 'product']);
+    Route::get('/extra-price/{id}', [App\Http\Controllers\API\TravShopController::class, 'extraPrice']);
     Route::get('/product/{id}', [App\Http\Controllers\API\TravShopController::class, 'productById']);
     Route::post('/order', [App\Http\Controllers\API\TravShopController::class, 'order']);
     Route::get('/order/{id}', [App\Http\Controllers\API\TravShopController::class, 'orderById']);

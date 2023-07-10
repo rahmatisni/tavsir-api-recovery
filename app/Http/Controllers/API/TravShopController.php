@@ -129,6 +129,12 @@ class TravShopController extends Controller
         return response()->json(new TsProducDetiltResource($data));
     }
 
+    public function extraPrice($id)
+    {
+        $data =  ExtraPrice::byTenant($id)->aktif()->get();
+        return response()->json($data);
+    }
+
     public function order(TsOrderRequest $request)
     {
         try {
