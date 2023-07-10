@@ -722,9 +722,11 @@ class TravShopController extends Controller
                         "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
 
                     ];
+                    log::info('Request DD inquiry => '.$payment_payload);
+
                     $respon = PgJmto::inquiryDD($payment_payload);
                     // log::info($respon);
-                    log::info('Payload => '.$respon.'inquiry');
+                    log::info('Response DD inquiry => '.$respon);
 
                     if ($respon->successful()) {
                         $res = $respon->json();
