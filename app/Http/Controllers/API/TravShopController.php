@@ -722,7 +722,7 @@ class TravShopController extends Controller
                         "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
 
                     ];
-                    log::info('Request DD inquiry => '.$payment_payload);
+                    // log::info('Request DD inquiry => '.$payment_payload);
 
                     $respon = PgJmto::inquiryDD($payment_payload);
                     // log::info($respon);
@@ -1084,10 +1084,7 @@ class TravShopController extends Controller
                 $payload = $data_payment;
                 $payload['otp'] = $request->otp;
                 $payload['submerchant_id'] = $data->sub_merchant_id;
-                // log::info('DD REQ PAYMENT => '.$payload->all());
-
                 $res = PgJmto::paymentDD($payload);
-                // log::info('DD RESP PAYMENT => '.$res);
                 if ($res->successful()) {
                     $res = $res->json();
 
@@ -1141,7 +1138,6 @@ class TravShopController extends Controller
                 $payload = $data_payment;
                 $payload['otp'] = $request->otp;
                 $res = PgJmto::paymentDD($payload);
-                log::info($res);
                 if ($res->successful()) {
                     $res = $res->json();
 
@@ -1507,13 +1503,7 @@ class TravShopController extends Controller
                 $payload = $data_payment;
                 $payload['otp'] = $request->otp;
                 $payload['submerchant_id'] = $data->sub_merchant_id;
-
-                // log::info('DD REQ PAYMENT => '.$payload->all());
-
                 $res = PgJmto::paymentDD($payload);
-                // log::info('DD RESP PAYMENT => '.$res);
-
-                
                 if ($res->successful()) {
                     $res = $res->json();
 
@@ -1567,7 +1557,6 @@ class TravShopController extends Controller
                 $payload = $data_payment;
                 $payload['otp'] = $request->otp;
                 $res = PgJmto::paymentDD($payload);
-                log::info($res);
                 if ($res->successful()) {
                     $res = $res->json();
 
