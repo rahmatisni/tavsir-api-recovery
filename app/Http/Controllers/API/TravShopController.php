@@ -1084,7 +1084,7 @@ class TravShopController extends Controller
                 $payload = $data_payment;
                 $payload['otp'] = $request->otp;
                 $payload['submerchant_id'] = $data->sub_merchant_id;
-                log::info('DD REQ PAYMENT => '.json_encode($payload));
+                log::info('DD REQ PAYMENT => '.print_r($payload));
 
                 $res = PgJmto::paymentDD($payload);
                 log::info('DD RESP PAYMENT => '.$res);
@@ -1508,7 +1508,7 @@ class TravShopController extends Controller
                 $payload['otp'] = $request->otp;
                 $payload['submerchant_id'] = $data->sub_merchant_id;
 
-                log::info('DD REQ PAYMENT => '.json_encode($payload));
+                log::info('DD REQ PAYMENT => '.print_r($payload));
 
                 $res = PgJmto::paymentDD($payload);
                 log::info('DD RESP PAYMENT => '.$res);
