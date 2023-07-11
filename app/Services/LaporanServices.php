@@ -280,6 +280,7 @@ class LaporanServices
                 'waktu_transaksi' => (string) $value->created_at,
                 'id_transaksi' => $value->order_id,
                 'total_product' => $count,
+                'total_addon' => $value->addon_total ?? 0,
                 'total' => $value->sub_total,
                 'metode_pembayaran' => $value->payment_method->name ?? '',
                 'jenis_transaksi' => $value->labelOrderType()
