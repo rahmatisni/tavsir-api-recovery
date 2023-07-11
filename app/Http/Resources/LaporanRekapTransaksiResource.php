@@ -20,6 +20,7 @@ class LaporanRekapTransaksiResource extends JsonResource
             'end_date' => (string) $this->end_date,
             'periode' => $this->periode,
             'rp_total' => $this->trans_cashbox->rp_total ?? 0,
+            'rp_addon_total' => $this->trans_cashbox->rp_addon_total ?? 0,
         ];
     }
 }
