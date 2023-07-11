@@ -42,7 +42,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td >Total</td>
+                <td colspan="2">Total</td>
                 <td>{{$total_product}} item</td>
                 <td>{{$total_addon}}</td>
                 <td>{{$total_total}}</td>
