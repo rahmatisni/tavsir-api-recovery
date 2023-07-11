@@ -19,7 +19,7 @@ class RestAreaResource extends JsonResource
         $detil = [];
         foreach ($this->tenant()->categoryCount()->get() as $v) {
             $detil[] = [
-                'kategori' => CategoryTenant::find($v['kategori'])->first()->name ?? '',
+                'kategori' => CategoryTenant::find($v['kategori'])->name ?? '',
                 'tenant' => $v['tenant']
             ];
         }
