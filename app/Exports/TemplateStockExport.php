@@ -18,7 +18,7 @@ class TemplateStockExport implements FromCollection, WithHeadings
                 'no' => $key + 1,
                 'id' => $item->id,
                 'product' => $item->name,
-                'stock' => $item->stock,
+                'stock' => $item->stock ?? 0,
                 'keterangan' => $item->description
             ];
         });
