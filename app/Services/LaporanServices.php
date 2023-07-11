@@ -281,7 +281,10 @@ class LaporanServices
                 'id_transaksi' => $value->order_id,
                 'total_product' => $count,
                 'total_addon' => $value->addon_total ?? 0,
-                'total' => $value->sub_total,
+                'total_sub_total' => $value->sub_total,
+                'fee' => $value->fee ?? 0,
+                'service_fee' => $value->service_fee ?? 0,
+                'total' => $value->total,
                 'metode_pembayaran' => $value->payment_method->name ?? '',
                 'jenis_transaksi' => $value->labelOrderType()
             ]);
@@ -293,7 +296,10 @@ class LaporanServices
             'tanggal_akhir' => $tanggal_akhir ?? 'Semua Tanggal',
             'total_product' => $item_count,
             'total_addon' => $data->sum('addon_total'),
-            'total_total' => $data->sum('sub_total'),
+            'total_sub_total' => $data->sum('sub_total'),
+            'fee' => $data->sum('fee'),
+            'service_fee' => $data->sum('service_fee'),
+            'total_total' => $data->sum('total'),
             'record' => $hasil,
 
         ];
