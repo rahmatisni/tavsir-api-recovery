@@ -619,7 +619,7 @@ class TravShopController extends Controller
                         $request->customer_phone,
                         $request->customer_email,
                         $request->customer_name,
-                        $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id,
+                        $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
                     );
                     if ($res['status'] == 'success') {
                         $pay = null;
