@@ -21,6 +21,7 @@
                 <th>Waktu Transaksi</th>
                 <th>ID Transaksi</th>
                 <th>Total Product</th>
+                <th>Biaya Tambahan</th>
                 <th>Total</th>
                 <th>Metode Pembayaran</th>
                 <th>Jenis Transkasi</th>
@@ -32,6 +33,7 @@
                 <td>{{$value['waktu_transaksi']}}</td>
                 <td>{{$value['id_transaksi']}}</td>
                 <td>{{$value['total_product']}} item</td>
+                <td style="white-space: nowrap;">{{ $value['total_addon'] }}</td>
                 <td style="white-space: nowrap;">{{ $value['total'] }}</td>
                 <td>{{$value['metode_pembayaran']}}</td>
                 <td>{{$value['jenis_transaksi']}}</td>
@@ -42,8 +44,8 @@
             <tr>
                 <td >Total</td>
                 <td>{{$total_product}} item</td>
-                <td>{{$total_total}}</td>
                 <td>{{$total_addon}}</td>
+                <td>{{$total_total}}</td>
             </tr>
         </tfoot>
     </table>
