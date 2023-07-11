@@ -115,6 +115,7 @@ class LaporanServices
             'total_tunai' => $data->sum('trans_cashbox.rp_cash'),
             'total_nominal_tunai' => $data->sum('trans_cashbox.cashbox'),
             'total_koreksi' => $data->sum('trans_cashbox.pengeluaran_cashbox'),
+            'total_addon' => $data->sum('trans_cashbox.rp_addon_total'),
             'total' => $data->sum('trans_cashbox.rp_total'),
             'record' => json_decode(LaporanOperationalResource::collection($data)->toJson()),
         ];
@@ -197,16 +198,20 @@ class LaporanServices
         $hasil = [];
         $sum_total_transaksi = 0;
         $sum_jumlah_transaksi = 0;
+        $sum_total_addon = 0;
         foreach ($data as $k => $i) {
             $jumlah_transaksi = $i->count();
             $total_transaksi = $i->sum('sub_total');
+            $total_addon = $i->sum('addon_total');
 
             $sum_jumlah_transaksi += $jumlah_transaksi;
             $sum_total_transaksi += $total_transaksi;
+            $sum_total_addon += $total_addon;
 
             array_push($hasil, [
                 'metode' => $k,
                 'jumlah_transaksi' => $jumlah_transaksi,
+                'total_addon' => $sum_total_addon,
                 'total_transaksi' => $total_transaksi
             ]);
         }
@@ -286,6 +291,7 @@ class LaporanServices
             'tanggal_awal' => $tanggal_awal ?? 'Semua Tanggal',
             'tanggal_akhir' => $tanggal_akhir ?? 'Semua Tanggal',
             'total_product' => $item_count,
+            'total_addon' => $data->sum('addon_total'),
             'total_total' => $data->sum('sub_total'),
             'record' => $hasil,
 

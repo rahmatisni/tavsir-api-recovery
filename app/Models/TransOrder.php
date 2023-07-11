@@ -71,6 +71,11 @@ class TransOrder extends BaseModel
         return $this->hasMany(TransOrderDetil::class, 'trans_order_id');
     }
 
+    public function product()
+    {
+        return $this->hasManyThrough(Product::class, TransOrderDetil::class);
+    }
+
     public function rest_area()
     {
         return $this->belongsTo(RestArea::class, 'rest_area_id');

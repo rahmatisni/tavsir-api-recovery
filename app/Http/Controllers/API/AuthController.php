@@ -93,7 +93,6 @@ class AuthController extends Controller
 
     public function profile()
     {
-        // dd(auth()->user());
         return response()->json(new ProfileResource(auth()->user()));
     }
 
@@ -309,6 +308,7 @@ class AuthController extends Controller
                 $trans_cashbox->rp_link_aja = $rp_link_aja;
 
                 $trans_cashbox->rp_total = $data_all->sum('sub_total');
+                $trans_cashbox->rp_addon_total = $data_all->sum('addon_total');
 
                 $trans_cashbox->save();
 

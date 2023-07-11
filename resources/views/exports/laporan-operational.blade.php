@@ -51,6 +51,7 @@
                 <td>{{ $value->digital }}</td>
                 <td>{{ $value->tunai }}</td>
                 <td>{{ $value->nominal_tunai}}</td>
+                <td>{{ $value->total_addon }}</td>
                 <td>{{ $value->koreksi }}</td>
                 <td>{{ $value->selisih}}</td>
                 <td>{{ $value->keterangan_koreksi }}</td>
@@ -65,6 +66,7 @@
                 <td>{{ $total_digital }}</td>
                 <td>{{ $total_tunai }}</td>
                 <td>{{ $total_nominal_tunai }}</td>
+                <td>{{ $total_addon }}</td>
                 <td>{{ $total_koreksi }}</td>
                 <td></td>
                 <td></td>
