@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\CategoryTenant;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 
@@ -15,12 +16,19 @@ class RestAreaResource extends JsonResource
      */
     public function toArray($request)
     {   
+        $detil = [];
+        foreach ($this->tenant()->categoryCount()->get() as $v) {
+            $detil[] = [
+                'kategori' => CategoryTenant::find($v['kategori'])->first() ?? '',
+                'tenant' => $v['tenant']
+            ];
+        }
         return [
             ...parent::toArray($request),
             'photo' => $this->photo ? asset($this->photo) : null,
             'ruas_name' => $this->ruas->name ?? '',
             'tenant_total' => $this->tenant->count(),
-            'detil_tenant' => $this->tenant()->categoryCount()->get()
+            'detil_tenant' => $detil
         ];
     }
 }
