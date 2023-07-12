@@ -257,6 +257,17 @@ class TravShopController extends Controller
         $data = TransOrder::where('nomor_name', $request->no_meja)->where('status', 'cart')->where('rest_area_id', $request->rest_area_id)->where('business_id', $request->business_id)->get();
         return response()->json($data);
     }
+
+    public function paymentonCasheer($id)
+    {
+        $data = TransOrder::findOrfail($id);
+        $data->status = 'QUEUE';
+        $data->save();
+        DB::commit();
+        return response()->json($data);
+    }
+
+
     public function orderCustomer($id, Request $request)
     {
         $tanggal_awal = $request->tanggal_awal;
