@@ -110,6 +110,7 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('number-table', [App\Http\Controllers\API\NumberTableController::class,'index']);
     Route::get('number-table/{id}', [App\Http\Controllers\API\NumberTableController::class,'show']);
+    Route::get('number-table/{id}/qr', [App\Http\Controllers\API\NumberTableController::class,'showQr']);
     Route::post('number-table', [App\Http\Controllers\API\NumberTableController::class,'store']);
     Route::post('number-table/{id}', [App\Http\Controllers\API\NumberTableController::class,'update']);
     Route::delete('number-table/{id}', [App\Http\Controllers\API\NumberTableController::class,'destroy']);

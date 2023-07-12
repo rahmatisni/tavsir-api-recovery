@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ChangeStatusRequest;
 use App\Http\Requests\NumberTableRequest;
 use App\Models\NumberTable;
 use App\Models\User;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class NumberTableController extends Controller
 {
@@ -81,16 +81,20 @@ class NumberTableController extends Controller
 
 
      /**
-     * Change Status
+     * Show QR
      *
      * @param  \App\Models\NumberTable  $extraPrice
-     * @return \Illuminate\Http\Response
+     * @return svg
      */
-    public function changeStatus($id, ChangeStatusRequest $request)
+    public function showQr($id)
     {
         $data =  NumberTable::byTenant()->findOrFail($id);
-        $data->status = $request->status;
-        $data->save();
-        return response()->json($data);
+        return QrCode::size(200)
+        ->backgroundColor(254, 200, 26)
+        ->color(1, 55, 182)
+        ->margin(1)
+        ->generate(
+            $data->name,
+        );
     }
 }
