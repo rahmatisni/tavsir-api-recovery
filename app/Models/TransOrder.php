@@ -113,10 +113,6 @@ class TransOrder extends BaseModel
         return $query->where('order_type', self::ORDER_TAKE_N_GO);
     }
 
-    public function scopeFromSelfOrder($query)
-    {
-        return $query->where('order_type', self::ORDER_SELF_ORDER);
-    }
     public function scopeFromTavsir($query)
     {
         return $query->where('order_type', self::POS);
