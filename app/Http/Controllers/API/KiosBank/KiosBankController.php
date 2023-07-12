@@ -60,7 +60,7 @@ class KiosBankController extends Controller
             //     ])
             //     ->first();
 
-            $harga_jual = ProductKiosBank::where('kode', $val['code'])
+            $harga_jual = ProductKiosBank::where('kode', $val['code'])->where('is_active', 1)
             ->select([
                 'kode',
                'harga'
