@@ -213,6 +213,7 @@ Route::prefix('travshop')->group(function () {
     Route::get('/extra-price/{id}', [App\Http\Controllers\API\TravShopController::class, 'extraPrice']);
     Route::get('/product/{id}', [App\Http\Controllers\API\TravShopController::class, 'productById']);
     Route::post('/order', [App\Http\Controllers\API\TravShopController::class, 'order']);
+    Route::post('/self-order', [App\Http\Controllers\API\TravShopController::class, 'selfOrder']);
     Route::get('/order/{id}', [App\Http\Controllers\API\TravShopController::class, 'orderById']);
     Route::get('/order-meja/{id}', [App\Http\Controllers\API\TravShopController::class, 'orderByMeja']);
     Route::get('/order-customer/{id}', [App\Http\Controllers\API\TravShopController::class, 'orderCustomer']);
