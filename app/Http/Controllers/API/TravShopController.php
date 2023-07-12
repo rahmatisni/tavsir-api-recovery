@@ -347,7 +347,7 @@ class TravShopController extends Controller
                 );
                 $result = sendNotif($ids, 'Info', 'Pemberitahuan order baru Self Order ' . $data->order_id, $payload);
             }
-            if ($data->order_type == TransOrder::ORDER_TRAVOY) {
+            if ($data->order_type == TransOrder::ORDER_SELF_ORDER) {
                 $product_kios = ProductKiosBank::select(
                     'kategori',
                     'sub_kategori',
