@@ -210,7 +210,7 @@ Route::prefix('travshop')->group(function () {
     Route::get('/order/{id}', [App\Http\Controllers\API\TravShopController::class, 'orderById']);
     Route::get('/order-meja/{id}', [App\Http\Controllers\API\TravShopController::class, 'orderByMeja']);
     Route::get('/order-customer/{id}', [App\Http\Controllers\API\TravShopController::class, 'orderCustomer']);
-    Route::get('/order-customer/{id}', [App\Http\Controllers\API\TravShopController::class, 'paymentonCasheer']);
+    Route::get('/queue-payment/{id}', [App\Http\Controllers\API\TravShopController::class, 'paymentonCasheer']);
     Route::post('/order-confirmation/{id}', [App\Http\Controllers\API\TravShopController::class, 'orderConfirm']);
     Route::post('/order-cancel/{id}', [App\Http\Controllers\API\TravShopController::class, 'orderCancel']);
     Route::get('/payment-method', [App\Http\Controllers\API\TravShopController::class, 'paymentMethod']);
