@@ -108,6 +108,12 @@ Route::middleware('auth:api')->group(function () {
     Route::post('extra-price/{id}', [App\Http\Controllers\API\ExtraPriceController::class,'update']);
     Route::delete('extra-price/{id}', [App\Http\Controllers\API\ExtraPriceController::class,'destroy']);
 
+    Route::get('number-table', [App\Http\Controllers\API\NumberTableController::class,'index']);
+    Route::get('number-table/{id}', [App\Http\Controllers\API\NumberTableController::class,'show']);
+    Route::post('number-table', [App\Http\Controllers\API\NumberTableController::class,'store']);
+    Route::post('number-table/{id}', [App\Http\Controllers\API\NumberTableController::class,'update']);
+    Route::delete('number-table/{id}', [App\Http\Controllers\API\NumberTableController::class,'destroy']);
+
     Route::prefix('tavsir')->group(function () {
         #Supertenant
         Route::get('/tenant-supertenant', [App\Http\Controllers\API\TavsirController::class, 'tenantSupertenantList']);
