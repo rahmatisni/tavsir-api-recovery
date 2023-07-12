@@ -57,14 +57,21 @@ class KiosBankController extends Controller
             //         'harga'
             //     ])
             //     ->first();
-
-            $harga_jual = ProductKiosBank::where([['kode', $val['code']],['is_active', '1']])
+            $harga_jual = ProductKiosBank::where([['kode', $val['code']]])
             ->select([
                     'kode',
-                    'harga'
+                    'harga','is_active'
                 ])
-                ->first();
-            $data['record'][$key]['price_jmto'] = $data['record'][$key]['price'] + $harga_jual['harga'];
+                ->first();         
+            if ($harga_jual['is_active'] == '0')
+            {
+                unset($data['record'][$key]);
+            }
+            else {
+                $data['record'][$key]['price_jmto'] = $data['record'][$key]['price'] + $harga_jual['harga'];
+
+            }
+
         }
 
         return response()->json($data);
