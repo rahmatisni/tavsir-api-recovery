@@ -13,16 +13,16 @@ class KiosBankController extends Controller
 {
     public function __construct(
         protected KiosBankService $service,
-    )
-    {}
-   
+    ) {
+    }
+
     public function index(Request $request)
     {
         $kategori_pulsa = codefikasiNomor($request->nomor_hp);
         $kategori = ($request?->kategori);
         $sub_kategori = ($request?->sub_kategori);
 
-        if($request->nomor_hp && !$kategori_pulsa){
+        if ($request->nomor_hp && !$kategori_pulsa) {
             return response()->json(['message' => 'Nomor Salah'], 422);
         }
 
@@ -45,14 +45,12 @@ class KiosBankController extends Controller
     public function listProductOperatorPulsa($id)
     {
         $data = $this->service->listProductOperatorPulsa($id);
-        if($data['rc'] != '00')
-        {
+        if ($data['rc'] != '00') {
             $data['record'] = [];
         }
         $harga = $data['record'];
         // $product = ProductKiosBank::get();
-        foreach($harga as $key => $val) 
-        {
+        foreach ($harga as $key => $val) {
             // $harga_jual = $product->where('kode', $val['code'])
             //     ->only([
             //         'kode',
@@ -60,13 +58,13 @@ class KiosBankController extends Controller
             //     ])
             //     ->first();
 
-            $harga_jual = ProductKiosBank::where('kode', $val['code'])->where('is_active', 1)
+            $harga_jual = ProductKiosBank::where([['kode', $val['code']],['is_active', '1']])
             ->select([
-                'kode',
-               'harga'
-            ])
-            ->first();
-            $data['record'][$key]['price_jmto'] = $data['record'][$key]['price']+ $harga_jual['harga'];
+                    'kode',
+                    'harga'
+                ])
+                ->first();
+            $data['record'][$key]['price_jmto'] = $data['record'][$key]['price'] + $harga_jual['harga'];
         }
 
         return response()->json($data);
@@ -75,7 +73,7 @@ class KiosBankController extends Controller
     public function orderPulsa(OrderPulsaRequest $reqest)
     {
         $kategori_pulsa = codefikasiNomor($reqest->phone);
-        if($reqest->phone && !$kategori_pulsa){
+        if ($reqest->phone && !$kategori_pulsa) {
             return response()->json(['message' => 'Nomor Tidak Sesuai Dengan Produk!', 'errors' => 'Nomor Tidak Sesuai Dengan Produk!'], 422);
         }
 
@@ -83,13 +81,11 @@ class KiosBankController extends Controller
         $validatorpulsa = [];
         $validatordata = [];
 
-        if(isset($datax['Pulsa']))
-        {
+        if (isset($datax['Pulsa'])) {
             $validatorpulsa = json_decode($datax['Pulsa']);
         }
 
-        if(isset($datax['Paket Data']))
-        {
+        if (isset($datax['Paket Data'])) {
             $validatordata = json_decode($datax['Paket Data']);
         }
 
@@ -100,29 +96,25 @@ class KiosBankController extends Controller
         foreach ($validatordata as $y) {
             array_push($validatorarr, $y->kode);
         }
-        if (!in_array($reqest->code, $validatorarr))
-        {
+        if (!in_array($reqest->code, $validatorarr)) {
             return response()->json(['message' => 'Nomor Tidak Sesuai Dengan Produk!', 'errors' => 'Nomor Tidak Sesuai Dengan Produk!'], 422);
         }
 
-        $product_jmto = ProductKiosBank::where('kode',$reqest->code)->first();
+        $product_jmto = ProductKiosBank::where('kode', $reqest->code)->first();
         $product_kios = $this->service->listProductOperatorPulsa($product_jmto->prefix_id);
-        if($product_kios['rc'] != '00')
-        {
+        if ($product_kios['rc'] != '00') {
             return response()->json(['message' => 'Product Tidak ditemukan!', 'errors' => 'Product Tidak ditemukan!'], 422);
         }
-        if(!isset($product_kios['record'][0]['price']))
-        {
+        if (!isset($product_kios['record'][0]['price'])) {
             return response()->json(['message' => 'Product maintenance', 'errors' => 'Product maintenance'], 422);
         }
         $product_kios = collect($product_kios['record'])->firstWhere('code', $reqest->code);
-        if(!$product_kios)
-        {
+        if (!$product_kios) {
             return response()->json(['message' => 'Product Tidak ditemukan!', 'errors' => 'Product Tidak ditemukan!'], 422);
         }
 
         $harga_kios = $product_kios['price'];
-        $harga_final =  $harga_kios + ($product_jmto->harga ?? 0);
+        $harga_final = $harga_kios + ($product_jmto->harga ?? 0);
 
         $data = $this->service->orderPulsa($reqest->validated(), $harga_kios, $harga_final);
         return response()->json($data);
@@ -142,19 +134,19 @@ class KiosBankController extends Controller
 
     public function orderUangElektronik(UangElektronikRequest $request)
     {
-        $mandiri = ['6032','5893','6221'];        
-        if ((substr($request['code'],  0, 3) == '753') && ((strlen($request['phone']) != 16) || (!in_array(substr($request['phone'],  0, 4), $mandiri)))) {
-        // return response()->json([
-        //     'status' => 'error',
-        //     'message' => 'Nomor Kartu Anda Tidak Valid'
-        // ], 422);
+        $mandiri = ['6032', '5893', '6221'];
+        if ((substr($request['code'], 0, 3) == '753') && ((strlen($request['phone']) != 16) || (!in_array(substr($request['phone'], 0, 4), $mandiri)))) {
+            // return response()->json([
+            //     'status' => 'error',
+            //     'message' => 'Nomor Kartu Anda Tidak Valid'
+            // ], 422);
 
-        return response()->json(['message' => 'Nomor Kartu Anda Tidak Valid', 'errors' => 'Nomor Kartu Anda Tidak Valid'], 422);
+            return response()->json(['message' => 'Nomor Kartu Anda Tidak Valid', 'errors' => 'Nomor Kartu Anda Tidak Valid'], 422);
 
-    }
-        
+        }
+
         $data = $this->service->uangelEktronik($request->validated());
-        if($data instanceof \Exception) {
+        if ($data instanceof \Exception) {
             return response()->json(['message' => 'Silahkan Coba Kembali', 'errors' => 'Silahkan Coba Kembali'], 500);
         }
 
@@ -163,7 +155,7 @@ class KiosBankController extends Controller
         }
 
 
-       
+
         return response()->json($data);
     }
 
@@ -172,5 +164,5 @@ class KiosBankController extends Controller
         $data = $this->service->getSubKategoriProduct();
         return response()->json($data);
     }
-    
+
 }
