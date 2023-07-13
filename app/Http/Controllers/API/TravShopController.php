@@ -781,9 +781,9 @@ class TravShopController extends Controller
                     foreach ($barrier as $string) {
                         $count += substr_count($string['trx_order_id'], $kunci);
                     }
+                    log::info('count',$count);
                     if ($count > 0) {
                         return response()->json(['error' => 'Voucher Sudah digunakan pada tenant yang sama'], 500);
-
                     }
 
 
