@@ -773,20 +773,6 @@ class TravShopController extends Controller
                         ->where('rest_area_id', $data->tenant->rest_area_id)
                         ->first();
 
-                    #barrier hut JMTO id 3
-
-                    $barrier = SaldoResource::collection($voucher->balance_history['data']);
-                    $kunci =  $data->tenant->rest_area_id.'-'.$data->tenant->id;
-                    $count = 0;
-                    foreach ($barrier as $string) {
-                        $count += substr_count($string['trx_order_id'], $kunci);
-                    }
-                    log::info('count'.$count);
-                    if ($count > 0) {
-                        return response()->json(['error' => 'Voucher Sudah digunakan pada tenant yang sama'], 500);
-                    }
-
-
                     if (!$voucher) {
                         return response()->json(['error' => 'Voucher tidak ditemukan'], 500);
                     }
