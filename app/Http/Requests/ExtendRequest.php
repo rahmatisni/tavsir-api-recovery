@@ -24,8 +24,8 @@ class ExtendRequest extends FormRequest
      */
     public function rules()
     {
-        $rule['limit_tenant'] = 'min:1';
-        $rule['limit_cashier'] = 'min:1';
+        $rule['limit_tenant'] = 'min:0';
+        $rule['limit_cashier'] = 'min:0';
 
         return $rule;
     }
