@@ -273,45 +273,44 @@ class AuthController extends Controller
                     ->whereBetween('created_at', [$data->start_date, $data->end_date])
                     ->get();
                 $total_order = $data_all;
-                $total_order = $total_order->where('payment_method.code_name', 'cash')->get();
+                $total_order = $total_order->where('payment_method.code_name', 'cash');
                 $total_order = $total_order->sum('sub_total') + $total_order->sum('addon_total');
-
                 $trans_cashbox->rp_cash = $total_order;
                 $trans_cashbox->different_cashbox = $request->cashbox - $total_order  - $request->pengeluaran_cashbox;
                 $trans_cashbox->input_cashbox_date = Carbon::now();
 
                 $rp_va_bri = $data_all;
-                $rp_va_bri = $rp_va_bri->where('payment_method.code_name', 'pg_va_bri')->get();
+                $rp_va_bri = $rp_va_bri->where('payment_method.code_name', 'pg_va_bri');
                 $rp_va_bri = $rp_va_bri->sum('sub_total') + $rp_va_bri->sum('addon_total');
                 $trans_cashbox->rp_dd_bri = $rp_va_bri;
 
                 $rp_dd_bri = $data_all;
-                $rp_dd_bri = $rp_dd_bri->where('payment_method.code_name', 'pg_dd_bri')->get();
+                $rp_dd_bri = $rp_dd_bri->where('payment_method.code_name', 'pg_dd_bri');
                 $rp_dd_bri = $rp_dd_bri->sum('sub_total') + $rp_dd_bri->sum('addon_total');
                 $trans_cashbox->rp_dd_bri = $rp_dd_bri;
 
                 $rp_va_mandiri = $data_all;
-                $rp_va_mandiri = $rp_va_mandiri->where('payment_method.code_name', 'pg_va_mandiri')->get();
+                $rp_va_mandiri = $rp_va_mandiri->where('payment_method.code_name', 'pg_va_mandiri');
                 $rp_va_mandiri = $rp_va_mandiri->sum('sub_total') + $rp_va_mandiri->sum('addon_total');
                 $trans_cashbox->rp_va_mandiri = $rp_va_mandiri;
 
                 $rp_dd_mandiri = $data_all;
-                $rp_dd_mandiri = $rp_dd_mandiri->where('payment_method.code_name', 'pg_dd_mandiri')->get();
+                $rp_dd_mandiri = $rp_dd_mandiri->where('payment_method.code_name', 'pg_dd_mandiri');
                 $rp_dd_mandiri = $rp_dd_mandiri->sum('sub_total') + $rp_dd_mandiri->sum('addon_total');
                 $trans_cashbox->rp_dd_mandiri = $rp_dd_mandiri;
 
                 $rp_va_bni = $data_all;
-                $rp_va_bni = $rp_va_bni->where('payment_method.code_name', 'pg_va_bni')->get();
+                $rp_va_bni = $rp_va_bni->where('payment_method.code_name', 'pg_va_bni');
                 $rp_va_bni = $rp_va_bni->sum('sub_total') + $rp_va_bni->sum('addon_total');
                 $trans_cashbox->rp_va_bni = $rp_va_bni;
 
                 $rp_tav_qr = $data_all;
-                $rp_tav_qr = $rp_tav_qr->where('payment_method.code_name', 'tav_qr')->get();
+                $rp_tav_qr = $rp_tav_qr->where('payment_method.code_name', 'tav_qr');
                 $rp_tav_qr = $rp_tav_qr->sum('sub_total') + $rp_tav_qr->sum('addon_total');
                 $trans_cashbox->rp_tav_qr = $rp_tav_qr;
 
                 $rp_link_aja = $data_all;
-                $rp_link_aja->where('payment_method.code_name', 'pg_link_aja')->get();
+                $rp_link_aja->where('payment_method.code_name', 'pg_link_aja');
                 $rp_link_aja = $rp_link_aja->sum('sub_total') + $rp_link_aja->sum('addon_total');
                 $trans_cashbox->rp_link_aja = $rp_link_aja;
 
