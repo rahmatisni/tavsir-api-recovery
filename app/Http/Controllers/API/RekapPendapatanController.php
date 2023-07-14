@@ -63,15 +63,15 @@ class RekapPendapatanController extends Controller
         $cash = $cash->where('payment_method.code_name', 'cash')->sum('sub_total');
         $qr = $qr->where('payment_method.code_name', 'tav_qr')->sum('sub_total');
 
-        $mandiri_va = $mandiri_va->where('payment_method.code_name', 'pg_va_mandiri')->sum('sub_total');
-        $mandiri_dd = $mandiri_dd->where('payment_method.code_name', 'pg_dd_mandiri')->sum('sub_total');
-        $bri_va = $bri_va->where('payment_method.code_name', 'pg_va_bri')->sum('sub_total');
-        $bri_dd = $bri_dd->where('payment_method.code_name', 'pg_dd_bri')->sum('sub_total');
-        $link_aja = $link_aja->where('payment_method.code_name', 'pg_link_aja')->sum('sub_total');
-        $bni_va = $bni_va->where('payment_method.code_name', 'pg_va_bni')->sum('sub_total');
+        $mandiri_va = $mandiri_va->where('payment_method.code_name', 'pg_va_mandiri')->sum('sub_total') + $mandiri_va->where('payment_method.code_name', 'pg_va_mandiri')->sum('addon_total');
+        $mandiri_dd = $mandiri_dd->where('payment_method.code_name', 'pg_dd_mandiri')->sum('sub_total') + $mandiri_dd->where('payment_method.code_name', 'pg_dd_mandiri')->sum('addon_total');
+        $bri_va = $bri_va->where('payment_method.code_name', 'pg_va_bri')->sum('sub_total') + $bri_va->where('payment_method.code_name', 'pg_va_bri')->sum('addon_total');
+        $bri_dd = $bri_dd->where('payment_method.code_name', 'pg_dd_bri')->sum('sub_total') + $bri_dd->where('payment_method.code_name', 'pg_dd_bri')->sum('addon_total');
+        $link_aja = $link_aja->where('payment_method.code_name', 'pg_link_aja')->sum('sub_total') + $link_aja->where('payment_method.code_name', 'pg_link_aja')->sum('addon_total');
+        $bni_va = $bni_va->where('payment_method.code_name', 'pg_va_bni')->sum('sub_total') + $bni_va->where('payment_method.code_name', 'pg_va_bni')->sum('addon_total');
         $digital = $mandiri_va + $mandiri_dd + $bri_va + $bri_dd + $link_aja + $bni_va;
 
-        $total_pendapatan = $total_pendapatan->sum('sub_total');
+        $total_pendapatan = $total_pendapatan->sum('sub_total') + $total_addon->sum('addon_total');
         $total_addon = $total_addon->sum('addon_total');
 
         $periode_berjalan = $periode_berjalan;
