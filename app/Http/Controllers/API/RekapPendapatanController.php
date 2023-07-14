@@ -61,7 +61,7 @@ class RekapPendapatanController extends Controller
         $total_addon = $data_all;
 
         $cash = $cash->where('payment_method.code_name', 'cash')->sum('sub_total') + $cash->where('payment_method.code_name', 'cash')->sum('addon_total');
-        $qr = $qr->where('payment_method.code_name', 'tav_qr')->sum('sub_total') + $cash->where('payment_method.code_name', 'cash')->sum('addon_total');
+        $qr = $qr->where('payment_method.code_name', 'tav_qr')->sum('sub_total') + $qr->where('payment_method.code_name', 'tav_qr')->sum('addon_total');
 
         $mandiri_va = $mandiri_va->where('payment_method.code_name', 'pg_va_mandiri')->sum('sub_total') + $mandiri_va->where('payment_method.code_name', 'pg_va_mandiri')->sum('addon_total');
         $mandiri_dd = $mandiri_dd->where('payment_method.code_name', 'pg_dd_mandiri')->sum('sub_total') + $mandiri_dd->where('payment_method.code_name', 'pg_dd_mandiri')->sum('addon_total');
