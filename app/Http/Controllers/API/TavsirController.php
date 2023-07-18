@@ -795,6 +795,10 @@ class TavsirController extends Controller
                     break;
 
                 case 'tav_qr':
+
+                    if(!request()->voucher){
+                        return response()->json(['message' => 'Scan QR dibatalkan'], 500);
+                    }
                     $voucher = Voucher::where('hash', request()->voucher)
                         ->where('is_active', 1)
                         ->where('rest_area_id', $data->tenant?->rest_area_id)
