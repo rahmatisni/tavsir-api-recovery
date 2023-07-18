@@ -804,7 +804,7 @@ class TavsirController extends Controller
 
                           #barrier hut JMTO id 3
                     if($voucher == null){
-                    return response()->json(['message' => 'Scan QR dibatalkan'], 200);
+                    return response()->json(['message' => 'Scan QR dibatalkan'], 700);
                    }
                     $barrier = SaldoResource::collection($voucher?->balance_history['data']);
                     $kunci =  $data->tenant->rest_area_id.'-'.$data->tenant->id;
