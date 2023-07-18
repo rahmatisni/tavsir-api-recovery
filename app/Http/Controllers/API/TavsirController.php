@@ -796,16 +796,16 @@ class TavsirController extends Controller
 
                 case 'tav_qr':
 
-                    if(!request()->voucher){
-                        return response()->json(['message' => 'Scan QR dibatalkan'], 500);
-                    }
+                  
                     $voucher = Voucher::where('hash', request()->voucher)
                         ->where('is_active', 1)
                         ->where('rest_area_id', $data->tenant?->rest_area_id)
                         ->first();
 
                           #barrier hut JMTO id 3
-
+                    if($voucher == null){
+                    return response()->json(['message' => 'Scan QR dibatalkan'], 500);
+                   }
                     $barrier = SaldoResource::collection($voucher?->balance_history['data']);
                     $kunci =  $data->tenant->rest_area_id.'-'.$data->tenant->id;
                     $count = 0;
