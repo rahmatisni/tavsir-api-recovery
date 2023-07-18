@@ -802,7 +802,7 @@ class TavsirController extends Controller
 
                           #barrier hut JMTO id 3
 
-                    $barrier = SaldoResource::collection($voucher->balance_history['data']);
+                    $barrier = SaldoResource::collection($voucher?->balance_history['data']);
                     $kunci =  $data->tenant->rest_area_id.'-'.$data->tenant->id;
                     $count = 0;
                     foreach ($barrier as $string) {
