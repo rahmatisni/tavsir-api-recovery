@@ -210,17 +210,15 @@ class AuthController extends Controller
 
         DB::beginTransaction();
         $user = auth()->user();
-        $tenant = Tenant::find($user->tenant_id ?? $user->supertenant_id);
-        if (!$tenant) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'User Tenant ID ' . $user->tenant_id . ' invalid'
-            ], 400);
-        }
+        // $tenant = Tenant::find($user->tenant_id ?? $user->supertenant_id);
+        // if (!$tenant) {
+        //     return response()->json([
+        //         'status' => 'error',
+        //         'message' => 'User Tenant ID ' . $user->tenant_id . ' invalid'
+        //     ], 400);
+        // }
         try {
-            // dd($request->pin, $user->pin);
             if (Hash::check($request->pin, $user->pin)) {
-            //    dd($request->pin);
                return response()->json([
                 'status' => 'success',
                 'message' => 'PIN verification success'
