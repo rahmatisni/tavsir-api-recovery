@@ -342,7 +342,13 @@ class PgJmto extends Model
             "phone" => $payload['phone'],
             "email" => $payload['email'],
             "customer_name" => $payload['customer_name'],
-            "submerchant_id" => null
+            "submerchant_id" => null,
+            "exp_date" => $payload['exp_date'],
+            "custom_field_1"=> "test",
+            "custom_field_2"=>"",
+            "custom_field_3"=>"",
+            "custom_field_4"=>"",
+            "custom_field_5"=>""
         ];
         $res = self::service('POST','/sof/bind', $payload);
         Log::info('DD bind', $res->json());

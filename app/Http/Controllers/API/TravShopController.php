@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Http\Resources\Tavsir\TrOrderResource;
 use App\Models\LogKiosbank;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -135,6 +136,21 @@ class TravShopController extends Controller
         return response()->json($data);
     }
 
+    public function orderList(Request $request)
+    {
+        $data = TransOrder::with(['detil', 'tenant', 'rest_area', 'payment', 'payment_method'])->where('order_type', 'POS')
+        ->when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
+        return $q->where('tenant_id', $tenant_id);
+        })
+        ->when($rest_area_id = request()->rest_area_id, function ($q) use ($rest_area_id) {
+        return $q->where('rest_area_id', $rest_area_id);
+        })->get();
+
+
+        $resource = TsOrderResource::collection($data);
+        return response()->json($resource);
+    }
+    
     public function order(TsOrderRequest $request)
     {
         try {

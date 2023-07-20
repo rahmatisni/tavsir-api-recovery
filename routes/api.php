@@ -217,6 +217,8 @@ Route::prefix('travshop')->group(function () {
     Route::post('/self-order', [App\Http\Controllers\API\TravShopController::class, 'selfOrder']);
     Route::get('/order/{id}', [App\Http\Controllers\API\TravShopController::class, 'orderById']);
     Route::get('/order-meja/{id}', [App\Http\Controllers\API\TravShopController::class, 'orderByMeja']);
+    Route::get('/order-list', [App\Http\Controllers\API\TravShopController::class, 'orderList']);
+
     Route::get('/order-customer/{id}', [App\Http\Controllers\API\TravShopController::class, 'orderCustomer']);
     Route::get('/queue-payment/{id}', [App\Http\Controllers\API\TravShopController::class, 'paymentonCasheer']);
     Route::post('/order-confirmation/{id}', [App\Http\Controllers\API\TravShopController::class, 'orderConfirm']);
