@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Tenant;
 use App\Http\Resources\TravShop\TsTenantResource;
+use App\Models\Business;
 use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
@@ -62,6 +63,41 @@ class AuthController extends Controller
                     }
                     $user->accessTokens()->delete();
                 }
+
+                //Cek subscription aktif
+                $business_id = 0;
+                if(in_array($user->role,[User::OWNER, User::TENANT, User::CASHIER])){
+                    switch ($user->role) {
+                        case User::OWNER:
+                            $business_id = $user->business->id ?? 0;
+                            break;
+                        case User::TENANT:
+                            $business_id = $user->tenant->business->id ?? 0;
+                            break;
+                        case User::CASHIER:
+                            $business_id = $user->tenant->business->id ?? 0;
+                            break;
+                        
+                        default:
+                            # code...
+                            break;
+                    }
+                    $subscription_end = Business::find($business_id)?->subscription_end;
+                    if($subscription_end){
+                        $subscription_end = Carbon::parse($subscription_end);
+                        $is_active = $subscription_end->lt(Carbon::now()->subDay());
+                        if($is_active){
+                            $response = ["message" => "Subscription tidak aktif, terakhir subscription ".$subscription_end->format('d F Y').' / '.$subscription_end->diffForHumans()];
+                            return response($response, 422);
+                        }
+                    }else{
+                        $response = ["message" => "Invalid Subscription"];
+                        return response($response, 422);
+                    }
+                }
+
+                //End Cek
+
                 $tokenResult = $user->createToken('Personal');
                 $token = $tokenResult->accessToken;
 

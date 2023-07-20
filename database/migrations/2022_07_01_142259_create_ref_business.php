@@ -25,6 +25,7 @@ class CreateRefBusiness extends Migration
             $table->string('owner');
             $table->string('phone');
             $table->integer('created_by')->nullable();
+            $table->date('subscription_end')->nullable();
             $table->timestamps();
         });
     }

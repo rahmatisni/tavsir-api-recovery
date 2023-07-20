@@ -2,6 +2,10 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Business;
+use App\Models\Subscription;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProfileResource extends JsonResource
@@ -14,6 +18,31 @@ class ProfileResource extends JsonResource
      */
     public function toArray($request)
     {
+        $user = auth()->user();
+        $business_id = 0;
+        if(in_array($user->role,[User::OWNER, User::TENANT, User::CASHIER])){
+            switch ($user->role) {
+                case User::OWNER:
+                    $business_id = $user->business->id ?? 0;
+                    break;
+                case User::TENANT:
+                    $business_id = $user->tenant->business->id ?? 0;
+                    break;
+                case User::CASHIER:
+                    $business_id = $user->tenant->business->id ?? 0;
+                    break;
+                
+                default:
+                    # code...
+                    break;
+            }
+        }
+
+        $subscription_end = Business::find($business_id)?->subscription_end;
+        if($subscription_end){
+            $subscription_end = Carbon::parse($subscription_end)->diffForHumans();
+        }
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -36,6 +65,7 @@ class ProfileResource extends JsonResource
             'have_pin' => $this->pin ? true : false,
             'reset_pin' => $this->reset_pin,
             'fcm_token' => $this->fcm_token,
+            'subscription_end' => $subscription_end,
         ];
     }
 }

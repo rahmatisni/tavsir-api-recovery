@@ -8,6 +8,10 @@ class Business extends BaseModel
 {
     protected $table = 'ref_business';
 
+    protected $date = [
+        'subscription_end'
+    ];
+
     protected $fillable = [
         'name',
         'email',

@@ -13,6 +13,7 @@ use App\Http\Resources\MemberTenantResource;
 use App\Http\Resources\SubscriptionCalculationResource;
 use App\Http\Resources\SubscriptionDetilResource;
 use App\Http\Resources\SubscriptionResource;
+use App\Models\Business;
 use App\Models\PriceSubscription;
 use App\Models\Subscription;
 use App\Models\Tenant;
@@ -64,6 +65,8 @@ class SubscriptionController extends Controller
             $data->document_type = $request->document_type;
             $data->detail_aktivasi = Subscription::WAITING_ACTIVATION;
             $data->save();
+
+            $business = Business::find($request->super_merchant_id);
             DB::commit();
             return response()->json($data);
         } catch (\Throwable $th) {
@@ -132,11 +135,41 @@ class SubscriptionController extends Controller
         if(!$data){
             return  response()->json(['message' => 'Subscription invalid'], 422);
         }
-        $data->start_date = Carbon::now();
-        $data->detail_aktivasi = Subscription::TERKONFIRMASI;
-        $data->note = $request->note;
-        $data->save();
-        return response()->json(['message' => 'Subscription aktif '.$data->aktif_awal]);
+
+        if($data->detail_aktivasi != Subscription::MENUNGGU_KONFIRMASI){
+            return  response()->json(['message' => 'Subscription status not '.Subscription::MENUNGGU_KONFIRMASI], 422);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $data->start_date = Carbon::now();
+            $data->detail_aktivasi = Subscription::TERKONFIRMASI;
+            $data->note = $request->note;
+            $data->superMerchant;
+            $data->save();
+            $superMerchant = $data->superMerchant;
+            if($superMerchant->subscription_end){
+                //Jika Expire
+                $subscription_last = Carbon::parse($superMerchant->subscription_end);
+                if($subscription_last->lt(Carbon::now()->subDay())){
+                    $superMerchant->subscription_end = Carbon::now()->addMonth($data->masa_aktif);
+                }else{
+                    //Belum expire
+                    $superMerchant->subscription_end = $subscription_last->addMonths($data->masa_aktif);
+                }
+            }else{
+                //Belum pernah subscription
+                $superMerchant->subscription_end = Carbon::now()->addMonth($data->masa_aktif);
+            }
+
+            $superMerchant->save();
+            DB::commit();
+            return response()->json(['message' => 'Subscription aktif '.$data->aktif_awal]);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return response()->json(['message' => $th->getMessage()], 422);
+        }
     }
 
     public function reject($id, Request $request)
