@@ -144,9 +144,9 @@ class TravShopController extends Controller
         })
         ->when($rest_area_id = request()->rest_area_id, function ($q) use ($rest_area_id) {
         return $q->where('rest_area_id', $rest_area_id);
-        })->get();
+        })->orderByDesc('created_at')->get();
 
-
+      
         $resource = TsOrderResource::collection($data);
         return response()->json($resource);
     }
