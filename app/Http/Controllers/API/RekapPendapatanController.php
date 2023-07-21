@@ -51,6 +51,7 @@ class RekapPendapatanController extends Controller
         $qr = $data_all;
         $digital = $data_all;
         $mandiri_va = $data_all;
+        $edc = $data_all;
         $mandiri_dd = $data_all;
         $bri_va = $data_all;
         $bri_dd = $data_all;
@@ -70,6 +71,9 @@ class RekapPendapatanController extends Controller
         $link_aja = $link_aja->where('payment_method.code_name', 'pg_link_aja')->sum('sub_total') + $link_aja->where('payment_method.code_name', 'pg_link_aja')->sum('addon_total');
         $bni_va = $bni_va->where('payment_method.code_name', 'pg_va_bni')->sum('sub_total') + $bni_va->where('payment_method.code_name', 'pg_va_bni')->sum('addon_total');
         $digital = $mandiri_va + $mandiri_dd + $bri_va + $bri_dd + $link_aja + $bni_va;
+        $edc = $edc->where('payment_method.code_name', 'edc')->sum('sub_total') + $edc->where('payment_method.code_name', 'edc')->sum('addon_total');
+
+
 
         $total_pendapatan = $total_pendapatan->sum('sub_total') + $total_addon->sum('addon_total');
         $total_addon = $total_addon->sum('addon_total');
@@ -90,6 +94,7 @@ class RekapPendapatanController extends Controller
             'total_link_aja' => $link_aja,
             'total_bni_va' => $bni_va,
             'total_digital' => $digital,
+            'edc' => $edc,
             'total_addon' => $total_addon,
             'total_pendapatan' => $total_pendapatan,
             'detil' => RekapTransOrderResource::collection($data_all)
