@@ -48,6 +48,7 @@ class KiosBankController extends Controller
         if ($data['rc'] != '00') {
             $data['record'] = [];
         }
+        // dd($data);
         $harga = $data['record'];
         // $product = ProductKiosBank::get();
         foreach ($harga as $key => $val) {
@@ -69,7 +70,6 @@ class KiosBankController extends Controller
             }
             else {
                 $data['record'][$key]['price_jmto'] = $data['record'][$key]['price'] + $harga_jual['harga'];
-
             }
 
         }
