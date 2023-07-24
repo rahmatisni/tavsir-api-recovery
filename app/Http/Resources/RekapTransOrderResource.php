@@ -22,6 +22,7 @@ class RekapTransOrderResource extends JsonResource
             'total' => $this->total,
             'sub_total' => $this->sub_total,
             'payment_method' => $this->payment_method->name ?? '',
+            'bank_name' => $this->trans_edc->bank->name ?? '',
             'order_type' => $this->order_type,
             'order_type_label' => $this->labelOrderType(),
         ];
