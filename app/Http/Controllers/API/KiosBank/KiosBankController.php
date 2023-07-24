@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\OrderPulsaRequest;
 use App\Http\Requests\UangElektronikRequest;
 use App\Services\External\KiosBankService;
-use Facade\FlareClient\Glows\Recorder;
 use Illuminate\Http\Request;
 use App\Models\KiosBank\ProductKiosBank;
 
@@ -49,8 +48,6 @@ class KiosBankController extends Controller
         if ($data['rc'] != '00') {
             $data['record'] = [];
         }
-
-        $data_final=[];
         $harga = $data['record'];
         // $product = ProductKiosBank::get();
         foreach ($harga as $key => $val) {
@@ -65,29 +62,17 @@ class KiosBankController extends Controller
                     'kode',
                     'harga','is_active'
                 ])
-                ->firstOrFail();
-
+                ->first();         
             if ($harga_jual['is_active'] == '0')
             {
                 unset($data['record'][$key]);
             }
             else {
                 $data['record'][$key]['price_jmto'] = $data['record'][$key]['price'] + $harga_jual['harga'];
-                array_push($data_final,$data['record'][$key]);
+
             }
 
         }
-
-        if  ($data['rc'] == '00') {
-            $data = [
-                'record' => $data_final,
-                "rc" => "00"
-            ];
-        }
-        else {
-            return response()->json(['message' => 'Produk Sedang Gangguan', 'errors' => 'Produk Sedang Gangguan'], 422);
-        }
-      
 
         return response()->json($data);
     }
