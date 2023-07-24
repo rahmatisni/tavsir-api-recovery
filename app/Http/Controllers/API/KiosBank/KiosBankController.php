@@ -50,6 +50,8 @@ class KiosBankController extends Controller
         }
         // dd($data);
         $harga = $data['record'];
+
+        dd($data);
         // $product = ProductKiosBank::get();
         foreach ($harga as $key => $val) {
             // $harga_jual = $product->where('kode', $val['code'])
