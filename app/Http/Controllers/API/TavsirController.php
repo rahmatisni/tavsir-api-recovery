@@ -670,7 +670,7 @@ class TavsirController extends Controller
                 $value->fee = $data;
             }
             if (in_array($value->id, $tavsir)){
-                $value->travshop = true;
+                $value->tavsir = true;
             }
             else {
                 $value->tavsir = false;
