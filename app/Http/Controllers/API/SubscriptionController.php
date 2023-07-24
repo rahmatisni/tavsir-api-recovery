@@ -63,7 +63,7 @@ class SubscriptionController extends Controller
             $data->limit_cashier = 1;
             $data->limit_tenant = 1;
             $data->document_type = $request->document_type;
-            $data->detail_aktivasi = Subscription::WAITING_ACTIVATION;
+            $data->detail_aktivasi = Subscription::MENUNGGU_KONFIRMASI;
             $data->save();
 
             $business = Business::find($request->super_merchant_id);
