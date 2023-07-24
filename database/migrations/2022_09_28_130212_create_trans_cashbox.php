@@ -31,6 +31,7 @@ class CreateTransCashbox extends Migration
             $table->integer('rp_tav_qr');
             $table->integer('rp_link_aja');
             $table->integer('rp_total');
+            $table->integer('rp_edc')->default(0);
             $table->integer('rp_addon_total')->default(0);
             $table->timestamps();
         });

@@ -73,8 +73,6 @@ class RekapPendapatanController extends Controller
         $digital = $mandiri_va + $mandiri_dd + $bri_va + $bri_dd + $link_aja + $bni_va;
         $edc = $edc->where('payment_method.code_name', 'edc')->sum('sub_total') + $edc->where('payment_method.code_name', 'edc')->sum('addon_total');
 
-
-
         $total_pendapatan = $total_pendapatan->sum('sub_total') + $total_addon->sum('addon_total');
         $total_addon = $total_addon->sum('addon_total');
 

@@ -28,6 +28,7 @@ class TransCashbox extends BaseModel
         'rp_link_aja',
         'rp_cash',
         'rp_total',
+        'rp_edc',
     ];
 
     public function trans_operational()

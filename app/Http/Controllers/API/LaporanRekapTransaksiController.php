@@ -138,7 +138,8 @@ class LaporanRekapTransaksiController extends Controller
                 'pembayaran_qr' => $data->trans_cashbox?->rp_tav_qr,
                 'pembayaran_digital' => $data->trans_cashbox?->total_digital,
                 'bri_va' => $data->trans_cashbox?->rp_va_bri,
-                'mandiri_va' => $data->trans_cashbox?->mandiri_va,
+                'mandiri_va' => $data->trans_cashbox?->rp_va_mandiri,
+                'edc' => $data->trans_cashbox?->rp_edc,
                 // 'record' => $data,
                 'order' => $order->map(function($value){
                     return [
