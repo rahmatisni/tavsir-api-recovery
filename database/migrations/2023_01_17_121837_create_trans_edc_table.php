@@ -15,7 +15,7 @@ class CreateTransEdcTable extends Migration
     {
         Schema::create('trans_edc', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('trans_order_id');
+            $table->string('trans_order_id');
             $table->unsignedInteger('bank_id');
             $table->string('card_nomor');
             $table->string('ref_nomor');

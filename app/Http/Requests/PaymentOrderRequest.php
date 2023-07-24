@@ -26,13 +26,13 @@ class PaymentOrderRequest extends FormRequest
     {
         return [
             'payment_method_id' => 'required|exists:ref_payment_method,id',
-            'voucher' => 'required_if:payment_method_id,5|max:50',
-            'cash' => 'required_if:payment_method_id,6|max:10000000|min:0',
+            'voucher' => 'required_if:payment_method_id,3|max:50',
+            'cash' => 'required_if:payment_method_id,2|max:10000000|min:0',
             'consume_type' => 'required|in:' . TransOrder::DINE_IN . ',' . TransOrder::TAKE_AWAY,
             'nomor_name' => 'required',
-            'bank_id' => 'required_if:payment_method_id,8|exists:ref_bank,id',
-            'card_nomor' => 'required_if:payment_method_id,8',
-            'ref_nomor' => 'required_if:payment_method_id,8',
+            'bank_id' => 'required_if:payment_method_id,1|exists:ref_bank,id',
+            'card_nomor' => 'required_if:payment_method_id,1',
+            'ref_nomor' => 'required_if:payment_method_id,1',
         ];
     }
 
