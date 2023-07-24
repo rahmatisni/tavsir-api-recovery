@@ -345,7 +345,7 @@ class AuthController extends Controller
                 $trans_cashbox->rp_tav_qr = $rp_tav_qr;
 
                 $rp_link_aja = $data_all;
-                $rp_link_aja->where('payment_method.code_name', 'pg_link_aja');
+                $rp_link_aja = $rp_link_aja->where('payment_method.code_name', 'pg_link_aja');
                 $rp_link_aja = $rp_link_aja->sum('sub_total') + $rp_link_aja->sum('addon_total');
                 $trans_cashbox->rp_link_aja = $rp_link_aja;
 
