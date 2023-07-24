@@ -661,11 +661,21 @@ class TavsirController extends Controller
         //show payment method fro pg
 
         $paymentMethods = PaymentMethod::all();
+        $tavsir = ['1','2','3','5','7','9','10'];
+
+
         foreach ($paymentMethods as $key => $value) {
             if ($value->sof_id && $request->amount) {
                 $data = PgJmto::tarifFee($value->sof_id, $value->payment_method_id, $value->sub_merchant_id, $request->amount);
                 $value->fee = $data;
             }
+            if (in_array($value->id, $tavsir)){
+                $value->travshop = true;
+            }
+            else {
+                $value->tavsir = false;
+            }
+
             if ($value->sof_id == (0||null)) {
                 $value->status = false;
             }
