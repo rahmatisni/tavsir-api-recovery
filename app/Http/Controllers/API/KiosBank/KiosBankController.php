@@ -62,18 +62,28 @@ class KiosBankController extends Controller
                     'kode',
                     'harga','is_active'
                 ])
-                ->first();         
-            if ($harga_jual['is_active'] == '0')
-            {
+                ->first();  
+                
+            // dump($harga_jual);
+
+            if ($harga_jual == null){
                 unset($data['record'][$key]);
             }
             else {
-                $data['record'][$key]['price_jmto'] = $data['record'][$key]['price'] + $harga_jual['harga'];
-
+                if ($harga_jual['is_active'] == '0')
+                {
+                    unset($data['record'][$key]);
+                }
+                else {
+                    $data['record'][$key]['price_jmto'] = $data['record'][$key]['price'] + $harga_jual['harga'];
+    
+                }    
+                
             }
-
+          
         }
-
+        $parsed_ressult = array_values($data['record']);
+        $data['record'] = $parsed_ressult;
         return response()->json($data);
     }
 
