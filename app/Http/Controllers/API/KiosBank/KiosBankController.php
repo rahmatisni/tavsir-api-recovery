@@ -48,7 +48,7 @@ class KiosBankController extends Controller
         if ($data['rc'] != '00') {
             $data['record'] = [];
         }
-        // dd($data);
+        dd($data);
         $harga = $data['record'];
         // $product = ProductKiosBank::get();
         foreach ($harga as $key => $val) {
