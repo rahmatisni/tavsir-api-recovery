@@ -350,7 +350,7 @@ class AuthController extends Controller
                 $trans_cashbox->rp_link_aja = $rp_link_aja;
 
                 $rp_edc = $data_all;
-                $rp_edc->where('payment_method.code_name', 'edc');
+                $rp_edc = $rp_edc->where('payment_method.code_name', 'edc');
                 $rp_edc = $rp_edc->sum('sub_total') + $rp_edc->sum('addon_total');
                 $trans_cashbox->rp_edc = $rp_edc;
 
