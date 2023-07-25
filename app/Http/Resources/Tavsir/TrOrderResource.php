@@ -49,7 +49,7 @@ class TrOrderResource extends JsonResource
             'status_label' => $this->statusLabel(),
             'canceled_by' => $this->canceled_by,
             'canceled_name' => $this->canceled_name,
-            'reason_cancel' => $this->reason_cancel,
+            'bank_name' => $this->trans_edc->bank->name ?? '',
             'payment' => $this->payment,
             'code_verif' => $this->code_verif,
             'rating' => $this->rating,

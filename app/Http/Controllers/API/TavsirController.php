@@ -688,7 +688,7 @@ class TavsirController extends Controller
 
     public function orderList(Request $request)
     {
-        $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer')->when($status = request()->status, function ($q) use ($status) {
+        $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer','trans_edc.bank')->when($status = request()->status, function ($q) use ($status) {
             if (is_array($status)) {
                 $q->whereIn('status', $status);
             } else {
