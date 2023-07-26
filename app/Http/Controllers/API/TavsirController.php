@@ -688,6 +688,14 @@ class TavsirController extends Controller
 
     public function orderList(Request $request)
     {
+        $queryOrder = "CASE WHEN status = 'WAITING_CONFIRMATION_TENANT' THEN 1 ";
+        $queryOrder = "CASE WHEN status = 'WAITING_CONFIRMATION_USER' THEN 2 ";
+        $queryOrder .= "WHEN status = 'READY' THEN 3 ";
+        $queryOrder .= "WHEN status = 'PAYMENT_SUCCESS' THEN 4 ";
+        $queryOrder .= "WHEN status = 'DONE' THEN 5 ";
+        $queryOrder .= "WHEN status = 'CANCEL' THEN 6 ";
+        $queryOrder .= "ELSE 7 END";
+
         $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer','trans_edc.bank')->when($status = request()->status, function ($q) use ($status) {
             if (is_array($status)) {
                 $q->whereIn('status', $status);
@@ -721,20 +729,14 @@ class TavsirController extends Controller
                     $q->orderBy($jsonx[0], $jsonx[1]);
                 }
             }
-        });
+        }
+    
+    )->orderByRaw($queryOrder)->get();
         if (!request()->sort) {
             $data = $data->orderBy('updated_at', 'desc');
 
         }
-        $data = $data->orderBy('updated_at', 'desc');
-        $queryOrder = "CASE WHEN status = 'WAITING_CONFIRMATION_TENANT' THEN 1 ";
-        $queryOrder = "CASE WHEN status = 'WAITING_CONFIRMATION_USER' THEN 2 ";
-        $queryOrder .= "WHEN status = 'READY' THEN 3 ";
-        $queryOrder .= "WHEN status = 'PAYMENT_SUCCESS' THEN 4 ";
-        $queryOrder .= "WHEN status = 'DONE' THEN 5 ";
-        $queryOrder .= "WHEN status = 'CANCEL' THEN 6 ";
-        $queryOrder .= "ELSE 7 END";
-        $data = $data->orderByRaw($queryOrder)->get();
+
 
         return response()->json(TrOrderResource::collection($data));
     }
