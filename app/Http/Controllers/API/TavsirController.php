@@ -727,11 +727,11 @@ class TavsirController extends Controller
 
         }
         $data = $data->orderBy('updated_at', 'desc');
-        $queryOrder = "CASE WHEN Size = 'WAITING_OPEN' THEN 1 ";
-        $queryOrder .= "WHEN Size = 'READY' THEN 2 ";
-        $queryOrder .= "WHEN Size = 'PAYMENT_SUCCESS' THEN 2 ";
-        $queryOrder .= "WHEN Size = 'DONE' THEN 2 ";
-        $queryOrder .= "WHEN Size = 'CANCEL' THEN 2 ";
+        $queryOrder = "CASE WHEN status = 'WAITING_OPEN' THEN 1 ";
+        $queryOrder .= "WHEN status = 'READY' THEN 2 ";
+        $queryOrder .= "WHEN status = 'PAYMENT_SUCCESS' THEN 2 ";
+        $queryOrder .= "WHEN status = 'DONE' THEN 2 ";
+        $queryOrder .= "WHEN status = 'CANCEL' THEN 2 ";
         $queryOrder .= "ELSE 3 END";
         $data = $data->orderByRaw($queryOrder)->get();
 
