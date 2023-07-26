@@ -736,7 +736,7 @@ class TavsirController extends Controller
         if (!request()->sort) {
             $data = $data->orderBy('updated_at', 'desc');
 
-        // }
+        }
         $data = $data->get();
 
 
