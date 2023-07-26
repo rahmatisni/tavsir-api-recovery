@@ -732,10 +732,10 @@ class TavsirController extends Controller
         }
     
     )->orderByRaw($queryOrder);
-        if (!request()->sort) {
-            $data = $data->orderBy('updated_at', 'desc');
+        // if (!request()->sort) {
+        //     $data = $data->orderBy('updated_at', 'desc');
 
-        }
+        // }
         $data = $data->get();
 
 
