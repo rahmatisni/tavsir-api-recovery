@@ -732,9 +732,9 @@ class TavsirController extends Controller
         //     }
         // }
     
-    )->orderBy('updated_at', 'asc')->orderByRaw($queryOrder);
+    )->orderBy('updated_at', 'desc')->orderByRaw($queryOrder);
         if (!request()->sort) {
-            $data = $data->orderBy('updated_at', 'desc');
+            // $data = $data->orderBy('updated_at', 'desc');
 
         }
         $data = $data->get();
