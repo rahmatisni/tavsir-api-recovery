@@ -727,12 +727,12 @@ class TavsirController extends Controller
 
         }
         $data = $data->orderBy('updated_at', 'desc');
-        $queryOrder = "CASE WHEN status = 'WAITING_OPEN' THEN 1 ";
+        $queryOrder = "CASE WHEN status = 'WAITING_CONFIRMATION_TENANT' THEN 1 ";
         $queryOrder .= "WHEN status = 'READY' THEN 2 ";
-        $queryOrder .= "WHEN status = 'PAYMENT_SUCCESS' THEN 2 ";
-        $queryOrder .= "WHEN status = 'DONE' THEN 2 ";
-        $queryOrder .= "WHEN status = 'CANCEL' THEN 2 ";
-        $queryOrder .= "ELSE 3 END";
+        $queryOrder .= "WHEN status = 'PAYMENT_SUCCESS' THEN 3 ";
+        $queryOrder .= "WHEN status = 'DONE' THEN 4 ";
+        $queryOrder .= "WHEN status = 'CANCEL' THEN 5 ";
+        $queryOrder .= "ELSE 6 END";
         $data = $data->orderByRaw($queryOrder)->get();
 
         return response()->json(TrOrderResource::collection($data));
