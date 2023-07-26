@@ -722,18 +722,19 @@ class TavsirController extends Controller
             $q->where('tenant_id', $tenant_id);
         })->when($order_type = request()->order_type, function ($q) use ($order_type) {
             $q->where('order_type', $order_type);
-        })->when($sort = request()->sort, function ($q) use ($sort) {
-            if (is_array($sort)) {
-                foreach ($sort as $val) {
-                    $jsonx = explode("&", $val);
-                    $q->orderBy($jsonx[0], $jsonx[1]);
-                }
-            }
         }
+        // )->when($sort = request()->sort, function ($q) use ($sort) {
+        //     if (is_array($sort)) {
+        //         foreach ($sort as $val) {
+        //             $jsonx = explode("&", $val);
+        //             $q->orderBy($jsonx[0], $jsonx[1]);
+        //         }
+        //     }
+        // }
     
-    )->orderByRaw($queryOrder);
-        // if (!request()->sort) {
-        //     $data = $data->orderBy('updated_at', 'desc');
+    )->orderByRaw($queryOrder)->orderBy('updated_at', 'desc');
+        if (!request()->sort) {
+            $data = $data->orderBy('updated_at', 'desc');
 
         // }
         $data = $data->get();
