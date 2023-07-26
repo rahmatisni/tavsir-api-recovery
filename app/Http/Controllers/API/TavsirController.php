@@ -689,12 +689,13 @@ class TavsirController extends Controller
     public function orderList(Request $request)
     {
         $queryOrder = "CASE WHEN status = 'WAITING_CONFIRMATION_TENANT' THEN 1 ";
-        $queryOrder .= "WHEN status = 'WAITING_CONFIRMATION_USER' THEN 2 ";
-        $queryOrder .= "WHEN status = 'READY' THEN 3 ";
-        $queryOrder .= "WHEN status = 'PAYMENT_SUCCESS' THEN 4 ";
-        $queryOrder .= "WHEN status = 'DONE' THEN 5 ";
-        $queryOrder .= "WHEN status = 'CANCEL' THEN 6 ";
-        $queryOrder .= "ELSE 7 END";
+        $queryOrder .= "WHEN status = 'WAITING_PAYMENT' THEN 2 ";
+        $queryOrder .= "WHEN status = 'WAITING_CONFIRMATION_USER' THEN 3 ";
+        $queryOrder .= "WHEN status = 'READY' THEN 4 ";
+        $queryOrder .= "WHEN status = 'PAYMENT_SUCCESS' THEN 5 ";
+        $queryOrder .= "WHEN status = 'DONE' THEN 6 ";
+        $queryOrder .= "WHEN status = 'CANCEL' THEN 7 ";
+        $queryOrder .= "ELSE 8 END";
 
         $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer','trans_edc.bank')->when($status = request()->status, function ($q) use ($status) {
             if (is_array($status)) {
