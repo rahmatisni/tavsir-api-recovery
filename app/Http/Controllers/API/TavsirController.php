@@ -731,11 +731,12 @@ class TavsirController extends Controller
             }
         }
     
-    )->orderByRaw($queryOrder)->get();
-        // if (!request()->sort) {
-        //     $data = $data->orderBy('updated_at', 'desc');
+    )->orderByRaw($queryOrder);
+        if (!request()->sort) {
+            $data = $data->orderBy('updated_at', 'desc');
 
-        // }
+        }
+        $data = $data->get();
 
 
         return response()->json(TrOrderResource::collection($data));
