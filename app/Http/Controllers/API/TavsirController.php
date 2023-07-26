@@ -689,7 +689,7 @@ class TavsirController extends Controller
     public function orderList(Request $request)
     {
         $queryOrder = "CASE WHEN status = 'WAITING_CONFIRMATION_TENANT' THEN 1 ";
-        $queryOrder = "WHEN status = 'WAITING_CONFIRMATION_USER' THEN 2 ";
+        $queryOrder .= "WHEN status = 'WAITING_CONFIRMATION_USER' THEN 2 ";
         $queryOrder .= "WHEN status = 'READY' THEN 3 ";
         $queryOrder .= "WHEN status = 'PAYMENT_SUCCESS' THEN 4 ";
         $queryOrder .= "WHEN status = 'DONE' THEN 5 ";
