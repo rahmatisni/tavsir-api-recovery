@@ -341,7 +341,7 @@ class TravShopController extends Controller
             $data->fee = env('PLATFORM_FEE');
             $data->sub_total = $sub_total;
             $data->total = $data->sub_total + $data->fee + $data->service_fee + $data->addon_total;
-            $data->status = TransOrder::WAITING_OPEN;
+            $data->status = TransOrder::WAITING_CONFIRMATION_TENANT;
             $data->save();
             $data->detil()->saveMany($order_detil_many);
 
