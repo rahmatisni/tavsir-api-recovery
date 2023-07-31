@@ -657,6 +657,9 @@ class TravShopController extends Controller
 
             $res = 'Invalid';
             $payment_method = PaymentMethod::find($request->payment_method_id);
+            if ($data->order_type != TransOrder::ORDER_TRAVOY) {
+                $data->total = $data->sub_total + $data->addon_total + $data->fee;
+            }
             switch ($payment_method->code_name) {
                 case 'pg_va_mandiri':
                     $payment_payload = [
@@ -696,13 +699,7 @@ class TravShopController extends Controller
                             $pay->save();
                         }
                         $data->service_fee = $pay->data['fee'];
-                        if($data->order_type != TransOrder::ORDER_SELF_ORDER)
-                        {
-                            $data->total = $data->total + $data->service_fee + $data->addon_total;
-                        }
-                        else {
-                            $data->total = $data->sub_total + $data->addon_total + $data->service_fee + $data->fee;
-                        }
+                        $data->total = $data->total + $data->service_fee;
                         $data->save();
                     } else {
                         return response()->json([$res], 500);
@@ -745,13 +742,7 @@ class TravShopController extends Controller
                             $pay->save();
                         }
                         $data->service_fee = $pay->data['fee'];
-                        if($data->order_type != TransOrder::ORDER_SELF_ORDER)
-                        {
-                            $data->total = $data->total + $data->service_fee + $data->addon_total;
-                        }
-                        else {
-                            $data->total = $data->sub_total + $data->addon_total + $data->service_fee + $data->fee;
-                        }
+                        $data->total = $data->total + $data->service_fee;
                         $data->save();
                     } else {
                         return response()->json([$res], 500);
@@ -795,13 +786,7 @@ class TravShopController extends Controller
                             $pay->save();
                         }
                         $data->service_fee = $pay->data['fee'];
-                        if($data->order_type != TransOrder::ORDER_SELF_ORDER)
-                        {
-                            $data->total = $data->total + $data->service_fee + $data->addon_total;
-                        }
-                        else {
-                            $data->total = $data->sub_total + $data->addon_total + $data->service_fee + $data->fee;
-                        }
+                        $data->total = $data->total + $data->service_fee;
                         $data->save();
                     } else {
                         return response()->json([$res], 500);
