@@ -628,8 +628,11 @@ class TravShopController extends Controller
                     $data->customer_id = $request->customer_id;
                 }
             }
+            if ($data->status == TransOrder::QUEUE) {
+                $data->status = TransOrder::WAITING_PAYMENT;
+            }
 
-            if ($data->status != TransOrder::WAITING_PAYMENT || TransOrder:: QUEUE) {
+            if ($data->status != TransOrder::WAITING_PAYMENT) {
 
                 return response()->json(['info' => $data->status], 422);
             }
