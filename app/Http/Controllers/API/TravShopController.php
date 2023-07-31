@@ -629,6 +629,7 @@ class TravShopController extends Controller
                 }
             }
             if ($data->status == TransOrder::QUEUE) {
+                $data->total = $data->sub_total;
                 $data->status = TransOrder::WAITING_PAYMENT;
             }
 
