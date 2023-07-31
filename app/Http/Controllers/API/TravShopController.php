@@ -701,7 +701,7 @@ class TravShopController extends Controller
                             $data->total = $data->total + $data->service_fee + $data->addon_total;
                         }
                         else {
-                            $data->total = $data->total + $data->service_fee;
+                            $data->total = $data->sub_total + $data->addon_total + $data->service_fee + $data->fee;
                         }
                         $data->save();
                     } else {
@@ -750,7 +750,7 @@ class TravShopController extends Controller
                             $data->total = $data->total + $data->service_fee + $data->addon_total;
                         }
                         else {
-                            $data->total = $data->total + $data->service_fee;
+                            $data->total = $data->sub_total + $data->addon_total + $data->service_fee + $data->fee;
                         }
                         $data->save();
                     } else {
@@ -800,7 +800,7 @@ class TravShopController extends Controller
                             $data->total = $data->total + $data->service_fee + $data->addon_total;
                         }
                         else {
-                            $data->total = $data->total + $data->service_fee;
+                            $data->total = $data->sub_total + $data->addon_total + $data->service_fee + $data->fee;
                         }
                         $data->save();
                     } else {
