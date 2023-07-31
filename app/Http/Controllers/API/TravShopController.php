@@ -962,7 +962,7 @@ class TravShopController extends Controller
                         }
                         $data->service_fee = $respon['fee'];
                         if(TransOrder::ORDER_SELF_ORDER){
-                            $data->total = $data->sub_total;
+                            // $data->total = $data->sub_total;
                         }
                         else {
                             $data->total = $data->sub_total + $data->service_fee + $data->addon_total;
