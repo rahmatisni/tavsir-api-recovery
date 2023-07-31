@@ -392,7 +392,7 @@ class TravShopController extends Controller
     public function paymentonCasheer($id)
     {
         $data = TransOrder::findOrfail($id);
-        if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::READY || $data->status != TransOrder::DONE) {
+        if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::READY || $data->status == TransOrder::DONE) {
             return response()->json(['status' => $data->status, 'responseData' => $data->payment ?? '']);
         }
         $data->status = 'QUEUE';
