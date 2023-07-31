@@ -23,6 +23,8 @@ class TransOrder extends BaseModel
     public const READY = 'READY';
     public const DONE = 'DONE';
     public const CANCEL = 'CANCEL';
+    public const QUEUE = 'QUEUE';
+
 
     public const ORDER_TAKE_N_GO = 'TAKE_N_GO';
     public const ORDER_SELF_ORDER = 'SELF_ORDER';

@@ -629,7 +629,7 @@ class TravShopController extends Controller
                 }
             }
 
-            if ($data->status != TransOrder::WAITING_PAYMENT) {
+            if ($data->status != TransOrder::WAITING_PAYMENT && TransOrder:: QUEUE) {
 
                 return response()->json(['info' => $data->status], 422);
             }
