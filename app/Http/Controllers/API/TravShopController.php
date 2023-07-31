@@ -394,7 +394,7 @@ class TravShopController extends Controller
         $data = TransOrder::findOrfail($id);
         $data->status = 'QUEUE';
         $data->service_fee = 0;
-        $data->total = $data->sub_total + $data->addon_total;
+        $data->total = $data->sub_total + $data->addon_total + $data->fee +$data->service_fee;
         $data->save();
         DB::commit();
         return response()->json($data);
