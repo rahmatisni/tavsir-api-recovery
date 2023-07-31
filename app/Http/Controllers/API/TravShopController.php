@@ -694,7 +694,11 @@ class TravShopController extends Controller
                             $pay->save();
                         }
                         $data->service_fee = $pay->data['fee'];
-                        $data->total = $data->total + $data->service_fee + $data->addon_total;
+                        if($data->order_type != TransOrder::ORDER_SELF_ORDER)
+                        {
+                            $data->total = $data->total + $data->service_fee + $data->addon_total;
+                        }
+                        // $data->total = $data->total + $data->service_fee + $data->addon_total;
                         $data->save();
                     } else {
                         return response()->json([$res], 500);
@@ -737,7 +741,10 @@ class TravShopController extends Controller
                             $pay->save();
                         }
                         $data->service_fee = $pay->data['fee'];
-                        $data->total = $data->total + $data->service_fee;
+                        if($data->order_type != TransOrder::ORDER_SELF_ORDER)
+                        {
+                            $data->total = $data->total + $data->service_fee + $data->addon_total;
+                        }
                         $data->save();
                     } else {
                         return response()->json([$res], 500);
@@ -781,7 +788,10 @@ class TravShopController extends Controller
                             $pay->save();
                         }
                         $data->service_fee = $pay->data['fee'];
-                        $data->total = $data->total + $data->service_fee + $data->addon_total;
+                        if($data->order_type != TransOrder::ORDER_SELF_ORDER)
+                        {
+                            $data->total = $data->total + $data->service_fee + $data->addon_total;
+                        }
                         $data->save();
                     } else {
                         return response()->json([$res], 500);
@@ -961,13 +971,7 @@ class TravShopController extends Controller
                             $tans_payment->save();
                         }
                         $data->service_fee = $respon['fee'];
-                        if(TransOrder::ORDER_SELF_ORDER){
-                            // $data->total = $data->sub_total;
-                        }
-                        else {
-                            $data->total = $data->sub_total + $data->service_fee + $data->addon_total;
-                        }
-                        // $data->total = $data->sub_total + $data->service_fee + $data->addon_total;
+                        $data->total = $data->sub_total + $data->service_fee + $data->addon_total;
                         $data->save();
                         DB::commit();
                         return response()->json($res);
