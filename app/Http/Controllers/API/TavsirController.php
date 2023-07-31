@@ -688,14 +688,15 @@ class TavsirController extends Controller
 
     public function orderList(Request $request)
     {
-        $queryOrder = "CASE WHEN status = 'WAITING_OPEN' THEN 1 ";
-        $queryOrder .= "WHEN status = 'WAITING_CONFIRMATION_TENANT' THEN 2 ";
-        $queryOrder .= "WHEN status = 'WAITING_CONFIRMATION_USER' THEN 3 ";
-        $queryOrder .= "WHEN status = 'WAITING_PAYMENT' THEN 4 ";
-        $queryOrder .= "WHEN status = 'READY' THEN 5 ";
-        $queryOrder .= "WHEN status = 'PAYMENT_SUCCESS' THEN 6 ";
-        $queryOrder .= "WHEN status = 'DONE' THEN 7 ";
-        $queryOrder .= "WHEN status = 'CANCEL' THEN 8 ";
+        $queryOrder = "CASE WHEN status = 'QUEUE' THEN 1 ";
+        $queryOrder .= "WHEN status = 'WAITING_OPEN' THEN 2 ";
+        $queryOrder .= "WHEN status = 'WAITING_CONFIRMATION_TENANT' THEN 3 ";
+        $queryOrder .= "WHEN status = 'WAITING_CONFIRMATION_USER' THEN 4 ";
+        $queryOrder .= "WHEN status = 'WAITING_PAYMENT' THEN 5 ";
+        $queryOrder .= "WHEN status = 'READY' THEN 6 ";
+        $queryOrder .= "WHEN status = 'PAYMENT_SUCCESS' THEN 7 ";
+        $queryOrder .= "WHEN status = 'DONE' THEN 8 ";
+        $queryOrder .= "WHEN status = 'CANCEL' THEN 9 ";
         $queryOrder .= "ELSE 9 END";
 
         $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer','trans_edc.bank')->when($status = request()->status, function ($q) use ($status) {
