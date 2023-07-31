@@ -629,9 +629,9 @@ class TravShopController extends Controller
                 }
             }
             if ($data->status == TransOrder::QUEUE) {
-                $data->total = $data->sub_total;
-                $data->save();
-                DB::commit();
+                // $data->total = $data->sub_total;
+                // $data->save();
+                // DB::commit();
                 $data->status = TransOrder::WAITING_PAYMENT;
             }
 
@@ -961,7 +961,14 @@ class TravShopController extends Controller
                             $tans_payment->save();
                         }
                         $data->service_fee = $respon['fee'];
-                        $data->total = $data->sub_total + $data->service_fee + $data->addon_total;
+                        if(TransOrder::ORDER_SELF_ORDER){
+                            $data->total = $data->total;
+
+                        }
+                        else {
+                            $data->total = $data->sub_total + $data->service_fee + $data->addon_total;
+                        }
+                        // $data->total = $data->sub_total + $data->service_fee + $data->addon_total;
                         $data->save();
                         DB::commit();
                         return response()->json($res);
