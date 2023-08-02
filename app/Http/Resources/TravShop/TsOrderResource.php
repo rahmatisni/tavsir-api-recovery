@@ -177,6 +177,7 @@ class TsOrderResource extends JsonResource
             'sub_total' => $this->sub_total,
             'fee' => $this->fee,
             'service_fee' => $this->service_fee,
+            'discount' => $this->discount,
             'total' => $this->total,
             'status' => $this->status,
             'status_label' => $this->statusLabel(),
