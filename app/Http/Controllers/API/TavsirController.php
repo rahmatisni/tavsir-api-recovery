@@ -856,6 +856,7 @@ class TavsirController extends Controller
                         }
                         $data->service_fee = $pay->data['fee'];
                         $data->total = $data->total + $data->service_fee;
+                        $data->status = TransOrder::WAITING_PAYMENT;
                         $data->save();
                     } else {
                         return response()->json([$res], 500);
@@ -899,6 +900,7 @@ class TavsirController extends Controller
                         }
                         $data->service_fee = $pay->data['fee'];
                         $data->total = $data->total + $data->service_fee;
+                        $data->status = TransOrder::WAITING_PAYMENT;
                         $data->save();
                     } else {
                         return response()->json([$res], 500);
@@ -943,190 +945,191 @@ class TavsirController extends Controller
                         }
                         $data->service_fee = $pay->data['fee'];
                         $data->total = $data->total + $data->service_fee;
+                        $data->status = TransOrder::WAITING_PAYMENT;
                         $data->save();
                     } else {
                         return response()->json([$res], 500);
                     }
                     break;
-                case 'tav_qr':
-                    $voucher = Voucher::where('hash', request()->voucher)
-                        ->where('is_active', 1)
-                        ->where('rest_area_id', $data->tenant->rest_area_id)
-                        ->first();
+                // case 'tav_qr':
+                //     $voucher = Voucher::where('hash', request()->voucher)
+                //         ->where('is_active', 1)
+                //         ->where('rest_area_id', $data->tenant->rest_area_id)
+                //         ->first();
 
-                    if (!$voucher) {
-                        return response()->json(['error' => 'Voucher tidak ditemukan'], 500);
-                    }
+                //     if (!$voucher) {
+                //         return response()->json(['error' => 'Voucher tidak ditemukan'], 500);
+                //     }
 
-                    if ($voucher->balance < $data->total) {
-                        return response()->json(['error' => 'Ballance tidak cukup'], 500);
-                    }
+                //     if ($voucher->balance < $data->total) {
+                //         return response()->json(['error' => 'Ballance tidak cukup'], 500);
+                //     }
 
-                    $balance_now = $voucher->balance;
-                    $voucher->balance -= $data->total;
-                    $ballaceHistory = [
-                        "trx_id" => $data->id,
-                        "trx_order_id" => $data->order_id,
-                        "trx_type" => 'Belanja',
-                        "trx_area" => $data->tenant ? ($data->tenant->rest_area ? $data->tenant->rest_area->name : '') : '',
-                        "trx_name" => $data->tenant ? $data->tenant->name : '',
-                        "trx_amount" => $data->total,
-                        "current_balance" => $voucher->balance,
-                        "last_balance" => $balance_now,
-                        "datetime" => Carbon::now()->toDateTimeString(),
-                    ];
-                    $dataHistori = $voucher->balance_history;
-                    $dataHistori['data'] = array_merge([$ballaceHistory], $voucher->balance_history['data']);
-                    $dataHistori['current_balance'] = $voucher->balance;
-                    $voucher->balance_history = $dataHistori;
-                    $voucher->qr_code_use = $voucher->qr_code_use + 1;
-                    $voucher->updated_at = Carbon::now()->format('Y-m-d H:i:s');
-                    $voucher->save();
+                //     $balance_now = $voucher->balance;
+                //     $voucher->balance -= $data->total;
+                //     $ballaceHistory = [
+                //         "trx_id" => $data->id,
+                //         "trx_order_id" => $data->order_id,
+                //         "trx_type" => 'Belanja',
+                //         "trx_area" => $data->tenant ? ($data->tenant->rest_area ? $data->tenant->rest_area->name : '') : '',
+                //         "trx_name" => $data->tenant ? $data->tenant->name : '',
+                //         "trx_amount" => $data->total,
+                //         "current_balance" => $voucher->balance,
+                //         "last_balance" => $balance_now,
+                //         "datetime" => Carbon::now()->toDateTimeString(),
+                //     ];
+                //     $dataHistori = $voucher->balance_history;
+                //     $dataHistori['data'] = array_merge([$ballaceHistory], $voucher->balance_history['data']);
+                //     $dataHistori['current_balance'] = $voucher->balance;
+                //     $voucher->balance_history = $dataHistori;
+                //     $voucher->qr_code_use = $voucher->qr_code_use + 1;
+                //     $voucher->updated_at = Carbon::now()->format('Y-m-d H:i:s');
+                //     $voucher->save();
 
-                    $payment_payload = [
-                        'order_id' => $data->order_id,
-                        'order_name' => 'GetPay',
-                        'amount' => $data->total,
-                        'desc' => $data->tenant->name ?? 'Travoy',
-                        'phone' => $request->customer_phone,
-                        'email' => $request->customer_email,
-                        'customer_name' => $request->customer_name,
-                        'voucher' => $voucher->id
-                    ];
-                    $payment = new TransPayment();
-                    $payment->trans_order_id = $data->id;
-                    $payment->data = $payment_payload;
-                    $data->payment()->save($payment);
-                    $data->total = $data->total + $data->service_fee + $data->addon_total;
-                    $data->status = TransOrder::PAYMENT_SUCCESS;
-                    $data->save();
-                    foreach ($data->detil as $key => $value) {
-                        $this->stock_service->updateStockProduct($value);
-                    }
-                    $this->trans_sharing_service->calculateSharing($data);
-                    $res = $data;
+                //     $payment_payload = [
+                //         'order_id' => $data->order_id,
+                //         'order_name' => 'GetPay',
+                //         'amount' => $data->total,
+                //         'desc' => $data->tenant->name ?? 'Travoy',
+                //         'phone' => $request->customer_phone,
+                //         'email' => $request->customer_email,
+                //         'customer_name' => $request->customer_name,
+                //         'voucher' => $voucher->id
+                //     ];
+                //     $payment = new TransPayment();
+                //     $payment->trans_order_id = $data->id;
+                //     $payment->data = $payment_payload;
+                //     $data->payment()->save($payment);
+                //     $data->total = $data->total + $data->service_fee + $data->addon_total;
+                //     $data->status = TransOrder::PAYMENT_SUCCESS;
+                //     $data->save();
+                //     foreach ($data->detil as $key => $value) {
+                //         $this->stock_service->updateStockProduct($value);
+                //     }
+                //     $this->trans_sharing_service->calculateSharing($data);
+                //     $res = $data;
 
-                    break;
+                //     break;
 
-                case 'pg_dd_bri':
-                    $bind = Bind::where('id', $request->card_id)->first();
-                    $bind_before = TransPayment::where('trans_order_id', $data->id)->first();
+                // case 'pg_dd_bri':
+                //     $bind = Bind::where('id', $request->card_id)->first();
+                //     $bind_before = TransPayment::where('trans_order_id', $data->id)->first();
 
-                    if (!$bind && $request->card_id) {
-                        return response()->json(['message' => 'Card Not Found'], 404);
-                    }
-                    if ($bind) {
-                        if (!$bind->is_valid) {
-                            return response()->json(['message' => 'Card Not Valid'], 404);
-                        }
-                    }
+                //     if (!$bind && $request->card_id) {
+                //         return response()->json(['message' => 'Card Not Found'], 404);
+                //     }
+                //     if ($bind) {
+                //         if (!$bind->is_valid) {
+                //             return response()->json(['message' => 'Card Not Valid'], 404);
+                //         }
+                //     }
 
-                    // dd($bind_before);
-                    $payment_payload = [
-                        "sof_code" => $bind->sof_code ?? $bind_before->data['sof_code'],
-                        "bind_id" => $bind->bind_id ?? $bind_before->data['bind_id'],
-                        "refnum" => $bind->refnum ?? $bind_before->data['refnum'],
-                        "card_no" => $bind->card_no ?? $bind_before->data['card_no'],
-                        "amount" => (string) $data->sub_total,
-                        "trxid" => $data->order_id,
-                        "remarks" => $data->tenant->name ?? 'Travoy',
-                        "phone" => $bind->phone ?? $bind_before->data['phone'],
-                        "email" => $bind->email ?? $bind_before->data['email'],
-                        "customer_name" => $bind->customer_name ?? $bind_before->data['customer_name'],
-                        "bill" => (string) $data->sub_total,
-                        "fee" => (string) $data->fee,
-                        "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
+                //     // dd($bind_before);
+                //     $payment_payload = [
+                //         "sof_code" => $bind->sof_code ?? $bind_before->data['sof_code'],
+                //         "bind_id" => $bind->bind_id ?? $bind_before->data['bind_id'],
+                //         "refnum" => $bind->refnum ?? $bind_before->data['refnum'],
+                //         "card_no" => $bind->card_no ?? $bind_before->data['card_no'],
+                //         "amount" => (string) $data->sub_total,
+                //         "trxid" => $data->order_id,
+                //         "remarks" => $data->tenant->name ?? 'Travoy',
+                //         "phone" => $bind->phone ?? $bind_before->data['phone'],
+                //         "email" => $bind->email ?? $bind_before->data['email'],
+                //         "customer_name" => $bind->customer_name ?? $bind_before->data['customer_name'],
+                //         "bill" => (string) $data->sub_total,
+                //         "fee" => (string) $data->fee,
+                //         "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
 
-                    ];
-                    // log::info('Request DD inquiry => '.$payment_payload);
+                //     ];
+                //     // log::info('Request DD inquiry => '.$payment_payload);
 
-                    $respon = PgJmto::inquiryDD($payment_payload);
-                    // log::info($respon);
-                    log::info('Response DD inquiry => '.$respon);
+                //     $respon = PgJmto::inquiryDD($payment_payload);
+                //     // log::info($respon);
+                //     log::info('Response DD inquiry => '.$respon);
 
-                    if ($respon->successful()) {
-                        $res = $respon->json();
-                        if ($res['status'] == 'ERROR') {
-                            return response()->json($res, 400);
-                        }
-                        $res['responseData']['bind_id'] = $bind->bind_id;
-                        $respon = $res['responseData'];
-                        if ($data->payment === null) {
-                            $payment = new TransPayment();
-                            $payment->data = $respon;
-                            $payment->trans_order_id = $data->id;
-                            $payment->save();
-                        } else {
-                            $tans_payment = TransPayment::where('trans_order_id', $data->id)->first();
-                            $tans_payment->data = $respon;
-                            $tans_payment->save();
-                        }
-                        $data->service_fee = $respon['fee'];
-                        $data->total = $data->sub_total + $data->service_fee + $data->addon_total;
-                        $data->save();
-                        DB::commit();
-                        return response()->json($res);
-                    }
-                    return response()->json($respon->json(), 400);
-                    break;
-
-
-                case 'pg_dd_mandiri':
-                    $bind = Bind::where('id', $request->card_id)->first();
-                    $bind_before = TransPayment::where('trans_order_id', $data->id)->first();
-
-                    if (!$bind && $request->card_id) {
-                        return response()->json(['message' => 'Card Not Found'], 404);
-                    }
-                    if ($bind) {
-                        if (!$bind->is_valid) {
-                            return response()->json(['message' => 'Card Not Valid'], 404);
-                        }
-                    }
+                //     if ($respon->successful()) {
+                //         $res = $respon->json();
+                //         if ($res['status'] == 'ERROR') {
+                //             return response()->json($res, 400);
+                //         }
+                //         $res['responseData']['bind_id'] = $bind->bind_id;
+                //         $respon = $res['responseData'];
+                //         if ($data->payment === null) {
+                //             $payment = new TransPayment();
+                //             $payment->data = $respon;
+                //             $payment->trans_order_id = $data->id;
+                //             $payment->save();
+                //         } else {
+                //             $tans_payment = TransPayment::where('trans_order_id', $data->id)->first();
+                //             $tans_payment->data = $respon;
+                //             $tans_payment->save();
+                //         }
+                //         $data->service_fee = $respon['fee'];
+                //         $data->total = $data->sub_total + $data->service_fee + $data->addon_total;
+                //         $data->save();
+                //         DB::commit();
+                //         return response()->json($res);
+                //     }
+                //     return response()->json($respon->json(), 400);
+                //     break;
 
 
-                    $payment_payload = [
-                        "sof_code" => $bind->sof_code ?? $bind_before->data['sof_code'],
-                        "bind_id" => (string) ($bind?->bind_id ?? $bind_before->data['bind_id']),
-                        "refnum" => $bind->refnum ?? $bind_before->data['refnum'],
-                        "card_no" => $bind->card_no ?? $bind_before->data['card_no'],
-                        "amount" => (string) $data->sub_total,
-                        "trxid" => $data->order_id,
-                        "remarks" => $data->tenant->name ?? 'Travoy',
-                        "phone" => $bind->phone ?? $bind_before->data['phone'],
-                        "email" => $bind->email ?? $bind_before->data['email'],
-                        "customer_name" => $bind->customer_name ?? $bind_before->data['customer_name'],
-                        "bill" => (string) $data->sub_total,
-                        "fee" => (string) $data->fee,
-                        "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
-                    ];
-                    $respon = PgJmto::inquiryDD($payment_payload);
-                    log::info($respon);
-                    if ($respon->successful()) {
-                        $res = $respon->json();
-                        if ($res['status'] == 'ERROR') {
-                            return response()->json($res, 400);
-                        }
-                        $res['responseData']['bind_id'] = $bind->bind_id;
-                        $respon = $res['responseData'];
-                        if ($data->payment === null) {
-                            $payment = new TransPayment();
-                            $payment->data = $respon;
-                            $payment->trans_order_id = $data->id;
-                            $payment->save();
-                        } else {
-                            $tans_payment = TransPayment::where('trans_order_id', $data->id)->first();
-                            $tans_payment->data = $respon;
-                            $tans_payment->save();
-                        }
-                        $data->service_fee = $respon['fee'];
-                        $data->total = $data->sub_total + $data->service_fee + $data->addon_total;
-                        $data->save();
-                        DB::commit();
-                        return response()->json($res);
-                    }
-                    return response()->json($respon->json(), 400);
-                    break;
+                // case 'pg_dd_mandiri':
+                //     $bind = Bind::where('id', $request->card_id)->first();
+                //     $bind_before = TransPayment::where('trans_order_id', $data->id)->first();
+
+                //     if (!$bind && $request->card_id) {
+                //         return response()->json(['message' => 'Card Not Found'], 404);
+                //     }
+                //     if ($bind) {
+                //         if (!$bind->is_valid) {
+                //             return response()->json(['message' => 'Card Not Valid'], 404);
+                //         }
+                //     }
+
+
+                //     $payment_payload = [
+                //         "sof_code" => $bind->sof_code ?? $bind_before->data['sof_code'],
+                //         "bind_id" => (string) ($bind?->bind_id ?? $bind_before->data['bind_id']),
+                //         "refnum" => $bind->refnum ?? $bind_before->data['refnum'],
+                //         "card_no" => $bind->card_no ?? $bind_before->data['card_no'],
+                //         "amount" => (string) $data->sub_total,
+                //         "trxid" => $data->order_id,
+                //         "remarks" => $data->tenant->name ?? 'Travoy',
+                //         "phone" => $bind->phone ?? $bind_before->data['phone'],
+                //         "email" => $bind->email ?? $bind_before->data['email'],
+                //         "customer_name" => $bind->customer_name ?? $bind_before->data['customer_name'],
+                //         "bill" => (string) $data->sub_total,
+                //         "fee" => (string) $data->fee,
+                //         "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
+                //     ];
+                //     $respon = PgJmto::inquiryDD($payment_payload);
+                //     log::info($respon);
+                //     if ($respon->successful()) {
+                //         $res = $respon->json();
+                //         if ($res['status'] == 'ERROR') {
+                //             return response()->json($res, 400);
+                //         }
+                //         $res['responseData']['bind_id'] = $bind->bind_id;
+                //         $respon = $res['responseData'];
+                //         if ($data->payment === null) {
+                //             $payment = new TransPayment();
+                //             $payment->data = $respon;
+                //             $payment->trans_order_id = $data->id;
+                //             $payment->save();
+                //         } else {
+                //             $tans_payment = TransPayment::where('trans_order_id', $data->id)->first();
+                //             $tans_payment->data = $respon;
+                //             $tans_payment->save();
+                //         }
+                //         $data->service_fee = $respon['fee'];
+                //         $data->total = $data->sub_total + $data->service_fee + $data->addon_total;
+                //         $data->save();
+                //         DB::commit();
+                //         return response()->json($res);
+                //     }
+                //     return response()->json($respon->json(), 400);
+                //     break;
 
                 default:
                     return response()->json(['error' => $payment_method->name . ' Coming Soon'], 500);
