@@ -30,6 +30,7 @@ class CardController extends Controller
                 $bind = new Bind();
                 $res = $res['responseData'];
                 $res['customer_id'] = $request['customer_id'];
+                $res['exp_date'] = $request['exp_date'];
                 $bind->fill($res);
                 $bind->save();
                 return response()->json([
