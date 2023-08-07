@@ -692,6 +692,8 @@ class TavsirController extends Controller
         $removes = [];
         $self_order = ['5','7','9'];
         $travshop = ['5','6','7','8','9','10'];
+        $tavsir = ['1','2','3','5','7','9','10'];
+
 
         if ($request->trans_order_id) {
             $trans_order = TransOrder::with('tenant')->findOrfail($request->trans_order_id);
@@ -721,6 +723,8 @@ class TavsirController extends Controller
                 $value->fee = 0;
                 $value->self_order = false;
                 $value->travshop = false;
+                $value->tavsir = false;
+
 
 
 
@@ -732,10 +736,10 @@ class TavsirController extends Controller
                 if (in_array($value->id, $travshop)){
                     $value->travshop = true;
                 }
+                if (in_array($value->id, $tavsir)){
+                    $value->tavsir = true;
+                }
                 
-
-                
-
                 if ($value->sof_id) {
                     // tenant_is_verified
                     // if ($tenant_is_verified || $trans_order->order_type == TransOrder::ORDER_TRAVOY) {
