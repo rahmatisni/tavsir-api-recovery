@@ -34,6 +34,7 @@ class BindRequest extends FormRequest
             })],
             'phone' => 'required',
             'email' => 'required',
+            'exp_date' => 'required'
         ];
     }
 }
