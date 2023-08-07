@@ -18,6 +18,7 @@ class Bind extends BaseModel
         'phone',
         'email',
         'refnum',
+        'exp_date',
     ];
 
     public function getIsValidAttribute()
