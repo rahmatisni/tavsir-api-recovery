@@ -725,7 +725,7 @@ class TavsirController extends Controller
             $q->where('tenant_id', $tenant_id);
         })->when($order_type = request()->order_type, function ($q) use ($order_type) {
             $q->where('order_type', $order_type);
-        }
+        })
         // )->when($sort = request()->sort, function ($q) use ($sort) {
         //     if (is_array($sort)) {
         //         foreach ($sort as $val) {
@@ -735,6 +735,9 @@ class TavsirController extends Controller
         //     }
         // }
     
+        ->when($customer_name = request()->customer_name, function ($q) use ($customer_name) {
+            $q->where('customer_name', $customer_name);
+        }
     )->orderByRaw($queryOrder)->orderBy('created_at', 'desc');
         if (!request()->sort) {
             // $data = $data->orderBy('updated_at', 'desc');
