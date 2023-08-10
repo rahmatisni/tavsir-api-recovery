@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\Constanta\ProductType;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
@@ -35,7 +38,35 @@ class AppServiceProvider extends ServiceProvider
         Http::macro('kiosbank', function () {
             return Http::baseUrl(env('KIOSBANK_URL'))->withOptions(["verify"=>false]);
         });
-        
+
+        Builder::macro('myWhereLike', function($columns, $search) {
+            if($search){
+                $this->where(function($query) use ($columns, $search) {
+                  foreach(\Arr::wrap($columns) as $column) {
+                    $query->orWhere($column, 'LIKE', "%{$search}%");
+                  }
+                });
+            }
+           
+            return $this;
+        });
+
+        Builder::macro('myWheres', function($filter, $colum_filter = []) {
+            $colum_model = empty($colum_filter) ? $this->model->getFillable() : $colum_filter;
+            if($filter){
+                $this->where(function($query) use ($filter, $colum_model) {
+                    foreach($filter as $column => $search) {
+                        if($search){
+                            if(in_array($column,$colum_model)){
+                                $query->orWhere($column, $search);
+                            }
+                        }
+                    }
+                });
+            }
+           
+            return $this;
+        });
         // if(env('LOG_VIEWER_AUTH') === true)
         // {
         //     LogViewer::auth(function ($request) {

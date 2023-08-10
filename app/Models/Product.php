@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\BaseModel;
+use App\Models\Constanta\ProductType;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
@@ -23,7 +24,14 @@ class Product extends BaseModel
         'price',
         'stock',
         'is_active',
-        'description'
+        'description',
+
+        //v2
+        'is_composit',
+        'price_capital',
+        'stock_min',
+        'satuan_id',
+        'is_notification',
     ];
 
     public function setPhotoAttribute($value)
@@ -80,5 +88,20 @@ class Product extends BaseModel
     {
         $tenant = Tenant::where('supertenant_id',auth()->user()->supertenant_id)->pluck('id');
         return $query->whereIn('tenant_id', $tenant);
+    }
+
+    public function trans_product_raw()
+    {
+        return $this->belongsToMany(Product::class,'trans_product_raw','parent_id','child_id')->withPivot('qty');
+    }
+
+    public function satuan()
+    {
+        return $this->belongsTo(Satuan::class, 'satuan_id');
+    }
+
+    public function scopeByType($query, $type = ProductType::TUNGGAL)
+    {
+        return $query->where('type', $type);
     }
 }
