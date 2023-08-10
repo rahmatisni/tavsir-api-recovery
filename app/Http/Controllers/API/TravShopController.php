@@ -2003,7 +2003,7 @@ class TravShopController extends Controller
     {
         $asd = request()->voucher;
         $voucher = Voucher::where('hash', request()->voucher)
-            ->where('rest_area_id', '4')
+            ->where('rest_area_id', request()->rest_area_id)
             ->first();
         if ($voucher == null) {
             return response()->json(['message' => 'Scan QR dibatalkan'], 500);
