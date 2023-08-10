@@ -2,6 +2,7 @@
 
 namespace App\Imports;
 
+use App\Models\Constanta\ProductType;
 use App\Models\Product;
 use App\Models\TransStock;
 use Exception;
@@ -32,7 +33,7 @@ class StockImport implements ToCollection
         foreach ($collection as $key => $row) {
             if ($key != 0) {
                 try {
-                    $product = Product::byTenant()->find($row[1]);
+                    $product = Product::byTenant()->byType(ProductType::TUNGGAL)->find($row[1]);
                     if (!$product) {
                         throw new Exception('Product ID ' . $row[1] . ' invalid');
                     }

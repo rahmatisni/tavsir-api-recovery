@@ -3,9 +3,6 @@
 namespace App\Models;
 
 use App\Models\BaseModel;
-use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Carbon;
 
 class TransStock extends BaseModel
 {
@@ -18,9 +15,11 @@ class TransStock extends BaseModel
 
     protected $fillable = [
         'product_id',
+        'tenant_id',
         'current_stock',
         'stock_amount',
-        'description'
+        'description',
+        'satuan_id'
     ];
 
     protected $appends = ['lates_stock'];

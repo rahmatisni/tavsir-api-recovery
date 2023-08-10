@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Models\Constanta\ProductType;
 use App\Models\Product;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -13,7 +14,7 @@ class TemplateStockExport implements FromCollection, WithHeadings
      */
     public function collection()
     {
-        return Product::byTenant()->get()->map(function ($item, $key) {
+        return Product::byTenant()->byType(ProductType::TUNGGAL)->get()->map(function ($item, $key) {
             return [
                 'no' => $key + 1,
                 'id' => $item->id,

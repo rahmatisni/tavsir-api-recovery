@@ -13,6 +13,7 @@ use App\Http\Resources\StockKeluarResource;
 use App\Http\Resources\StockMasukResource;
 use App\Http\Resources\TransStockResource;
 use App\Imports\StockImport;
+use App\Models\Constanta\ProductType;
 use App\Models\Product;
 use App\Models\TransStock;
 use GuzzleHttp\Psr7\Request;
@@ -23,7 +24,7 @@ class StockController extends Controller
 {
     public function indexKartu()
     {
-        $data = Product::byTenant()->when($name = request()->name, function ($q) use ($name) {
+        $data = Product::byTenant()->byType(ProductType::TUNGGAL)->when($name = request()->name, function ($q) use ($name) {
             $q->where('name', 'like', '%' . $name . '%');
         })->when($sku = request()->sku, function ($q) use ($sku) {
             $q->where('sku', 'like', '%' . $sku . '%');
@@ -93,7 +94,7 @@ class StockController extends Controller
 
     public function kartuShow($id)
     {
-        $data = Product::byTenant()->findOrfail($id);
+        $data = Product::byTenant()->byType(ProductType::TUNGGAL)->findOrfail($id);
         return response()->json(new KartuStockDetilResource($data));
     }
 
@@ -139,7 +140,7 @@ class StockController extends Controller
 
     public function changeStatus($id)
     {
-        $data = Product::findOrfail($id);
+        $data = Product::byType(ProductType::TUNGGAL)->findOrfail($id);
         $data->is_active = $data->is_active == 1 ? 0 : 1;
         $data->save();
         return response()->json(['message' => 'Change status success', 'is_active' => $data->is_active]);

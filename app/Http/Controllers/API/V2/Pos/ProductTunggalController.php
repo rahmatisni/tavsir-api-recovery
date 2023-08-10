@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API\V2\Pos;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ProductV2Request;
+use App\Http\Requests\ProductTunggalRequest;
 use App\Http\Resources\Pos\ProductV2Resource;
 use App\Http\Resources\Pos\ProductV2ShowResource;
 use App\Http\Resources\ProductRawResource;
@@ -38,7 +38,7 @@ class ProductTunggalController extends Controller
      * @param  \App\Http\Requests\ProductRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(ProductV2Request $request)
+    public function store(ProductTunggalRequest $request)
     {
         return $this->response($this->service->create($request->validated()));
     }
@@ -55,7 +55,7 @@ class ProductTunggalController extends Controller
     }
    
 
-    public function update($id, ProductV2Request $request)
+    public function update($id, ProductTunggalRequest $request)
     {
         return $this->response($this->service->update($id, $request->validated()));
     }

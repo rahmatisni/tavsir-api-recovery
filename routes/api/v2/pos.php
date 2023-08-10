@@ -37,8 +37,8 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('/{id}','destroy');
     });
 
-    // Route::prefix('stock')->controller(TransStockV2Controller::class)->group(function () {
-    //     Route::get('kartu','kartu');
-    //     Route::get('masuk','masuk');
-    // });
+    Route::prefix('stock')->controller(TransStockV2Controller::class)->group(function () {
+        Route::get('kartu','kartu');
+        Route::get('masuk','masuk');
+    });
 });

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Constanta\ProductType;
 use App\Models\Product;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -42,7 +43,7 @@ class TsOrderRequest extends FormRequest
                 function($attribute, $value, $fail){
                     $index = explode('.', $attribute)[1];
                     $id = $this->product[$index]['product_id'];
-                    $p = Product::find($id);
+                    $p = Product::byType(ProductType::TUNGGAL)->find($id);
                     if($p){
                         if ($value > $p->stock) {
                             $fail('The '.$attribute.' is invalid. stock available is '. $p->stock);

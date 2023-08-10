@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DashboardRequest;
+use App\Models\Constanta\ProductType;
 use App\Models\Product;
 use App\Models\RestArea;
 use App\Models\Tenant;
@@ -178,7 +179,7 @@ class DashboardController extends Controller
             })->sortDesc();
         $top_product = [];
         foreach ($topProduct as $key => $value) {
-            $product = Product::find($key);
+            $product = Product::byType(ProductType::TUNGGAL)->find($key);
             $top_product[] = [
                 'name' => $product->name ?? '',
                 'photo' => $product?->photo ? asset($product?->photo) : null,
