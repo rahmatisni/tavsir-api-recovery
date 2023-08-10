@@ -703,6 +703,7 @@ class TravShopController extends Controller
                         }
                         $data->service_fee = $pay->data['fee'];
                         $data->total = $data->total + $data->service_fee;
+                        $data->sub_merchant_id = $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id;
                         $data->save();
                     } else {
                         return response()->json([$res], 500);
@@ -746,7 +747,8 @@ class TravShopController extends Controller
                         }
                         $data->service_fee = $pay->data['fee'];
                         $data->total = $data->total + $data->service_fee;
-                        $data->sub_merchant_id =  $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id;
+                        $data->sub_merchant_id = $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id;
+
                         $data->save();
                     } else {
                         return response()->json([$res], 500);
@@ -791,6 +793,7 @@ class TravShopController extends Controller
                         }
                         $data->service_fee = $pay->data['fee'];
                         $data->total = $data->total + $data->service_fee;
+                        $data->sub_merchant_id = $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id;
                         $data->save();
                     } else {
                         return response()->json([$res], 500);
@@ -913,6 +916,7 @@ class TravShopController extends Controller
                         }
                         $data->service_fee = $respon['fee'];
                         $data->total = $data->sub_total + $data->service_fee + $data->addon_total;
+                        $data->sub_merchant_id = $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id;
                         $data->save();
                         DB::commit();
                         return response()->json($res);
@@ -971,6 +975,7 @@ class TravShopController extends Controller
                         }
                         $data->service_fee = $respon['fee'];
                         $data->total = $data->sub_total + $data->service_fee + $data->addon_total;
+                        $data->sub_merchant_id = $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id;
                         $data->save();
                         DB::commit();
                         return response()->json($res);
@@ -1434,9 +1439,7 @@ class TravShopController extends Controller
                 $data_payment['email'],
                 $data_payment['customer_name'],
                 // $data_payment['submerchant_id']
-                // $data->sub_merchant_id
-                $data->sub_merchant_id ?? $data->sub_merchant_id
-
+                $data->sub_merchant_id
 
             );
             if ($res['status'] == 'success') {
@@ -1854,8 +1857,8 @@ class TravShopController extends Controller
                 $data_payment['phone'],
                 $data_payment['email'],
                 $data_payment['customer_name'],
-                $data->sub_merchant_id ?? $data_payment['submerchant_id']
-
+                // $data_payment['submerchant_id']
+                $data->sub_merchant_id
 
             );
             if ($res['status'] == 'success') {
