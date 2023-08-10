@@ -1362,7 +1362,7 @@ class TavsirController extends Controller
                                         }
                     #barrier hut JMTO
                     if ($voucher->is_active == 0) {
-                        return response()->json(['Anda Belum Absen'], 500);
+                        return response()->json(['error' =>'Anda Belum Absen'], 500);
                     }   
                     if ($count > 0) {
                         return response()->json(['error' => 'Voucher Sudah digunakan pada tenant yang sama'], 500);
