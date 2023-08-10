@@ -1348,7 +1348,6 @@ class TavsirController extends Controller
 
                 case 'tav_qr':
                     $voucher = Voucher::where('hash', request()->voucher)
-                        ->where('is_active', 1)
                         ->where('rest_area_id', $data->tenant?->rest_area_id)
                         ->first();
                     if($voucher == null){
@@ -1360,17 +1359,20 @@ class TavsirController extends Controller
                     $count = 0;
                     foreach ($barrier as $string) {
                         $count += substr_count($string['trx_order_id'], $kunci);
-                    }
-#barrier hut JMTO
-if ($count > 0) {
-    return response()->json(['error' => 'Voucher Sudah digunakan pada tenant yang sama'], 500);
-}   
-###
+                                        }
+                    #barrier hut JMTO
+                    if ($voucher->is_active == 0) {
+                        return response()->json(['Anda Belum Absen'], 500);
+                    }   
+                    if ($count > 0) {
+                        return response()->json(['error' => 'Voucher Sudah digunakan pada tenant yang sama'], 500);
+                    }   
+                    ###
                     if (!$voucher) {
                         return response()->json(['message' => 'Voucher tidak ditemukan'], 500);
                     }
 
-                    if ($voucher->balance < $data->total) {
+                    if ($voucher-1 < $data->total) {
                         return response()->json(['message' => 'Ballance tidak cukup'], 500);
                     }
 
