@@ -746,6 +746,7 @@ class TravShopController extends Controller
                         }
                         $data->service_fee = $pay->data['fee'];
                         $data->total = $data->total + $data->service_fee;
+                        $data->sub_merchant_id =  $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id;
                         $data->save();
                     } else {
                         return response()->json([$res], 500);
