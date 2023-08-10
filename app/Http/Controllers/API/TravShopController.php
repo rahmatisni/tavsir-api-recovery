@@ -2001,8 +2001,7 @@ class TravShopController extends Controller
 
     public function absen(Request $request)
     {
-        $asd = request()->voucher;
-        $voucher = Voucher::where('hash', $request->voucher)
+        $voucher = Voucher::where('hash', request()->voucher)
             ->where('rest_area_id', request()->rest_area_id)
             ->first();
         if ($voucher == null) {
