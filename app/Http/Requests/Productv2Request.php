@@ -72,7 +72,6 @@ class ProductV2Request extends FormRequest
             'customize' => 'List Customize',
             'customize.*.customize_id' => 'Customize',
             'customize.*.must_choose' => 'Must Choose',
-            
             'raw' => 'List bahan baku',
             'raw.*.raw_product_id' => 'Prodcut bahan baku',
             'raw.*.qty' => 'Qty',
