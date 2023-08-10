@@ -34,6 +34,7 @@ class ProductV2Resource extends JsonResource
             'satuan_name' => $this->satuan?->name,
             'satuan_type' => $this->satuan?->type,
             'is_active' => $this->is_active,
+            'is_notification' => $this->is_notification,
         ];
     }
 }

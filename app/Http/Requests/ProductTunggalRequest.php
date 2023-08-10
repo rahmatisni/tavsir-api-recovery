@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use App\Models\Constanta\ProductType;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ProductV2Request extends FormRequest
+class ProductTunggalRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

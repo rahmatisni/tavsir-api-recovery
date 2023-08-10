@@ -8,6 +8,7 @@ use App\Http\Resources\Pos\ProductV2Resource;
 use App\Http\Resources\Pos\ProductV2ShowResource;
 use App\Http\Resources\ProductRawResource;
 use App\Http\Resources\ProductResource;
+use App\Models\Constanta\ProductType;
 use App\Models\Product;
 use App\Models\User;
 use App\Services\Pos\ProductServices;
@@ -71,7 +72,7 @@ class ProductTunggalController extends Controller
 
     public function updateStatus()
     {
-        $product = Product::whereIn('id', request()->product_id);
+        $product = Product::byType(ProductType::TUNGGAL)->whereIn('id', request()->product_id);
         $product->update(['is_active' => request()->is_active]);
 
         return response()->json($product->get());
