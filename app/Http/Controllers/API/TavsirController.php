@@ -1361,7 +1361,7 @@ class TavsirController extends Controller
                         $count += substr_count($string['trx_order_id'], $kunci);
                                         }
                     #barrier hut JMTO
-                    if ($voucher->is_active == 0) {
+                    if ($voucher->is_active != 1) {
                         return response()->json(['error' =>'Anda Belum Absen'], 500);
                     }   
                     if ($count > 0) {
