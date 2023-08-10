@@ -254,7 +254,7 @@ class SubscriptionController extends Controller
         $kuota = $tenant->kuota_kasir;
         $kasir_subscrption = $kasirAll->where('is_subscription', 1)->count();
         $sisa = $kuota - $kasir_subscrption;
-        if($kuota < $kasir_subscrption){
+        if($kuota <= $kasir_subscrption){
             return  response()->json(['message' => 'Kuota Kasir '.$kuota.' sisa '.$sisa], 422);
         }
 

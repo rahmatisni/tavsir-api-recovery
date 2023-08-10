@@ -28,8 +28,15 @@ class KuotaKasirTenantRequest extends FormRequest
     public function rules()
     {
         $subsciption = Subscription::byOwner()->get();
-        $this->subsciption_aktif = $subsciption->where('status_aktivasi', Subscription::AKTIF)->count();
+        $this->subsciption_aktif = $subsciption->where('status_aktivasi', Subscription::AKTIF)->sum('limit_cashier');
+        // $sum_limit =  $this->subsciption_aktif;
+        // dump($sum_limit);
+
         $this->sisa_kuota = $this->subsciption_aktif - Tenant::byOwner()->sum('kuota_kasir');
+       
+        // dump($this->sisa_kuota);
+        // dd('x');
+
         return [
             'tenant_id' => ['required','exists:ref_tenant,id,business_id,'.auth()->user()->business_id],
             'kuota_kasir' => ['required', 'integer', 'min:0', 'max:'.$this->sisa_kuota]
