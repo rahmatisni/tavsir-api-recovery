@@ -1362,9 +1362,9 @@ class TavsirController extends Controller
                         $count += substr_count($string['trx_order_id'], $kunci);
                     }
 #barrier hut JMTO
-// if ($count > 0) {
-//     return response()->json(['error' => 'Voucher Sudah digunakan pada tenant yang sama'], 500);
-// }   
+if ($count > 0) {
+    return response()->json(['error' => 'Voucher Sudah digunakan pada tenant yang sama'], 500);
+}   
 ###
                     if (!$voucher) {
                         return response()->json(['message' => 'Voucher tidak ditemukan'], 500);
