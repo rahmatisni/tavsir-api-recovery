@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class RawProductAddStockRequest extends FormRequest
+class TransStockStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,16 +24,20 @@ class RawProductAddStockRequest extends FormRequest
     public function rules()
     {
         return [
+            'product_id' => 'integer|exists:ref_product,id,tenant_id,'.auth()->user()->tenant_id,
             'stock' => 'required|numeric|min:1|max:999',
-            'price' => 'required|numeric|min:100|max:100000000',
+            'price_capital' => 'required|numeric|min:100|max:100000000',
+            'keterangan' => 'nullable|string|max:255',
         ];
     }
 
     public function attributes()
     {
         return [
-            'stock' => 'Stock',
-            'price' => 'Price',
+            'product_id' => 'Product',
+            'stock' => 'Stok',
+            'keterangan' => 'Keterangan',
+            'price_capital' => 'Harga Modal',
         ];
     }
 }

@@ -30,7 +30,7 @@ class CustomizeRequest extends FormRequest
             'name' => 'required|string|max:50',
             'pilihan' => 'required|array',
             'pilihan.*.name' => 'required|string|max:20',
-            'pilihan.*.price' => 'required|integer|min:0|max:1000000',
+            'pilihan.*.price' => 'required|integer|min:0|max:100000000',
             'pilihan.*.is_available' => 'required|boolean',
         ];
     }

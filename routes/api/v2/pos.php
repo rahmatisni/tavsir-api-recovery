@@ -39,6 +39,12 @@ Route::middleware('auth:api')->group(function () {
 
     Route::prefix('stock')->controller(TransStockV2Controller::class)->group(function () {
         Route::get('kartu','kartu');
+        Route::get('kartu/{id}','showKartu');
+        Route::get('show/{id}','showMasukKeluar');
         Route::get('masuk','masuk');
+        Route::post('masuk','storeMasuk');
+        Route::get('keluar','keluar');
+        Route::post('keluar','storeKeluar');
+        Route::post('change-status','changeStatus');
     });
 });

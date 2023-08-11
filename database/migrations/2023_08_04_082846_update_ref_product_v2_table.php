@@ -25,7 +25,7 @@ class UpdateRefProductV2Table extends Migration
         });
 
          //M to M product to raw product
-         Schema::create('trans_product_raw', function (Blueprint $table) {
+        Schema::create('trans_product_raw', function (Blueprint $table) {
             $table->unsignedInteger('parent_id');
             $table->unsignedInteger('child_id');
             $table->unsignedInteger('qty');
@@ -34,8 +34,8 @@ class UpdateRefProductV2Table extends Migration
         //M to M product to raw product
         Schema::table('trans_stock', function (Blueprint $table) {
             $table->unsignedInteger('tenant_id');
-            $table->unsignedInteger('satuan_id');
             $table->unsignedInteger('price_capital');
+            $table->unsignedInteger('total_capital');
         });
 
        
@@ -50,11 +50,11 @@ class UpdateRefProductV2Table extends Migration
     public function down()
     {
         Schema::table('trans_stock', function (Blueprint $table) {
-            $table->dropColumn(['tenant_id','satuan_id','price_capital']);
+            $table->dropColumn(['tenant_id','price_capital','total_capital']);
         });
         Schema::dropIfExists('trans_product_raw');
         Schema::table('ref_product', function (Blueprint $table) {
-            $table->dropColumn(['is_composit','price_capital','price_min','price_max','stock_min','satuan_id','is_notification']);
+            $table->dropColumn(['is_composit','type','price_capital','price_min','price_max','stock_min','satuan_id','is_notification']);
         });
     }
 }

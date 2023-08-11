@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\API\V2\Pos;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\TransStockStoreRequest;
+use App\Http\Resources\Pos\TransStockDetilResource;
 use App\Http\Resources\Pos\TransStockKartuResource;
-use App\Http\Resources\StockMasukResource;
+use App\Http\Resources\Pos\TransStockResource;
 use App\Models\User;
 use App\Services\Pos\StockServices;
 use Illuminate\Http\Request;
@@ -27,6 +29,12 @@ class TransStockV2Controller extends Controller
         return $this->responsePaginate(TransStockKartuResource::class, $data);
     }
 
+    public function showKartu($id)
+    {
+        $data = $this->service->showKartu($id);
+        return $this->response(new TransStockKartuResource($data));
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -35,6 +43,35 @@ class TransStockV2Controller extends Controller
     public function masuk(Request $request)
     {
         $data = $this->service->stockMasuk($request->search, $request->filter);
-        return $this->responsePaginate(StockMasukResource::class, $data);
+        return $this->responsePaginate(TransStockResource::class, $data);
+    }
+
+    public function showMasukKeluar($id)
+    {
+        $data = $this->service->showMasukKeluar($id);
+        return $this->response(new TransStockResource($data));
+    }
+
+     /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+    */
+    public function keluar(Request $request)
+    {
+        $data = $this->service->stockKeluar($request->search, $request->filter);
+        return $this->responsePaginate(TransStockResource::class, $data);
+    }
+
+    public function storeMasuk(TransStockStoreRequest $request)
+    {
+        $data = $this->service->storeMasuk($request->validated());
+        return $this->response($data);
+    }
+
+    public function storeKeluar(TransStockStoreRequest $request)
+    {
+        $data = $this->service->storeKeluar($request->validated());
+        return $this->response($data);
     }
 }
