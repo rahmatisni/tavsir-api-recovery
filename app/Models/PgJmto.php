@@ -483,6 +483,41 @@ class PgJmto extends Model
         return $res;
     }
 
+    public static function statusDD($payload)
+    {
+        if (env('PG_FAKE_RESPON') === true) {
+            //for fake
+            Http::fake([
+                env('PG_BASE_URL') . '/directdebit/payment' => function () use ($payload) {
+                    return Http::response([
+                        "status" => "success",
+                        "rc" => "0000",
+                        "rcm" => "success",
+                        "responseData" => [
+                            "sof_code" => $payload['sof_code'],
+                            "bill" => $payload['bill'],
+                            "fee" => $payload['fee'],
+                            "amount" => $payload['bill'] + 2500,
+                            "trxid" => $payload['trxid'],
+                            "remarks" => $payload['remarks'],
+                            "refnum" => $payload['refnum'],
+                            "pay_refnum" => "88888" . rand(1000000, 9999999),
+                            "email" => $payload['email'],
+                            "phone" => $payload['phone'],
+                            "customer_name" => $payload['customer_name'],
+                        ],
+                        "requestData" => $payload
+                    ], 200);
+                },
+            ]);
+            //end fake
+        }
+        Log::info('DD Payment Request', $payload);
+        $res = self::service('POST','/directdebit/advice', $payload);
+        Log::info('DD payment Response', $res->json());
+        return $res;
+    }
+
     public static function cardList($payload)
     {
         $res = self::service('POST','/sof/cardlist', $payload);
