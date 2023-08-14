@@ -1410,7 +1410,7 @@ class TravShopController extends Controller
                         ], 422);
                     }
 
-                    $res['responseData']['card_id'] = $payload['card_id'];
+                    $res['responseData']['card_id'] = $payload['card_id'] ?? '';
                     $respon = $res['responseData'];
                     if ($data->payment === null) {
                         $payment = new TransPayment();
@@ -1903,7 +1903,7 @@ class TravShopController extends Controller
                             ]
                         ], 422);
                     }
-                    $res['responseData']['card_id'] = $payload['card_id'];
+                    $res['responseData']['card_id'] = $payload['card_id'] ?? '';
                     $respon = $res['responseData'];
                     if ($data->payment === null) {
                         $payment = new TransPayment();
@@ -2267,7 +2267,7 @@ class TravShopController extends Controller
                             ]
                         ], 422);
                     }
-                    $res['responseData']['card_id'] = $payload['card_id'];
+                    $res['responseData']['card_id'] = $payload['card_id'] ?? '';
                     $respon = $res['responseData'];
                     if ($data->payment === null) {
                         $payment = new TransPayment();
@@ -2321,7 +2321,7 @@ class TravShopController extends Controller
                             ]
                         ], 422);
                     }
-                    $res['responseData']['card_id'] = $payload['card_id'];
+                    $res['responseData']['card_id'] = $payload['card_id'] ?? '';
                     $respon = $res['responseData'];
                     if ($data->payment === null) {
                         $payment = new TransPayment();
