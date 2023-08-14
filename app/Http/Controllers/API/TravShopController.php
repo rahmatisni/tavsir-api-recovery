@@ -905,6 +905,7 @@ class TravShopController extends Controller
                             return response()->json($res, 400);
                         }
                         $res['responseData']['bind_id'] = $bind->bind_id;
+                        $res['responseData']['card_id'] = $request->card_id;
                         $respon = $res['responseData'];
                         if ($data->payment === null) {
                             $payment = new TransPayment();
@@ -964,6 +965,7 @@ class TravShopController extends Controller
                             return response()->json($res, 400);
                         }
                         $res['responseData']['bind_id'] = $bind->bind_id;
+                        $res['responseData']['card_id'] = $request->card_id;
                         $respon = $res['responseData'];
                         if ($data->payment === null) {
                             $payment = new TransPayment();
@@ -1281,6 +1283,7 @@ class TravShopController extends Controller
                         ], 422);
                     }
 
+                    $res['responseData']['card_id'] = $request->card_id;
                     $respon = $res['responseData'];
                     if ($data->payment === null) {
                         $payment = new TransPayment();
@@ -1393,6 +1396,7 @@ class TravShopController extends Controller
                 }
                 $payload = $data_payment;
                 $payload['otp'] = $request->otp;
+                $payload['submerchant_id'] = $data->sub_merchant_id;
                 $res = PgJmto::paymentDD($payload);
                 if ($res->successful()) {
                     $res = $res->json();
@@ -1406,6 +1410,7 @@ class TravShopController extends Controller
                         ], 422);
                     }
 
+                    $res['responseData']['card_id'] = $payload['card_id'];
                     $respon = $res['responseData'];
                     if ($data->payment === null) {
                         $payment = new TransPayment();
@@ -1885,6 +1890,7 @@ class TravShopController extends Controller
                 }
                 $payload = $data_payment;
                 $payload['otp'] = $request->otp;
+                $payload['submerchant_id'] = $data->sub_merchant_id;
                 $res = PgJmto::paymentDD($payload);
                 if ($res->successful()) {
                     $res = $res->json();
@@ -1897,7 +1903,7 @@ class TravShopController extends Controller
                             ]
                         ], 422);
                     }
-
+                    $res['responseData']['card_id'] = $payload['card_id'];
                     $respon = $res['responseData'];
                     if ($data->payment === null) {
                         $payment = new TransPayment();
@@ -2261,7 +2267,7 @@ class TravShopController extends Controller
                             ]
                         ], 422);
                     }
-
+                    $res['responseData']['card_id'] = $payload['card_id'];
                     $respon = $res['responseData'];
                     if ($data->payment === null) {
                         $payment = new TransPayment();
@@ -2302,6 +2308,7 @@ class TravShopController extends Controller
                 }
                 $payload = $data_payment;
                 $payload['otp'] = $request->otp;
+                $payload['submerchant_id'] = $data->sub_merchant_id;
                 $res = PgJmto::paymentDD($payload);
                 if ($res->successful()) {
                     $res = $res->json();
@@ -2314,7 +2321,7 @@ class TravShopController extends Controller
                             ]
                         ], 422);
                     }
-
+                    $res['responseData']['card_id'] = $payload['card_id'];
                     $respon = $res['responseData'];
                     if ($data->payment === null) {
                         $payment = new TransPayment();
