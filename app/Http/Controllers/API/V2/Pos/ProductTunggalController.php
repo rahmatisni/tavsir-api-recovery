@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\V2\Pos;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductTunggalRequest;
+use App\Http\Requests\ProductTunggalUpdateRequest;
 use App\Http\Resources\Pos\ProductV2Resource;
 use App\Http\Resources\Pos\ProductV2ShowResource;
 use App\Http\Resources\ProductRawResource;
@@ -55,7 +56,7 @@ class ProductTunggalController extends Controller
     }
    
 
-    public function update($id, ProductTunggalRequest $request)
+    public function update($id, ProductTunggalUpdateRequest $request)
     {
         return $this->response($this->service->update($id, $request->validated()));
     }
