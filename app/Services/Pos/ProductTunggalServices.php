@@ -45,8 +45,8 @@ class ProductTunggalServices
                     $product_min += ($product->price_min * $value['child_id']);
                     $product_max += ($product->price_max * $value['child_id']);
                 }
-                $data->price_min = $data->product_min;
-                $data->price_max = $data->product_max;
+                $data->price_min = $product_min;
+                $data->price_max = $product_max;
             }
             $data->save();
             if($paylod['is_composit'] == 0){
