@@ -37,7 +37,8 @@ class Tenant extends BaseModel
         'created_by',
         'created_at',
         'updated_at',
-        'is_subscription'
+        'is_subscription',
+        'is_print'
     ];
 
     public function setPhotoUrlAttribute($value)

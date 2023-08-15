@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use App\Models\Business;
 use App\Models\Subscription;
+use App\Models\Tenant;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -42,6 +43,9 @@ class ProfileResource extends JsonResource
         if($subscription_end){
             $subscription_end = Carbon::parse($subscription_end)->diffForHumans();
         }
+        $print = Tenant::find($this->tenant_id);
+
+        // dd($print);
 
         return [
             'id' => $this->id,
@@ -66,6 +70,7 @@ class ProfileResource extends JsonResource
             'reset_pin' => $this->reset_pin,
             'fcm_token' => $this->fcm_token,
             'subscription_end' => $subscription_end,
+            'is_print' => $print->is_print
         ];
     }
 }
