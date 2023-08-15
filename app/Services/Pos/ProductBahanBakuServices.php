@@ -28,8 +28,8 @@ class ProductBahanBakuServices
             $data->type = ProductType::BAHAN_BAKU;
             $data->tenant_id = auth()->user()->tenant_id;
             $data->fill($paylod);
-            $data->price_min = $data->price;
-            $data->price_max = $data->price;
+            $data->price_min = $data->price_capital;
+            $data->price_max = $data->price_capital;
             $data->price_capital = $data->price_capital;
             $data->save();
             $data->trans_stock()->create([
