@@ -28,6 +28,9 @@ class ProductTunggalServices
             $data->type = ProductType::TUNGGAL;
             $data->tenant_id = auth()->user()->tenant_id;
             $data->fill($paylod);
+            $data->price_min = $data->price;
+            $data->price_max = $data->price;
+            $data->price_capital = $data->price_capital;
             $data->save();
             if($paylod['is_composit'] == 0){
                 $data->trans_stock()->create([
