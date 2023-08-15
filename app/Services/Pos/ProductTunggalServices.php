@@ -42,8 +42,8 @@ class ProductTunggalServices
                 foreach ($paylod['raw'] as $value) {
                     //Product sudah divalidasi di request
                     $product = Product::find($value['child_id']);
-                    $product_min += ($product->price_min * $value['child_id']);
-                    $product_max += ($product->price_max * $value['child_id']);
+                    $product_min += ($product->price_min * $value['qty']);
+                    $product_max += ($product->price_max * $value['qty']);
                 }
                 $data->price_min = $product_min;
                 $data->price_max = $product_max;
