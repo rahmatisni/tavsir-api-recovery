@@ -32,17 +32,13 @@ class ProductTunggalServices
             $data->price_min = $data->price_capital;
             $data->price_max = $data->price_capital;
             $data->save();
-            if($paylod['is_composit'] == 0){
-                $data->trans_stock()->create([
-                    'stock_type' => TransStock::INIT,
-                    'recent_stock' => 0,
-                    'stock_amount' => $data->stock,
-                    'price_capital' => $data->price_capital,
-                    'created_by' => auth()->user()->id,
-                ]);
-            }else{
-                $data->trans_product_raw()->sync($paylod['raw']);
-            }
+            $data->trans_stock()->create([
+                'stock_type' => TransStock::INIT,
+                'recent_stock' => 0,
+                'stock_amount' => $data->stock,
+                'price_capital' => $data->price_capital,
+                'created_by' => auth()->user()->id,
+            ]);
             $data->customize()->sync($paylod['customize'] ?? []);
             Db::commit();
             return $data;
@@ -72,11 +68,6 @@ class ProductTunggalServices
         try {
             $data->fill($paylod);
             $data->save();
-            if($paylod['is_composit'] == 1){
-                $data->trans_product_raw()->sync($paylod['raw']);
-            }else{
-                $data->trans_product_raw()->sync([]);
-            }
             $data->customize()->sync($paylod['customize'] ?? []);
             Db::commit();
             return $data;
@@ -91,7 +82,6 @@ class ProductTunggalServices
         $data = $this->show($id);
         $data->trans_stock()->delete();
         $data->customize()->sync([]);
-        $data->trans_product_raw()->sync([]);
         $data->delete();
         return true;
     }

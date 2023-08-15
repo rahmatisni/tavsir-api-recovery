@@ -25,18 +25,18 @@ class ProductTunggalRequest extends FormRequest
     public function rules()
     {
         $rule = [
-            'is_composit' => 'required',
+            // 'is_composit' => 'required',
             'category_id' => 'required|exists:ref_category,id,tenant_id,'.auth()->user()->tenant_id,
-            'satuan_id' => 'required|exists:ref_satuan,id',
+            // 'satuan_id' => 'required|exists:ref_satuan,id',
             'sku' => 'required|string|max:20|unique:ref_product,sku,NULL,id,deleted_at,'.$this->id.',tenant_id,'.auth()->user()->tenant_id.',type,'.ProductType::TUNGGAL,
             'name' => 'required|string|max:50',
             'photo' => 'nullable|max:5000',
             'price' => 'required|numeric|min:100|max:100000000',
-            'price_capital' => 'required|numeric|min:100|max:100000000',
+            // 'price_capital' => 'required|numeric|min:100|max:100000000',
             'is_active' => 'required|boolean',
             'is_notification' => 'required|boolean',
             'stock_min' => 'required|numeric|min:1|max:999',
-            'stock' => 'required|numeric|min:1|max:999',
+            // 'stock' => 'required|numeric|min:1|max:999',
             'description' => 'nullable|string|max:255',
 
             //Custome Producr
@@ -44,11 +44,6 @@ class ProductTunggalRequest extends FormRequest
             'customize.*.customize_id' => 'nullable|integer|exists:ref_customize,id',
             'customize.*.must_choose' => 'nullable|boolean',
         ];
-        if($this->is_composit == 1){
-            $rule['raw'] = 'required|array';
-            $rule['raw.*.child_id'] = 'integer|exists:ref_product,id,type,'.ProductType::BAHAN_BAKU.',tenant_id,'.auth()->user()->tenant_id;
-            $rule['raw.*.qty'] = 'integer|min:1|max:999';
-        }
 
         return $rule;
     }
