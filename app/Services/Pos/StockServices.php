@@ -101,7 +101,7 @@ class StockServices
             $data->save();
             $data->product()->update([
                 'stock' => $data->lates_stock,
-                'price_capital' => $$data->price_capital,
+                'price_capital' => $data->price_capital,
                 'price_min' => $data->product->price_min < $data->price_capital ? $data->product->price_min : $data->price_capital,
                 'price_max' => $data->product->price_max > $data->price_capital ? $data->product->price_max : $data->price_capital,
             ]);
