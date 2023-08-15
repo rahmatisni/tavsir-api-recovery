@@ -45,6 +45,6 @@ Route::middleware('auth:api')->group(function () {
         Route::post('masuk','storeMasuk');
         Route::get('keluar','keluar');
         Route::post('keluar','storeKeluar');
-        Route::post('change-status','changeStatus');
+        Route::post('change-status/{id}','changeStatus');
     });
 });
