@@ -70,11 +70,8 @@ class ProductTunggalController extends Controller
         return $this->response($this->service->delete($id));
     }
 
-    public function updateStatus()
+    public function changeStatus($id)
     {
-        $product = Product::byType(ProductType::TUNGGAL)->whereIn('id', request()->product_id);
-        $product->update(['is_active' => request()->is_active]);
-
-        return response()->json($product->get());
+        return $this->response($this->service->changeStatus($id));
     }
 }

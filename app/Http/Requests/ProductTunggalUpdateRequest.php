@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use App\Models\Constanta\ProductType;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ProductTunggalRequest extends FormRequest
+class ProductTunggalUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,7 +25,6 @@ class ProductTunggalRequest extends FormRequest
     public function rules()
     {
         $rule = [
-            'is_composit' => 'required',
             'category_id' => 'required|exists:ref_category,id,tenant_id,'.auth()->user()->tenant_id,
             'satuan_id' => 'required|exists:ref_satuan,id',
             'sku' => 'required|string|max:20|unique:ref_product,sku,NULL,id,deleted_at,'.$this->id.',tenant_id,'.auth()->user()->tenant_id.',type,'.ProductType::TUNGGAL,

@@ -33,7 +33,6 @@ class ProductTunggalServices
                 $data->trans_stock()->create([
                     'stock_type' => TransStock::INIT,
                     'recent_stock' => 0,
-                    'satuan_id' => $data->satuan_id,
                     'stock_amount' => $data->stock,
                     'price_capital' => $data->price_capital,
                     'created_by' => auth()->user()->id,

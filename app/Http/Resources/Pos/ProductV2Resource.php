@@ -27,6 +27,8 @@ class ProductV2Resource extends JsonResource
             'photo' => $this->photo ? asset($this->photo) : null,
             'discount' => $this->discount,
             'price' => $this->price,
+            'price_min' => $this->price_min,
+            'price_max' => $this->price_max,
             'price_capital' => $this->price_capital,
             'stock' => $this->stock,
             'stock_min' => $this->stock_min,
