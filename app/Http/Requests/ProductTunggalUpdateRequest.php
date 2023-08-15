@@ -34,7 +34,7 @@ class ProductTunggalUpdateRequest extends FormRequest
             'price' => 'required|numeric|min:100|max:100000000',
             'is_active' => 'required|boolean',
             'is_notification' => 'required|boolean',
-            'stock_min' => 'required|numeric|min:1|max:999',
+            'stock_min' => 'required|required_if:is_composit,1||min:1|max:999',
             'description' => 'nullable|string|max:255',
 
             //Custome Product

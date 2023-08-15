@@ -31,12 +31,12 @@ class ProductTunggalRequest extends FormRequest
             'sku' => 'required|string|max:20|unique:ref_product,sku,NULL,id,deleted_at,'.$this->id.',tenant_id,'.auth()->user()->tenant_id.',type,'.ProductType::TUNGGAL,
             'name' => 'required|string|max:50',
             'photo' => 'nullable|max:5000',
-            'price' => 'required|numeric|min:100|max:100000000',
+            'price' => 'numeric|min:100|max:100000000',
             'price_capital' => 'required|numeric|min:100|max:100000000',
             'is_active' => 'required|boolean',
             'is_notification' => 'required|boolean',
-            'stock_min' => 'required|numeric|min:1|max:999',
-            'stock' => 'required|numeric|min:1|max:999',
+            'stock_min' => 'required_if:is_composit,1||numeric|min:1|max:999',
+            'stock' => 'required_if:is_composit,1||numeric|min:1|max:999',
             'description' => 'nullable|string|max:255',
 
             //Custome Product
