@@ -27,7 +27,7 @@ class ProductTunggalUpdateRequest extends FormRequest
     {
         $rule = [
             'category_id' => 'required|exists:ref_category,id,tenant_id,'.auth()->user()->tenant_id,
-            'satuan_id' => 'required|exists:ref_satuan,id',
+            // 'satuan_id' => 'required|exists:ref_satuan,id',
             'sku' => 'required|string|max:20|unique:ref_product,sku,NULL,id,deleted_at,'.$this->id.',tenant_id,'.auth()->user()->tenant_id.',type,'.ProductType::TUNGGAL,
             'name' => 'required|string|max:50',
             'photo' => 'nullable|max:5000',
@@ -42,7 +42,7 @@ class ProductTunggalUpdateRequest extends FormRequest
             'customize.*.customize_id' => 'nullable|integer|exists:ref_customize,id,tenant_id,'.auth()->user()->tenant_id,
             'customize.*.must_choose' => 'nullable|boolean',
         ];
-        
+
         $product = Product::find($this->id);
 
         if($product->is_composit == 1){
