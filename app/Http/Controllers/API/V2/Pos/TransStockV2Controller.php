@@ -74,4 +74,10 @@ class TransStockV2Controller extends Controller
         $data = $this->service->storeKeluar($request->validated());
         return $this->response($data);
     }
+
+    public function changeStatus($id)
+    {
+        $data = $this->service->changeStatus($id);
+        return $this->response($data);
+    }
 }
