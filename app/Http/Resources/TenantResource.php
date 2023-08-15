@@ -42,6 +42,7 @@ class TenantResource extends JsonResource
             'is_open' => $this->is_open,
             'is_verified' => $this->is_verified,
             'in_takengo' => $this->in_takengo,
+            'is_print' => $this->is_print,
             'rating' => round($this->rating, 1),
             'total_rating' => $this->total_rating,
             'created_by' => $this->created_by,
