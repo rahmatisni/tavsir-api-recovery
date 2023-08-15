@@ -27,7 +27,7 @@ class TransStockResource extends JsonResource
             'price_capital' => $this->price_capital,
             'total_capital' => $this->total_capital,
             'stock_awal' => $this->recent_stock,
-            'stock_masuk' => $this->stock_amount,
+            'stock_amount' => $this->stock_amount,
             'lates_stock' => $this->lates_stock,
             'keterangan' => $this->keterangan,
             'created_at' => (string) $this->created_at,
