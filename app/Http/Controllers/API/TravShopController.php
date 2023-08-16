@@ -902,6 +902,7 @@ class TravShopController extends Controller
                         "remarks" => $data->tenant->name ?? 'Travoy',
                         "phone" => $bind->phone ?? $bind_before->data['phone'],
                         "email" => $bind->email ?? $bind_before->data['email'],
+                        "fee" => (string) $data->fee,
                         "customer_name" => $bind->customer_name ?? $bind_before->data['customer_name'],
                         "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
 
