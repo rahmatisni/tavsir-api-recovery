@@ -442,7 +442,7 @@ class PgJmto extends Model
             //end fake
         }
         Log::info('DD Req Inquiry', $payload);
-
+        unset($payload["card_id"]);
         $res = self::service('POST','/directdebit/inquiry', $payload);
         Log::info('DD Resp inquiry', $res->json());
         return $res;
@@ -477,6 +477,8 @@ class PgJmto extends Model
             ]);
             //end fake
         }
+
+        unset($payload["card_id"]);
         Log::info('DD Payment Request', $payload);
         $res = self::service('POST','/directdebit/payment', $payload);
         Log::info('DD payment Response', $res->json());
@@ -512,6 +514,7 @@ class PgJmto extends Model
             ]);
             //end fake
         }
+        unset($payload["card_id"]);
         Log::info('DD Status Request', $payload);
         $res = self::service('POST','/directdebit/advice', $payload);
         Log::info('DD Status Response', $res->json());
