@@ -70,7 +70,7 @@ class ProfileResource extends JsonResource
             'reset_pin' => $this->reset_pin,
             'fcm_token' => $this->fcm_token,
             'subscription_end' => $subscription_end,
-            'is_print' => $print->is_print
+            'is_print' => $print?->is_print ?? 0
         ];
     }
 }
