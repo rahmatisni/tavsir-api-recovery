@@ -29,7 +29,7 @@ class RawProductUpdateRequest extends FormRequest
             'sku' => 'required|string|max:20|unique:ref_product,sku,'.request()->id.',id,deleted_at,NULL,type,'.ProductType::BAHAN_BAKU.',tenant_id,'.auth()->user()->tenant_id,
             'name' => 'required|string|max:50',
             'photo' => 'nullable|max:5000',
-            'stock_min' => 'required|numeric|min:1|max:999',
+            'stock_min' => 'required|numeric|min:1|max:999999999',
             'is_active' => 'required|boolean',
             'is_notification' => 'required|boolean',
             'description' => 'nullable|string|max:255',
