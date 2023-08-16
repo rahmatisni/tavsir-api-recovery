@@ -11,14 +11,13 @@ class ProductTunggalServices
 {
     public function list($search = null, $filter = [])
     {
-        return dd(Product::with('category','customize','tenant')
+        return Product::with('category','customize','tenant')
                 ->byType(ProductType::TUNGGAL)
                 ->byTenant()
                 ->myWhereLike(['name','sku'], $search)
                 ->myWheres($filter)
                 ->orderByRaw('stock = 0')->orderByRaw('is_active = 0')->orderBy('name', 'asc')
-                ->toSql());
-                // ->paginate();
+                ->paginate();
     }
 
     public function create(array $paylod)
