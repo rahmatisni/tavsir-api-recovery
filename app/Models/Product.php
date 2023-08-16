@@ -27,8 +27,8 @@ class Product extends BaseModel
         'description',
 
         //v2
-        'type',
         'is_composit',
+        'type',
         'price_capital',
         'stock_min',
         'satuan_id',

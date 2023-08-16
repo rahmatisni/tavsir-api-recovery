@@ -383,7 +383,6 @@ class TavsirController extends Controller
             $data = new Product();
             $data->tenant_id = auth()->user()->tenant_id;
             $data->fill($request->all());
-            $data->type = ProductType::PRODUCT;
             $data->save();
             $data->trans_stock()->create([
                 'stock_type' => TransStock::INIT,

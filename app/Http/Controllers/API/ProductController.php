@@ -49,6 +49,7 @@ class ProductController extends Controller
             DB::beginTransaction();
             $data = new Product();
             $data->fill($request->all());
+            $data->type = ProductType::PRODUCT;
             $data->save();
             $data->trans_stock()->create([
                 'stock_type' => TransStock::INIT,
