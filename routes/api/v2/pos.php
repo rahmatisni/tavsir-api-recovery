@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::middleware('auth:api')->group(function () {
-    Route::prefix('product-bahan-baku')->controller(ProductBahanBakuController::class)->group(function () {
+    Route::prefix('bahan-baku')->controller(ProductBahanBakuController::class)->group(function () {
         Route::get('','index');
         Route::get('/{id}','show');
         Route::post('','store');
@@ -28,7 +28,7 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('/{id}','destroy');
     });
 
-    Route::prefix('product-tunggal')->controller(ProductTunggalController::class)->group(function () {
+    Route::prefix('product')->controller(ProductTunggalController::class)->group(function () {
         Route::get('','index');
         Route::get('/{id}','show');
         Route::post('','store');

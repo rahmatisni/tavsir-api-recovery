@@ -22,7 +22,7 @@ class TransOrderSeeder extends Seeder
     {
         $faker = Factory::create();
         TransOrder::factory()->count(500)->create()->each(function ($transOrder) use ($faker) {
-            $product = Product::byType(ProductType::TUNGGAL)->where('tenant_id', $transOrder->tenant_id)->get();
+            $product = Product::byType(ProductType::PRODUCT)->where('tenant_id', $transOrder->tenant_id)->get();
             $count = $product->count();
             $random_get = $faker->numberBetween(1, $count);
             $product->random($random_get)->each(function ($product) use ($transOrder, $faker) {

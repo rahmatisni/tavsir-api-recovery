@@ -5,6 +5,6 @@ namespace App\Models\Constanta;
 
 class ProductType
 {
-   const TUNGGAL = 'tunggal';
+   const PRODUCT = 'product';
    const BAHAN_BAKU = 'bahanbaku';
 }

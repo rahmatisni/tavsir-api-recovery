@@ -15,7 +15,7 @@ class UpdateRefProductV2Table extends Migration
     {
         Schema::table('ref_product', function (Blueprint $table) {
             $table->boolean('is_composit')->default(0)->comment('product komposit');
-            $table->string('type')->default('tunggal');
+            $table->string('type')->default('product');
             $table->unsignedInteger('price_capital')->default(0);
             $table->unsignedInteger('price_min')->default(0);
             $table->unsignedInteger('price_max')->default(0);

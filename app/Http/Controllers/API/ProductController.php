@@ -20,7 +20,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $data = Product::with('category','customize','tenant')->byType(ProductType::TUNGGAL)->when($name = request()->name, function ($q) use ($name) {
+        $data = Product::with('category','customize','tenant')->byType(ProductType::PRODUCT)->when($name = request()->name, function ($q) use ($name) {
             $q->where('name', 'like', '%' . $name . '%');
         })->when($sku = request()->sku, function ($q) use ($sku) {
             $q->where('sku', 'like', '%' . $sku . '%');
@@ -117,7 +117,7 @@ class ProductController extends Controller
 
     public function updateStatus()
     {
-        $product = Product::byType(ProductType::TUNGGAL)->whereIn('id', request()->product_id);
+        $product = Product::byType(ProductType::PRODUCT)->whereIn('id', request()->product_id);
         $product->update(['is_active' => request()->is_active]);
 
         return response()->json($product->get());

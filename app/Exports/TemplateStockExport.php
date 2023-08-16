@@ -14,7 +14,7 @@ class TemplateStockExport implements FromCollection, WithHeadings
      */
     public function collection()
     {
-        return Product::byTenant()->byType(ProductType::TUNGGAL)->get()->map(function ($item, $key) {
+        return Product::byTenant()->byType(ProductType::PRODUCT)->get()->map(function ($item, $key) {
             return [
                 'no' => $key + 1,
                 'id' => $item->id,

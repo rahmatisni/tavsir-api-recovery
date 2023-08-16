@@ -12,7 +12,7 @@ class ProductTunggalServices
     public function list($search = null, $filter = [])
     {
         return Product::with('category','customize','tenant')
-                ->byType(ProductType::TUNGGAL)
+                ->byType(ProductType::PRODUCT)
                 ->byTenant()
                 ->myWhereLike(['name','sku'], $search)
                 ->myWheres($filter)
@@ -25,7 +25,7 @@ class ProductTunggalServices
         DB::beginTransaction();
         try {
             $data = new Product();
-            $data->type = ProductType::TUNGGAL;
+            $data->type = ProductType::PRODUCT;
             $data->tenant_id = auth()->user()->tenant_id;
             $data->fill($paylod);
             $data->price_capital = $data->price_capital;
@@ -71,7 +71,7 @@ class ProductTunggalServices
 
     public function show($id)
     {
-        return Product::byTenant()->byType(ProductType::TUNGGAL)->findOrFail($id);
+        return Product::byTenant()->byType(ProductType::PRODUCT)->findOrFail($id);
     }
 
     public function changeStatus($id)

@@ -92,7 +92,7 @@ class TavsirController extends Controller
 
     public function productSupertenantList(Request $request)
     {
-        $data = Product::bySupertenant()->byType(ProductType::TUNGGAL)->with('tenant')->when($filter = $request->filter, function ($q) use ($filter) {
+        $data = Product::bySupertenant()->byType(ProductType::PRODUCT)->with('tenant')->when($filter = $request->filter, function ($q) use ($filter) {
             return $q->where('name', 'like', "%$filter%")
                 ->orwhere('sku', 'like', "%$filter%");
         })->when($category_id = $request->category_id, function ($q) use ($category_id) {
@@ -134,7 +134,7 @@ class TavsirController extends Controller
 
             $sub_total = 0;
             foreach ($request->product as $k => $v) {
-                $product = Product::byType(ProductType::TUNGGAL)->find($v['product_id']);
+                $product = Product::byType(ProductType::PRODUCT)->find($v['product_id']);
 
                 $order_detil = new TransOrderDetil();
                 $order_detil->trans_order_id = $data->id;
@@ -357,7 +357,7 @@ class TavsirController extends Controller
 
     public function productList(Request $request)
     {
-        $data = Product::byTenant()->byType(ProductType::TUNGGAL)->with('tenant')->when($filter = $request->filter, function ($q) use ($filter) {
+        $data = Product::byTenant()->byType(ProductType::PRODUCT)->with('tenant')->when($filter = $request->filter, function ($q) use ($filter) {
             $q->where(function ($qq) use ($filter) {
                 return $qq->where('name', 'like', "%$filter%")
                     ->orwhere('sku', 'like', "%$filter%");
@@ -406,7 +406,7 @@ class TavsirController extends Controller
 
     public function updateStatusProduct(TavsirChangeStatusProductRequest $request)
     {
-        $product = Product::byTenant()->byType(ProductType::TUNGGAL)->whereIn('id', $request->product_id);
+        $product = Product::byTenant()->byType(ProductType::PRODUCT)->whereIn('id', $request->product_id);
         if ($product->count() == 0) {
             return response()->json(['message' => 'Not Found.'], 404);
         }
@@ -417,7 +417,7 @@ class TavsirController extends Controller
 
     public function productById($id)
     {
-        $data = Product::byType(ProductType::TUNGGAL)->findOrfail($id);
+        $data = Product::byType(ProductType::PRODUCT)->findOrfail($id);
         return response()->json(new ProductResource($data));
     }
 
@@ -479,7 +479,7 @@ class TavsirController extends Controller
 
     public function categoryDestroy(Category $category)
     {
-        $data = Product::byType(ProductType::TUNGGAL)->where('category_id', $category->id)->count();
+        $data = Product::byType(ProductType::PRODUCT)->where('category_id', $category->id)->count();
         if ($data > 0) {
             return response()->json(['message' => 'Kategori tidak dapat dihapus karna sudah digunakan pada produk'], 422);
         }
@@ -516,7 +516,7 @@ class TavsirController extends Controller
 
             $sub_total = 0;
             foreach ($request->product as $k => $v) {
-                $product = Product::byType(ProductType::TUNGGAL)->find($v['product_id']);
+                $product = Product::byType(ProductType::PRODUCT)->find($v['product_id']);
 
                 $order_detil = new TransOrderDetil();
                 $order_detil->trans_order_id = $data->id;

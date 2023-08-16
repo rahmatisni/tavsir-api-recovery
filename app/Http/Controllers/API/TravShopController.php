@@ -115,7 +115,7 @@ class TravShopController extends Controller
 
     public function product(Request $request)
     {
-        $data = Product::byType(ProductType::TUNGGAL)->with('customize', 'category')->when($name = $request->name, function ($q) use ($name) {
+        $data = Product::byType(ProductType::PRODUCT)->with('customize', 'category')->when($name = $request->name, function ($q) use ($name) {
             return $q->where('name', 'like', "%$name%");
         })->when($tenant_id = $request->tenant_id, function ($q) use ($tenant_id) {
             return $q->where('tenant_id', $tenant_id);
@@ -127,7 +127,7 @@ class TravShopController extends Controller
 
     public function productById($id)
     {
-        $data = Product::byType(ProductType::TUNGGAL)->findOrfail($id);
+        $data = Product::byType(ProductType::PRODUCT)->findOrfail($id);
         return response()->json(new TsProducDetiltResource($data));
     }
 
@@ -175,7 +175,7 @@ class TravShopController extends Controller
             $sub_total = 0;
             foreach ($request->product as $k => $v) {
 
-                $product = Product::byType(ProductType::TUNGGAL)->find($v['product_id']);
+                $product = Product::byType(ProductType::PRODUCT)->find($v['product_id']);
                 $order_detil = new TransOrderDetil();
                 $order_detil->trans_order_id = $data->id;
                 $order_detil->product_id = $product->id;
@@ -291,7 +291,7 @@ class TravShopController extends Controller
             $sub_total = 0;
             foreach ($request->product as $k => $v) {
 
-                $product = Product::byType(ProductType::TUNGGAL)->find($v['product_id']);
+                $product = Product::byType(ProductType::PRODUCT)->find($v['product_id']);
                 $order_detil = new TransOrderDetil();
                 $order_detil->trans_order_id = $data->id;
                 $order_detil->product_id = $product->id;

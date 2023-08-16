@@ -33,7 +33,7 @@ class StockImport implements ToCollection
         foreach ($collection as $key => $row) {
             if ($key != 0) {
                 try {
-                    $product = Product::byTenant()->byType(ProductType::TUNGGAL)->find($row[1]);
+                    $product = Product::byTenant()->byType(ProductType::PRODUCT)->find($row[1]);
                     if (!$product) {
                         throw new Exception('Product ID ' . $row[1] . ' invalid');
                     }

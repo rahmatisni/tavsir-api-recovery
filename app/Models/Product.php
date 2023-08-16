@@ -100,7 +100,7 @@ class Product extends BaseModel
         return $this->belongsTo(Satuan::class, 'satuan_id');
     }
 
-    public function scopeByType($query, $type = ProductType::TUNGGAL)
+    public function scopeByType($query, $type = ProductType::PRODUCT)
     {
         return $query->where('type', $type);
     }

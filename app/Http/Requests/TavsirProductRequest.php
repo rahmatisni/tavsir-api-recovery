@@ -28,7 +28,7 @@ class TavsirProductRequest extends FormRequest
         return [
             'category_id' => 'required|exists:ref_category,id',
             'sku' => ['required','string','max:255',function($attribute, $value, $fail){
-                $cek = Product::byType(ProductType::TUNGGAL)->where('tenant_id',auth()->user()->tenant_id)
+                $cek = Product::byType(ProductType::PRODUCT)->where('tenant_id',auth()->user()->tenant_id)
                 ->where('sku',$value)->exists();
                 if($cek){
                     $fail('The '.$attribute.' has been take');

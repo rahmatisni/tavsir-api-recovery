@@ -179,7 +179,7 @@ class DashboardController extends Controller
             })->sortDesc();
         $top_product = [];
         foreach ($topProduct as $key => $value) {
-            $product = Product::byType(ProductType::TUNGGAL)->find($key);
+            $product = Product::byType(ProductType::PRODUCT)->find($key);
             $top_product[] = [
                 'name' => $product->name ?? '',
                 'photo' => $product?->photo ? asset($product?->photo) : null,
