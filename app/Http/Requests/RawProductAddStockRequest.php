@@ -25,7 +25,7 @@ class RawProductAddStockRequest extends FormRequest
     {
         return [
             'stock' => 'required|numeric|min:1|max:999',
-            'price' => 'required|numeric|min:100|max:100000000',
+            'price' => 'required|numeric|min:0|max:100000000',
         ];
     }
 
