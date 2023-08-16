@@ -36,7 +36,7 @@ class ProductTunggalRequest extends FormRequest
             'is_active' => 'required|boolean',
             'is_notification' => 'required|boolean',
             'stock_min' => 'required_if:is_composit,0||numeric|min:1|max:999999999',
-            'stock' => 'required_if:is_composit,0||numeric|min:1|max:999',
+            'stock' => 'required_if:is_composit,0||numeric|min:1|max:999999999',
             'description' => 'nullable|string|max:255',
 
             //Custome Product

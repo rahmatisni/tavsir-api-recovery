@@ -31,7 +31,7 @@ class ProductRequest extends FormRequest
             'photo' => 'nullable|max:5000',
             'price' => 'required|numeric|min:0|max:100000000',
             'is_active' => 'required|boolean',
-            'stock' => 'required|numeric|min:1|max:999',
+            'stock' => 'required|numeric|min:1|max:999999999',
             'description' => 'nullable|string|max:255',
             'customize' => 'nullable|array',
             'customize.*.customize_id' => 'nullable|integer|exists:ref_customize,id',
