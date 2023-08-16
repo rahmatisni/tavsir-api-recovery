@@ -877,10 +877,25 @@ class TravShopController extends Controller
                     }
 
                     // dd($bind_before);
-                    $payment_payload = [
+                    // $payment_payload = [
+                    //     "sof_code" => $bind->sof_code ?? $bind_before->data['sof_code'],
+                    //     "bind_id" => $bind->bind_id ?? $bind_before->data['bind_id'],
+                    //     "refnum" => $bind->refnum ?? $bind_before->data['refnum'],
+                    //     "card_no" => $bind->card_no ?? $bind_before->data['card_no'],
+                    //     "amount" => (string) $data->sub_total,
+                    //     "trxid" => $data->order_id,
+                    //     "remarks" => $data->tenant->name ?? 'Travoy',
+                    //     "phone" => $bind->phone ?? $bind_before->data['phone'],
+                    //     "email" => $bind->email ?? $bind_before->data['email'],
+                    //     "customer_name" => $bind->customer_name ?? $bind_before->data['customer_name'],
+                    //     "bill" => (string) $data->sub_total,
+                    //     "fee" => (string) $data->fee,
+                    //     "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
+
+                    // ];
+                     $payment_payload = [
                         "sof_code" => $bind->sof_code ?? $bind_before->data['sof_code'],
                         "bind_id" => $bind->bind_id ?? $bind_before->data['bind_id'],
-                        "refnum" => $bind->refnum ?? $bind_before->data['refnum'],
                         "card_no" => $bind->card_no ?? $bind_before->data['card_no'],
                         "amount" => (string) $data->sub_total,
                         "trxid" => $data->order_id,
@@ -888,8 +903,6 @@ class TravShopController extends Controller
                         "phone" => $bind->phone ?? $bind_before->data['phone'],
                         "email" => $bind->email ?? $bind_before->data['email'],
                         "customer_name" => $bind->customer_name ?? $bind_before->data['customer_name'],
-                        "bill" => (string) $data->sub_total,
-                        "fee" => (string) $data->fee,
                         "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
 
                     ];
@@ -942,10 +955,24 @@ class TravShopController extends Controller
                     }
 
 
+                    // $payment_payload = [
+                    //     "sof_code" => $bind->sof_code ?? $bind_before->data['sof_code'],
+                    //     "bind_id" => (string) ($bind?->bind_id ?? $bind_before->data['bind_id']),
+                    //     "refnum" => $bind->refnum ?? $bind_before->data['refnum'],
+                    //     "card_no" => $bind->card_no ?? $bind_before->data['card_no'],
+                    //     "amount" => (string) $data->sub_total,
+                    //     "trxid" => $data->order_id,
+                    //     "remarks" => $data->tenant->name ?? 'Travoy',
+                    //     "phone" => $bind->phone ?? $bind_before->data['phone'],
+                    //     "email" => $bind->email ?? $bind_before->data['email'],
+                    //     "customer_name" => $bind->customer_name ?? $bind_before->data['customer_name'],
+                    //     "bill" => (string) $data->sub_total,
+                    //     "fee" => (string) $data->fee,
+                    //     "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
+                    // ];
                     $payment_payload = [
                         "sof_code" => $bind->sof_code ?? $bind_before->data['sof_code'],
-                        "bind_id" => (string) ($bind?->bind_id ?? $bind_before->data['bind_id']),
-                        "refnum" => $bind->refnum ?? $bind_before->data['refnum'],
+                        "bind_id" => $bind->bind_id ?? $bind_before->data['bind_id'],
                         "card_no" => $bind->card_no ?? $bind_before->data['card_no'],
                         "amount" => (string) $data->sub_total,
                         "trxid" => $data->order_id,
@@ -953,9 +980,8 @@ class TravShopController extends Controller
                         "phone" => $bind->phone ?? $bind_before->data['phone'],
                         "email" => $bind->email ?? $bind_before->data['email'],
                         "customer_name" => $bind->customer_name ?? $bind_before->data['customer_name'],
-                        "bill" => (string) $data->sub_total,
-                        "fee" => (string) $data->fee,
                         "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
+
                     ];
                     $respon = PgJmto::inquiryDD($payment_payload);
                     log::info($respon);
