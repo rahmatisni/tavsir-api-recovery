@@ -31,7 +31,7 @@ class ProductTunggalUpdateRequest extends FormRequest
             'sku' => 'required|string|max:20|unique:ref_product,sku,NULL,id,deleted_at,'.$this->id.',tenant_id,'.auth()->user()->tenant_id.',type,'.ProductType::PRODUCT,
             'name' => 'required|string|max:50',
             'photo' => 'nullable|max:5000',
-            'price' => 'required|numeric|min:0|max:100000000',
+            'price' => 'required|numeric|min:0|max:999999999',
             'is_active' => 'required|boolean',
             'is_notification' => 'required|boolean',
             'stock_min' => 'required_if:is_composit,0||min:1|max:999999999',
