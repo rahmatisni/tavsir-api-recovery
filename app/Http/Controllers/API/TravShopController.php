@@ -2487,8 +2487,23 @@ class TravShopController extends Controller
         }
     }
 
+    public function convernum($phone){
+        
+        $phone = request()->phone;
+        $Phone = str_replace("+", "", $phone);
+
+        if (substr($Phone, 0, 1) == 0){
+            return $Phone;
+        }
+
+        if (substr($Phone, 0, 2 ) == 62){
+            return substr_replace($Phone,'0',0,2);
+        }
+    }
     public function saldo()
     {
+        $phone = $this->convernum(request()->phone);
+
         $data = Voucher::when($rest_area_id = request()->rest_area_id, function ($q) use ($rest_area_id) {
             return $q->where('rest_area_id', $rest_area_id);
         })
@@ -2496,7 +2511,7 @@ class TravShopController extends Controller
                 return $q->where('username', $username);
             })->when($customer_id = request()->customer_id, function ($q) use ($customer_id) {
             return $q->where('customer_id', $customer_id);
-        })->when($phone = request()->phone, function ($q) use ($phone) {
+        })->when($phone =  $this->convernum(request()->phone), function ($q) use ($phone) {
             return $q->where('phone', $phone);
         })->get();
         return response()->json(SaldoResource::collection($data));
