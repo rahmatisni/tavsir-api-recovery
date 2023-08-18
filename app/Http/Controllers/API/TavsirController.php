@@ -1266,7 +1266,10 @@ class TavsirController extends Controller
             // $data = $data->orderBy('updated_at', 'desc');
 
         }
-        $data = $data->whereIn('casheer_id',[auth()->user()->tenant_id, NULL])->get();
+        $data = $data->where(function ($query) {
+            $query->where('casheer_id',auth()->user()->id)
+                ->orWhereNull('casheer_id');
+        })->get();
 
 
         return response()->json(TrOrderResource::collection($data));
