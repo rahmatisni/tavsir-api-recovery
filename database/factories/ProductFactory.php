@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Tenant;
 use App\Models\Category;
+use App\Models\Constanta\ProductType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ProductFactory extends Factory
@@ -20,7 +21,7 @@ class ProductFactory extends Factory
         $tenant = Tenant::all()->random();
         return [
             'tenant_id' => $tenant->id,
-            'category_id' => Category::where('tenant_id',$tenant->id)->get()->random()->id,
+            'category_id' => Category::byType(ProductType::PRODUCT)->where('tenant_id',$tenant->id)->get()->random()->id,
             'name' => $faker->foodName(),
             'sku' => 'P-'.$faker->unique()->numberBetween(1,9999),
             'photo' => $this->faker->imageUrl,

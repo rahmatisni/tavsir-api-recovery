@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\API\PPOBDashboardController;
+use App\Http\Controllers\API\V2\Pos\CategoryBahanBakuController;
+use App\Http\Controllers\API\V2\Pos\CategoryProductController;
 use App\Http\Controllers\API\V2\Pos\ProductBahanBakuController;
 use App\Http\Controllers\API\V2\Pos\ProductTunggalController;
 use App\Http\Controllers\API\V2\Pos\ProductV2Controller;
@@ -46,5 +48,21 @@ Route::middleware('auth:api')->group(function () {
         Route::get('keluar','keluar');
         Route::post('keluar','storeKeluar');
         Route::post('change-status/{id}','changeStatus');
+    });
+
+    Route::prefix('category-product')->controller(CategoryProductController::class)->group(function () {
+        Route::get('','index');
+        Route::get('/{id}','show');
+        Route::post('','store');
+        Route::post('/{id}','update');
+        Route::delete('/{id}','destroy');
+    });
+
+    Route::prefix('category-bahan-baku')->controller(CategoryBahanBakuController::class)->group(function () {
+        Route::get('','index');
+        Route::get('/{id}','show');
+        Route::post('','store');
+        Route::post('/{id}','update');
+        Route::delete('/{id}','destroy');
     });
 });

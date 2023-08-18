@@ -451,7 +451,7 @@ class TavsirController extends Controller
 
     public function categoryList(Request $request)
     {
-        $data = Category::byTenant()->when($filter = $request->filter, function ($q) use ($filter) {
+        $data = Category::byType(ProductType::PRODUCT)->byTenant()->when($filter = $request->filter, function ($q) use ($filter) {
             return $q->where('name', 'like', "%$filter%");
         })->orderBy('name')->get();
         return response()->json(TrCategoryResource::collection($data));

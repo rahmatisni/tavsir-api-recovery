@@ -25,7 +25,7 @@ class RawProductUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'category_id' => 'required|exists:ref_category,id,tenant_id,'.auth()->user()->tenant_id,
+            'category_id' => 'required|exists:ref_category,id,tenant_id,'.auth()->user()->tenant_id.',type,'.ProductType::BAHAN_BAKU,
             'sku' => 'required|string|max:20|unique:ref_product,sku,'.request()->id.',id,deleted_at,NULL,type,'.ProductType::BAHAN_BAKU.',tenant_id,'.auth()->user()->tenant_id,
             'name' => 'required|string|max:50',
             'photo' => 'nullable|max:5000',
