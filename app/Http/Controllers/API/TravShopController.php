@@ -2543,6 +2543,8 @@ class TravShopController extends Controller
         $voucher = Voucher::where('hash', request()->voucher)
             ->where('rest_area_id', request()->rest_area_id)
             ->first();
+
+        // dd(request());
         if ($voucher == null) {
             return response()->json(['message' => 'Scan QR dibatalkan'], 500);
         }
@@ -2552,9 +2554,12 @@ class TravShopController extends Controller
         $voucher->qr_code_use = $voucher->qr_code_use + 1;
         $voucher->is_active = 1;
 
+        if($voucher->is_active == 1){
+            return response(['message' => 'Selamat '.$voucher->nama_lengkap.' sudah absen'], 200);
+        }
         $voucher->updated_at = Carbon::now()->format('Y-m-d H:i:s');
         $voucher->save();
-        return response()->json($voucher);
+        return response(['message' => 'Maaf '.$voucher->nama_lengkap.' sudah pernah melakukan Absen'], 422);
 
 
     }
