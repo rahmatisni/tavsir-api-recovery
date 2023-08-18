@@ -2555,11 +2555,11 @@ class TravShopController extends Controller
         $voucher->is_active = 1;
 
         if($voucher->is_active == 1){
-            return response(['message' => 'Selamat '.$voucher->nama_lengkap.' sudah absen'], 200);
+            return response(['message' => 'Mohon Maaf karyawan atas nama '.$voucher->nama_lengkap.' Sudah pernah melakukan absen'], 422);
         }
         $voucher->updated_at = Carbon::now()->format('Y-m-d H:i:s');
         $voucher->save();
-        return response(['message' => 'Maaf '.$voucher->nama_lengkap.' sudah pernah melakukan Absen'], 422);
+        return response(['message' => 'Selamat karyawan atas nama '.$voucher->nama_lengkap.' Berhasil melakukan Absen'], 200);
 
 
     }
