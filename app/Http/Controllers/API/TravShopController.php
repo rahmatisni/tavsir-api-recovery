@@ -2552,14 +2552,16 @@ class TravShopController extends Controller
         $dataHistori['current_balance'] = $voucher->balance;
         $voucher->balance_history = $dataHistori;
         $voucher->qr_code_use = $voucher->qr_code_use + 1;
-        $voucher->is_active = 1;
 
         if($voucher->is_active == 1){
             return response(['message' => 'Mohon Maaf karyawan atas nama '.$voucher->nama_lengkap.' Sudah pernah melakukan absen'], 422);
         }
-        $voucher->updated_at = Carbon::now()->format('Y-m-d H:i:s');
-        $voucher->save();
-        return response(['message' => 'Selamat karyawan atas nama '.$voucher->nama_lengkap.' Berhasil melakukan Absen'], 200);
+        else {     
+            $voucher->updated_at = Carbon::now()->format('Y-m-d H:i:s');
+            $voucher->is_active = 1;
+            $voucher->save();
+            return response(['message' => 'Selamat karyawan atas nama '.$voucher->nama_lengkap.' Berhasil melakukan Absen'], 200);
+        }
 
 
     }
