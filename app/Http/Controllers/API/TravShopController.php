@@ -98,7 +98,7 @@ class TravShopController extends Controller
 
     public function categoryProductTenant($tenant_id)
     {
-        $data = Category::where('tenant_id', $tenant_id)->select('id', 'name', 'tenant_id')->get();
+        $data = Category::byType(ProductType::PRODUCT)->where('tenant_id', $tenant_id)->select('id', 'name', 'tenant_id')->get();
         return response()->json($data);
     }
 
