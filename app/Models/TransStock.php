@@ -19,6 +19,8 @@ class TransStock extends BaseModel
         'current_stock',
         'stock_amount',
         'description',
+        'price_capital',
+        'total_capital',
     ];
 
     protected $appends = ['lates_stock'];

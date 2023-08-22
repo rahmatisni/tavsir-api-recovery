@@ -37,6 +37,7 @@ class ProductBahanBakuServices
                 'recent_stock' => 0,
                 'stock_amount' => $data->stock,
                 'price_capital' => $data->price_capital,
+                'total_capital' => $data->price_capital * $data->stock,
                 'created_by' => auth()->user()->id,
             ]);
             Db::commit();
