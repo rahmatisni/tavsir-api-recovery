@@ -1250,7 +1250,7 @@ class TavsirController extends Controller
             $q->where('order_type', $order_type);
         })
             ->when($customer_name = request()->customer_name, function ($q) use ($customer_name) {
-                $q->where('customer_name', $customer_name);
+                $q->where('customer_name', $customer_name)->orwhere('nomor_name', $customer_name);;
             })->orderByRaw($queryOrder)->orderBy('created_at', 'desc');
         if (!request()->sort) {
             // $data = $data->orderBy('updated_at', 'desc');
