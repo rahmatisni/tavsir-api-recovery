@@ -37,6 +37,8 @@ class ProductTunggalServices
 
             if($paylod['is_composit'] == 1)
             {
+                $data->price_capital = 0;
+                $data->stock = 0;
                 $product_min = 0;
                 $product_max = 0;
                 foreach ($paylod['raw'] as $value) {

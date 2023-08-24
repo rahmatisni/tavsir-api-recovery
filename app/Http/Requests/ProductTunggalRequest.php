@@ -32,11 +32,9 @@ class ProductTunggalRequest extends FormRequest
             'name' => 'required|string|max:50',
             'photo' => 'nullable|max:5000',
             'price' => 'numeric|min:0|max:999999999',
-            'price_capital' => 'required_if:is_composit,0|numeric|min:0|max:999999999',
             'is_active' => 'required|boolean',
             'is_notification' => 'required|boolean',
-            'stock_min' => 'required_if:is_composit,0||numeric|min:1|max:999999999',
-            'stock' => 'required_if:is_composit,0||numeric|min:1|max:999999999',
+            'stock_min' => 'required_if:is_composit,0|numeric|min:1|max:999999999',
             'description' => 'nullable|string|max:255',
 
             //Custome Product
@@ -44,6 +42,11 @@ class ProductTunggalRequest extends FormRequest
             'customize.*.customize_id' => 'nullable|integer|exists:ref_customize,id,tenant_id,'.auth()->user()->tenant_id,
             'customize.*.must_choose' => 'nullable|boolean',
         ];
+
+        if($this->is_composit == 0){
+            $rule['stock'] = 'required|numeric|min:0|max:999999999';
+            $rule['price_capital'] = 'required|numeric|min:0|max:999999999';
+        }
 
         if($this->is_composit == 1){
             $rule['raw'] = 'required|array';

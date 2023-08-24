@@ -34,8 +34,8 @@ class UpdateRefProductV2Table extends Migration
         //M to M product to raw product
         Schema::table('trans_stock', function (Blueprint $table) {
             $table->unsignedInteger('tenant_id');
-            $table->unsignedInteger('price_capital');
-            $table->unsignedInteger('total_capital');
+            $table->unsignedInteger('price_capital')->default(0);
+            $table->unsignedInteger('total_capital')->default(0);
         });
 
        
