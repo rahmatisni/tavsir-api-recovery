@@ -6,6 +6,7 @@ use App\Models\BaseModel;
 use App\Models\Constanta\ProductType;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Image;
 
@@ -111,18 +112,17 @@ class Product extends BaseModel
         if($this->type == ProductType::BAHAN_BAKU || $this->is_composit == 0){
             return $this->attributes['stock'] ;
         }
-        $stock = 0;
+
+        $stock = [];
+        if($this->trans_product_raw->count() == 0)
+        {
+            return 0;
+        }
+
         foreach($this->trans_product_raw as $item)
         {
-            $result = floor($item->stock / $item->pivot->qty);
-            if($stock == 0){
-                $stock = $result;
-            }else{
-                if($result < $stock){
-                    $stock = $result;
-                }
-            }
+            $stock[] = floor($item->stock / $item->pivot->qty);
         }
-        return $stock;
+        return min($stock);
     }
 }
