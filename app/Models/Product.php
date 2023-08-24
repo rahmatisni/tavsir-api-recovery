@@ -114,15 +114,11 @@ class Product extends BaseModel
         }
 
         $stock = [];
-        if($this->trans_product_raw->count() == 0)
-        {
-            return 0;
-        }
-
         foreach($this->trans_product_raw as $item)
         {
             $stock[] = floor($item->stock / $item->pivot->qty);
         }
-        return min($stock);
+
+        return count($stock) == 0 ? 0 : min($stock);
     }
 }
