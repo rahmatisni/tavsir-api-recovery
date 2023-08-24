@@ -105,4 +105,24 @@ class Product extends BaseModel
     {
         return $query->where('type', $type);
     }
+
+    public function getStockAttribute()
+    {
+        if($this->type == ProductType::BAHAN_BAKU || $this->is_composit == 0){
+            return $this->attributes['stock'] ;
+        }
+        $stock = 0;
+        foreach($this->trans_product_raw as $item)
+        {
+            $result = floor($item->stock / $item->pivot->qty);
+            if($stock == 0){
+                $stock = $result;
+            }else{
+                if($result < $stock){
+                    $stock = $result;
+                }
+            }
+        }
+        return $stock;
+    }
 }
