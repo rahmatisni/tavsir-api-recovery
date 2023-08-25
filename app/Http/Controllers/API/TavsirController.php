@@ -426,6 +426,7 @@ class TavsirController extends Controller
     {
         try {
             DB::beginTransaction();
+            $request->except('is_active');
             $product->fill($request->all());
             $product->tenant_id = auth()->user()->tenant_id;
             $product->save();
