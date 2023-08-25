@@ -88,7 +88,8 @@ class ProductController extends Controller
     {
         try {
             DB::beginTransaction();
-            $product->fill($request->all());
+            $product->fill($request->except('is_active'));
+            // $product->fill($request->all());
             $product->save();
             $product->customize()->sync($request->customize);
             DB::commit();
