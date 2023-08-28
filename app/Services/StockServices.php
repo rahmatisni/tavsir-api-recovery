@@ -11,13 +11,23 @@ class StockServices
 {
     public function updateStockProduct(TransOrderDetil $order_detil)
     {
-        if ($order_detil->product) {
-
+        $product = $order_detil->product;
+        if ($product) {
             $qty = $order_detil->qty;
             $stock = $order_detil->product->stock;
-            $update_stock = max(($stock - $qty), 0);
-
-            $order_detil->product->update(['stock' => $update_stock]);
+            if($product->is_composit == 1)
+            {
+                foreach($product->trans_product_raw as $value)
+                {
+                    $stock = max($value->stock - ($value->pivot->qty * $qty), 0);
+                    $value->update([
+                        'stock' => $stock
+                    ]);
+                }
+            }else{
+                $update_stock = max(($stock - $qty), 0);
+                $order_detil->product->update(['stock' => $update_stock]);
+            }
             if ($update_stock < 10) {
                
                 $fcm_token = User::where('tenant_id', $order_detil->product->tenant_id)->get();
