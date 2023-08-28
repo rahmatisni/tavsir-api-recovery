@@ -15,6 +15,7 @@ class StockServices
         if ($product) {
             $qty = $order_detil->qty;
             $stock = $order_detil->product->stock;
+            $update_stock = 0;
             if($product->is_composit == 1)
             {
                 foreach($product->trans_product_raw as $value)
