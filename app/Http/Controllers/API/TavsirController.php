@@ -1257,7 +1257,7 @@ class TavsirController extends Controller
 
         }
 
-        if (auth()->user()->id->role()=='CASHIER') {
+        if (auth()->user()->role()=='CASHIER') {
             $data = $data->where(function ($query) {
                 $query->where('casheer_id', auth()->user()->id)
                     ->orWhereNull('casheer_id');
