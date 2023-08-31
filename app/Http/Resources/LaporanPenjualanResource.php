@@ -14,12 +14,15 @@ class LaporanPenjualanResource extends JsonResource
      */
     public function toArray($request)
     {
-        $product_detil = '';
-        $pilihan_price = '';
+        $product_detil = [];
+        $pilihan_price = [];
 
         foreach ($this->customize as $v) {
-            $product_detil = $v->customize_name . ': ' . $v->pilihan_name;
-            $pilihan_price = $v->pilihan_price;
+            // $product_detil = $v->customize_name . ': ' . $v->pilihan_name;
+            // $pilihan_price = $v->pilihan_price;
+
+            array_push($product_detil, $v->customize_name . ': ' . $v->pilihan_name);
+            array_push($pilihan_price,  $v->pilihan_price);
         };
         return [
             'sku' => $this->product->sku ?? '',
