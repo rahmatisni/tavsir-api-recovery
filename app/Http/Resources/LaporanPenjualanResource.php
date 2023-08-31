@@ -16,14 +16,16 @@ class LaporanPenjualanResource extends JsonResource
     {
         $product_detil = '';
         foreach ($this->customize as $v) {
-            $product_detil = $v->customize_name . ': ' . $v->pilihan_name;
+            $product_detil = $v->customize_name . ' : ' . $v->pilihan_name;
         };
         return [
             'sku' => $this->product->sku ?? '',
-            'nama_product' => ($this->product->name ?? '') . $product_detil,
+            'nama_product' => ($this->product->name ?? ''),
+            'nama_varian' => ($product_detil ?? ''),
             'kategori' => $this->product->category->name ?? '',
             'jumlah' => $this->qty,
             'harga' => $this->base_price,
+            'harga_varian' => ($this->total_price-$this->base_price),
             'pendapatan' => $this->total_price,
         ];
     }
