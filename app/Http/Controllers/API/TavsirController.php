@@ -1256,11 +1256,17 @@ class TavsirController extends Controller
             // $data = $data->orderBy('updated_at', 'desc');
 
         }
-        $data = $data->where(function ($query) {
-            $query->where('casheer_id', auth()->user()->id)
-                ->orWhereNull('casheer_id');
-        })->get();
 
+        if (auth()->user()->id->role()=='CASHIER') {
+            $data = $data->where(function ($query) {
+                $query->where('casheer_id', auth()->user()->id)
+                    ->orWhereNull('casheer_id');
+            })->get();    
+        }
+        else {
+            $data = $data->get();
+        }
+       
         // )->when($sort = request()->sort, function ($q) use ($sort) {
         //     if (is_array($sort)) {
         //         foreach ($sort as $val) {
