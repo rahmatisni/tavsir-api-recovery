@@ -44,8 +44,12 @@ class DashboardController extends Controller
         $all1 = $order;
         $all2 = $order;
         $all3 = $order;
+        $all4 = $order;
+
         $takengo_count = $all2->where('order_type', TransOrder::ORDER_TAKE_N_GO)->count();
         $tavsir = $all3->where('order_type', TransOrder::POS)->count();
+        $so = $all4->where('order_type', TransOrder::ORDER_SELF_ORDER)->count();
+
 
         $rest_area = RestArea::when($rest_area_id = $request->rest_area_id, function ($q) use ($rest_area_id) {
             $q->where('id', $rest_area_id);
@@ -72,7 +76,10 @@ class DashboardController extends Controller
         $total_pemasukan = $all1->sum('sub_total');
         $total_transaksi_takengo = $takengo_count;
         $total_transaksi_tavsir = $tavsir;
-        $total_transaksi = $total_transaksi_tavsir + $total_transaksi_takengo;
+        $total_transaksi_so = $so;
+
+        
+        $total_transaksi = $total_transaksi_tavsir + $total_transaksi_takengo + $total_transaksi_so;
         $total_rest_area = $rest_area->count();
         $total_merchant = 0;
         $total_tenant = $tenant->count();
@@ -190,6 +197,7 @@ class DashboardController extends Controller
             'total_pemasukan' => number_format($total_pemasukan, 0, ',', '.'),
             'total_transaksi_tavsir' => number_format($total_transaksi_tavsir, 0, ',', '.'),
             'total_transaksi_tng' => number_format($total_transaksi_takengo, 0, ',', '.'),
+            'total_transaksi_so' => number_format($total_transaksi_so, 0, ',', '.'),
             'total_transaksi' => number_format($total_transaksi, 0, ',', '.'),
             'total_rest_area' => $total_rest_area,
             'total_tenant' => $total_tenant,
