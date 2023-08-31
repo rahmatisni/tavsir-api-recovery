@@ -15,8 +15,11 @@ class LaporanPenjualanResource extends JsonResource
     public function toArray($request)
     {
         $product_detil = '';
+        $pilihan_price = '';
+
         foreach ($this->customize as $v) {
-            $product_detil = $v->customize_name . ' : ' . $v->pilihan_name;
+            $product_detil = $v->customize_name . ': ' . $v->pilihan_name;
+            $pilihan_price = $v->pilihan_price;
         };
         return [
             'sku' => $this->product->sku ?? '',
@@ -25,7 +28,7 @@ class LaporanPenjualanResource extends JsonResource
             'kategori' => $this->product->category->name ?? '',
             'jumlah' => $this->qty,
             'harga' => $this->base_price,
-            'harga_varian' => ($this->total_price-$this->base_price),
+            'harga_varian' => $pilihan_price,
             'pendapatan' => $this->total_price,
         ];
     }
