@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Models\RestArea;
 use App\Models\Tenant;
 use App\Models\TransOrder;
+use App\Models\TransOrderDetil;
 use App\Models\User;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
@@ -174,9 +175,18 @@ class DashboardController extends Controller
         // ];
 
         $topProduct = $order;
-        $topProduct = $topProduct->groupBy('detil.product_id')->map(function ($item) {
-                return $item->count();
-            })->sortDesc();
+        // $topProduct = $topProduct->groupBy('detil.product_id')->map(function ($item) {
+        //         return $item;
+        //     })->sortDesc();
+
+        $topProducts = Product::when($tenant_id = $request->tenant_id, function ($q) use ($tenant_id) {
+            $q->where('tenant_id', $tenant_id);
+        })->pluck('id')->toarray();
+
+        // dd($topProducts);
+
+        $topSales = TransOrderDetil::whereIn('product_id', $topProducts)->groupBy('product_id')->select('product_id','product_name as name', DB::raw('count(*) as total'))->orderBy('total', 'desc')->skip(0)->take(10)->get();
+        // dd($topSales);
         $top_product = [];
         foreach ($topProduct as $key => $value) {
             $product = Product::byType(ProductType::PRODUCT)->find($key);
@@ -200,7 +210,7 @@ class DashboardController extends Controller
             'top_rest_area' => $top_rest_area,
             'top_tenant' => $top_tenant,
             'total_merchat' => $total_merchant,
-            'top_product' => $top_product,
+            'top_product' => $topSales,
         ];
 
         return response()->json($data);
