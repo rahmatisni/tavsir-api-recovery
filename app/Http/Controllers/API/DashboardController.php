@@ -28,19 +28,19 @@ class DashboardController extends Controller
                     $qq->where('rest_area_id', $rest_area_id);
                 });
             })->when($tenant_id = $request->tenant_id, function ($q) use ($tenant_id) {
-                $q->where('tenant_id', $tenant_id);
-            })->when($business_id = $request->business_id, function ($q) use ($business_id) {
-                $q->where('business_id', $business_id);
-            })->when(($tanggal_awal && $tanggal_akhir), function ($q) use ($tanggal_awal, $tanggal_akhir) {
+            $q->where('tenant_id', $tenant_id);
+        })->when($business_id = $request->business_id, function ($q) use ($business_id) {
+            $q->where('business_id', $business_id);
+        })->when(($tanggal_awal && $tanggal_akhir), function ($q) use ($tanggal_awal, $tanggal_akhir) {
 
-                return $q->whereBetween(
-                    'created_at',
-                    [
-                        $tanggal_awal,
-                        $tanggal_akhir . ' 23:59:59'
-                    ]
-                );
-            })->get();
+            return $q->whereBetween(
+                'created_at',
+                [
+                    $tanggal_awal,
+                    $tanggal_akhir . ' 23:59:59'
+                ]
+            );
+        })->get();
         $all1 = $order;
         $all2 = $order;
         $all3 = $order;
@@ -58,18 +58,16 @@ class DashboardController extends Controller
         })->get();
 
         $customer_count = 0;
-        if(auth()->user()->role == User::JMRBAREA)
-        {
+        if (auth()->user()->role == User::JMRBAREA) {
             $customer_count = Voucher::when($rest_area_id = $request->rest_area_id, function ($q) use ($rest_area_id) {
-                        $q->where('rest_area_id', $rest_area_id);
-                    })->count();
+                $q->where('rest_area_id', $rest_area_id);
+            })->count();
         }
 
-        if(auth()->user()->role == User::TENANT)
-        {
+        if (auth()->user()->role == User::TENANT) {
             $customer_count = $order->whereNotNull('customer_id')->unique('customer_id')->count();
         }
-       
+
 
         $total_pemasukan = $all1->sum('sub_total');
         $total_transaksi_takengo = $takengo_count;
@@ -114,7 +112,7 @@ class DashboardController extends Controller
             $restarea = RestArea::find($key);
             $top_rest_area[] = [
                 'name' => $restarea->name ?? '',
-                'photo' => $restarea?->photo != null  ? asset($restarea->photo) : null,
+                'photo' => $restarea?->photo != null ? asset($restarea->photo) : null,
                 'total_transaksi' => $value,
             ];
         }
@@ -175,27 +173,18 @@ class DashboardController extends Controller
         // ];
 
         $topProduct = $order;
-        // $topProduct = $topProduct->groupBy('detil.product_id')->map(function ($item) {
-        //         return $item;
-        //     })->sortDesc();
-
-        $topProducts = Product::when($tenant_id = $request->tenant_id, function ($q) use ($tenant_id) {
-            $q->where('tenant_id', $tenant_id);
-        })->pluck('id')->toarray();
-
-        // dd($topProducts);
-
-        $topSales = TransOrderDetil::whereIn('product_id', $topProducts)->groupBy('product_id')->select('product_id','product_name as name', DB::raw('count(*) as total'))->orderBy('total', 'desc')->skip(0)->take(10)->get();
-        // dd($topSales);
+        $topProduct = $topProduct->pluck('id')->toarray();
+        $topSales = TransOrderDetil::whereIn('trans_order_id', $topProduct)->groupBy('product_id')->select('product_id', 'product_name as name', 'photo',DB::raw('count(*) as total'))->orderBy('total', 'desc')->join('ref_product', 'ref_product.id', '=', 'product_id')
+        ->skip(0)->take(10)->get();
         $top_product = [];
-        foreach ($topProduct as $key => $value) {
-            $product = Product::byType(ProductType::PRODUCT)->find($key);
+        foreach ($topSales as $key => $value) {
             $top_product[] = [
-                'name' => $product->name ?? '',
-                'photo' => $product?->photo ? asset($product?->photo) : null,
-                'total' => $value,
+                'name' => $value->name ?? '',
+                'photo' => $value?->photo ? asset($value?->photo) : null,
+                'total' => $value->total,
             ];
         }
+
 
         $data = [
             'total_pemasukan' => number_format($total_pemasukan, 0, ',', '.'),
@@ -210,7 +199,7 @@ class DashboardController extends Controller
             'top_rest_area' => $top_rest_area,
             'top_tenant' => $top_tenant,
             'total_merchat' => $total_merchant,
-            'top_product' => $topSales,
+            'top_product' => $top_product,
         ];
 
         return response()->json($data);
