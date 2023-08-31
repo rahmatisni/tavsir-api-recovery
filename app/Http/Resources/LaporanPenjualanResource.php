@@ -22,7 +22,7 @@ class LaporanPenjualanResource extends JsonResource
             // $pilihan_price = $v->pilihan_price;
 
             array_push($product_detil, $v->customize_name . ': ' . $v->pilihan_name);
-            array_push($pilihan_price,  $v->pilihan_price);
+            array_push($pilihan_price,  (int)$v->pilihan_price);
         };
         return [
             'sku' => $this->product->sku ?? '',
