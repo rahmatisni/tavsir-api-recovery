@@ -38,7 +38,7 @@
                 <td>{{$value['total_product']}} item</td>
                 <td style="white-space: nowrap;">{{ $value['fee'] }}</td>
                 <td style="white-space: nowrap;">{{ $value['service_fee'] }}</td>
-                <td style="white-space: nowrap;">{{ $value['sub_total'] }}</td>
+                <td style="white-space: nowrap;">{{ $value['total_sub_total'] }}</td>
                 <td style="white-space: nowrap;">{{ $value['total_addon'] }}</td>
                 <td style="white-space: nowrap;">{{ $value['total'] }}</td>
                 <td>{{$value['metode_pembayaran']}}</td>

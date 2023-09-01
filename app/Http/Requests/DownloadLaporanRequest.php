@@ -31,7 +31,7 @@ class DownloadLaporanRequest extends FormRequest
             'rest_area_id' => 'nullable|exists:ref_rest_area,id',
             'business_id' => 'nullable|exists:ref_business,id',
             'payment_method_id' => 'nullable|exists:ref_payment_method,id',
-            'order_type' => 'nullable|in:' . TransOrder::ORDER_TAKE_N_GO . ',' . TransOrder::POS
+            'order_type' => 'nullable|in:' . TransOrder::ORDER_TAKE_N_GO . ',' . TransOrder::POS . ',' . TransOrder::ORDER_SELF_ORDER
         ];
     }
 
