@@ -27,7 +27,7 @@ class SubscriptionController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('role:' . User::TENANT . ',' . User::OWNER)->only('maapingSubscriptionKasir','showKasirTenant');
+        $this->middleware('role:' . User::TENANT . ',' . User::OWNER)->only('maapingSubscriptionKasir', 'showKasirTenant');
         // $this->middleware('role:' . User::TENANT . ',' . User::OWNER)->only('maapingSubscriptionKasir');
         $this->middleware('role:' . User::OWNER)->only('showMemberTenantOwner', 'kuotaKasirTenant');
         // $this->middleware('role:' . User::TENANT)->only('showKasirTenant');
@@ -192,15 +192,18 @@ class SubscriptionController extends Controller
 
     public function showKasirTenant()
     {
-        $limit = Subscription::byOwner(auth()->user()->tenant->business_id)->get();
 
         if (auth()->user()->role == 'OWNER') {
+            $limit = Subscription::byOwner(auth()->user()->business_id)->get();
+
             $data = User::where('role', User::CASHIER)->where('business_id', auth()->user()->business_id)->get();
-        }
-        else {
+        } else {
+            $limit = Subscription::byOwner(auth()->user()->tenant->business_id)->get();
+
             $data = User::where('role', User::CASHIER)->where('tenant_id', auth()->user()->tenant_id)->get();
 
         }
+        // $limit = Subscription::byOwner(auth()->user()->tenant->business_id)->get();
         // $data = User::where('role', User::CASHIER)->where('tenant_id', auth()->user()->tenant_id)->get();
         $result = [
             'limit_kasir' => $limit->where('status_aktivasi', Subscription::AKTIF)->sum('limit_cashier'),
