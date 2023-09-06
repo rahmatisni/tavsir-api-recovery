@@ -28,7 +28,8 @@ class SubscriptionController extends Controller
     public function __construct()
     {
         $this->middleware('role:'.User::OWNER)->only('showMemberTenantOwner','kuotaKasirTenant');
-        $this->middleware('role:'.User::TENANT)->only('showKasirTenant','maapingSubscriptionKasir');
+        // $this->middleware('role:'.User::TENANT)->only('showKasirTenant','maapingSubscriptionKasir');
+        $this->middleware('role:'.User::TENANT.','.User::OWNER)->only('showKasirTenant','maapingSubscriptionKasir');
         $this->middleware('role:'.User::SUPERADMIN)->only('aktivasi');
     }
 
