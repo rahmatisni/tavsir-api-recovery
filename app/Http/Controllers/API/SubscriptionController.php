@@ -27,10 +27,10 @@ class SubscriptionController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('role:' . User::OWNER)->only('showMemberTenantOwner', 'kuotaKasirTenant');
+        $this->middleware('role:'.User::OWNER)->only('showMemberTenantOwner','kuotaKasirTenant');
         // $this->middleware('role:'.User::TENANT)->only('showKasirTenant','maapingSubscriptionKasir');
-        $this->middleware('role:' . User::TENANT . ',' . User::OWNER)->only('showKasirTenant', 'maapingSubscriptionKasir');
-        $this->middleware('role:' . User::SUPERADMIN)->only('aktivasi');
+        $this->middleware('role:'.User::TENANT.','.User::OWNER)->only('showKasirTenant','maapingSubscriptionKasir');
+        $this->middleware('role:'.User::SUPERADMIN)->only('aktivasi');
     }
 
     public function index()
@@ -120,7 +120,7 @@ class SubscriptionController extends Controller
     public function showMemberTenantOwner()
     {
         $limit = Subscription::byOwner()->get();
-        $data = Tenant::byOwner()->get();
+        $data =  Tenant::byOwner()->get();
         $result = [
             'limit_tenant' => $limit->where('status_aktivasi', Subscription::AKTIF)->sum('limit_tenant'),
             'limit_kasir' => $limit->where('status_aktivasi', Subscription::AKTIF)->sum('limit_cashier'),
@@ -132,13 +132,13 @@ class SubscriptionController extends Controller
 
     public function aktivasi($id, Request $request)
     {
-        $data = Subscription::where('id', $id)->first();
-        if (!$data) {
-            return response()->json(['message' => 'Subscription invalid'], 422);
+        $data = Subscription::where('id',$id)->first();
+        if(!$data){
+            return  response()->json(['message' => 'Subscription invalid'], 422);
         }
 
-        if ($data->detail_aktivasi != Subscription::MENUNGGU_KONFIRMASI) {
-            return response()->json(['message' => 'Subscription status not ' . Subscription::MENUNGGU_KONFIRMASI], 422);
+        if($data->detail_aktivasi != Subscription::MENUNGGU_KONFIRMASI){
+            return  response()->json(['message' => 'Subscription status not '.Subscription::MENUNGGU_KONFIRMASI], 422);
         }
 
         try {
@@ -150,23 +150,23 @@ class SubscriptionController extends Controller
             $data->superMerchant;
             $data->save();
             $superMerchant = $data->superMerchant;
-            if ($superMerchant->subscription_end) {
+            if($superMerchant->subscription_end){
                 //Jika Expire
                 $subscription_last = Carbon::parse($superMerchant->subscription_end);
-                if ($subscription_last->lt(Carbon::now()->subDay())) {
+                if($subscription_last->lt(Carbon::now()->subDay())){
                     $superMerchant->subscription_end = Carbon::now()->addMonth($data->masa_aktif);
-                } else {
+                }else{
                     //Belum expire
                     $superMerchant->subscription_end = $subscription_last->addMonths($data->masa_aktif);
                 }
-            } else {
+            }else{
                 //Belum pernah subscription
                 $superMerchant->subscription_end = Carbon::now()->addMonth($data->masa_aktif);
             }
 
             $superMerchant->save();
             DB::commit();
-            return response()->json(['message' => 'Subscription aktif ' . $data->aktif_awal]);
+            return response()->json(['message' => 'Subscription aktif '.$data->aktif_awal]);
         } catch (\Throwable $th) {
             DB::rollback();
             return response()->json(['message' => $th->getMessage()], 422);
@@ -175,12 +175,12 @@ class SubscriptionController extends Controller
 
     public function reject($id, Request $request)
     {
-        $data = Subscription::whereNull('start_date')->where('id', $id)->first();
-        if (!$data) {
-            return response()->json(['message' => 'Subscription invalid'], 422);
+        $data = Subscription::whereNull('start_date')->where('id',$id)->first();
+        if(!$data){
+            return  response()->json(['message' => 'Subscription invalid'], 422);
         }
-        if ($data->detail_aktivasi == Subscription::TERKONFIRMASI) {
-            return response()->json(['message' => 'Subscription tidak bnisa di tolak karena sudah dikonfirmasi'], 422);
+        if($data->detail_aktivasi == Subscription::TERKONFIRMASI){
+            return  response()->json(['message' => 'Subscription tidak bnisa di tolak karena sudah dikonfirmasi'], 422);
         }
         $data->detail_aktivasi = Subscription::DITOLAK;
         $data->note = $request->note;
@@ -216,58 +216,53 @@ class SubscriptionController extends Controller
         $tenant = Tenant::byOwner()->get();
         $tenant_has_subscription = $tenant->where('is_subscription', 1)->count();
         $aktivasi_tenant = $tenant->where('id', $request->id)->first();
-        if (!$aktivasi_tenant) {
-            return response()->json(['message' => 'Tenant invalid'], 422);
+        if(!$aktivasi_tenant){
+            return  response()->json(['message' => 'Tenant invalid'], 422);
         }
-        if ($request->status == 'false') {
+        if($request->status == 'false')
+        {
             $aktivasi_tenant->is_subscription = 0;
             $aktivasi_tenant->save();
-            return response()->json(['message' => 'Unsubscription success']);
+            return  response()->json(['message' => 'Unsubscription success']);
         }
         $kuota = Subscription::byOwner()->get()->where('status_aktivasi', Subscription::AKTIF)->sum('limit_tenant');
-        if ($kuota <= $tenant_has_subscription) {
-            return response()->json(['message' => 'Limit tenant tidak tersedia'], 422);
+        if($kuota <= $tenant_has_subscription){
+            return  response()->json(['message' => 'Limit tenant tidak tersedia'], 422);
         }
 
         $aktivasi_tenant->is_subscription = 1;
         $aktivasi_tenant->save();
 
-        return response()->json(['message' => 'Subscription success']);
+        return  response()->json(['message' => 'Subscription success']);
     }
 
     public function maapingSubscriptionKasir(MapingSubscriptionRequest $request)
     {
-        if (auth()->user()->role == 'OWNER') {
-            $kasirAll = User::where('business_id', auth()->user()->business_id)->where('role', User::CASHIER)->get();
-
-        } else {
-            $kasirAll = User::where('tenant_id', auth()->user()->tenant_id)->where('role', User::CASHIER)->get();
-
-        }
-        // $kasirAll = User::where('tenant_id', auth()->user()->tenant_id)->where('role',User::CASHIER)->get();
+        $kasirAll = User::where('tenant_id', auth()->user()->tenant_id)->where('role',User::CASHIER)->get();
         $kasir = $kasirAll->where('id', $request->id)->first();
 
         $tenant = $kasir?->tenant;
-        if (!$tenant) {
-            return response()->json(['message' => 'Tenant invalid'], 422);
+        if(!$tenant){
+            return  response()->json(['message' => 'Tenant invalid'], 422);
         }
-        if ($request->status == 'false') {
+        if($request->status == 'false')
+        {
             $kasir->is_subscription = 0;
             $kasir->save();
-            return response()->json(['message' => 'Unsubscription success']);
+            return  response()->json(['message' => 'Unsubscription success']);
         }
 
         $kuota = $tenant->kuota_kasir;
         $kasir_subscrption = $kasirAll->where('is_subscription', 1)->count();
         $sisa = $kuota - $kasir_subscrption;
-        if ($kuota <= $kasir_subscrption) {
-            return response()->json(['message' => 'Kuota Kasir ' . $kuota . ' sisa ' . $sisa], 422);
+        if($kuota <= $kasir_subscrption){
+            return  response()->json(['message' => 'Kuota Kasir '.$kuota.' sisa '.$sisa], 422);
         }
 
         $kasir->is_subscription = 1;
         $kasir->save();
 
-        return response()->json(['message' => 'Subscription success']);
+        return  response()->json(['message' => 'Subscription success']);
     }
 
 }
