@@ -52,6 +52,6 @@ class JatelindoService
             ]);
         }
 
-        return Http::withOptions()->post(config('jatelindo.url'), $payload);
+        return Http::post(config('jatelindo.url'), $payload);
     }
 }
