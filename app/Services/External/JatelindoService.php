@@ -39,6 +39,8 @@ class JatelindoService
             "bit49" => "360", // COUNTRY CURRENCY CODE NUMBER IDR 
         ];
 
+        dd($payload);
+
         //fake respone
         if(false){
             $fake_payload = $payload;
