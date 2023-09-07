@@ -33,6 +33,7 @@ use App\Models\TransOrder;
 use App\Models\TransOrderDetil;
 use App\Models\TransPayment;
 use App\Models\Voucher;
+use App\Services\External\JatelindoService;
 use App\Services\External\KiosBankService;
 use App\Services\StockServices;
 use App\Services\TransSharingServices;
@@ -648,13 +649,17 @@ class TravShopController extends Controller
             }
             //Cek deposit
             if ($data->order_type == TransOrder::ORDER_TRAVOY) {
-                $deposit = $this->kiosBankService->cekDeposit();
-                if ($deposit['rc'] == '00') {
-                    if ((int) $deposit['deposit'] < $data->sub_total) {
-                        return response()->json(['info' => 'Deposit ' . $deposit['deposit'] . ' < ' . $data->sub_total], 422);
+                $cekProduct = ProductKiosBank::where('kode', $data->codeProductKiosbank())->first();
+                //Skip jika jatelindo
+                if($cekProduct->integrator != 'JATELINDO'){
+                    $deposit = $this->kiosBankService->cekDeposit();
+                    if ($deposit['rc'] == '00') {
+                        if ((int) $deposit['deposit'] < $data->sub_total) {
+                            return response()->json(['info' => 'Deposit ' . $deposit['deposit'] . ' < ' . $data->sub_total], 422);
+                        }
+                    } else {
+                        return response()->json(['info' => 'Deposit ', 'data' => $deposit], 422);
                     }
-                } else {
-                    return response()->json(['info' => 'Deposit ', 'data' => $deposit], 422);
                 }
             }
 
@@ -1495,6 +1500,10 @@ class TravShopController extends Controller
                         }
                         if ($data->description == 'dual') {
                             $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
+                            if($data->productKiosbank()->integrator == 'JATELINDO')
+                            {
+                                JatelindoService::purchase();
+                            }
                             $tagihan = $datalog['data']['data']['tagihan'] ?? $datalog['data']['data']['harga_kios'];
                             $admin = $datalog['data']['data']['adminBank'] ?? $datalog['data']['data']['AB'] ?? '000000000000';
                             $total = $datalog['data']['data']['total'] ?? $datalog['data']['data']['harga_kios'] ?? $tagihan;
