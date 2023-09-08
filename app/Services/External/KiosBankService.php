@@ -633,14 +633,14 @@ class KiosBankService
                 $order->harga_kios = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'] ?? $res_json;
                 //harga jual
 
-                $deposit = $this->cekDeposit();
-                if ($deposit['rc'] == '00') {
-                    if ((int) $deposit['deposit'] < $order->harga_kios) {
-                        $data['rc'] = '71';
-                        $data['description'] = 'MAINTENANCE';
-                        return $data;            
-                } 
-            }
+            //     $deposit = $this->cekDeposit();
+            //     if ($deposit['rc'] == '00') {
+            //         if ((int) $deposit['deposit'] < $order->harga_kios) {
+            //             $data['rc'] = '71';
+            //             $data['description'] = 'MAINTENANCE';
+            //             return $data;            
+            //     } 
+            // }
                 $harga_jual_kios = ProductKiosBank::where('kode', $res_json['productID'])->first();
                 
                 // $order->sub_total = $harga_jual_kios?->harga ?? $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
