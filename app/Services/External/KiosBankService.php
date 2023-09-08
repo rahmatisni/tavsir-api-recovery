@@ -632,6 +632,15 @@ class KiosBankService
                 $disc = 0;
                 $order->harga_kios = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'] ?? $res_json;
                 //harga jual
+
+                $deposit = $this->cekDeposit();
+                if ($deposit['rc'] == '00') {
+                    if ((int) $deposit['deposit'] < $order->harga_kios) {
+                        return response()->json(['info' => 'Deposit ' . $deposit['deposit'] . ' < ' . $order->harga_kios], 422);
+                    }
+                } else {
+                    return response()->json(['info' => 'Deposit ', 'data' => $deposit], 422);
+                }
                 $harga_jual_kios = ProductKiosBank::where('kode', $res_json['productID'])->first();
                 
                 // $order->sub_total = $harga_jual_kios?->harga ?? $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
