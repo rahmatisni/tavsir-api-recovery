@@ -636,6 +636,7 @@ class KiosBankService
                 $deposit = $this->cekDeposit();
                 if ($deposit['rc'] == '00') {
                     if ((int) $deposit['deposit'] < $order->harga_kios) {
+                        $data['rc'] = '71';
                         $data['description'] = 'MAINTENANCE';
                         return $data;            
                 } 
