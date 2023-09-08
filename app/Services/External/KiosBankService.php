@@ -572,16 +572,6 @@ class KiosBankService
                 $disc = 0;
                 $order->harga_kios = $res_json['data']['total'];
               
-
-                $deposit = $this->cekDeposit();
-                if ($deposit['rc'] == '00') {
-                    if ((int) $deposit['deposit'] < $order->harga_kios) {
-                        return response()->json(['info' => 'Maintenance Work In Progress'], 422);
-                    }
-                } else {
-                    return response()->json(['info' => 'Maintenance Work In Progress'], 422);
-                }
-
                 //harga jual
 
                 $harga_jual_kios = ProductKiosBank::where('kode', $res_json['productID'])->first() ?? $res_json['data']['total'];
@@ -616,16 +606,6 @@ class KiosBankService
                 $temp_harga = preg_replace('/[^0-9]/', '', $harga_jual_kios['name']) + $res_json['data']['AB'];
                 
                 $order->harga_kios = $temp_harga;
-
-                $deposit = $this->cekDeposit();
-                if ($deposit['rc'] == '00') {
-                    if ((int) $deposit['deposit'] < $order->harga_kios) {
-                        return response()->json(['info' => 'Maintenance Work In Progress'], 422);
-                    }
-                } else {
-                    return response()->json(['info' => 'Maintenance Work In Progress'], 422);
-                }
-
                 $order->discount = $disc;
                 $order->sub_total = $temp_harga - $disc ;
 
@@ -677,14 +657,6 @@ class KiosBankService
                 //harga jual
                 $harga_jual_kios = ProductKiosBank::where('kode', $res_json['productID'])->first();
                 
-                $deposit = $this->cekDeposit();
-                if ($deposit['rc'] == '00') {
-                    if ((int) $deposit['deposit'] < $order->harga_kios) {
-                        return response()->json(['info' => 'Maintenance Work In Progress'], 422);
-                    }
-                } else {
-                    return response()->json(['info' => 'Maintenance Work In Progress'], 422);
-                }
                 // $order->sub_total = $harga_jual_kios?->harga ?? $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
                 $order->discount = $disc;
                 $order->sub_total = ($harga_jual_kios?->harga ?? 0) + ($res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan']) - $disc ;
