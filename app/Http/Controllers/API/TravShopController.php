@@ -41,6 +41,8 @@ use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
+
 
 
 class TravShopController extends Controller
@@ -398,6 +400,25 @@ class TravShopController extends Controller
         if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::READY || $data->status == TransOrder::DONE) {
             return response()->json(['status' => $data->status, 'responseData' => $data->payment ?? '']);
         }
+
+        $error = [];
+        foreach ($data->detil as $value) {
+            if ($value->product) {
+                if ($value->product->stock < $value->qty) {
+                    $error['product'][] = $value->qty . ' qty order ' . $value->product->name . ' is invalid. stock available is ' . $value->product->stock;
+                }
+
+                if (!$value->product->is_active) {
+                    $error['product'][] = $value->product->name . ' is not active';
+                }
+            } else {
+                $error[]['Product '] = 'Product not available';
+            }
+        }
+        if (count($error) > 0) {
+            throw ValidationException::withMessages($error);
+        }
+        
         $data->status = 'QUEUE';
         $data->service_fee = 0;
         $data->total = $data->sub_total + $data->addon_total + $data->fee + $data->service_fee;
@@ -579,20 +600,12 @@ class TravShopController extends Controller
                 $value->fee = 0;
                 $value->self_order = false;
                 $value->travshop = false;
-
-
-
-
                 if (in_array($value->id, $self_order)) {
                     $value->self_order = true;
                 }
-
                 if (in_array($value->id, $travshop)) {
                     $value->travshop = true;
                 }
-
-
-
 
                 if ($value->sof_id) {
                     // tenant_is_verified
