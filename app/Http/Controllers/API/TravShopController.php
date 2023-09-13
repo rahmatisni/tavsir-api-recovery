@@ -629,16 +629,12 @@ class TravShopController extends Controller
                     } else {
                         $value->fee = (int) ceil((float) $x / 100 * $trans_order->sub_total);
                     }
-
-                    // } else {
-                    //     $removes[] = $value->id;
-                    // }
                 }
             }
         }
-        $merchant = PgJmto::listSubMerchant();
+        // $merchant = PgJmto::listSubMerchant();
         // log::info($merchant);
-        $paymentMethods = $paymentMethods->whereNotIn('id', $removes);
+        // $paymentMethods = $paymentMethods->whereNotIn('id', $removes);
         return response()->json($paymentMethods);
     }
 
