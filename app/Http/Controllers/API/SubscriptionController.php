@@ -196,7 +196,7 @@ class SubscriptionController extends Controller
         if (auth()->user()->role == 'OWNER') {
             $limit = Subscription::byOwner(auth()->user()->business_id)->get();
             $data = User::where('role', User::CASHIER)->where('business_id', auth()->user()->business_id)->get();
-            dd('oke',[$data, $limit]);
+            // dd('oke',[$data, $limit]);
         } else {
             $limit = Subscription::byOwner(auth()->user()->tenant->business_id)->get();
             $data = User::where('role', User::CASHIER)->where('tenant_id', auth()->user()->tenant_id)->get();

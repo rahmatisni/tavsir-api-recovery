@@ -63,7 +63,7 @@ class TravShopController extends Controller
 
     public function tableList(Request $request)
     {
-        return response()->json(NumberTable::where('tenant_id', $request->tenant_id)->firstOrFail());
+        return response()->json(NumberTable::where('tenant_id', $request->tenant_id)->get());
     }
     public function restArea(Request $request)
     {
