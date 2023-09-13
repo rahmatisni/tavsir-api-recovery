@@ -707,7 +707,6 @@ class TavsirController extends Controller
 
             $param_removes = Tenant::where('id', $trans_order->tenant_id)->firstOrFail();
             $removes = json_decode($param_removes->list_payment);
-            dd($removes);
 
             $tenant = $trans_order->tenant;
             $tenant_is_verified = $tenant?->is_verified;
@@ -732,6 +731,7 @@ class TavsirController extends Controller
           
 
             foreach ($paymentMethods as $value) {
+                Log::warning($value);
                 $value->platform_fee = env('PLATFORM_FEE');
                 $value->fee = 0;
                 $value->self_order = false;
@@ -760,6 +760,7 @@ class TavsirController extends Controller
                     // if ($tenant_is_verified || $trans_order->order_type == TransOrder::ORDER_TRAVOY) {
 
                     $data = PgJmto::tarifFee($value->sof_id, $value->payment_method_id, $value->sub_merchant_id, $trans_order->sub_total);
+                    Log::warning($data);
                     $value->percentage = $data['is_presentage'] ?? null;
                     $x = $data['value'] ?? 'x';
                     $state = $data['is_presentage'] ?? null;
