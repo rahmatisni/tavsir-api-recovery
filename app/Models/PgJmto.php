@@ -103,7 +103,8 @@ class PgJmto extends Model
                     'JMTO-IP-CLIENT' => '172.0.0.1',
                     'JMTO-REQUEST-ID' => '123456789',
                 ])
-                    ->retry(1, 2)
+                    // ->retry(1, 100)
+                    ->timeout(2)
                     ->withoutVerifying()
                     ->post(env('PG_BASE_URL') . $path, $payload);
                 clock()->event("pg{$path}")->end();
@@ -122,7 +123,8 @@ class PgJmto extends Model
                     'JMTO-IP-CLIENT' => '172.0.0.1',
                     'JMTO-REQUEST-ID' => '123456789',
                 ])
-                    ->retry(1, 2)
+                    // ->retry(1, 100)
+                    ->timeout(2)
                     ->withoutVerifying()
                     ->get(env('PG_BASE_URL') . $path, $payload);
 
