@@ -728,9 +728,7 @@ class TavsirController extends Controller
                     }
                 }
             }
-            foreach ($paymentMethods as $x) {
-                dump($x);
-            }
+          
 
             foreach ($paymentMethods as $value) {
                 $value->platform_fee = env('PLATFORM_FEE');
