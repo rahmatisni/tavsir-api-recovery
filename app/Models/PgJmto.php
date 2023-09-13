@@ -283,12 +283,18 @@ class PgJmto extends Model
             "sub_merchant_id" =>  $sub_merchant_id,
             "bill_amount" =>  $bill_amount,
         ];
+
+        $fake_handling = [
+            "value" =>  null,
+            "is_presentage" =>  null
+        ];
         $res = self::service('POST','/sof/tariffee', $payload);
         // Log::info($res);
         if ($res->status() != 200) {
-            dd('fck');
             // return null;
+            return $fake_handling;
         }
+        
         if ($res->successful()) {
             if($res->json()['status'] == 'ERROR'){
                 Log::warning('PG Tarif Fee', $res->json());
