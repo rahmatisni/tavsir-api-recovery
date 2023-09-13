@@ -108,10 +108,17 @@ class PgJmto extends Model
                     ->post(env('PG_BASE_URL') . $path, $payload);
                 clock()->event("pg{$path}")->end();
 
-                $asd = $response->getStatusCode();
+                $bad = $response->getStatusCode();
                 // dd($asd);
-                if($asd === 400) {
-dd('coi');
+                if($bad === 400) {
+                    $fake_respo_create_bad = [
+                        "responseData" => [
+                            "is_presentage" => null,
+                            "value" => null
+                        ]
+                    ];
+    
+                    return Http::response($fake_respo_create_bad, 200);         
                 }
                 return $response;
                 break;
@@ -290,6 +297,8 @@ dd('coi');
             "bill_amount" =>  $bill_amount,
         ];
         $res = self::service('POST','/sof/tariffee', $payload);
+
+        dd($res);
         
         if ($res->successful()) {
             if($res->json()['status'] == 'ERROR'){
