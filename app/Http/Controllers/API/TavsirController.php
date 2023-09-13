@@ -756,7 +756,7 @@ class TavsirController extends Controller
                     // if ($tenant_is_verified || $trans_order->order_type == TransOrder::ORDER_TRAVOY) {
 
                     $data = PgJmto::tarifFee($value->sof_id, $value->payment_method_id, $value->sub_merchant_id, $trans_order->sub_total);
-                    dd($data);
+                    // dd($data);
 
                     $value->percentage = $data['is_presentage'] ?? null;
 
