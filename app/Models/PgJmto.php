@@ -300,8 +300,7 @@ class PgJmto extends Model
         ];
         $res = self::service('POST','/sof/tariffee', $payload);
         if($res['status'] == 400){
-            // dd($res);
-            return $res['responseData'];
+            return $res;
         }
         if ($res->successful()) {
             if($res->json()['status'] == 'ERROR'){
