@@ -84,6 +84,7 @@ class PgJmto extends Model
 
     public static function service($method, $path, $payload)
     {
+        try{
         $token = self::getToken();
         $timestamp = Carbon::now()->format('c');
         $signature = self::generateSignature($method, $path, $token, $timestamp, $payload);
@@ -131,6 +132,10 @@ class PgJmto extends Model
                 # code...
                 break;
         }
+    } catch (Exception $e) {
+        // throw new H(500, $e->getMessage());
+        dd('4');
+    }
 
     }
 
@@ -281,12 +286,12 @@ class PgJmto extends Model
             "sub_merchant_id" => $sub_merchant_id,
             "bill_amount" => $bill_amount,
         ];
-        try {
+        // try {
             $res = self::service('POST', '/sof/tariffee', $payload);
 
-        } catch (\Exception $e) {
-            throw new HttpException(500, $e->getMessage());
-        }
+        // } catch (\Exception $e) {
+        //     throw new HttpException(500, $e->getMessage());
+        // }
 
 
         if ($res->successful()) {
