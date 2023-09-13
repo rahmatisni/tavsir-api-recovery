@@ -132,9 +132,9 @@ class PgJmto extends Model
                 # code...
                 break;
         }
-    } catch (Exception $e) {
-        // throw new H(500, $e->getMessage());
-        dd('4');
+    } catch (\Throwable $th) {
+        dd('asd');
+        return response()->json($th->getMessage(), 400);
     }
 
     }
