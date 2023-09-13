@@ -749,11 +749,11 @@ class TavsirController extends Controller
                     $value->tavsir = true;
                 }
 
-                // if (!in_array($value->id, $removes)) {
-                //     $value->self_order = false;
-                //     $value->travshop = false;
-                //     $value->tavsir = false;
-                // }
+                if (!in_array($value->id, $removes)) {
+                    $value->self_order = false;
+                    $value->travshop = false;
+                    $value->tavsir = false;
+                }
 
                 if ($value?->sof_id) {
                     // tenant_is_verified
