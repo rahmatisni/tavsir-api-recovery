@@ -756,13 +756,7 @@ class TavsirController extends Controller
                     // if ($tenant_is_verified || $trans_order->order_type == TransOrder::ORDER_TRAVOY) {
 
                     $data = PgJmto::tarifFee($value->sof_id, $value->payment_method_id, $value->sub_merchant_id, $trans_order->sub_total);
-                    // dd($data);
 
-                    if($data === null) {
-                        $value->fee = null;
-                        dump('fc');
-                    }
-                    
                     $value->percentage = $data['is_presentage'] ?? null;
 
                     $x = $data['value'] ?? 'x';
@@ -773,6 +767,8 @@ class TavsirController extends Controller
                     } else {
                         $value->fee = (int) ceil((float) $x / 100 * $trans_order->sub_total);
                     }
+
+
 
                     // } else {
                     //     $removes[] = $value->id;
@@ -1271,16 +1267,15 @@ class TavsirController extends Controller
 
         }
 
-        if (auth()->user()->role=='CASHIER') {
+        if (auth()->user()->role == 'CASHIER') {
             $data = $data->where(function ($query) {
                 $query->where('casheer_id', auth()->user()->id)
                     ->orWhereNull('casheer_id');
-            })->get();    
-        }
-        else {
+            })->get();
+        } else {
             $data = $data->get();
         }
-       
+
         // )->when($sort = request()->sort, function ($q) use ($sort) {
         //     if (is_array($sort)) {
         //         foreach ($sort as $val) {

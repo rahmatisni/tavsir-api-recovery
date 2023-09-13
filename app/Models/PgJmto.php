@@ -297,7 +297,6 @@ class PgJmto extends Model
             "bill_amount" => $bill_amount,
         ];
         $res = self::service('POST', '/sof/tariffee', $payload);
-        // dd($res);
         try {
             if ($res->successful()) {
                 if ($res->json()['status'] == 'ERROR') {
@@ -311,9 +310,8 @@ class PgJmto extends Model
             return $res;
 
         }
-
-
-        return null;
+        
+        // return null;
     }
 
     public static function bindDD($payload)
