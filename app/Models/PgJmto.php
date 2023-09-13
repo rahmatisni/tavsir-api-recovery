@@ -119,7 +119,7 @@ class PgJmto extends Model
                         ]
                     ];
     
-                    return Http::response($fake_respo_create_bad, 200);         
+                   $fake_respo_create_bad;       
                 }
                 return $response;
                 break;
