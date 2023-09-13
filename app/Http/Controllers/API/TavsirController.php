@@ -772,11 +772,11 @@ class TavsirController extends Controller
 
                     }
                     dump($state);
+                    dd('x');
 
                 }
             }
         }
-        dd('x');
 
         // $merchant = PgJmto::listSubMerchant();
         // log::info($merchant);
