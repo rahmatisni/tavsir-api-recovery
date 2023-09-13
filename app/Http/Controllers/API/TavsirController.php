@@ -693,6 +693,7 @@ class TavsirController extends Controller
 
     public function paymentMethod(Request $request)
     {
+        try{
         $paymentMethods = PaymentMethod::all();
         $removes = [];
         $self_order = ['5', '7', '9'];
@@ -782,6 +783,11 @@ class TavsirController extends Controller
         // log::info($merchant);
         // $paymentMethods = $paymentMethods->whereIn('id', $removes);
         return response()->json($paymentMethods);
+
+    } catch (\Throwable $th) {
+        DB::rollback();
+        return response()->json(['error' => $th->getMessage(), $payment_payload], 500);
+    }
     }
 
 
