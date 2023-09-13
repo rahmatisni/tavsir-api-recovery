@@ -300,9 +300,9 @@ class PgJmto extends Model
         ];
         $res = self::service('POST','/sof/tariffee', $payload);
         dd($res);
-        // if($res->json()['status'] === 400){
-        //     dd('oke');
-        // }
+        if($res->json()['status'] === 400){
+            return $res->json()['responseData'];
+        }
         if ($res->successful()) {
             if($res->json()['status'] == 'ERROR'){
                 Log::warning('PG Tarif Fee', $res->json());
