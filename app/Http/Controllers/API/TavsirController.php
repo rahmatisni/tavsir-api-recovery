@@ -756,14 +756,7 @@ class TavsirController extends Controller
                     // if ($tenant_is_verified || $trans_order->order_type == TransOrder::ORDER_TRAVOY) {
 
                     $data = PgJmto::tarifFee($value->sof_id, $value->payment_method_id, $value->sub_merchant_id, $trans_order->sub_total);
-                    // dd($data);
-                    // log::info($data);
 
-                    if($data == null) {
-                        $value->fee = null;
-                    }
-
-                    
                     $value->percentage = $data['is_presentage'] ?? null;
 
                     $x = $data['value'] ?? 'x';
@@ -782,7 +775,7 @@ class TavsirController extends Controller
             }
         }
 
-        $merchant = PgJmto::listSubMerchant();
+        // $merchant = PgJmto::listSubMerchant();
         // log::info($merchant);
         // $paymentMethods = $paymentMethods->whereIn('id', $removes);
         return response()->json($paymentMethods);
