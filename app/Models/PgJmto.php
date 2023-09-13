@@ -108,7 +108,8 @@ class PgJmto extends Model
                     ->post(env('PG_BASE_URL') . $path, $payload);
                 clock()->event("pg{$path}")->end();
 
-                dd($response->bad());
+                $asd = $response->getStatusCode();
+                dd($asd);
                 return $response;
                 break;
             case 'GET':
