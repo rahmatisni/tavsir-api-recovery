@@ -25,7 +25,7 @@ class PgJmto extends Model
             $hours = Carbon::now()->addMinute(59);
             $diff = $now->diffInMinutes($hours) * 60;
             $token = self::generateToken()['access_token'] ?? '';
-            if($token == ''){
+            if ($token == '') {
                 // throw new Exception("token not found",422);
             }
             Redis::set('token_pg', $token);
@@ -33,7 +33,7 @@ class PgJmto extends Model
         }
         return $token;
     }
-    
+
     public static function generateToken()
     {
         if (env('PG_FAKE_RESPON') === true) {
@@ -63,12 +63,11 @@ class PgJmto extends Model
         return $response->json();
     }
 
-    public static function generateSignature($method ,$path, $token, $timestamp, $request_body)
+    public static function generateSignature($method, $path, $token, $timestamp, $request_body)
     {
         $request_body = json_encode($request_body);
 
-        if($method == 'GET')
-        {
+        if ($method == 'GET') {
             $request_body = '';
         }
         $has_body = hash('sha256', $request_body);
@@ -118,11 +117,11 @@ class PgJmto extends Model
                             "value" => null
                         ]
                     ];
-                
+
                     return $fake_respo_create_bad;
                     // You don't need a break statement here as it's not inside a loop.
                 }
-                
+
                 return $response;
                 break;
             case 'GET':
@@ -143,32 +142,31 @@ class PgJmto extends Model
                     ->get(env('PG_BASE_URL') . $path, $payload);
 
                 return $response;
-            
+
             default:
                 # code...
                 break;
         }
-       
+
     }
 
     public static function vaCreate($sof_code, $bill_id, $bill_name, $amount, $desc, $phone, $email, $customer_name, $sub_merchant_id)
     {
-        if($amount > 1000000)
-        {
+        if ($amount > 1000000) {
             throw new Exception("The amount must be less than 1000000", 422);
         }
 
         $payload = [
-            "sof_code" =>  $sof_code,
-            "bill_id" =>  $bill_id,
+            "sof_code" => $sof_code,
+            "bill_id" => $bill_id,
             "bill_name" => $bill_name,
             "amount" => (string) $amount,
-            "desc" =>  $desc,
-            "exp_date" =>  Carbon::now()->addMinutes(5)->format('Y-m-d H:i:s'),
-            "va_type" =>  "close",
-            "phone" =>  $phone,
-            "email" =>  $email,
-            "customer_name" =>  $customer_name,
+            "desc" => $desc,
+            "exp_date" => Carbon::now()->addMinutes(5)->format('Y-m-d H:i:s'),
+            "va_type" => "close",
+            "phone" => $phone,
+            "email" => $email,
+            "customer_name" => $customer_name,
             "submerchant_id" => $sub_merchant_id
         ];
 
@@ -211,7 +209,7 @@ class PgJmto extends Model
             //end fake
         }
 
-        $res = self::service('POST','/va/create', $payload);
+        $res = self::service('POST', '/va/create', $payload);
         Log::info($payload);
         Log::info('Va create res', $res->json());
         return $res->json();
@@ -220,13 +218,13 @@ class PgJmto extends Model
     public static function vaStatus($sof_code, $bill_id, $va_number, $refnum, $phone, $email, $customer_name, $submerchant_id)
     {
         $payload = [
-            "sof_code" =>  $sof_code,
-            "bill_id" =>  $bill_id,
+            "sof_code" => $sof_code,
+            "bill_id" => $bill_id,
             "va_number" => $va_number,
-            "refnum" =>  $refnum,
-            "phone" =>  $phone,
-            "email" =>  $email,
-            "customer_name" =>  $customer_name,
+            "refnum" => $refnum,
+            "phone" => $phone,
+            "email" => $email,
+            "customer_name" => $customer_name,
             "submerchant_id" => $submerchant_id ?? ''
         ];
 
@@ -268,7 +266,7 @@ class PgJmto extends Model
             //end fake
         }
 
-        $res = self::service('POST','/va/cekstatus', $payload);
+        $res = self::service('POST', '/va/cekstatus', $payload);
         // dd ($res->json());
         Log::info(['Payload =>', $payload, 'Va status => ', $res->json()]);
         return $res->json();
@@ -277,15 +275,15 @@ class PgJmto extends Model
     public static function vaBriDelete($sof_code, $bill_id, $va_number, $refnum, $phone, $email, $customer_name)
     {
         $payload = [
-            "sof_code" =>  $sof_code,
-            "bill_id" =>  $bill_id,
+            "sof_code" => $sof_code,
+            "bill_id" => $bill_id,
             "va_number" => $va_number,
-            "refnum" =>  $refnum,
-            "phone" =>  $phone,
-            "email" =>  $email,
-            "customer_name" =>  $customer_name,
+            "refnum" => $refnum,
+            "phone" => $phone,
+            "email" => $email,
+            "customer_name" => $customer_name,
         ];
-        $res = self::service('POST','/va/delete', $payload);
+        $res = self::service('POST', '/va/delete', $payload);
         Log::info('Va delete', $res->json());
 
         return $res->json();
@@ -294,29 +292,46 @@ class PgJmto extends Model
     public static function tarifFee($sof_id, $payment_method_id, $sub_merchant_id, $bill_amount)
     {
         $payload = [
-            "sof_id" =>  $sof_id,
-            "payment_method_id" =>  $payment_method_id,
-            "sub_merchant_id" =>  $sub_merchant_id,
-            "bill_amount" =>  $bill_amount,
+            "sof_id" => $sof_id,
+            "payment_method_id" => $payment_method_id,
+            "sub_merchant_id" => $sub_merchant_id,
+            "bill_amount" => $bill_amount,
         ];
-        $res = self::service('POST','/sof/tariffee', $payload);
-        Log::error($res);
-        if($res['status'] == 400){
-            // return $res['responseData'];
-            $res = $res['responseData'];
+
+        try {
+            $res = self::service('POST', '/sof/tariffee', $payload);
+            Log::error($res);
+            if ($res['status'] == 400) {
+                // return $res['responseData'];
+                $res = $res['responseData'];
+                Log::warning('Trace PG Tarif Fee', $res);
+
+                return $res;
+            }
+            if ($res->successful()) {
+                if ($res->json()['status'] == 'ERROR') {
+                    Log::warning('PG Tarif Fee', $res->json());
+                    return null;
+                }
+                Log::warning('Trace PG Tarif Fee', $res);
+                return $res->json()['responseData'];
+            }
+        } catch (\Illuminate\Http\Client\RequestException $e) {
+            $fake_respo_create_bad = [
+                "status" => 400,
+                "responseData" => [
+                    "is_presentage" => null,
+                    "value" => null
+                ]
+            ];
+            $res = $fake_respo_create_bad['responseData'];
             Log::warning('Trace PG Tarif Fee', $res);
 
             return $res;
         }
-        if ($res->successful()) {
-            if($res->json()['status'] == 'ERROR'){
-                Log::warning('PG Tarif Fee', $res->json());
-                return null;
-            }
-            Log::warning('Trace PG Tarif Fee', $res);
-            return $res->json()['responseData'];
-        }
-        return null;
+
+
+        // return null;
     }
 
     public static function bindDD($payload)
@@ -367,13 +382,13 @@ class PgJmto extends Model
             "customer_name" => $payload['customer_name'],
             "submerchant_id" => null,
             "exp_date" => $payload['exp_date'],
-            "custom_field_1"=> "test",
-            "custom_field_2"=>"",
-            "custom_field_3"=>"",
-            "custom_field_4"=>"",
-            "custom_field_5"=>""
+            "custom_field_1" => "test",
+            "custom_field_2" => "",
+            "custom_field_3" => "",
+            "custom_field_4" => "",
+            "custom_field_5" => ""
         ];
-        $res = self::service('POST','/sof/bind', $payload);
+        $res = self::service('POST', '/sof/bind', $payload);
         Log::info('DD bind', $res->json());
         return $res;
     }
@@ -402,7 +417,7 @@ class PgJmto extends Model
             ]);
             //end fake
         }
-        $res = self::service('POST','/sof/bind-validate', $payload);
+        $res = self::service('POST', '/sof/bind-validate', $payload);
         Log::info('DD bind validate', $res->json());
         return $res;
     }
@@ -430,7 +445,7 @@ class PgJmto extends Model
             ]);
             //end fake
         }
-        $res = self::service('POST','/sof/unbind', $payload);
+        $res = self::service('POST', '/sof/unbind', $payload);
         Log::info('DD unbind', $res->json());
         return $res;
     }
@@ -466,7 +481,7 @@ class PgJmto extends Model
         }
         Log::info('DD Req Inquiry', $payload);
         unset($payload["card_id"]);
-        $res = self::service('POST','/directdebit/inquiry', $payload);
+        $res = self::service('POST', '/directdebit/inquiry', $payload);
         Log::info('DD Resp inquiry', $res->json());
         return $res;
     }
@@ -503,7 +518,7 @@ class PgJmto extends Model
 
         unset($payload["card_id"]);
         Log::info('DD Payment Request', $payload);
-        $res = self::service('POST','/directdebit/payment', $payload);
+        $res = self::service('POST', '/directdebit/payment', $payload);
         Log::info('DD payment Response', $res->json());
         return $res;
     }
@@ -539,14 +554,14 @@ class PgJmto extends Model
         }
         unset($payload["card_id"]);
         Log::info('DD Status Request', $payload);
-        $res = self::service('POST','/directdebit/advice', $payload);
+        $res = self::service('POST', '/directdebit/advice', $payload);
         Log::info('DD Status Response', $res->json());
         return $res;
     }
 
     public static function cardList($payload)
     {
-        $res = self::service('POST','/sof/cardlist', $payload);
+        $res = self::service('POST', '/sof/cardlist', $payload);
         Log::info('Card list', $res->json());
         return $res;
     }
@@ -609,14 +624,14 @@ class PgJmto extends Model
             //end fake
         }
 
-        $res = self::service('POST','/sof/list',[]);
+        $res = self::service('POST', '/sof/list', []);
         Log::info('SOF list', $res->json());
         return $res;
     }
 
     public static function listSubMerchant()
     {
-        $res = self::service('GET','/merchant-data/submerchant',[]);
+        $res = self::service('GET', '/merchant-data/submerchant', []);
         return $res;
     }
 }
