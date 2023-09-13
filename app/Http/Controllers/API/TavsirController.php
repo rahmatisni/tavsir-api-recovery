@@ -759,7 +759,7 @@ class TavsirController extends Controller
                     dd($data);
                     // log::info($data);
 
-                    if(!$data) {
+                    if($data == null) {
                         $value->fee = null;
                     }
 
