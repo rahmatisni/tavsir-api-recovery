@@ -317,9 +317,8 @@ class PgJmto extends Model
                 Log::warning('Trace PG Tarif Fee', $res);
                 return $res->json()['responseData'];
             }
-        } catch (\Illuminate\Http\Client\RequestException $e) {
+        } catch (\Throwable $th) {
             
-            dump($e->getCode());
             $fake_respo_create_bad = [
                 "status" => 400,
                 "responseData" => [
@@ -329,7 +328,7 @@ class PgJmto extends Model
             ];
             $res = $fake_respo_create_bad['responseData'];
             Log::warning('Trace PG Tarif Fee', $res);
-
+            dd($res);
             return $res;
         }
 
