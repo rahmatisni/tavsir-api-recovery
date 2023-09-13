@@ -299,7 +299,7 @@ class PgJmto extends Model
             "bill_amount" =>  $bill_amount,
         ];
         $res = self::service('POST','/sof/tariffee', $payload);
-        dd($res);
+        // dd($res);
         if($res->json()['status'] === 400){
             return $res->json()['responseData'];
         }
@@ -311,22 +311,6 @@ class PgJmto extends Model
             return $res->json()['responseData'];
         }
         return null;
-        // }
-        // catch (\Throwable $e) {
-        //     $catch = [
-        //         "status" => "success",
-        //         "rc" => "0000",
-        //         "rcm" => "success",
-        //         "responseData" => [
-                    
-        //             "value" => null,
-        //             "is_presentage" => null,
-        //         ],
-        //         "requestData" => $payload
-        //     ];
-        //      return $catch;    
-        // }
-
     }
 
     public static function bindDD($payload)
