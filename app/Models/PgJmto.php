@@ -107,7 +107,6 @@ class PgJmto extends Model
                     ->withoutVerifying()
                     ->post(env('PG_BASE_URL') . $path, $payload);
                 clock()->event("pg{$path}")->end();
-dd($response);
                 return $response;
                 break;
             case 'GET':
@@ -286,6 +285,15 @@ dd($response);
         ];
         try{
         $res = self::service('POST','/sof/tariffee', $payload);
+        if ($res->bad()) {
+
+            dd('_');
+            if($res->json()['status'] == 'ERROR'){
+                Log::warning('PG Tarif Fee', $res->json());
+                return null;
+            }
+            return $res->json()['responseData'];
+        }
         if ($res->successful()) {
             if($res->json()['status'] == 'ERROR'){
                 Log::warning('PG Tarif Fee', $res->json());
