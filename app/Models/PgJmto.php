@@ -112,6 +112,7 @@ class PgJmto extends Model
                 // dd($asd);
                 if($bad === 400) {
                     $fake_respo_create_bad = [
+                        "status" => 400,
                         "responseData" => [
                             "is_presentage" => null,
                             "value" => null
@@ -298,6 +299,9 @@ class PgJmto extends Model
         ];
         $res = self::service('POST','/sof/tariffee', $payload);
         
+        if($res->json()['status'] === 400){
+            dd('oke');
+        }
         if ($res->successful()) {
             if($res->json()['status'] == 'ERROR'){
                 Log::warning('PG Tarif Fee', $res->json());
