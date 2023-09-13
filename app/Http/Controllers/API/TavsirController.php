@@ -762,7 +762,6 @@ class TavsirController extends Controller
 
                     $x = $data['value'] ?? 'x';
                     $state = $data['is_presentage'] ?? null;
-                    dump($state);
 
 
                     if ($state == (false || null)) {
