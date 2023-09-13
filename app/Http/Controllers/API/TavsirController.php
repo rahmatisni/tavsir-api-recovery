@@ -695,6 +695,8 @@ class TavsirController extends Controller
     {
         $paymentMethods = PaymentMethod::all();
         $removes = [];
+        $remove = [];
+
         $self_order = ['5', '7', '9'];
         $travshop = ['5', '6', '7', '8', '9', '10'];
         $tavsir = ['1', '2', '3', '10'];
@@ -775,7 +777,7 @@ class TavsirController extends Controller
 
         // $merchant = PgJmto::listSubMerchant();
         // log::info($merchant);
-        // $paymentMethods = $paymentMethods->whereIn('id', $removes);
+        $paymentMethods = $paymentMethods->whereNotIn('id', $remove);
         return response()->json($paymentMethods);
     }
 
