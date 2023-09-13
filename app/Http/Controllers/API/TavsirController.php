@@ -763,10 +763,16 @@ class TavsirController extends Controller
                     $x = $data['value'] ?? 'x';
                     $state = $data['is_presentage'] ?? null;
 
+                    dump($state);
+
                     if ($state == (false || null)) {
                         $value->fee = $data['value'] ?? null;
+                        dd('x');
+
                     } else {
                         $value->fee = (int) ceil((float) $x / 100 * $trans_order->sub_total);
+                        dd('x');
+
                     }
 
                     dump($value->fee);
