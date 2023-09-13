@@ -295,6 +295,10 @@ class PgJmto extends Model
             return $res->json()['responseData'];
         }
 
+        if ($res->status() == '400') {
+            return null;
+
+        }
         return null;
     }
 
