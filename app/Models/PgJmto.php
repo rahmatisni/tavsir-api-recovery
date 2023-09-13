@@ -103,7 +103,7 @@ class PgJmto extends Model
                     'JMTO-IP-CLIENT' => '172.0.0.1',
                     'JMTO-REQUEST-ID' => '123456789',
                 ])
-                    ->retry(1, 100)
+                    ->retry(1, 2)
                     ->withoutVerifying()
                     ->post(env('PG_BASE_URL') . $path, $payload);
                 clock()->event("pg{$path}")->end();
@@ -122,7 +122,7 @@ class PgJmto extends Model
                     'JMTO-IP-CLIENT' => '172.0.0.1',
                     'JMTO-REQUEST-ID' => '123456789',
                 ])
-                    ->retry(1, 100)
+                    ->retry(1, 2)
                     ->withoutVerifying()
                     ->get(env('PG_BASE_URL') . $path, $payload);
 
@@ -285,15 +285,7 @@ class PgJmto extends Model
         ];
         try{
         $res = self::service('POST','/sof/tariffee', $payload);
-        if ($res->bad()) {
-
-            dd('_');
-            if($res->json()['status'] == 'ERROR'){
-                Log::warning('PG Tarif Fee', $res->json());
-                return null;
-            }
-            return $res->json()['responseData'];
-        }
+        
         if ($res->successful()) {
             if($res->json()['status'] == 'ERROR'){
                 Log::warning('PG Tarif Fee', $res->json());
