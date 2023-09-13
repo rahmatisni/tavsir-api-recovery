@@ -102,7 +102,7 @@ class PgJmto extends Model
                     'JMTO-IP-CLIENT' => '172.0.0.1',
                     'JMTO-REQUEST-ID' => '123456789',
                 ])
-                    ->timeout(10)
+                    ->timeout(3)
                     ->retry(1, 100)
                     ->withoutVerifying()
                     ->post(env('PG_BASE_URL') . $path, $payload);
@@ -123,7 +123,6 @@ class PgJmto extends Model
                 //     // You don't need a break statement here as it's not inside a loop.
                 // }
                 return $response;
-                break;
             case 'GET':
                 $response = Http::withHeaders([
                     'JMTO-TIMESTAMP' => $timestamp,
@@ -137,8 +136,8 @@ class PgJmto extends Model
                     'JMTO-IP-CLIENT' => '172.0.0.1',
                     'JMTO-REQUEST-ID' => '123456789',
                 ])
-                    ->timeout(10)
-                    ->retry(1, 100)
+                ->timeout(3)
+                ->retry(1, 100)
                     ->withoutVerifying()
                     ->get(env('PG_BASE_URL') . $path, $payload);
 
