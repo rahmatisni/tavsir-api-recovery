@@ -33,6 +33,7 @@ use App\Models\TransOrder;
 use App\Models\TransOrderDetil;
 use App\Models\TransPayment;
 use App\Models\Voucher;
+use App\Models\NumberTable;
 use App\Services\External\KiosBankService;
 use App\Services\StockServices;
 use App\Services\TransSharingServices;
@@ -42,6 +43,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+
 
 
 
@@ -58,6 +60,11 @@ class TravShopController extends Controller
         $this->kiosBankService = $kiosBankService;
     }
 
+
+    public function tableList(Request $request)
+    {
+        return response()->json(NumberTable::where('tenant_id', $request->tenant_id)->firstOrFail());
+    }
     public function restArea(Request $request)
     {
         $data = RestArea::when($name = $request->name, function ($q) use ($name) {

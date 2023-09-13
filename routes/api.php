@@ -210,6 +210,7 @@ Route::post('/tavsir/log-order/{id}', [App\Http\Controllers\API\TavsirController
 Route::post('/login', [App\Http\Controllers\API\AuthController::class, 'login']);
 
 Route::prefix('travshop')->group(function () {
+    Route::get('/number-table', [App\Http\Controllers\API\TravShopController::class,'tableList']);
     Route::post('/rest-area', [App\Http\Controllers\API\TravShopController::class, 'restArea']);
     Route::get('/tenant/{id}', [App\Http\Controllers\API\TravShopController::class, 'tenantById']);
     Route::get('/tenant-category', [App\Http\Controllers\API\TravShopController::class, 'tenantByCategory']);

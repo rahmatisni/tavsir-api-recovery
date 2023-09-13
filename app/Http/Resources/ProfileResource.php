@@ -43,9 +43,7 @@ class ProfileResource extends JsonResource
         if($subscription_end){
             $subscription_end = Carbon::parse($subscription_end)->diffForHumans();
         }
-        $print = Tenant::find($this->tenant_id);
-
-        // dd($print);
+        // $print = Tenant::find($this->tenant_id);
 
         return [
             'id' => $this->id,
@@ -70,7 +68,10 @@ class ProfileResource extends JsonResource
             'reset_pin' => $this->reset_pin,
             'fcm_token' => $this->fcm_token,
             'subscription_end' => $subscription_end,
-            'is_print' => $print?->is_print ?? 0
+            'is_print' =>  $this->is_print ?? 0,
+            'is_scan'  => $this->is_scan ?? 0,
+            'is_composite' => $this->is_composite ?? 0,
+            'list_payment' => $this->list_payment ?? ['2']
         ];
     }
 }

@@ -697,11 +697,15 @@ class TavsirController extends Controller
         $removes = [];
         $self_order = ['5', '7', '9'];
         $travshop = ['5', '6', '7', '8', '9', '10'];
-        $tavsir = ['1', '2', '3', '5', '7', '9', '10'];
+        $tavsir = ['1', '2', '3', '10'];
 
 
         if ($request->trans_order_id) {
             $trans_order = TransOrder::with('tenant')->findOrfail($request->trans_order_id);
+
+            $param_removes = Tenant::where('id', $trans_order->tenant_id)->firstOrFail();
+            $removes = json_decode($param_removes->list_payment);
+
             $tenant = $trans_order->tenant;
             $tenant_is_verified = $tenant?->is_verified;
 
@@ -730,10 +734,6 @@ class TavsirController extends Controller
                 $value->travshop = false;
                 $value->tavsir = false;
 
-
-
-
-
                 if (in_array($value->id, $self_order)) {
                     $value->self_order = true;
                 }
@@ -745,11 +745,21 @@ class TavsirController extends Controller
                     $value->tavsir = true;
                 }
 
+                if (!in_array($value->id, $removes)) {
+                    $value->self_order = false;
+                    $value->travshop = false;
+                    $value->tavsir = false;
+                }
+
                 if ($value->sof_id) {
                     // tenant_is_verified
                     // if ($tenant_is_verified || $trans_order->order_type == TransOrder::ORDER_TRAVOY) {
+
                     $data = PgJmto::tarifFee($value->sof_id, $value->payment_method_id, $value->sub_merchant_id, $trans_order->sub_total);
+                    
                     // log::info($data);
+
+                    
                     $value->percentage = $data['is_presentage'] ?? null;
 
                     $x = $data['value'] ?? 'x';
@@ -767,9 +777,10 @@ class TavsirController extends Controller
                 }
             }
         }
+
         $merchant = PgJmto::listSubMerchant();
         // log::info($merchant);
-        $paymentMethods = $paymentMethods->whereNotIn('id', $removes);
+        // $paymentMethods = $paymentMethods->whereIn('id', $removes);
         return response()->json($paymentMethods);
     }
 
