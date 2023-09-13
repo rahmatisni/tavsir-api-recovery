@@ -286,7 +286,12 @@ class PgJmto extends Model
         $res = self::service('POST','/sof/tariffee', $payload);
         // Log::info($res);
         if ($res->status() != 200) {
-            dd('fck');
+
+            $responseData = [
+                "is_presentage" => null,
+                "value" => null
+            ];
+            return $res->json()[$responseData];
         }
         if ($res->successful()) {
             if($res->json()['status'] == 'ERROR'){
