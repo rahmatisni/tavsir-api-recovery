@@ -298,10 +298,10 @@ class PgJmto extends Model
             "bill_amount" =>  $bill_amount,
         ];
         $res = self::service('POST','/sof/tariffee', $payload);
-        
-        if($res->json()['status'] === 400){
-            dd('oke');
-        }
+        dd($res);
+        // if($res->json()['status'] === 400){
+        //     dd('oke');
+        // }
         if ($res->successful()) {
             if($res->json()['status'] == 'ERROR'){
                 Log::warning('PG Tarif Fee', $res->json());
