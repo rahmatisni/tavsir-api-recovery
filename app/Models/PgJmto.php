@@ -318,6 +318,8 @@ class PgJmto extends Model
                 return $res->json()['responseData'];
             }
         } catch (\Illuminate\Http\Client\RequestException $e) {
+            
+            dump($e->getCode());
             $fake_respo_create_bad = [
                 "status" => 400,
                 "responseData" => [
