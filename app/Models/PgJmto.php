@@ -290,6 +290,8 @@ class PgJmto extends Model
         if ($res->successful()) {
             if($res->json()['status'] == 'ERROR'){
                 Log::warning('PG Tarif Fee', $res->json());
+                dump('ip');
+
                 return null;
             }
             return $res->json()['responseData'];
