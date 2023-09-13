@@ -771,14 +771,15 @@ class TavsirController extends Controller
                         $value->fee = (int) ceil((float) $x / 100 * $trans_order->sub_total);
                     }
                 }
-                // dump($value);
+
             }
+            dd($paymentMethods);
+
         }
 
         // $merchant = PgJmto::listSubMerchant();
         // log::info($merchant);
 
-        dd($paymentMethods);
         $paymentMethods = $paymentMethods->whereNotIn('id', $remove);
         return response()->json($paymentMethods);
     }
