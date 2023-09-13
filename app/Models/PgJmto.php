@@ -284,7 +284,7 @@ class PgJmto extends Model
             "bill_amount" =>  $bill_amount,
         ];
         $res = self::service('POST','/sof/tariffee', $payload);
-        if($res->status() == 404){
+        if($res->status() === 404){
             dd('res');
         }
         // Log::info($res);
