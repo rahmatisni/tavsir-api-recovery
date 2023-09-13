@@ -85,6 +85,8 @@ class PgJmto extends Model
 
     public static function service($method, $path, $payload)
     {
+        try{
+        
         $token = self::getToken();
         $timestamp = Carbon::now()->format('c');
         $signature = self::generateSignature($method, $path, $token, $timestamp, $payload);
@@ -131,6 +133,10 @@ class PgJmto extends Model
             default:
                 # code...
                 break;
+        }
+    }catch (\Throwable $th) {
+            Log::info("Cron token kios error!".$th->getMessage());
+            return 666;
         }
        
     }
@@ -290,12 +296,9 @@ class PgJmto extends Model
         ];
         
         $res = self::service('POST','/sof/tariffee', $payload);
-        // Log::info($res);
-        // if ($res->status() != 200) {
-        //     // return null;
-        //     dd('fck');
-        //     return $fake_handling;
-        // }
+        if ($res == 666) {
+            return $fake_handling;
+        }
 
         if ($res->successful()) {
             if($res->json()['status'] == 'ERROR'){
