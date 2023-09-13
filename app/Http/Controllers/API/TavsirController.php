@@ -707,6 +707,7 @@ class TavsirController extends Controller
 
             $param_removes = Tenant::where('id', $trans_order->tenant_id)->firstOrFail();
             $removes = json_decode($param_removes->list_payment);
+            dd($removes);
 
             $tenant = $trans_order->tenant;
             $tenant_is_verified = $tenant?->is_verified;
