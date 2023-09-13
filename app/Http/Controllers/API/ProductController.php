@@ -40,7 +40,7 @@ class ProductController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'sku' => 'max:5',
+                'sku' => 'max:50',
             ]);
             if ($validator->fails())
             {
