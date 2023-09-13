@@ -108,9 +108,9 @@ class PgJmto extends Model
                     ->post(env('PG_BASE_URL') . $path, $payload);
                 clock()->event("pg{$path}")->end();
 
-                $bad = $response->getStatusCode();
-                // dd($asd);
-                if($bad === 400) {
+                $bad = $response?->getStatusCode();
+                Log::error($bad);
+                if ($bad === 400 || $bad === 504) {
                     $fake_respo_create_bad = [
                         "status" => 400,
                         "responseData" => [
@@ -118,10 +118,11 @@ class PgJmto extends Model
                             "value" => null
                         ]
                     ];
-    
-                   return $fake_respo_create_bad;  
-                   break;     
+                
+                    return $fake_respo_create_bad;
+                    // You don't need a break statement here as it's not inside a loop.
                 }
+                
                 return $response;
                 break;
             case 'GET':
