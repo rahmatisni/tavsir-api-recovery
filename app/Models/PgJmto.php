@@ -277,6 +277,8 @@ class PgJmto extends Model
 
     public static function tarifFee($sof_id, $payment_method_id, $sub_merchant_id, $bill_amount)
     {
+
+        try {
         $payload = [
             "sof_id" =>  $sof_id,
             "payment_method_id" =>  $payment_method_id,
@@ -300,6 +302,11 @@ class PgJmto extends Model
 
         }
         return null;
+
+    } catch (\Throwable $th) {
+        Log::error($th);
+        return null;
+    }
     }
 
     public static function bindDD($payload)
