@@ -777,6 +777,8 @@ class TavsirController extends Controller
 
         // $merchant = PgJmto::listSubMerchant();
         // log::info($merchant);
+
+        dd($paymentMethods);
         $paymentMethods = $paymentMethods->whereNotIn('id', $remove);
         return response()->json($paymentMethods);
     }
