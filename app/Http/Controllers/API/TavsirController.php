@@ -761,8 +761,6 @@ class TavsirController extends Controller
                     $value->percentage = $data['is_presentage'] ?? null;
 
                     $x = $data['value'] ?? 'x';
-                                        dd($x);
-
                     $state = $data['is_presentage'] ?? null;
 
                     if ($state == (false || null)) {
@@ -771,7 +769,7 @@ class TavsirController extends Controller
                         $value->fee = (int) ceil((float) $x / 100 * $trans_order->sub_total);
                     }
 
-
+                    dump($value->fee);
 
                     // } else {
                     //     $removes[] = $value->id;
