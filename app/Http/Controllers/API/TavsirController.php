@@ -771,9 +771,9 @@ class TavsirController extends Controller
                         $value->fee = (int) ceil((float) $x / 100 * $trans_order->sub_total);
                     }
                 }
+                 dd('2');
 
             }
-            dd('2');
 
         }
 
