@@ -294,13 +294,15 @@ class PgJmto extends Model
             }
             return $res->json()['responseData'];
         }
+        else {
 
-        dump($res->status());
-        if ($res->status() == '504') {
-            return null;
-
+            $res =[
+                "is_presentage" => null,
+                "value" => null
+            ];     
+            
+            return $res;
         }
-        return null;
     }
 
     public static function bindDD($payload)
