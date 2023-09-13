@@ -759,6 +759,10 @@ class TavsirController extends Controller
                     dd($data);
                     // log::info($data);
 
+                    if(!$data) {
+                        $value->fee = null;
+                    }
+
                     
                     $value->percentage = $data['is_presentage'] ?? null;
 
