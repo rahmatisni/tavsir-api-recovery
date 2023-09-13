@@ -727,6 +727,8 @@ class TavsirController extends Controller
                 }
             }
 
+            dump($paymentMethods);
+
             foreach ($paymentMethods as $value) {
                 $value->platform_fee = env('PLATFORM_FEE');
                 $value->fee = 0;
@@ -770,7 +772,6 @@ class TavsirController extends Controller
                 }
                 dump($value);
             }
-            dd('asd');
         }
 
         // $merchant = PgJmto::listSubMerchant();
