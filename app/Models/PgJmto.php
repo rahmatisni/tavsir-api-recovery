@@ -109,7 +109,10 @@ class PgJmto extends Model
                 clock()->event("pg{$path}")->end();
 
                 $asd = $response->getStatusCode();
-                dd($asd);
+                // dd($asd);
+                if($asd === 400) {
+dd('coi');
+                }
                 return $response;
                 break;
             case 'GET':
