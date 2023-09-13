@@ -296,6 +296,8 @@ class PgJmto extends Model
         }
         else {
 
+            dump('ip');
+
             $res =[
                 "is_presentage" => null,
                 "value" => null
