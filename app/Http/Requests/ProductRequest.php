@@ -26,7 +26,7 @@ class ProductRequest extends FormRequest
         return [
             'tenant_id' => 'required|exists:ref_tenant,id',
             'category_id' => 'required|exists:ref_category,id',
-            'sku' => 'required|string|max:20',
+            'sku' => 'required|string|max:50',
             'name' => 'required|string|max:50',
             'photo' => 'nullable|max:5000',
             'price' => 'required|numeric|min:0|max:10000000000000',
