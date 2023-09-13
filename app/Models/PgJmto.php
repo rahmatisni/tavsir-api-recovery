@@ -312,7 +312,6 @@ class PgJmto extends Model
                 return null;
             }
             Log::warning('Trace PG Tarif Fee', $res);
-
             return $res->json()['responseData'];
         }
         return null;
