@@ -291,7 +291,7 @@ class PgJmto extends Model
                 "is_presentage" => null,
                 "value" => null
             ];
-            return $res->json()[$responseData];
+            return $responseData;
         }
         if ($res->successful()) {
             if($res->json()['status'] == 'ERROR'){
