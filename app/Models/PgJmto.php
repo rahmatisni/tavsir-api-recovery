@@ -302,6 +302,8 @@ class PgJmto extends Model
         if($res['status'] == 400){
             // return $res['responseData'];
             $res = $res['responseData'];
+            Log::warning('Trace PG Tarif Fee', $res);
+
             return $res;
         }
         if ($res->successful()) {
@@ -309,6 +311,8 @@ class PgJmto extends Model
                 Log::warning('PG Tarif Fee', $res->json());
                 return null;
             }
+            Log::warning('Trace PG Tarif Fee', $res);
+
             return $res->json()['responseData'];
         }
         return null;
