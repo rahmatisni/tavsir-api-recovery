@@ -297,7 +297,11 @@ class PgJmto extends Model
         
         $res = self::service('POST','/sof/tariffee', $payload);
         if ($res == 666) {
-            return $fake_handling;
+            return array(
+              [
+              "value" =>  null,
+              "is_presentage" =>  null]
+              );
         }
 
         if ($res->successful()) {
