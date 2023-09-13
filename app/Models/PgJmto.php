@@ -277,36 +277,26 @@ class PgJmto extends Model
 
     public static function tarifFee($sof_id, $payment_method_id, $sub_merchant_id, $bill_amount)
     {
-
         $payload = [
             "sof_id" =>  $sof_id,
             "payment_method_id" =>  $payment_method_id,
             "sub_merchant_id" =>  $sub_merchant_id,
             "bill_amount" =>  $bill_amount,
         ];
-
         $res = self::service('POST','/sof/tariffee', $payload);
-        
+        // Log::info($res);
+        if ($res->status() != 200) {
+            dd('fck');
+        }
         if ($res->successful()) {
             if($res->json()['status'] == 'ERROR'){
                 Log::warning('PG Tarif Fee', $res->json());
-                dump('ip');
-
                 return null;
             }
             return $res->json()['responseData'];
         }
-        else {
 
-            dump('ip');
-
-            $res =[
-                "is_presentage" => null,
-                "value" => null
-            ];     
-            
-            return $res;
-        }
+        return null;
     }
 
     public static function bindDD($payload)
