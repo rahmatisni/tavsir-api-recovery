@@ -107,7 +107,7 @@ class PgJmto extends Model
                     ->withoutVerifying()
                     ->post(env('PG_BASE_URL') . $path, $payload);
                 clock()->event("pg{$path}")->end();
-dd('1');
+dd($response);
                 return $response;
                 break;
             case 'GET':
@@ -126,7 +126,6 @@ dd('1');
                     ->retry(1, 100)
                     ->withoutVerifying()
                     ->get(env('PG_BASE_URL') . $path, $payload);
-                    dd('2');
 
                 return $response;
             
