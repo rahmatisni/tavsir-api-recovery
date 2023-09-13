@@ -102,26 +102,26 @@ class PgJmto extends Model
                     'JMTO-IP-CLIENT' => '172.0.0.1',
                     'JMTO-REQUEST-ID' => '123456789',
                 ])
-                    ->timeout(2)
+                    ->timeout(10)
                     ->retry(1, 100)
                     ->withoutVerifying()
                     ->post(env('PG_BASE_URL') . $path, $payload);
                 clock()->event("pg{$path}")->end();
 
-                $bad = $response?->getStatusCode();
-                Log::error($bad);
-                if ($bad === 400 || $bad === 504) {
-                    $fake_respo_create_bad = [
-                        "status" => 400,
-                        "responseData" => [
-                            "is_presentage" => null,
-                            "value" => null
-                        ]
-                    ];
+                // $bad = $response?->getStatusCode();
+                // Log::error($bad);
+                // if ($bad === 400 || $bad === 504) {
+                //     $fake_respo_create_bad = [
+                //         "status" => 400,
+                //         "responseData" => [
+                //             "is_presentage" => null,
+                //             "value" => null
+                //         ]
+                //     ];
 
-                    return $fake_respo_create_bad;
-                    // You don't need a break statement here as it's not inside a loop.
-                }
+                //     return $fake_respo_create_bad;
+                //     // You don't need a break statement here as it's not inside a loop.
+                // }
                 return $response;
                 break;
             case 'GET':
@@ -137,7 +137,7 @@ class PgJmto extends Model
                     'JMTO-IP-CLIENT' => '172.0.0.1',
                     'JMTO-REQUEST-ID' => '123456789',
                 ])
-                    ->timeout(2)
+                    ->timeout(10)
                     ->retry(1, 100)
                     ->withoutVerifying()
                     ->get(env('PG_BASE_URL') . $path, $payload);
@@ -301,14 +301,14 @@ class PgJmto extends Model
 
         try {
             $res = self::service('POST', '/sof/tariffee', $payload);
-            Log::error($res);
-            if ($res['status'] == 400) {
-                // return $res['responseData'];
-                $res = $res['responseData'];
-                Log::warning('Trace PG Tarif Fee', $res);
+            Log::warning($res);
+            // if ($res['status'] == 400) {
+            //     // return $res['responseData'];
+            //     $res = $res['responseData'];
+            //     Log::warning('Trace PG Tarif Fee', $res);
 
-                return $res;
-            }
+            //     return $res;
+            // }
             if ($res->successful()) {
                 if ($res->json()['status'] == 'ERROR') {
                     Log::warning('PG Tarif Fee', $res->json());
@@ -318,7 +318,7 @@ class PgJmto extends Model
                 return $res->json()['responseData'];
             }
         } catch (\Throwable $th) {
-            
+
             $fake_respo_create_bad = [
                 "status" => 400,
                 "responseData" => [
@@ -327,7 +327,7 @@ class PgJmto extends Model
                 ]
             ];
             $res = $fake_respo_create_bad['responseData'];
-            Log::warning('Trace PG Tarif Fee', $res);
+            Log::error('Trace PG Tarif Fee', $res);
             return $res;
         }
 
