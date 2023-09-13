@@ -283,11 +283,8 @@ class PgJmto extends Model
             "sub_merchant_id" =>  $sub_merchant_id,
             "bill_amount" =>  $bill_amount,
         ];
+        try{
         $res = self::service('POST','/sof/tariffee', $payload);
-        if($res->status() === 404){
-            dd('res');
-        }
-        // Log::info($res);
         if ($res->successful()) {
             if($res->json()['status'] == 'ERROR'){
                 Log::warning('PG Tarif Fee', $res->json());
@@ -295,8 +292,22 @@ class PgJmto extends Model
             }
             return $res->json()['responseData'];
         }
+        }
+        catch (\Throwable $e) {
+            $catch = [
+                "status" => "success",
+                "rc" => "0000",
+                "rcm" => "success",
+                "responseData" => [
+                    
+                    "value" => null,
+                    "is_presentage" => null,
+                ],
+                "requestData" => $payload
+            ];
+             return $catch;    
+        }
 
-        return null;
     }
 
     public static function bindDD($payload)
