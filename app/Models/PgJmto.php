@@ -305,6 +305,7 @@ class PgJmto extends Model
 
     } catch (\Throwable $th) {
         Log::error($th);
+        dd($th);
         return null;
     }
     }
