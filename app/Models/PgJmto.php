@@ -328,7 +328,6 @@ class PgJmto extends Model
             ];
             $res = $fake_respo_create_bad['responseData'];
             Log::warning('Trace PG Tarif Fee', $res);
-            dd($res);
             return $res;
         }
 
