@@ -288,13 +288,15 @@ class PgJmto extends Model
             "value" =>  null,
             "is_presentage" =>  null
         ];
+        
         $res = self::service('POST','/sof/tariffee', $payload);
         // Log::info($res);
-        if ($res->status() != 200) {
-            // return null;
-            return $fake_handling;
-        }
-        
+        // if ($res->status() != 200) {
+        //     // return null;
+        //     dd('fck');
+        //     return $fake_handling;
+        // }
+
         if ($res->successful()) {
             if($res->json()['status'] == 'ERROR'){
                 Log::warning('PG Tarif Fee', $res->json());
