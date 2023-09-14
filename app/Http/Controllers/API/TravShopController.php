@@ -1286,7 +1286,7 @@ class TravShopController extends Controller
                             $kios['data']['harga'] = $data->sub_total ?? '0';
 
                             if ($kios['rc'] == '00' || $kios['rc'] == "00" || $kios['rc'] == 00) {
-                                if (str_contains(trim($kios['description'] ?? $kios['data']['status']), 'BERHASIL')) {
+                                if (str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL')) {
                                     $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                                         'data' => $kios,
                                         'payment' => $kios,
@@ -1297,7 +1297,7 @@ class TravShopController extends Controller
                                     DB::commit();
                                     return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                                 }
-                                if (str_contains(trim($kios['description'] ?? $kios['data']['status']), 'SUKSES')) {
+                                if (str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES')) {
                                     $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                                         'data' => $kios,
                                         'payment' => $kios,
@@ -1607,7 +1607,8 @@ class TravShopController extends Controller
                         $kios['data']['harga_kios'] = $data->harga_kios;
                         $kios['data']['harga'] = $data->sub_total ?? '0';
 
-                        if ($kios['rc'] == '00') {
+                        if ($kios['rc'] == '00' || $kios['rc'] == "00" || $kios['rc'] == 00) {
+                        // if ($kios['rc'] == '00') {
                             if (str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL')) {
                                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                                     'data' => $kios,
