@@ -704,9 +704,8 @@ class TavsirController extends Controller
 
         if ($request->trans_order_id) {
             $trans_order = TransOrder::with('tenant')->findOrfail($request->trans_order_id);
-
-            $param_removes = Tenant::where('id', $trans_order->tenant_id)->firstOrFail();
-            $removes = json_decode($param_removes->list_payment);
+            // $param_removes = Tenant::where('id', $trans_order->tenant_id)->firstOrFail();
+            // $removes = json_decode($param_removes->list_payment);
 
             $tenant = $trans_order->tenant;
             $tenant_is_verified = $tenant?->is_verified;
@@ -749,11 +748,11 @@ class TavsirController extends Controller
                     $value->tavsir = true;
                 }
 
-                if (!in_array($value->id, $removes)) {
-                    $value->self_order = false;
-                    $value->travshop = false;
-                    $value->tavsir = false;
-                }
+                // if (!in_array($value->id, $removes)) {
+                //     $value->self_order = false;
+                //     $value->travshop = false;
+                //     $value->tavsir = false;
+                // }
 
                 if ($value?->sof_id) {
                     // tenant_is_verified
