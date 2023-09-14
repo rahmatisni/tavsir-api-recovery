@@ -586,9 +586,6 @@ class TravShopController extends Controller
         if ($request->trans_order_id) {
             $trans_order = TransOrder::with('tenant')->findOrfail($request->trans_order_id);
 
-            $param_removes = Tenant::where('id', $trans_order->tenant_id)->firstOrFail();
-            $removes = json_decode($param_removes->list_payment);
-
             $tenant = $trans_order->tenant;
             $tenant_is_verified = $tenant?->is_verified;
 
@@ -630,11 +627,18 @@ class TravShopController extends Controller
                     $value->tavsir = true;
                 }
 
+
+            if ($trans_order->order_type != TransOrder::ORDER_TRAVOY) {
+                $param_removes = Tenant::where('id', $trans_order->tenant_id)->firstOrFail();
+                $removes = json_decode($param_removes->list_payment);
+
                 if (!in_array($value->id, $removes)) {
                     $value->self_order = false;
                     $value->travshop = false;
                     $value->tavsir = false;
                 }
+           
+            }
 
                 if ($value?->sof_id) {
                     // tenant_is_verified
@@ -1254,7 +1258,7 @@ class TravShopController extends Controller
                             $kios['data']['harga'] = $data->sub_total ?? '0';
 
                             if ($kios['rc'] == '00' || $kios['rc'] == "00" || $kios['rc'] == 00) {
-                                if (str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL')) {
+                                if (str_contains(trim($kios['description'] ?? $kios['data']['status']), 'BERHASIL')) {
                                     $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                                         'data' => $kios,
                                         'payment' => $kios,
@@ -1265,7 +1269,7 @@ class TravShopController extends Controller
                                     DB::commit();
                                     return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                                 }
-                                if (str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES')) {
+                                if (str_contains(trim($kios['description'] ?? $kios['data']['status']), 'SUKSES')) {
                                     $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                                         'data' => $kios,
                                         'payment' => $kios,
