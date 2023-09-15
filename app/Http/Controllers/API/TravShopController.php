@@ -23,7 +23,7 @@ use App\Models\Category;
 use App\Models\Constanta\ProductType;
 use App\Models\ExtraPrice;
 use App\Models\KiosBank\ProductKiosBank;
-use App\Models\PaymentMethod;
+use App\Models\paymentMethod;
 use App\Models\PgJmto;
 use App\Models\Product;
 use App\Models\RestArea;
@@ -572,6 +572,7 @@ class TravShopController extends Controller
         return response()->json(new TsOrderResource($data));
     }
 
+
     public function paymentMethod(Request $request)
     {
         $paymentMethods = PaymentMethod::all();
@@ -683,6 +684,7 @@ class TravShopController extends Controller
         $paymentMethods = $paymentMethods->whereNotIn('id', $remove);
         return response()->json($paymentMethods);
     }
+    
     public function createPayment(TsCreatePaymentRequest $request, $id)
     {
         $payment_payload = [];
