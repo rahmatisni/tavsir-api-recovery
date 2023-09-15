@@ -619,7 +619,7 @@ class TravShopController extends Controller
           
 
             foreach ($paymentMethods as $value) {
-                // Log::warning($value);
+
                 $value->platform_fee = env('PLATFORM_FEE');
                 $value->fee = 0;
 
@@ -661,7 +661,6 @@ class TravShopController extends Controller
                     }
                     else {
                         $data = PgJmto::tarifFee($value->sof_id, $value->payment_method_id, $value->sub_merchant_id, $trans_order->sub_total);
-                        // Log::warning($data);
                         $value->percentage = $data['is_presentage'] ?? null;
                         $x = $data['value'] ?? 'x';
                         $state = $data['is_presentage'] ?? null;
@@ -1168,12 +1167,6 @@ class TravShopController extends Controller
             if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::DONE || $data->status == TransOrder::READY) {
                 $kios = [];
                 if ($data->order_type == TransOrder::ORDER_TRAVOY) {
-                    log::warning('muter dulu');
-
-                    if($data->productKiosbank()->integrator == 'JATELINDO'){
-                        return response()->json(['token' => $data->log_kiosbank->data['bit62'] ?? '']);
-                    }
-
                     $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
                     $adminBank = $datalog['data']['data']['adminBank'] ?? '000000000000';
                     $refid = $datalog['data']['referenceID'];
@@ -1182,7 +1175,6 @@ class TravShopController extends Controller
                     $kios['data']['harga'] = $data->sub_total ?? '0';
                     $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '-';
                     if ($kios['rc'] == '00' || $kios['rc'] == "00" || $kios['rc'] == 00) {
-                        log::warning('muter disini');
                         if (str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL')) {
                             $data->status = TransOrder::DONE;
                             $data->save();
@@ -1626,10 +1618,11 @@ class TravShopController extends Controller
                         $kios['data']['harga_kios'] = $data->harga_kios;
                         $kios['data']['harga'] = $data->sub_total ?? '0';
 
-                        log::info('masuk dulu',$kios);
+                        Log::info(['masuk dulu => ', $kios]);
+
 
                         if ($kios['rc'] == '00' || $kios['rc'] == "00" || $kios['rc'] == 00) {
-                            log::info('masuk sini',$kios);
+                            Log::info(['masuk sini => ', $kios]);
                             $checker = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '';
                             if (str_contains(preg_replace('/\s+/','',$checker), 'BERHASIL')) {
                                 log::warning('info 1');
@@ -1671,7 +1664,7 @@ class TravShopController extends Controller
                             // return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                         } else {
 
-                            log::info('masuk sana',$kios);
+                            Log::info(['masuk sana => ', $kios]);
                             $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                                 'data' => $kios,
                                 'payment' => $kios,
@@ -1692,7 +1685,6 @@ class TravShopController extends Controller
                 $data->payment()->update(['data' => $res_data]);
             }
 
-            log::info('offsite');
             DB::commit();
             return response()->json($res);
         } catch (\Throwable $th) {
