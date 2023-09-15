@@ -300,7 +300,7 @@ class PgJmto extends Model
 
         try {
             $res = self::service('POST', '/sof/tariffee', $payload);
-            Log::warning($res);
+            // Log::warning($res);
             // if ($res['status'] == 400) {
             //     // return $res['responseData'];
             //     $res = $res['responseData'];
@@ -313,7 +313,7 @@ class PgJmto extends Model
                     Log::warning('PG Tarif Fee', $res->json());
                     return null;
                 }
-                Log::error('Success Trace PG Tarif Fee', $res->json()['responseData']);
+                // Log::error('Success Trace PG Tarif Fee', $res->json()['responseData']);
                 return $res->json()['responseData'];
             }
         } catch (\Throwable $th) {
@@ -326,7 +326,7 @@ class PgJmto extends Model
                 ]
             ];
             $res = $fake_respo_create_bad['responseData'];
-            Log::error('Catch Trace PG Tarif Fee', $res);
+            // Log::error('Catch Trace PG Tarif Fee', $res);
             return $res;
         }
 

@@ -619,7 +619,7 @@ class TravShopController extends Controller
           
 
             foreach ($paymentMethods as $value) {
-                Log::warning($value);
+                // Log::warning($value);
                 $value->platform_fee = env('PLATFORM_FEE');
                 $value->fee = 0;
 
@@ -661,7 +661,7 @@ class TravShopController extends Controller
                     }
                     else {
                         $data = PgJmto::tarifFee($value->sof_id, $value->payment_method_id, $value->sub_merchant_id, $trans_order->sub_total);
-                        Log::warning($data);
+                        // Log::warning($data);
                         $value->percentage = $data['is_presentage'] ?? null;
                         $x = $data['value'] ?? 'x';
                         $state = $data['is_presentage'] ?? null;
