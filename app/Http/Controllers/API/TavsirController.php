@@ -910,7 +910,6 @@ class TavsirController extends Controller
         $paymentMethods = $paymentMethods->whereNotIn('id', $remove);
         return response()->json($paymentMethods);
     }
-
     
     public function createPayment(TsCreatePaymentRequest $request, $id)
     {
