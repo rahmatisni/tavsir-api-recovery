@@ -1548,7 +1548,7 @@ class TravShopController extends Controller
                 $res_data['bill'] = $data_payment['bill'];
                 $kios = [];
 
-                if ($res_data['pay_status'] == '1') {
+                if ($res_data['pay_status'] == '1' && $data->status == TransOrder::WAITING_PAYMENT) {
                     // $data->status = TransOrder::PAYMENT_SUCCESS;
                     if ($data->order_type == TransOrder::POS) {
                         $data->status = TransOrder::DONE;
