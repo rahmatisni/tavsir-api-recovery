@@ -592,9 +592,8 @@ class TravShopController extends Controller
                 $removes =[1,2];
             }
             else {
-                $removes = json_decode($param_removes?->list_payment);
-            }
-          
+                $removes = json_decode($param_removes?->list_payment) ?? [1,2,3];
+            }          
 
             $tenant = $trans_order->tenant;
             $tenant_is_verified = $tenant?->is_verified;
