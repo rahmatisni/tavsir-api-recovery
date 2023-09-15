@@ -102,7 +102,7 @@ class PgJmto extends Model
                     'JMTO-IP-CLIENT' => '172.0.0.1',
                     'JMTO-REQUEST-ID' => '123456789',
                 ])
-                    ->timeout(3)
+                ->timeout(10)
                     ->retry(1, 100)
                     ->withoutVerifying()
                     ->post(env('PG_BASE_URL') . $path, $payload);
@@ -136,7 +136,7 @@ class PgJmto extends Model
                     'JMTO-IP-CLIENT' => '172.0.0.1',
                     'JMTO-REQUEST-ID' => '123456789',
                 ])
-                ->timeout(3)
+                ->timeout(10)
                 ->retry(1, 100)
                     ->withoutVerifying()
                     ->get(env('PG_BASE_URL') . $path, $payload);
@@ -313,7 +313,7 @@ class PgJmto extends Model
                     Log::warning('PG Tarif Fee', $res->json());
                     return null;
                 }
-                Log::warning('Trace PG Tarif Fee', $res);
+                Log::error('Success Trace PG Tarif Fee', $res->json()['responseData']);
                 return $res->json()['responseData'];
             }
         } catch (\Throwable $th) {
@@ -326,7 +326,7 @@ class PgJmto extends Model
                 ]
             ];
             $res = $fake_respo_create_bad['responseData'];
-            Log::error('Trace PG Tarif Fee', $res);
+            Log::error('Catch Trace PG Tarif Fee', $res);
             return $res;
         }
 
