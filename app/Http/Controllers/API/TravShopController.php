@@ -1627,6 +1627,7 @@ class TravShopController extends Controller
                             log::info('masuk sini',$kios);
                             $checker = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '';
                             if (str_contains(preg_replace('/\s+/','',$checker), 'BERHASIL')) {
+                                log::warning('info 1');
                                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                                     'data' => $kios,
                                     'payment' => $kios,
@@ -1634,10 +1635,11 @@ class TravShopController extends Controller
                                 $data->status = TransOrder::DONE;
                                 $data->save();
                                 DB::commit();
-                                log::warning('DB COMMIT 1');
                                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                             }
                             if (str_contains(preg_replace('/\s+/','',$checker), 'SUKSES')) {
+                                log::warning('info 2');
+
                                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                                     'data' => $kios,
                                     'payment' => $kios,
@@ -1645,22 +1647,19 @@ class TravShopController extends Controller
                                 $data->status = TransOrder::DONE;
                                 $data->save();
                                 DB::commit();
-                                log::warning('DB COMMIT 2');
                                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                             } else {
+                                log::warning('info 3');
                                 $kios['description'] = $kios['description'] ?? $kios['data']['description'];
                                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                                     'data' => $kios,
                                     'payment' => $kios,
-
                                 ]);
                                 $data->status = TransOrder::READY;
                                 $data->save();
                                 DB::commit();
-                                log::warning('DB COMMIT 3');
                                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                             }
-
                             // $data->status = TransOrder::READY;
                             // $data->save();
                             // DB::commit();
