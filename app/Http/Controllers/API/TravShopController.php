@@ -1674,7 +1674,7 @@ class TravShopController extends Controller
                             // return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                         } else {
 
-                            Log::info(['masuk sana => ', $kios]);
+                            Log::info('masuk_sana');
                             $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                                 'data' => $kios,
                                 'payment' => $kios,
