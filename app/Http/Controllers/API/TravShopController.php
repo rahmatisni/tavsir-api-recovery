@@ -1585,6 +1585,9 @@ class TravShopController extends Controller
                         log::info('clear SO');
 
                     }
+                    if ($data->order_type == TransOrder::ORDER_TRAVOY) {
+                        $data->status = TransOrder::PAYMENT_SUCCESS;
+                    }
                     $data->save();
                     if ($data->order_type == TransOrder::ORDER_TRAVOY && $data->status != TransOrder::DONE) {
                         log::info('clear PPOB '.$data->status);
