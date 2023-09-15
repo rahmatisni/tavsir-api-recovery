@@ -1555,10 +1555,7 @@ class TravShopController extends Controller
                     if ($data->order_type == TransOrder::POS) {
                         $data->status = TransOrder::DONE;
                     }
-                    if ($data->order_type == TransOrder::ORDER_SELF_ORDER) {
-                        $data->status = TransOrder::PAYMENT_SUCCESS;
-                    }
-                    // $data->save();
+                    $data->save();
                     if ($data->order_type == TransOrder::ORDER_TRAVOY && $data->status != TransOrder::DONE) {
                         if ($data->description == 'single') {
                             $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
