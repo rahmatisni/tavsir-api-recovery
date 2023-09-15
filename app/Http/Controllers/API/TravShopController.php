@@ -582,9 +582,19 @@ class TravShopController extends Controller
         $travshop = ['5', '6', '7', '8', '9', '10'];
         $tavsir = ['1', '2', '3', '10'];
 
+       
 
         if ($request->trans_order_id) {
             $trans_order = TransOrder::with('tenant')->findOrfail($request->trans_order_id);
+            $param_removes = Tenant::where('id', $trans_order->tenant_id)->first();
+            if ($param_removes == null)
+            {
+                $removes =[1,2];
+            }
+            else {
+                $removes = json_decode($param_removes?->list_payment);
+            }
+          
 
             $tenant = $trans_order->tenant;
             $tenant_is_verified = $tenant?->is_verified;
@@ -612,6 +622,7 @@ class TravShopController extends Controller
                 Log::warning($value);
                 $value->platform_fee = env('PLATFORM_FEE');
                 $value->fee = 0;
+
                 $value->self_order = false;
                 $value->travshop = false;
                 $value->tavsir = false;
@@ -627,20 +638,19 @@ class TravShopController extends Controller
                     $value->tavsir = true;
                 }
 
+                if ($trans_order->order_type != TransOrder::ORDER_TRAVOY) {
 
-            if ($trans_order->order_type != TransOrder::ORDER_TRAVOY) {
-                $param_removes = Tenant::where('id', $trans_order->tenant_id)->firstOrFail();
-                $removes = json_decode($param_removes->list_payment);
-
-                if (!in_array($value->id, $removes)) {
-                    $value->self_order = false;
-                    $value->travshop = false;
-                    $value->tavsir = false;
+                    if (!in_array($value->id, $removes)) {
+                        $value->self_order = false;
+                        $value->travshop = false;
+                        $value->tavsir = false;
+                    }
+               
                 }
-           
-            }
+
 
                 if ($value?->sof_id) {
+                   
                     // tenant_is_verified
                     // if ($tenant_is_verified || $trans_order->order_type == TransOrder::ORDER_TRAVOY) {
 
@@ -674,7 +684,6 @@ class TravShopController extends Controller
         $paymentMethods = $paymentMethods->whereNotIn('id', $remove);
         return response()->json($paymentMethods);
     }
-
     public function createPayment(TsCreatePaymentRequest $request, $id)
     {
         $payment_payload = [];
