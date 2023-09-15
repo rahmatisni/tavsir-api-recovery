@@ -1160,9 +1160,12 @@ class TravShopController extends Controller
 
     public function statusPayment(Request $request, $id)
     {
+        $i=0;
         $data = TransOrder::with('payment_method')->findOrfail($id);
         try {
 
+            $i = $i+1;
+            log::info($i);
             DB::beginTransaction();
             if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::DONE || $data->status == TransOrder::READY) {
                 $kios = [];
