@@ -691,113 +691,6 @@ class TavsirController extends Controller
     //     return response()->json($paymentMethods);
     // }
 
-    public function paymentMethod(Request $request)
-    {
-        $paymentMethods = PaymentMethod::all();
-        $removes = [];
-        $remove = [];
-
-        $self_order = ['5', '7', '9'];
-        $travshop = ['5', '6', '7', '8', '9', '10'];
-        $tavsir = ['1', '2', '3', '10'];
-
-       
-
-        if ($request->trans_order_id) {
-            $trans_order = TransOrder::with('tenant')->findOrfail($request->trans_order_id);
-            // $param_removes = Tenant::where('id', $trans_order->tenant_id)->firstOrFail();
-            // $removes = json_decode($param_removes?->list_payment) ?? [1,2];
-
-            $tenant = $trans_order->tenant;
-            $tenant_is_verified = $tenant?->is_verified;
-
-            if ($tenant_is_verified === false && $trans_order->order_type != TransOrder::ORDER_TRAVOY) {
-                $merchant = PgJmto::listSubMerchant();
-                if ($merchant->successful()) {
-                    $merchant = $merchant->json();
-                    if ($merchant['status'] == 'success') {
-                        $merchant = $merchant['responseData'];
-                        foreach ($merchant as $key => $value) {
-                            if ($value['email'] == $tenant->email) {
-                                $trans_order->tenant()->update([
-                                    'is_verified' => 1,
-                                    'sub_merchant_id' => $value['merchant_id']
-                                ]);
-                            }
-                        }
-                    }
-                }
-            }
-          
-
-            foreach ($paymentMethods as $value) {
-                Log::warning($value);
-                $value->platform_fee = env('PLATFORM_FEE');
-                $value->fee = 0;
-
-                $value->self_order = false;
-                $value->travshop = false;
-                $value->tavsir = false;
-
-                if (in_array($value->id, $self_order)) {
-                    $value->self_order = true;
-                }
-
-                if (in_array($value->id, $travshop)) {
-                    $value->travshop = true;
-                }
-                if (in_array($value->id, $tavsir)) {
-                    $value->tavsir = true;
-                }
-
-                // if ($trans_order->order_type != TransOrder::ORDER_TRAVOY) {
-
-                //     if (!in_array($value->id, $removes)) {
-                //         $value->self_order = false;
-                //         $value->travshop = false;
-                //         $value->tavsir = false;
-                //     }
-               
-                // }
-
-
-                if ($value?->sof_id) {
-                   
-                    // tenant_is_verified
-                    // if ($tenant_is_verified || $trans_order->order_type == TransOrder::ORDER_TRAVOY) {
-
-                    if($value?->sof_id == null)
-                    {
-                        $value->percentage = null;
-                        $value->fee = null;
-                    }
-                    else {
-                        $data = PgJmto::tarifFee($value->sof_id, $value->payment_method_id, $value->sub_merchant_id, $trans_order->sub_total);
-                        Log::warning($data);
-                        $value->percentage = $data['is_presentage'] ?? null;
-                        $x = $data['value'] ?? 'x';
-                        $state = $data['is_presentage'] ?? null;
-    
-    
-                        if ($state == (false || null)) {
-                            $value->fee = $data['value'] ?? null;
-                        } else {
-                            $value->fee = (int) ceil((float) $x / 100 * $trans_order->sub_total);
-                        }
-                    } 
-                }
-            }
-
-        }
-
-        // $merchant = PgJmto::listSubMerchant();
-        // log::info($merchant);
-
-        $paymentMethods = $paymentMethods->whereNotIn('id', $remove);
-        return response()->json($paymentMethods);
-    }
-
-
     // public function paymentMethod(Request $request)
     // {
     //     $paymentMethods = PaymentMethod::all();
@@ -812,15 +705,8 @@ class TavsirController extends Controller
 
     //     if ($request->trans_order_id) {
     //         $trans_order = TransOrder::with('tenant')->findOrfail($request->trans_order_id);
-    //         $param_removes = Tenant::where('id', $trans_order->tenant_id)->first();
-    //         if ($param_removes == null)
-    //         {
-    //             $removes =[1,2];
-    //         }
-    //         else {
-    //             $removes = json_decode($param_removes?->list_payment);
-    //         }
-          
+    //         // $param_removes = Tenant::where('id', $trans_order->tenant_id)->firstOrFail();
+    //         // $removes = json_decode($param_removes?->list_payment) ?? [1,2];
 
     //         $tenant = $trans_order->tenant;
     //         $tenant_is_verified = $tenant?->is_verified;
@@ -864,15 +750,15 @@ class TavsirController extends Controller
     //                 $value->tavsir = true;
     //             }
 
-    //             if ($trans_order->order_type != TransOrder::ORDER_TRAVOY) {
+    //             // if ($trans_order->order_type != TransOrder::ORDER_TRAVOY) {
 
-    //                 if (!in_array($value->id, $removes)) {
-    //                     $value->self_order = false;
-    //                     $value->travshop = false;
-    //                     $value->tavsir = false;
-    //                 }
+    //             //     if (!in_array($value->id, $removes)) {
+    //             //         $value->self_order = false;
+    //             //         $value->travshop = false;
+    //             //         $value->tavsir = false;
+    //             //     }
                
-    //             }
+    //             // }
 
 
     //             if ($value?->sof_id) {
@@ -910,6 +796,119 @@ class TavsirController extends Controller
     //     $paymentMethods = $paymentMethods->whereNotIn('id', $remove);
     //     return response()->json($paymentMethods);
     // }
+
+
+    public function paymentMethod(Request $request)
+    {
+        $paymentMethods = PaymentMethod::all();
+        $removes = [];
+        $remove = [];
+
+        $self_order = ['5', '7', '9'];
+        $travshop = ['5', '6', '7', '8', '9', '10'];
+        $tavsir = ['1', '2', '3', '10'];
+
+       
+
+        if ($request->trans_order_id) {
+            $trans_order = TransOrder::with('tenant')->findOrfail($request->trans_order_id);
+            $param_removes = Tenant::where('id', $trans_order->tenant_id)->first();
+            if ($param_removes == null)
+            {
+                $removes =[1,2];
+            }
+            else {
+                $removes = json_decode($param_removes?->list_payment) ?? [1,2,3];
+            }          
+
+            $tenant = $trans_order->tenant;
+            $tenant_is_verified = $tenant?->is_verified;
+
+            if ($tenant_is_verified === false && $trans_order->order_type != TransOrder::ORDER_TRAVOY) {
+                $merchant = PgJmto::listSubMerchant();
+                if ($merchant->successful()) {
+                    $merchant = $merchant->json();
+                    if ($merchant['status'] == 'success') {
+                        $merchant = $merchant['responseData'];
+                        foreach ($merchant as $key => $value) {
+                            if ($value['email'] == $tenant->email) {
+                                $trans_order->tenant()->update([
+                                    'is_verified' => 1,
+                                    'sub_merchant_id' => $value['merchant_id']
+                                ]);
+                            }
+                        }
+                    }
+                }
+            }
+          
+
+            foreach ($paymentMethods as $value) {
+                Log::warning($value);
+                $value->platform_fee = env('PLATFORM_FEE');
+                $value->fee = 0;
+
+                $value->self_order = false;
+                $value->travshop = false;
+                $value->tavsir = false;
+
+                if (in_array($value->id, $self_order)) {
+                    $value->self_order = true;
+                }
+
+                if (in_array($value->id, $travshop)) {
+                    $value->travshop = true;
+                }
+                if (in_array($value->id, $tavsir)) {
+                    $value->tavsir = true;
+                }
+
+                if ($trans_order->order_type != TransOrder::ORDER_TRAVOY) {
+
+                    if (!in_array($value->id, $removes)) {
+                        $value->self_order = false;
+                        $value->travshop = false;
+                        $value->tavsir = false;
+                    }
+               
+                }
+
+
+                if ($value?->sof_id) {
+                   
+                    // tenant_is_verified
+                    // if ($tenant_is_verified || $trans_order->order_type == TransOrder::ORDER_TRAVOY) {
+
+                    if($value?->sof_id == null)
+                    {
+                        $value->percentage = null;
+                        $value->fee = null;
+                    }
+                    else {
+                        $data = PgJmto::tarifFee($value->sof_id, $value->payment_method_id, $value->sub_merchant_id, $trans_order->sub_total);
+                        Log::warning($data);
+                        $value->percentage = $data['is_presentage'] ?? null;
+                        $x = $data['value'] ?? 'x';
+                        $state = $data['is_presentage'] ?? null;
+    
+    
+                        if ($state == (false || null)) {
+                            $value->fee = $data['value'] ?? null;
+                        } else {
+                            $value->fee = (int) ceil((float) $x / 100 * $trans_order->sub_total);
+                        }
+                    } 
+                }
+            }
+
+        }
+
+        // $merchant = PgJmto::listSubMerchant();
+        // log::info($merchant);
+
+        $paymentMethods = $paymentMethods->whereNotIn('id', $remove);
+        return response()->json($paymentMethods);
+    }
     public function createPayment(TsCreatePaymentRequest $request, $id)
     {
         $payment_payload = [];
