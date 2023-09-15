@@ -1139,10 +1139,13 @@ class TravShopController extends Controller
     {
         $data = TransOrder::with('payment_method')->findOrfail($id);
         try {
+
+            log::warning('Di HIT', $id);
             DB::beginTransaction();
             if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::DONE || $data->status == TransOrder::READY) {
                 $kios = [];
                 if ($data->order_type == TransOrder::ORDER_TRAVOY) {
+                    log::warning('muter dulu');
 
                     $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
                     $adminBank = $datalog['data']['data']['adminBank'] ?? '000000000000';
@@ -1587,6 +1590,7 @@ class TravShopController extends Controller
                                 $data->status = TransOrder::DONE;
                                 $data->save();
                                 DB::commit();
+                                log::warning('DB COMMIT 1');
                                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                             }
                             if (str_contains(preg_replace('/\s+/','',$checker), 'SUKSES')) {
@@ -1597,6 +1601,7 @@ class TravShopController extends Controller
                                 $data->status = TransOrder::DONE;
                                 $data->save();
                                 DB::commit();
+                                log::warning('DB COMMIT 2');
                                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                             } else {
                                 $kios['description'] = $kios['description'] ?? $kios['data']['description'];
@@ -1608,12 +1613,14 @@ class TravShopController extends Controller
                                 $data->status = TransOrder::READY;
                                 $data->save();
                                 DB::commit();
+                                log::warning('DB COMMIT 3');
                                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                             }
-                            $data->status = TransOrder::READY;
-                            $data->save();
-                            DB::commit();
-                            return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
+
+                            // $data->status = TransOrder::READY;
+                            // $data->save();
+                            // DB::commit();
+                            // return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                         } else {
 
                             log::info('masuk sana',$kios);
