@@ -68,10 +68,10 @@ class ProfileResource extends JsonResource
             'reset_pin' => $this->reset_pin,
             'fcm_token' => $this->fcm_token,
             'subscription_end' => $subscription_end,
-            'is_print' =>  $this->is_print ?? 0,
-            'is_scan'  => $this->is_scan ?? 0,
-            'is_composite' => $this->is_composite ?? 0,
-            'list_payment' => $this->list_payment ?? ['2']
+            'is_print' =>  $this->tenant->is_print ?? 0,
+            'is_scan'  => $this->tenant->is_scan ?? 0,
+            'is_composite' => $this->tenant->is_composite ?? 0,
+            'list_payment' => $this->tenant->list_payment ?? ['2']
         ];
     }
 }
