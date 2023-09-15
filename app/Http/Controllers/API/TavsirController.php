@@ -801,7 +801,7 @@ class TavsirController extends Controller
     public function paymentMethod(Request $request)
     {
         $paymentMethods = PaymentMethod::all();
-        $removes = [];
+        // $removes = [];
         $remove = [];
 
         $self_order = ['5', '7', '9'];
