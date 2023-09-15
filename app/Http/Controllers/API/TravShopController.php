@@ -1662,17 +1662,34 @@ class TravShopController extends Controller
                             // DB::commit();
                             // return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                         } else {
-
                             log::info('masuk sana',$kios);
                             $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                                 'data' => $kios,
                                 'payment' => $kios,
 
                             ]);
-                            $data->status = TransOrder::PAYMENT_SUCCESS;
-                            $data->save();
-                            DB::commit();
-                            return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
+
+                            if ($kios['rc'] == '00' || $kios['rc'] == "00" || $kios['rc'] == 00) {
+                                log::info('keluar sini',$kios);
+
+                                $kios['description'] = $kios['description'] ?? $kios['data']['description'];
+                                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
+                                    'data' => $kios,
+                                    'payment' => $kios,
+
+                                ]);
+                                $data->status = TransOrder::READY;
+                                $data->save();
+                                DB::commit();
+                                return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
+                            }
+                            else {
+                                log::info('keluar sana',$kios);
+                                $data->status = TransOrder::PAYMENT_SUCCESS;
+                                $data->save();
+                                DB::commit();
+                                return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
+                            }  
                         }
                     }
                     foreach ($data->detil as $key => $value) {
