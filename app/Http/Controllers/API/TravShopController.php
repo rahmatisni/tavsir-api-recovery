@@ -1185,11 +1185,17 @@ class TravShopController extends Controller
                         log::warning('muter disini');
                         if (str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL')) {
                             $data->status = TransOrder::DONE;
+                            $data->save();
+
                         }
                         if (str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES')) {
                             $data->status = TransOrder::DONE;
+                            $data->save();
+
                         } else {
                             $data->status = TransOrder::DONE;
+                            $data->save();
+
                         }
                         
                     }
