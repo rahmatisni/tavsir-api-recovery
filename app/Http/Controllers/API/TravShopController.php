@@ -1140,7 +1140,6 @@ class TravShopController extends Controller
         $data = TransOrder::with('payment_method')->findOrfail($id);
         try {
 
-            log::warning('Di HIT', $id);
             DB::beginTransaction();
             if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::DONE || $data->status == TransOrder::READY) {
                 $kios = [];
