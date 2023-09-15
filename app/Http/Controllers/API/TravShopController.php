@@ -1683,6 +1683,9 @@ class TravShopController extends Controller
 
 
 
+
+                    
+
                     $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
                     $adminBank = $datalog['data']['data']['adminBank'] ?? '000000000000';
                     $refid = $datalog['data']['referenceID'];
@@ -1716,7 +1719,7 @@ class TravShopController extends Controller
                     }
                 }
                 else {
-                    return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
+                    return response()->json(['status' => $data->status, 'rckearesponseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                 }
                 $data->payment()->update(['data' => $res_data]);
             }
