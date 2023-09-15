@@ -1160,12 +1160,8 @@ class TravShopController extends Controller
 
     public function statusPayment(Request $request, $id)
     {
-        $i=0;
         $data = TransOrder::with('payment_method')->findOrfail($id);
         try {
-
-            $i = $i+1;
-            log::info($i);
             DB::beginTransaction();
             if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::DONE || $data->status == TransOrder::READY) {
                 $kios = [];
@@ -1592,7 +1588,7 @@ class TravShopController extends Controller
                         $data->status = TransOrder::PAYMENT_SUCCESS;
                     }
                     $data->save();
-                    if ($data->order_type == TransOrder::ORDER_TRAVOY && $data->status != TransOrder::DONE) {
+                    if ($data->order_type === TransOrder::ORDER_TRAVOY && !in_array($data->status, [TransOrder::DONE, TransOrder::READY])) {
                         log::info('clear PPOB '.$data->status);
 
                         if ($data->description == 'single') {
