@@ -103,10 +103,25 @@ class PgJmto extends Model
                     'JMTO-REQUEST-ID' => '123456789',
                 ])
                 ->timeout(10)
-                    // ->retry(1, 100)
+                    ->retry(1, 100)
                     ->withoutVerifying()
                     ->post(env('PG_BASE_URL') . $path, $payload);
                 clock()->event("pg{$path}")->end();
+
+                // $bad = $response?->getStatusCode();
+                // Log::error($bad);
+                // if ($bad === 400 || $bad === 504) {
+                //     $fake_respo_create_bad = [
+                //         "status" => 400,
+                //         "responseData" => [
+                //             "is_presentage" => null,
+                //             "value" => null
+                //         ]
+                //     ];
+
+                //     return $fake_respo_create_bad;
+                //     // You don't need a break statement here as it's not inside a loop.
+                // }
                 return $response;
             case 'GET':
                 $response = Http::withHeaders([
@@ -122,7 +137,7 @@ class PgJmto extends Model
                     'JMTO-REQUEST-ID' => '123456789',
                 ])
                 ->timeout(10)
-                // ->retry(1, 100)
+                ->retry(1, 100)
                     ->withoutVerifying()
                     ->get(env('PG_BASE_URL') . $path, $payload);
 
