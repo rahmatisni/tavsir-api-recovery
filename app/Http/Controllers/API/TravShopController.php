@@ -1573,7 +1573,11 @@ class TravShopController extends Controller
                         $kios['data']['harga_kios'] = $data->harga_kios;
                         $kios['data']['harga'] = $data->sub_total ?? '0';
 
+                        log::info('masuk dulu',$kios);
+
                         if ($kios['rc'] == '00' || $kios['rc'] == "00" || $kios['rc'] == 00) {
+                            log::info('masuk sini',$kios);
+
                         // if ($kios['rc'] == '00') {
                             if (str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL')) {
                                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
@@ -1608,7 +1612,6 @@ class TravShopController extends Controller
                                 DB::commit();
                                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                             }
-                            log::info('masuk sini',$kios);
 
                             // $data->status = TransOrder::DONE;
                             // $data->save();
