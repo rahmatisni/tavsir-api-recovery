@@ -1576,13 +1576,19 @@ class TravShopController extends Controller
 
                 if ($res_data['pay_status'] == '1' && $data->status == TransOrder::WAITING_PAYMENT) {
                     if ($data->order_type == TransOrder::POS) {
+
+                        log::info('clear POS');
                         $data->status = TransOrder::DONE;
                     }
                     if ($data->order_type == TransOrder::ORDER_SELF_ORDER) {
                         $data->status = TransOrder::PAYMENT_SUCCESS;
+                        log::info('clear SO');
+
                     }
                     $data->save();
                     if ($data->order_type == TransOrder::ORDER_TRAVOY && $data->status != TransOrder::DONE) {
+                        log::info('clear PPOB '.$data->status);
+
                         if ($data->description == 'single') {
                             $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
                             Log::info(['bayar depan => ', $kios]);
