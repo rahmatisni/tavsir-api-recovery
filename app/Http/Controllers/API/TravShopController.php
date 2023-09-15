@@ -1147,12 +1147,12 @@ class TravShopController extends Controller
                     $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
                     $adminBank = $datalog['data']['data']['adminBank'] ?? '000000000000';
                     $refid = $datalog['data']['referenceID'];
-
                     $kios = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id, $adminBank, $data->harga_kios);
                     $kios['data']['harga_kios'] = $data->harga_kios;
                     $kios['data']['harga'] = $data->sub_total ?? '0';
                     $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '-';
                     if ($kios['rc'] == '00' || $kios['rc'] == "00" || $kios['rc'] == 00) {
+                        log::warning('muter disini');
                         if (str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL')) {
                             $data->status = TransOrder::DONE;
                         }
@@ -1161,6 +1161,7 @@ class TravShopController extends Controller
                         } else {
                             $data->status = TransOrder::DONE;
                         }
+                        
                     }
 
                     // if(!$kios['rc'] || $kios['rc'] == '01' || $kios['rc'] == '03' || $kios['rc'] == '04' || $kios['rc'] == '05' || $kios['rc'] == '14' || $kios['rc'] == '19' || $kios['rc'] == '38' || $kios['rc'] == '39' || $kios['rc'] == '67' | $kios['rc'] == '71') {
