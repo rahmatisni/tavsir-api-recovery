@@ -1598,10 +1598,14 @@ class TravShopController extends Controller
                         DB::commit();
 
                     }
+                    
 
                     if ($data->order_type === TransOrder::ORDER_TRAVOY && !in_array($data->status, [TransOrder::DONE, TransOrder::READY])) {
-                        log::info('clear PPOB '.$data->status);
-
+                        if ($data->status === TransOrder::WAITING_PAYMENT) {
+                            $data->status = TransOrder::PAYMENT_SUCCESS;
+                            $data->save();
+                            DB::commit();
+                        }
                         if ($data->description == 'single') {
                             $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
                             Log::info(['bayar depan => ', $kios]);
