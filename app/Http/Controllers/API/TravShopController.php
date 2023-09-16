@@ -1140,7 +1140,7 @@ class TravShopController extends Controller
         try {
             DB::beginTransaction();
             if ($data->status === TransOrder::PAYMENT_SUCCESS || $data->status === TransOrder::DONE || $data->status === TransOrder::READY) {
-                // $kios = [];
+                $kios = [];
                 // if ($data->order_type === TransOrder::ORDER_TRAVOY) {
                 //     log::info('pantau');
                 //     $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
@@ -1626,10 +1626,10 @@ class TravShopController extends Controller
                         $kios['data']['harga_kios'] = $data->harga_kios;
                         $kios['data']['harga'] = $data->sub_total ?? '0';
 
-                        Log::info(['masuk dulu => ', $kios]);
+                        Log::info('masuk dulu');
 
                         if ($kios['rc'] === '00') {
-                            Log::info(['masuk sini => ', $kios]);
+                            Log::info('masuk sini');
                             $checker = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '';
                             if (str_contains(preg_replace('/\s+/','',$checker), 'BERHASIL')) {
                                 log::warning('info 1');
