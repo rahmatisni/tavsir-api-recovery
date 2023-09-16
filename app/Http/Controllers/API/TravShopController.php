@@ -1586,17 +1586,18 @@ class TravShopController extends Controller
                     if ($data->order_type === TransOrder::POS) {
                         log::info('clear POS');
                         $data->status = TransOrder::DONE;
+                        $data->save();
+                        DB::commit();
                     }
+                    
                     if ($data->order_type === TransOrder::ORDER_SELF_ORDER) {
-                        $data->status = TransOrder::PAYMENT_SUCCESS;
                         log::info('clear SO');
 
-                    }
-                    if ($data->order_type === TransOrder::ORDER_TRAVOY) {
                         $data->status = TransOrder::PAYMENT_SUCCESS;
+                        $data->save();
+                        DB::commit();
+
                     }
-                    $data->save();
-                    DB::commit();
 
                     if ($data->order_type === TransOrder::ORDER_TRAVOY && !in_array($data->status, [TransOrder::DONE, TransOrder::READY])) {
                         log::info('clear PPOB '.$data->status);
