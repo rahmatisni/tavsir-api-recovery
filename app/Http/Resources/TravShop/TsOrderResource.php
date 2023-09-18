@@ -160,6 +160,8 @@ class TsOrderResource extends JsonResource
             unset($temps['merchantID']);
             unset($temps['referenceID']);
             unset($temps['productID']);
+            unset($temps['diskon']);
+
 
 
 
