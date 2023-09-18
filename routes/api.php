@@ -232,7 +232,7 @@ Route::prefix('travshop')->group(function () {
     Route::get('/payment-method', [App\Http\Controllers\API\TravShopController::class, 'paymentMethod']);
     Route::post('/create-payment/{id}', [App\Http\Controllers\API\TravShopController::class, 'createPayment']);
     Route::get('/payment-order/{id}', [App\Http\Controllers\API\TravShopController::class, 'paymentByOrderId']);
-    // Route::get('/payment-status/{id}', [App\Http\Controllers\API\TravShopController::class, 'statusPayment']);
+    Route::get('/payment-status/{id}', [App\Http\Controllers\API\TravShopController::class, 'statusPayment']);
 
   
 
@@ -247,9 +247,6 @@ Route::prefix('travshop')->group(function () {
     Route::post('/order-verification/{id}', [App\Http\Controllers\API\TravShopController::class, 'verifikasiOrder']);
 });
 
-Route::middleware('throttle:id_rate_limit')->group(function () {
-    Route::get('/travshop/payment-status/{id}', [App\Http\Controllers\API\TravShopController::class, 'statusPayment']);
-});
 
 Route::get('/card', [App\Http\Controllers\API\CardController::class, 'index']);
 Route::post('/card', [App\Http\Controllers\API\CardController::class, 'bind']);
