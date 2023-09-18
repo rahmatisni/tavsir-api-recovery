@@ -1603,6 +1603,7 @@ class TravShopController extends Controller
 
                     if ($data->order_type === TransOrder::ORDER_TRAVOY && !in_array($data->status, [TransOrder::DONE, TransOrder::READY])) {
                         if ($data->status === TransOrder::WAITING_PAYMENT) {
+                            log::info($data->status);
                             $data->status = TransOrder::PAYMENT_SUCCESS;
                             $data->save();
                             DB::commit();
