@@ -136,8 +136,8 @@ class TsOrderResource extends JsonResource
                     } elseif (in_array($key, $slice)) {
                     } elseif (in_array($key, $cleansing)) {
                         $temps['data'][$key] = cleansings($val);
-                    } elseif (in_array($key, ['referenceID', 'merhcantID', 'productID', 'sessionID'])) {
-
+                    } elseif (in_array( $temps['data'][$key], ['referenceID', 'merhcantID', 'productID', 'sessionID'])) {
+                        unset( $temps['data'][$key]);
                     } else {
                         // if ( $temps['data'][$key] == 'Harga_kios'){
                         //     $temps['data'][$key] = 2;
