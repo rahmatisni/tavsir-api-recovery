@@ -58,7 +58,7 @@ class TravShopController extends Controller
         $this->stock_service = $stock_service;
         $this->trans_sharing_service = $trans_sharing_service;
         $this->kiosBankService = $kiosBankService;
-        $this->middleware('throttle:1,5')->only('statusPayment')->key(request()->route('id'));
+        // $this->middleware('throttle:1,5')->only('statusPayment')->key(request()->route('id'));
     }
 
 
