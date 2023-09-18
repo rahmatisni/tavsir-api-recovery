@@ -1567,7 +1567,7 @@ class TravShopController extends Controller
                 $res_data['fee'] = $data_payment['fee'];
                 $res_data['bill'] = $data_payment['bill'];
                 $kios = [];
-                log::info('AWALNYA STATUSNYA INI '.$data->status);
+                log::info($data->created_at.'AWALNYA STATUSNYA INI '.$data->status);
                 if ($res_data['pay_status'] === '1' && $data->status === TransOrder::WAITING_PAYMENT) {
                     $data->status = TransOrder::PAYMENT_SUCCESS;
                     if ($data->order_type == TransOrder::POS) {
@@ -1575,7 +1575,7 @@ class TravShopController extends Controller
                     }
                     $data->save();
                     DB::commit();
-                    log::info('DIGANTI YA jadi '.$data->status);
+                    log::info($data->created_at.'DIGANTI YA jadi '.$data->status);
 
 
                     if ($data->order_type == TransOrder::ORDER_TRAVOY && $data->status != TransOrder::DONE) {
