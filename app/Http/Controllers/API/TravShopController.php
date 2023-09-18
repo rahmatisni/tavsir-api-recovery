@@ -1568,7 +1568,7 @@ class TravShopController extends Controller
                 $res_data['bill'] = $data_payment['bill'];
                 $kios = [];
 
-                if ($res_data['pay_status'] == '1') {
+                if ($res_data['pay_status'] == '1' && $data->status == TransOrder::WAITING_PAYMENT) {
                     $data->status = TransOrder::PAYMENT_SUCCESS;
                     if ($data->order_type == TransOrder::POS) {
                         $data->status = TransOrder::DONE;
@@ -1651,14 +1651,14 @@ class TravShopController extends Controller
                             // DB::commit();
                             // return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                         } else {
-                            $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-                                'data' => $kios,
-                                'payment' => $kios,
+                            // $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
+                            //     'data' => $kios,
+                            //     'payment' => $kios,
 
-                            ]);
-                            $data->status = TransOrder::PAYMENT_SUCCESS;
-                            $data->save();
-                            DB::commit();
+                            // ]);
+                            // $data->status = TransOrder::PAYMENT_SUCCESS;
+                            // $data->save();
+                            // DB::commit();
                             return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                         }
                     }
