@@ -238,6 +238,7 @@ Route::prefix('travshop')->group(function () {
     Route::middleware('customthrottle:1,5')->group(function () {
         Route::get('/payment-status/{id}', [App\Http\Controllers\API\TravShopController::class, 'statusPayment']);
     });
+    
 
     Route::get('/payment-status-manual/{id}', [App\Http\Controllers\API\TravShopController::class, 'statusPaymentManual']);
     Route::get('/payment-status-dd/{id}', [App\Http\Controllers\API\TravShopController::class, 'statusPaymentDD']);
