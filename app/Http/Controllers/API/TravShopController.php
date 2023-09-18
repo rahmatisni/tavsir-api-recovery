@@ -1163,22 +1163,7 @@ class TravShopController extends Controller
                             $data->status = TransOrder::READY;
                         }
                     }
-
-                    // if(!$kios['rc'] || $kios['rc'] == '01' || $kios['rc'] == '03' || $kios['rc'] == '04' || $kios['rc'] == '05' || $kios['rc'] == '14' || $kios['rc'] == '19' || $kios['rc'] == '38' || $kios['rc'] == '39' || $kios['rc'] == '67' | $kios['rc'] == '71') {
-                    //     // if(str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL'))
-                    //     // {
-                    //     //     $data->status = TransOrder::DONE;
-                    //     // }
-                    //     // if(str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES'))
-                    //     // {
-                    //     //     $data->status = TransOrder::DONE;
-                    //     // }
-                    //     // else 
-                    //     // {
-                    //         $data->status = TransOrder::READY;
-                    //     // }
-                    // }
-
+                    
                     $rc_coll = array('2', '10', '12', '15', '17', '18', '27', '34', '37', '40', '41', '42', '46', '60', '61', '62', '64', '65', '68', '69', '70', '72', '73', '74', '75', '78', '79', '80', '83', '85', '86');
 
                     if (in_array($kios['rc'], $rc_coll)) {
@@ -1635,7 +1620,6 @@ class TravShopController extends Controller
                 }
                 $data->payment()->update(['data' => $res_data]);
             }
-            // log::info('MAMPIR GAN');
             DB::commit();
             return response()->json($res);
         } catch (\Throwable $th) {
