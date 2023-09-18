@@ -1634,7 +1634,7 @@ class TravShopController extends Controller
                                     'payment' => $kios,
 
                                 ]);
-                                $data->status = TransOrder::READY;
+                                $data->status = TransOrder::PAYMENT_SUCCESS;
                                 $data->save();
                                 DB::commit();
                                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
@@ -1649,7 +1649,7 @@ class TravShopController extends Controller
                                 'payment' => $kios,
 
                             ]);
-                            $data->status = TransOrder::READY;
+                            $data->status = TransOrder::PAYMENT_SUCCESS;
                             $data->save();
                             DB::commit();
                             return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
