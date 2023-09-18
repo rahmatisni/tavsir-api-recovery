@@ -156,6 +156,8 @@ class TsOrderResource extends JsonResource
             $temps['data']['Diskon'] = '-' . rupiah((int) $this->discount);
             // } 
             $temps['sessionID'] = 1;
+            unset($temps['sessionID']);
+
 
 
             $rest_area_name = 'Travoy';
