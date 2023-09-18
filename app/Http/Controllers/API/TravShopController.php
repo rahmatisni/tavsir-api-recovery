@@ -1544,7 +1544,8 @@ class TravShopController extends Controller
                 $res_data['bill'] = $data_payment['bill'];
                 $kios = [];
 
-                if ($res_data['pay_status'] == '1' && $data->status == TransOrder::WAITING_PAYMENT) {
+                if ($res_data['pay_status'] === '1' && $data->status === TransOrder::WAITING_PAYMENT) {
+                    log::info('Kok Bisa '.$data->status);
                     $data->status = TransOrder::PAYMENT_SUCCESS;
                     if ($data->order_type == TransOrder::POS) {
                         $data->status = TransOrder::DONE;
@@ -1572,7 +1573,7 @@ class TravShopController extends Controller
                         $kios['data']['harga_kios'] = $data->harga_kios;
                         $kios['data']['harga'] = $data->sub_total ?? '0';
 
-                        if ($kios['rc'] == '00') {
+                        if ($kios['rc'] == '00' || $kios['rc'] == "00" || $kios['rc'] == 00) {
                             if (str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL')) {
                                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                                     'data' => $kios,
