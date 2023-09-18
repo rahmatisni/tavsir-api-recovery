@@ -1160,8 +1160,8 @@ class TravShopController extends Controller
 
     public function statusPayment(Request $request, $id)
     {
-        $data = TransOrder::with('payment_method')->findOrfail($id);
         try {
+            $data = TransOrder::with('payment_method')->findOrfail($id);
             DB::beginTransaction();
             if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::DONE || $data->status == TransOrder::READY) {
                 $kios = [];
@@ -1677,6 +1677,7 @@ class TravShopController extends Controller
                 }
                 $data->payment()->update(['data' => $res_data]);
             }
+            log::info('MAMPIR GAN');
             DB::commit();
             return response()->json($res);
         } catch (\Throwable $th) {
