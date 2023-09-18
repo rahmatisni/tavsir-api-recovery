@@ -142,7 +142,7 @@ class TsOrderResource extends JsonResource
                     $temps['data'][$key] = ($val);
                 }
                 elseif (in_array($key, ['referenceID','merhcantID','productID','sessionID'])){
-                    
+
                 }
                     else {
                         // if ( $temps['data'][$key] == 'Harga_kios'){
@@ -199,7 +199,7 @@ class TsOrderResource extends JsonResource
             'log_kiosbank' => $temps ?? $this->log_kiosbank,
             'addon_total' => $this->addon_total,
             'addon_price' => $this->addon_price,
-            'detil_kios' => $product_kios,
+            // 'detil_kios' => $product_kios,
             'detil' => TsOrderDetilResource::collection($this->detil),
         ];
     }
