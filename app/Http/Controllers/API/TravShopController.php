@@ -45,9 +45,6 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
-
-
-
 class TravShopController extends Controller
 {
     protected $stock_service;
@@ -1238,6 +1235,10 @@ class TravShopController extends Controller
                 $kios = [];
                 if ($data->order_type == TransOrder::ORDER_TRAVOY) {
 
+                    if($data->productKiosbank()->integrator == 'JATELINDO'){
+                        return response()->json(['token' => $data->log_kiosbank->data['bit62'] ?? '']);
+                    }
+
                     $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
                     $adminBank = $datalog['data']['data']['adminBank'] ?? '000000000000';
                     $refid = $datalog['data']['referenceID'];
@@ -1645,7 +1646,19 @@ class TravShopController extends Controller
                             $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
                             if($data->productKiosbank()->integrator == 'JATELINDO')
                             {
-                                JatelindoService::purchase();
+                                $result_jatelindo = JatelindoService::purchase($data->log_kiosbank->data ?? [])->json();
+                                if(($res_jatelindo['bit39'] ?? '') == '00'){
+                                    //return token listrik
+                                    $data->status = TransOrder::DONE;
+                                    $data->save();
+                                    $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
+                                        'data' => $result_jatelindo
+                                    ]);
+                                    DB::commit();
+                                    return response()->json(['token' => $result_jatelindo['bit62']]);
+                                }
+                                return response()->json(['status' => 422, 'data' => JatelindoService::responseTranslation($result_jatelindo)]);
+
                             }
                             $tagihan = $datalog['data']['data']['tagihan'] ?? $datalog['data']['data']['harga_kios'];
                             $admin = $datalog['data']['data']['adminBank'] ?? $datalog['data']['data']['AB'] ?? '000000000000';
