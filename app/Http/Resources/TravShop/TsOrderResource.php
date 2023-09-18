@@ -157,7 +157,7 @@ class TsOrderResource extends JsonResource
             }
             // if (!$temps['data']['Diskon'])
             // {
-                $temps['data']['Diskon'] = '-'.rupiah((int) $this->discount);
+            $temps['data']['Diskon'] = '-'.rupiah((int) $this->discount);
             // }
 
 
@@ -196,7 +196,7 @@ class TsOrderResource extends JsonResource
             'description' => $this->description,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'payment' => $this->payment->data ?? null,
-            // 'log_kiosbank' => $temps ?? $this->log_kiosbank,
+            'log_kiosbank' => $temps ?? $this->log_kiosbank,
             'addon_total' => $this->addon_total,
             'addon_price' => $this->addon_price,
             'detil_kios' => $product_kios,
