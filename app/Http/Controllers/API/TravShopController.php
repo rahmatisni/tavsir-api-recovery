@@ -1181,9 +1181,6 @@ class TravShopController extends Controller
 
                     $rc_coll = array('2', '10', '12', '15', '17', '18', '27', '34', '37', '40', '41', '42', '46', '60', '61', '62', '64', '65', '68', '69', '70', '72', '73', '74', '75', '78', '79', '80', '83', '85', '86');
 
-
-                    // $rc_coll = array('9999');
-
                     if (in_array($kios['rc'], $rc_coll)) {
 
                         //inquiry ulang
@@ -1197,7 +1194,6 @@ class TravShopController extends Controller
                         $referenceID = (string) $random_id;
                         $data->save();
                         DB::commit();
-
 
                         if ($data->description == 'single') {
                             $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
@@ -1644,7 +1640,7 @@ class TravShopController extends Controller
             return response()->json($res);
         } catch (\Throwable $th) {
             // DB::rollBack();
-            return response()->json(['error' => (string) $th], 500);
+            return response()->json(['error' => 'Coba Kembali Lain Waktu'], 500);
         }
     }
 
