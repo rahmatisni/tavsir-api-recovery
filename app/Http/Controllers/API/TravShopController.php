@@ -1772,6 +1772,7 @@ class TravShopController extends Controller
                 }
                 $data->payment()->update(['data' => $res_data]);
             }
+            log::info('Ke Sini?');
 
             DB::commit();
             return response()->json($res);
