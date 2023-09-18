@@ -1138,14 +1138,15 @@ class TravShopController extends Controller
     {
         $data = TransOrder::with('payment_method')->findOrfail($id);
         try {
-
             DB::beginTransaction();
             if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::DONE || $data->status == TransOrder::READY) {
                 $kios = [];
                 if ($data->order_type == TransOrder::ORDER_TRAVOY) {
+
                     $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
                     $adminBank = $datalog['data']['data']['adminBank'] ?? '000000000000';
                     $refid = $datalog['data']['referenceID'];
+
                     $kios = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id, $adminBank, $data->harga_kios);
                     $kios['data']['harga_kios'] = $data->harga_kios;
                     $kios['data']['harga'] = $data->sub_total ?? '0';
@@ -1153,19 +1154,12 @@ class TravShopController extends Controller
                     if ($kios['rc'] == '00' || $kios['rc'] == "00" || $kios['rc'] == 00) {
                         if (str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL')) {
                             $data->status = TransOrder::DONE;
-                            $data->save();
-
                         }
                         if (str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES')) {
                             $data->status = TransOrder::DONE;
-                            $data->save();
-
                         } else {
                             $data->status = TransOrder::DONE;
-                            $data->save();
-
                         }
-                        
                     }
 
                     // if(!$kios['rc'] || $kios['rc'] == '01' || $kios['rc'] == '03' || $kios['rc'] == '04' || $kios['rc'] == '05' || $kios['rc'] == '14' || $kios['rc'] == '19' || $kios['rc'] == '38' || $kios['rc'] == '39' || $kios['rc'] == '67' | $kios['rc'] == '71') {
@@ -1550,8 +1544,8 @@ class TravShopController extends Controller
                 $res_data['bill'] = $data_payment['bill'];
                 $kios = [];
 
-                if ($res_data['pay_status'] == '1' && $data->status == TransOrder::WAITING_PAYMENT) {
-                    // $data->status = TransOrder::PAYMENT_SUCCESS;
+                if ($res_data['pay_status'] == '1') {
+                    $data->status = TransOrder::PAYMENT_SUCCESS;
                     if ($data->order_type == TransOrder::POS) {
                         $data->status = TransOrder::DONE;
                     }
@@ -1578,53 +1572,45 @@ class TravShopController extends Controller
                         $kios['data']['harga_kios'] = $data->harga_kios;
                         $kios['data']['harga'] = $data->sub_total ?? '0';
 
-                        Log::info(['masuk dulu => ', $kios]);
-
-
-                        if ($kios['rc'] == '00' || $kios['rc'] == "00" || $kios['rc'] == 00) {
-                            Log::info(['masuk sini => ', $kios]);
-                            $checker = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '';
-                            if (str_contains(preg_replace('/\s+/','',$checker), 'BERHASIL')) {
-                                log::warning('info 1');
+                        if ($kios['rc'] == '00') {
+                            if (str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL')) {
                                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                                     'data' => $kios,
                                     'payment' => $kios,
+
                                 ]);
                                 $data->status = TransOrder::DONE;
                                 $data->save();
                                 DB::commit();
                                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                             }
-                            if (str_contains(preg_replace('/\s+/','',$checker), 'SUKSES')) {
-                                log::warning('info 2');
-
+                            if (str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES')) {
                                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                                     'data' => $kios,
                                     'payment' => $kios,
+
                                 ]);
                                 $data->status = TransOrder::DONE;
                                 $data->save();
                                 DB::commit();
                                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                             } else {
-                                log::warning('info 3');
                                 $kios['description'] = $kios['description'] ?? $kios['data']['description'];
                                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                                     'data' => $kios,
                                     'payment' => $kios,
+
                                 ]);
                                 $data->status = TransOrder::READY;
                                 $data->save();
                                 DB::commit();
                                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                             }
-                            // $data->status = TransOrder::READY;
+                            // $data->status = TransOrder::DONE;
                             // $data->save();
                             // DB::commit();
                             // return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                         } else {
-
-                            Log::info(['masuk sana => ', $kios]);
                             $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                                 'data' => $kios,
                                 'payment' => $kios,
@@ -1644,14 +1630,14 @@ class TravShopController extends Controller
                 }
                 $data->payment()->update(['data' => $res_data]);
             }
-
             DB::commit();
             return response()->json($res);
         } catch (\Throwable $th) {
-            DB::rollBack();
+            // DB::rollBack();
             return response()->json(['error' => (string) $th], 500);
         }
     }
+
 
 
     public function statusPaymentDD(Request $request, $id)
@@ -2052,13 +2038,13 @@ class TravShopController extends Controller
                 $res_data['bill'] = $data_payment['bill'];
                 $kios = [];
 
-                if ($res_data['pay_status'] == '1') {
+                if ($res_data['pay_status'] === '1') {
                     $data->status = TransOrder::PAYMENT_SUCCESS;
-                    if ($data->order_type == TransOrder::POS) {
+                    if ($data->order_type === TransOrder::POS) {
                         $data->status = TransOrder::DONE;
                     }
                     $data->save();
-                    if ($data->order_type == TransOrder::ORDER_TRAVOY && $data->status != TransOrder::DONE) {
+                    if ($data->order_type === TransOrder::ORDER_TRAVOY && $data->status !== TransOrder::DONE) {
                         if ($data->description == 'single') {
                             $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
                             Log::info(['bayar depan => ', $kios]);
@@ -2124,7 +2110,7 @@ class TravShopController extends Controller
                                 'payment' => $kios,
 
                             ]);
-                            $data->status = TransOrder::PAYMENT_SUCCESS;
+                            $data->status = TransOrder::READY;
                             $data->save();
                             DB::commit();
                             return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
