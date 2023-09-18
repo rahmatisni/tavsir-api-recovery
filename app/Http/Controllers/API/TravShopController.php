@@ -1775,7 +1775,7 @@ class TravShopController extends Controller
             DB::commit();
             return response()->json($res);
         } catch (\Throwable $th) {
-            log::info('ROLLBACK')
+            log::info('ROLLBACK');
             DB::rollBack();
             return response()->json(['error' => (string) $th], 500);
         }
