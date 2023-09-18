@@ -68,5 +68,7 @@ class Kernel extends HttpKernel
         'client' => CheckClientCredentials::class,
         'is_admin' => \App\Http\Middleware\IsAdmin::class,
         'role' => \App\Http\Middleware\RoleMiddleware::class,
+        'customthrottle' => \App\Http\Middleware\CustomThrottleMiddleware::class,
+
     ];
 }
