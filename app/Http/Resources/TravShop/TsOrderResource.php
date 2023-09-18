@@ -148,16 +148,15 @@ class TsOrderResource extends JsonResource
                         //     $temps['data'][$key] = 2;
                         // }
                         // unset( $temps['data'][$key]);
-
+                        $temps['data'][1] = 0;
                         $temps['data'][$key] = $val;
-
                     }
                 }
             }
             // if (!$temps['data']['Diskon'])
             // {
             $temps['data']['Diskon'] = '-'.rupiah((int) $this->discount);
-            // }
+            // } 
 
 
             $rest_area_name = 'Travoy';
