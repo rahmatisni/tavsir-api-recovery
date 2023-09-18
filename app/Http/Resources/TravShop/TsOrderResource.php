@@ -52,6 +52,7 @@ class TsOrderResource extends JsonResource
             if ($product_kios) {
                 $product_kios = $product_kios->toArray();
                 $product_kios['handphone'] = $product[1];
+                $product_kios['token'] = $this->log_kiosbank->data['bit62'] ?? '';
             }
             $temp = $this->log_kiosbank?->data['data'] ?? null;
 
@@ -138,7 +139,7 @@ class TsOrderResource extends JsonResource
                     elseif (in_array($key, $slice)) {
                     } 
                  elseif (in_array($key, $cleansing)) {
-                    $temps['data'][$key] = cleansings($val);
+                    $temps['data'][$key] = ($val);
                 }
                     else {
                         // if ( $temps['data'][$key] == 'Harga_kios'){

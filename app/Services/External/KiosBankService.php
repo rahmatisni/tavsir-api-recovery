@@ -517,7 +517,7 @@ class KiosBankService
         if($product->integrator == 'JATELINDO')
         {
             $res_jatelindo = JatelindoService::inquiry($data['phone'], $product)->json();
-            if($res_jatelindo['bit39'] == '00'){
+            if(($res_jatelindo['bit39'] ?? '') == '00'){
                 $order->sub_total = $product->base_price + ($product->harga ?? 0);
                 $order->total = $order->sub_total + $order->fee;
                 $order->save();
@@ -526,7 +526,7 @@ class KiosBankService
                 ]);
                 return ['code' => 200, 'data' => $order];
             }else{
-                return ['code' => 422, 'data' => $res_jatelindo];
+                return ['code' => 422, 'data' => JatelindoService::responseTranslation($res_jatelindo)];
             }
         }
 
