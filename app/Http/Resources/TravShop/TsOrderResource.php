@@ -149,7 +149,6 @@ class TsOrderResource extends JsonResource
                         //     $temps['data'][$key] = 2;
                         // }
                         // unset( $temps['data'][$key]);
-                        $temps['data'][1] = 0;
                         $temps['data'][$key] = $val;
                     }
                 }
