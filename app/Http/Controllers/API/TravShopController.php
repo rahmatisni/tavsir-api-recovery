@@ -1161,232 +1161,193 @@ class TravShopController extends Controller
     public function statusPayment(Request $request, $id)
     {
         $data = TransOrder::with('payment_method')->findOrfail($id);
-        log::info($data->status);
         try {
             DB::beginTransaction();
-            // if ($data->status === TransOrder::PAYMENT_SUCCESS || $data->status === TransOrder::DONE || $data->status === TransOrder::READY) {
-            //     $kios = [];
-            //     // if ($data->order_type === TransOrder::ORDER_TRAVOY) {
-            //     //     log::info('pantau');
-            //     //     $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
-            //     //     $adminBank = $datalog['data']['data']['adminBank'] ?? '000000000000';
-            //     //     $refid = $datalog['data']['referenceID'];
-            //     //     $kios = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id, $adminBank, $data->harga_kios);
-            //     //     $kios['data']['harga_kios'] = $data->harga_kios;
-            //     //     $kios['data']['harga'] = $data->sub_total ?? '0';
-            //     //     $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '-';
-            //     //     if ($kios['rc'] === '00'){
-            //     //         if (str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL')) {
-            //     //             $data->status = TransOrder::DONE;
-            //     //             $data->save();
+            if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::DONE || $data->status == TransOrder::READY) {
+                $kios = [];
+                if ($data->order_type == TransOrder::ORDER_TRAVOY) {
 
-            //     //         }
-            //     //         if (str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES')) {
-            //     //             $data->status = TransOrder::DONE;
-            //     //             $data->save();
+                    $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
+                    $adminBank = $datalog['data']['data']['adminBank'] ?? '000000000000';
+                    $refid = $datalog['data']['referenceID'];
 
-            //     //         } else {
-            //     //             $data->status = TransOrder::DONE;
-            //     //             $data->save();
+                    $kios = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id, $adminBank, $data->harga_kios);
+                    $kios['data']['harga_kios'] = $data->harga_kios;
+                    $kios['data']['harga'] = $data->sub_total ?? '0';
+                    $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '-';
+                    if ($kios['rc'] == '00' || $kios['rc'] == "00" || $kios['rc'] == 00) {
+                        if (str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL')) {
+                            $data->status = TransOrder::DONE;
+                        }
+                        if (str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES')) {
+                            $data->status = TransOrder::DONE;
+                        } else {
+                            $data->status = TransOrder::DONE;
+                        }
+                    }
 
-            //     //         }
-                        
-            //     //     }
+                    // if(!$kios['rc'] || $kios['rc'] == '01' || $kios['rc'] == '03' || $kios['rc'] == '04' || $kios['rc'] == '05' || $kios['rc'] == '14' || $kios['rc'] == '19' || $kios['rc'] == '38' || $kios['rc'] == '39' || $kios['rc'] == '67' | $kios['rc'] == '71') {
+                    //     // if(str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL'))
+                    //     // {
+                    //     //     $data->status = TransOrder::DONE;
+                    //     // }
+                    //     // if(str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES'))
+                    //     // {
+                    //     //     $data->status = TransOrder::DONE;
+                    //     // }
+                    //     // else 
+                    //     // {
+                    //         $data->status = TransOrder::READY;
+                    //     // }
+                    // }
 
-
-            //     //     $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
-            //     //     $adminBank = $datalog['data']['data']['adminBank'] ?? '000000000000';
-            //     //     $refid = $datalog['data']['referenceID'];
-            //     //     $kios = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id, $adminBank, $data->harga_kios);
-            //     //     $kios['data']['harga_kios'] = $data->harga_kios;
-            //     //     $kios['data']['harga'] = $data->sub_total ?? '0';
-            //     //     $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '-';
-            //     //     if ($kios['rc'] === '00'){
-            //     //         if (str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL')) {
-            //     //             $data->status = TransOrder::DONE;
-            //     //             $data->save();
-
-            //     //         }
-            //     //         if (str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES')) {
-            //     //             $data->status = TransOrder::DONE;
-            //     //             $data->save();
-
-            //     //         } else {
-            //     //             $data->status = TransOrder::DONE;
-            //     //             $data->save();
-
-            //     //         }
-            //     //         $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-            //     //             'data' => $kios
-            //     //         ]);
-            //     //         $data->save();
-            //     //         DB::commit();
-            //     //     }
+                    $rc_coll = array('2', '10', '12', '15', '17', '18', '27', '34', '37', '40', '41', '42', '46', '60', '61', '62', '64', '65', '68', '69', '70', '72', '73', '74', '75', '78', '79', '80', '83', '85', '86', '19');
 
 
+                    // $rc_coll = array('9999');
 
-            //     //     // if(!$kios['rc'] || $kios['rc'] == '01' || $kios['rc'] == '03' || $kios['rc'] == '04' || $kios['rc'] == '05' || $kios['rc'] == '14' || $kios['rc'] == '19' || $kios['rc'] == '38' || $kios['rc'] == '39' || $kios['rc'] == '67' | $kios['rc'] == '71') {
-            //     //     //     // if(str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL'))
-            //     //     //     // {
-            //     //     //     //     $data->status = TransOrder::DONE;
-            //     //     //     // }
-            //     //     //     // if(str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES'))
-            //     //     //     // {
-            //     //     //     //     $data->status = TransOrder::DONE;
-            //     //     //     // }
-            //     //     //     // else 
-            //     //     //     // {
-            //     //     //         $data->status = TransOrder::READY;
-            //     //     //     // }
-            //     //     // }
+                    if (in_array($kios['rc'], $rc_coll)) {
 
-            //     //     $rc_coll = array('2', '10', '12', '15', '17', '18', '27', '34', '37', '40', '41', '42', '46', '60', '61', '62', '64', '65', '68', '69', '70', '72', '73', '74', '75', '78', '79', '80', '83', '85', '86');
+                        //inquiry ulang
+                        $ref = explode('-', $data->order_id);
+                        $random_id = rand(100000000000, 999999999999);
+                        $data->order_id = $ref[0] . '-' . $ref[1] . '-' . $random_id . '-' . Carbon::now()->timestamp;
+                        Log::info('REPROCESS --> BEFORE => ' . $ref[2] . 'AFTER => ' . $random_id);
+
+                        $productId = $ref[0];
+                        $customerID = $ref[1];
+                        $referenceID = (string) $random_id;
+                        $data->save();
+                        DB::commit();
 
 
-            //     //     // $rc_coll = array('9999');
+                        if ($data->description == 'single') {
+                            $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
+                            Log::info(['bayar susulan => ', $kios]);
+                        }
 
-            //     //     if (in_array($kios['rc'], $rc_coll)) {
+                        if ($data->description == 'dual') {
+                            $res_json = $this->kiosBankService->reinquiry($productId, $customerID, $referenceID);
+                            $res_json = $res_json->json();
+                        }
 
-            //     //         //inquiry ulang
-            //     //         $ref = explode('-', $data->order_id);
-            //     //         $random_id = rand(100000000000, 999999999999);
-            //     //         $data->order_id = $ref[0] . '-' . $ref[1] . '-' . $random_id . '-' . Carbon::now()->timestamp;
-            //     //         Log::info('REPROCESS --> BEFORE => ' . $ref[2] . 'AFTER => ' . $random_id);
+                        if ($data->description == 'dual' && $res_json['rc'] == '00') {
+                            if ($res_json['productID'] == '520021' || $res_json['productID'] == '520011') {
+                                $data->harga_kios = $res_json['data']['total'];
 
-            //     //         $productId = $ref[0];
-            //     //         $customerID = $ref[1];
-            //     //         $referenceID = (string) $random_id;
-            //     //         $data->save();
-            //     //         DB::commit();
+                                //harga jual
 
+                                $harga_jual_kios = ProductKiosBank::where('kode', $res_json['productID'])->first() ?? $res_json['data']['total'];
+                                $data->sub_total = ($harga_jual_kios?->harga ?? 0) + $res_json['data']['total'];
+                                $data->total = $data->sub_total + $data->fee;
+                                $res_json['data']['harga_kios'] = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
+                                $res_json['data']['harga'] = $data->sub_total;
+                                $res_json['description'] = 'INQUIRY';
 
-            //     //         if ($data->description == 'single') {
-            //     //             $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
-            //     //             Log::info(['bayar susulan => ', $kios]);
-            //     //         }
+                                $data->save();
+                                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
+                                    'data' => $res_json
+                                ]);
+                            } else {
+                                $data->harga_kios = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'] ?? $data->harga_kios;
+                                //harga jual
+                                $harga_jual_kios = ProductKiosBank::where('kode', $ref[0])->first();
+                                // $order->sub_total = $harga_jual_kios?->harga ?? $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
+                                $data->total = $data->sub_total + $data->fee;
+                                $res_json['data']['harga_kios'] = $data->harga_kios;
+                                // $res_json['data']['harga_kios'] = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
+                                $res_json['data']['harga'] = $data->sub_total;
+                                $res_json['description'] = 'INQUIRY';
+                                $res_json['data']['adminBank'] = $res_json['data']['adminBank'] ?? $res_json['data']['AB'] ?? '000000000000';
 
-            //     //         if ($data->description == 'dual') {
-            //     //             $res_json = $this->kiosBankService->reinquiry($productId, $customerID, $referenceID);
-            //     //             $res_json = $res_json->json();
-            //     //         }
+                                $data->save();
+                                Log::info($data);
+                                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
+                                    'data' => $res_json
+                                ]);
+                            }
 
-            //     //         if ($data->description == 'dual' && $res_json['rc'] == '00') {
-            //     //             if ($res_json['productID'] == '520021' || $res_json['productID'] == '520011') {
-            //     //                 $data->harga_kios = $res_json['data']['total'];
+                            //pay ulang
+                            // if ($data->description == 'single') {
+                            //     $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
+                            //     Log::info(['bayar susulan => ', $kios]);
 
-            //     //                 //harga jual
+                            // }
+                            if ($data->description == 'dual') {
+                                $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
+                                $tagihan = $datalog['data']['data']['tagihan'] ?? $datalog['data']['data']['harga_kios'];
+                                $admin = $datalog['data']['data']['adminBank'] ?? '000000000000';
+                                $total = $datalog['data']['data']['total'] ?? $datalog['data']['data']['harga_kios'] ?? $tagihan;
+                                $kios = $this->kiosBankService->dualPayment($data->sub_total, $data->order_id, $tagihan, $admin, $total);
+                                Log::info(['bayar susulan => ', $kios]);
 
-            //     //                 $harga_jual_kios = ProductKiosBank::where('kode', $res_json['productID'])->first() ?? $res_json['data']['total'];
-            //     //                 $data->sub_total = ($harga_jual_kios?->harga ?? 0) + $res_json['data']['total'];
-            //     //                 $data->total = $data->sub_total + $data->fee;
-            //     //                 $res_json['data']['harga_kios'] = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
-            //     //                 $res_json['data']['harga'] = $data->sub_total;
-            //     //                 $res_json['description'] = 'INQUIRY';
+                            }
+                            $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
+                            $kios['data']['harga'] = $kios['data']['harga'] ?? ($data->sub_total ?? '0');
+                            // $kios['data']['nama'] = $kios['data']['nama'] ?? $datalog['data']['data']['nama'] ?? '-';
+                            // $kios['data']['nominalProduk'] = $kios['data']['nominalProduk'] ?? $datalog['data']['data']['nominalProduk'] ?? '0';
+                            $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '';
+                            $kios['data']['harga_kios'] = $data->harga_kios;
+                            $kios['data']['harga'] = $data->sub_total ?? '0';
 
-            //     //                 $data->save();
-            //     //                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-            //     //                     'data' => $res_json
-            //     //                 ]);
-            //     //             } else {
-            //     //                 $data->harga_kios = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'] ?? $data->harga_kios;
-            //     //                 //harga jual
-            //     //                 $harga_jual_kios = ProductKiosBank::where('kode', $ref[0])->first();
-            //     //                 // $order->sub_total = $harga_jual_kios?->harga ?? $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
-            //     //                 $data->total = $data->sub_total + $data->fee;
-            //     //                 $res_json['data']['harga_kios'] = $data->harga_kios;
-            //     //                 // $res_json['data']['harga_kios'] = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
-            //     //                 $res_json['data']['harga'] = $data->sub_total;
-            //     //                 $res_json['description'] = 'INQUIRY';
-            //     //                 $res_json['data']['adminBank'] = $res_json['data']['adminBank'] ?? $res_json['data']['AB'] ?? '000000000000';
+                            if ($kios['rc'] == '00' || $kios['rc'] == "00" || $kios['rc'] == 00) {
+                                if (str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL')) {
+                                    $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
+                                        'data' => $kios,
+                                        'payment' => $kios,
 
-            //     //                 $data->save();
-            //     //                 Log::info($data);
-            //     //                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-            //     //                     'data' => $res_json
-            //     //                 ]);
-            //     //             }
+                                    ]);
+                                    $data->status = TransOrder::DONE;
+                                    $data->save();
+                                    DB::commit();
+                                    return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
+                                }
+                                if (str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES')) {
+                                    $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
+                                        'data' => $kios,
+                                        'payment' => $kios,
 
-            //     //             //pay ulang
-            //     //             // if ($data->description == 'single') {
-            //     //             //     $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
-            //     //             //     Log::info(['bayar susulan => ', $kios]);
+                                    ]);
+                                    $data->status = TransOrder::DONE;
+                                    $data->save();
+                                    DB::commit();
+                                    return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
+                                } else {
+                                    $kios['description'] = $kios['description'] ?? $kios['data']['description'];
+                                    $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
+                                        'data' => $kios,
+                                        'payment' => $kios,
 
-            //     //             // }
-            //     //             if ($data->description == 'dual') {
-            //     //                 $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
-            //     //                 $tagihan = $datalog['data']['data']['tagihan'] ?? $datalog['data']['data']['harga_kios'];
-            //     //                 $admin = $datalog['data']['data']['adminBank'] ?? '000000000000';
-            //     //                 $total = $datalog['data']['data']['total'] ?? $datalog['data']['data']['harga_kios'] ?? $tagihan;
-            //     //                 $kios = $this->kiosBankService->dualPayment($data->sub_total, $data->order_id, $tagihan, $admin, $total);
-            //     //                 Log::info(['bayar susulan => ', $kios]);
+                                    ]);
+                                    $data->status = TransOrder::READY;
+                                    $data->save();
+                                    DB::commit();
+                                    return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
+                                }
+                            } else {
+                                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
+                                    'data' => $kios,
+                                    'payment' => $kios,
 
-            //     //             }
-            //     //             $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
-            //     //             $kios['data']['harga'] = $kios['data']['harga'] ?? ($data->sub_total ?? '0');
-            //     //             // $kios['data']['nama'] = $kios['data']['nama'] ?? $datalog['data']['data']['nama'] ?? '-';
-            //     //             // $kios['data']['nominalProduk'] = $kios['data']['nominalProduk'] ?? $datalog['data']['data']['nominalProduk'] ?? '0';
-            //     //             $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '';
-            //     //             $kios['data']['harga_kios'] = $data->harga_kios;
-            //     //             $kios['data']['harga'] = $data->sub_total ?? '0';
+                                ]);
+                                $data->status = TransOrder::PAYMENT_SUCCESS;
+                                $data->save();
+                                DB::commit();
+                                return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
+                            }
+                            //end pay ulang
+                        }
+                        // end inquiry ulang
+                    }
 
-            //     //             if ($kios['rc'] == '00' || $kios['rc'] == "00" || $kios['rc'] == 00) {
-            //     //                 if (str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL')) {
-            //     //                     $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-            //     //                         'data' => $kios,
-            //     //                         'payment' => $kios,
-
-            //     //                     ]);
-            //     //                     $data->status = TransOrder::DONE;
-            //     //                     $data->save();
-            //     //                     DB::commit();
-            //     //                     return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
-            //     //                 }
-            //     //                 if (str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES')) {
-            //     //                     $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-            //     //                         'data' => $kios,
-            //     //                         'payment' => $kios,
-
-            //     //                     ]);
-            //     //                     $data->status = TransOrder::DONE;
-            //     //                     $data->save();
-            //     //                     DB::commit();
-            //     //                     return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
-            //     //                 } else {
-            //     //                     $kios['description'] = $kios['description'] ?? $kios['data']['description'];
-            //     //                     $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-            //     //                         'data' => $kios,
-            //     //                         'payment' => $kios,
-
-            //     //                     ]);
-            //     //                     $data->status = TransOrder::READY;
-            //     //                     $data->save();
-            //     //                     DB::commit();
-            //     //                     return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
-            //     //                 }
-            //     //             } else {
-            //     //                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-            //     //                     'data' => $kios,
-            //     //                     'payment' => $kios,
-
-            //     //                 ]);
-            //     //                 $data->status = TransOrder::PAYMENT_SUCCESS;
-            //     //                 $data->save();
-            //     //                 DB::commit();
-            //     //                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
-            //     //             }
-            //     //             //end pay ulang
-            //     //         }
-            //     //         // end inquiry ulang
-            //     //     }
-
-            //     //     $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-            //     //         'data' => $kios
-            //     //     ]);
-            //     //     $data->save();
-            //     //     DB::commit();
-            //     // }
-            //     return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
-            // }
+                    $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
+                        'data' => $kios
+                    ]);
+                    $data->save();
+                    DB::commit();
+                }
+                return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
+            }
 
             if ($data->status != TransOrder::WAITING_PAYMENT) {
                 return response()->json(['status' => $data->status, 'responseData' => $data->payment ?? '']);
@@ -1423,19 +1384,7 @@ class TravShopController extends Controller
                             ]
                         ], 422);
                     }
-
-                    //Cek if pay_refnum null dianggap gagal
-                    $is_dd_pg_success = $res['responseData']['pay_refnum'] ?? null;
-                    if ($is_dd_pg_success == null) {
-                        return response()->json([
-                            "message" => "ERROR!",
-                            "errors" => [
-                                $res
-                            ]
-                        ], 422);
-                    }
-
-                    $res['responseData']['card_id'] = $request->card_id;
+                    $res['responseData']['card_id'] = $payload['card_id'] ?? '';
                     $respon = $res['responseData'];
                     if ($data->payment === null) {
                         $payment = new TransPayment();
@@ -1447,13 +1396,99 @@ class TravShopController extends Controller
                         $pay->save();
                     }
 
+                    $data->status = TransOrder::PAYMENT_SUCCESS;
+                    if ($data->order_type == TransOrder::POS) {
+                        $data->status = TransOrder::DONE;
+                    }
+                    $data->save();
+                    foreach ($data->detil as $key => $value) {
+                        $this->stock_service->updateStockProduct($value);
+                    }
+                    $this->trans_sharing_service->calculateSharing($data);
+                    DB::commit();
+                    return $data;
+                }
+
+                return response()->json($res->json(), 400);
+            }
+
+            if ($data->payment_method->code_name == 'pg_dd_mandiri') {
+                if (!$request->otp) {
+                    return response()->json([
+                        "message" => "The given data was invalid.",
+                        "errors" => [
+                            "otp" => [
+                                "The otp field is required."
+                            ]
+                        ]
+                    ], 422);
+                }
+                $payload = $data_payment;
+                $payload['otp'] = $request->otp;
+                $payload['submerchant_id'] = $data->sub_merchant_id;
+                $res = PgJmto::paymentDD($payload);
+                if ($res->successful()) {
+                    $res = $res->json();
+
+                    if ($res['status'] == 'ERROR') {
+                        return response()->json([
+                            "message" => "ERROR!",
+                            "errors" => [
+                                $res
+                            ]
+                        ], 422);
+                    }
+                    $res['responseData']['card_id'] = $payload['card_id'] ?? '';
+                    $respon = $res['responseData'];
+                    if ($data->payment === null) {
+                        $payment = new TransPayment();
+                        $payment->data = $respon;
+                        $data->payment()->save($payment);
+                    } else {
+                        $pay = TransPayment::where('trans_order_id', $data->id)->first();
+                        $pay->data = $respon;
+                        $pay->save();
+                    }
 
                     $data->status = TransOrder::PAYMENT_SUCCESS;
                     if ($data->order_type == TransOrder::POS) {
                         $data->status = TransOrder::DONE;
                     }
                     $data->save();
-                    //Cek Payment kios
+                    foreach ($data->detil as $key => $value) {
+                        $this->stock_service->updateStockProduct($value);
+                    }
+                    $this->trans_sharing_service->calculateSharing($data);
+                    DB::commit();
+                    return $data;
+                }
+                return response()->json($res->json(), 400);
+            }
+
+            $res = PgJmto::vaStatus(
+                $data_payment['sof_code'],
+                $data_payment['bill_id'],
+                $data_payment['va_number'],
+                $data_payment['refnum'],
+                $data_payment['phone'],
+                $data_payment['email'],
+                $data_payment['customer_name'],
+                // $data_payment['submerchant_id']
+                $data->sub_merchant_id
+
+            );
+            if ($res['status'] == 'success') {
+                $res_data = $res['responseData'];
+                $res_data['fee'] = $data_payment['fee'];
+                $res_data['bill'] = $data_payment['bill'];
+                $kios = [];
+
+                if ($res_data['pay_status'] == '1') {
+                    $data->status = TransOrder::PAYMENT_SUCCESS;
+                    if ($data->order_type == TransOrder::POS) {
+                        $data->status = TransOrder::DONE;
+                    }
+                    $data->save();
                     if ($data->order_type == TransOrder::ORDER_TRAVOY && $data->status != TransOrder::DONE) {
                         if ($data->description == 'single') {
                             $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
@@ -1461,6 +1496,22 @@ class TravShopController extends Controller
                         }
                         if ($data->description == 'dual') {
                             $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
+                            if($data->productKiosbank()->integrator == 'JATELINDO')
+                            {
+                                $result_jatelindo = JatelindoService::purchase($data->log_kiosbank->data ?? [])->json();
+                                if(($res_jatelindo['bit39'] ?? '') == '00'){
+                                    //return token listrik
+                                    $data->status = TransOrder::DONE;
+                                    $data->save();
+                                    $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
+                                        'data' => $result_jatelindo
+                                    ]);
+                                    DB::commit();
+                                    return response()->json(['token' => $result_jatelindo['bit62']]);
+                                }
+                                return response()->json(['status' => 422, 'data' => JatelindoService::responseTranslation($result_jatelindo)]);
+
+                            }
                             $tagihan = $datalog['data']['data']['tagihan'] ?? $datalog['data']['data']['harga_kios'];
                             $admin = $datalog['data']['data']['adminBank'] ?? $datalog['data']['data']['AB'] ?? '000000000000';
                             $total = $datalog['data']['data']['total'] ?? $datalog['data']['data']['harga_kios'] ?? $tagihan;
@@ -1468,7 +1519,10 @@ class TravShopController extends Controller
                             Log::info(['bayar depan => ', $kios]);
 
                         }
+                        $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
                         $kios['data']['harga'] = $kios['data']['harga'] ?? ($data->sub_total ?? '0');
+                        // $kios['data']['nama'] = $kios['data']['nama'] ?? $datalog['data']['data']['nama'] ?? '-';
+                        // $kios['data']['nominalProduk'] = $kios['data']['nominalProduk'] ?? $datalog['data']['data']['nominalProduk'] ?? '0';
                         $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '';
                         $kios['data']['harga_kios'] = $data->harga_kios;
                         $kios['data']['harga'] = $data->sub_total ?? '0';
@@ -1523,266 +1577,21 @@ class TravShopController extends Controller
                             return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                         }
                     }
-                    //End payment kios
                     foreach ($data->detil as $key => $value) {
                         $this->stock_service->updateStockProduct($value);
                     }
-                    $this->trans_sharing_service->calculateSharing($data);
-                    DB::commit();
-                    return response()->json($data);
-                }
-
-                return response()->json($res->json(), 400);
-            }
-
-            if ($data->payment_method->code_name == 'pg_dd_mandiri') {
-                if (!$request->otp) {
-                    return response()->json([
-                        "message" => "The given data was invalid.",
-                        "errors" => [
-                            "otp" => [
-                                "The otp field is required."
-                            ]
-                        ]
-                    ], 422);
-                }
-                $payload = $data_payment;
-                $payload['otp'] = $request->otp;
-                $payload['submerchant_id'] = $data->sub_merchant_id;
-                $res = PgJmto::paymentDD($payload);
-                if ($res->successful()) {
-                    $res = $res->json();
-
-                    if ($res['status'] == 'ERROR') {
-                        return response()->json([
-                            "message" => "ERROR!",
-                            "errors" => [
-                                $res
-                            ]
-                        ], 422);
-                    }
-
-                    $res['responseData']['card_id'] = $payload['card_id'] ?? '';
-                    $respon = $res['responseData'];
-                    if ($data->payment === null) {
-                        $payment = new TransPayment();
-                        $payment->data = $respon;
-                        $data->payment()->save($payment);
-                    } else {
-                        $pay = TransPayment::where('trans_order_id', $data->id)->first();
-                        $pay->data = $respon;
-                        $pay->save();
-                    }
-
-                    $data->status = TransOrder::PAYMENT_SUCCESS;
-                    if ($data->order_type == TransOrder::POS) {
-                        $data->status = TransOrder::DONE;
-                    }
-                    $data->save();
-                    foreach ($data->detil as $key => $value) {
-                        $this->stock_service->updateStockProduct($value);
-                    }
-                    $this->trans_sharing_service->calculateSharing($data);
-                    DB::commit();
-                    return $data;
-                }
-                return response()->json($res->json(), 400);
-            }
-
-            $res = PgJmto::vaStatus(
-                $data_payment['sof_code'],
-                $data_payment['bill_id'],
-                $data_payment['va_number'],
-                $data_payment['refnum'],
-                $data_payment['phone'],
-                $data_payment['email'],
-                $data_payment['customer_name'],
-                // $data_payment['submerchant_id']
-                $data->sub_merchant_id
-
-            );
-            if ($res['status'] == 'success') {
-                $res_data = $res['responseData'];
-                $res_data['fee'] = $data_payment['fee'];
-                $res_data['bill'] = $data_payment['bill'];
-                $kios = [];
-
-                if ($res_data['pay_status'] === '1' && $data->status === TransOrder::WAITING_PAYMENT) {
-                    if ($data->order_type === TransOrder::POS) {
-                        log::info('clear POS');
-                        $data->status = TransOrder::DONE;
-                        $data->save();
-                        DB::commit();
-                    }
-                    
-                    if ($data->order_type === TransOrder::ORDER_SELF_ORDER) {
-                        log::info('clear SO');
-
-                        $data->status = TransOrder::PAYMENT_SUCCESS;
-                        $data->save();
-                        DB::commit();
-
-                    }
-                    
-
-                    if ($data->order_type === TransOrder::ORDER_TRAVOY && !in_array($data->status, [TransOrder::DONE, TransOrder::READY])) {
-                        if ($data->status === TransOrder::WAITING_PAYMENT) {
-                            log::info($data->status);
-                            $data->status = TransOrder::PAYMENT_SUCCESS;
-                            $data->save();
-                            DB::commit();
-                        }
-                        if ($data->description == 'single') {
-                            $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
-                            Log::info(['bayar depan => ', $kios]);
-                        }
-                        if ($data->description == 'dual') {
-                            $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
-                            if($data->productKiosbank()->integrator == 'JATELINDO')
-                            {
-                                $result_jatelindo = JatelindoService::purchase($data->log_kiosbank->data ?? [])->json();
-                                if(($res_jatelindo['bit39'] ?? '') == '00'){
-                                    //return token listrik
-                                    $data->status = TransOrder::DONE;
-                                    $data->save();
-                                    $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-                                        'data' => $result_jatelindo
-                                    ]);
-                                    DB::commit();
-                                    return response()->json(['token' => $result_jatelindo['bit62']]);
-                                }
-                                return response()->json(['status' => 422, 'data' => JatelindoService::responseTranslation($result_jatelindo)]);
-
-                            }
-                            $tagihan = $datalog['data']['data']['tagihan'] ?? $datalog['data']['data']['harga_kios'];
-                            $admin = $datalog['data']['data']['adminBank'] ?? $datalog['data']['data']['AB'] ?? '000000000000';
-                            $total = $datalog['data']['data']['total'] ?? $datalog['data']['data']['harga_kios'] ?? $tagihan;
-                            $kios = $this->kiosBankService->dualPayment($data->sub_total, $data->order_id, $tagihan, $admin, $total);
-                            Log::info(['bayar depan => ', $kios]);
-                        }
-                        $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
-                        $kios['data']['harga'] = $kios['data']['harga'] ?? ($data->sub_total ?? '0');
-                        // $kios['data']['nama'] = $kios['data']['nama'] ?? $datalog['data']['data']['nama'] ?? '-';
-                        // $kios['data']['nominalProduk'] = $kios['data']['nominalProduk'] ?? $datalog['data']['data']['nominalProduk'] ?? '0';
-                        $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '';
-                        $kios['data']['harga_kios'] = $data->harga_kios;
-                        $kios['data']['harga'] = $data->sub_total ?? '0';
-
-                        Log::info('masuk dulu');
-
-                        if ($kios['rc'] === '00') {
-                            Log::info('masuk sini');
-                            $checker = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '';
-                            if (str_contains(preg_replace('/\s+/','',$checker), 'BERHASIL')) {
-                                log::warning('info 1');
-                                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-                                    'data' => $kios,
-                                    'payment' => $kios,
-                                ]);
-                                $data->status = TransOrder::DONE;
-                                $data->save();
-                                DB::commit();
-                                return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
-                            }
-                            if (str_contains(preg_replace('/\s+/','',$checker), 'SUKSES')) {
-                                log::warning('info 2');
-
-                                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-                                    'data' => $kios,
-                                    'payment' => $kios,
-                                ]);
-                                $data->status = TransOrder::DONE;
-                                $data->save();
-                                DB::commit();
-                                return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
-                            } else {
-                                log::warning('info 3');
-                                $kios['description'] = $kios['description'] ?? $kios['data']['description'];
-                                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-                                    'data' => $kios,
-                                    'payment' => $kios,
-                                ]);
-                                $data->status = TransOrder::DONE;
-                                $data->save();
-                                DB::commit();
-                                return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
-                            }
-                            // $data->status = TransOrder::READY;
-                            // $data->save();
-                            // DB::commit();
-                            // return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
-                        } else {
-                            Log::info('masuk_sana');
-                            $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-                                'data' => $kios,
-                                'payment' => $kios,
-
-                            ]);
-                            // $data->status = TransOrder::PAYMENT_SUCCESS;
-                            // $data->save();
-                            // DB::commit();
-                            return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
-                        }
-                    }
-                    foreach ($data->detil as $key => $value) {
-                        $this->stock_service->updateStockProduct($value);
-                    }
-                } 
-                // else if ($res_data['pay_status'] === '1' && $data->status === TransOrder::READY){
-
-
-
-
-                    
-
-                //     $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
-                //     $adminBank = $datalog['data']['data']['adminBank'] ?? '000000000000';
-                //     $refid = $datalog['data']['referenceID'];
-                //     $kios = $this->kiosBankService->cekStatus($data->sub_total, $data->order_id, $adminBank, $data->harga_kios);
-                //     $kios['data']['harga_kios'] = $data->harga_kios;
-                //     $kios['data']['harga'] = $data->sub_total ?? '0';
-                //     $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '-';
-                //     if ($kios['rc'] === '00'){
-                //         if (str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL')) {
-                //             $data->status = TransOrder::DONE;
-                //             $data->save();
-
-                //         }
-                //         if (str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES')) {
-                //             $data->status = TransOrder::DONE;
-                //             $data->save();
-
-                //         } else {
-                //             $data->status = TransOrder::DONE;
-                //             $data->save();
-
-                //         }
-                //         $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-                //             'data' => $kios
-                //         ]);
-                //         $data->save();
-                //         DB::commit();
-
-                //         return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
-
-                //     }
-                // }
-                else {
+                } else {
                     return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                 }
                 $data->payment()->update(['data' => $res_data]);
             }
-            log::info('Ke Sini?');
-
             DB::commit();
             return response()->json($res);
         } catch (\Throwable $th) {
-            log::info('ROLLBACK');
             DB::rollBack();
             return response()->json(['error' => (string) $th], 500);
         }
     }
-
 
     public function statusPaymentDD(Request $request, $id)
     {
