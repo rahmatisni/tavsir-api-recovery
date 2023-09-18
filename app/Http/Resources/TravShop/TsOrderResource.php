@@ -144,7 +144,7 @@ class TsOrderResource extends JsonResource
                         // if ( $temps['data'][$key] == 'Harga_kios'){
                         //     $temps['data'][$key] = 2;
                         // }
-                        unset( $temps['data'][$key]);
+                        // unset( $temps['data'][$key]);
 
                         // $temps['data'][$key] = $val;
 
