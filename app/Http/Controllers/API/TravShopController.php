@@ -1651,14 +1651,14 @@ class TravShopController extends Controller
                             // DB::commit();
                             // return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                         } else {
-                            // $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-                            //     'data' => $kios,
-                            //     'payment' => $kios,
+                            $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
+                                'data' => $kios,
+                                'payment' => $kios,
 
-                            // ]);
-                            // $data->status = TransOrder::PAYMENT_SUCCESS;
-                            // $data->save();
-                            // DB::commit();
+                            ]);
+                            $data->status = TransOrder::PAYMENT_SUCCESS;
+                            $data->save();
+                            DB::commit();
                             return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                         }
                     }
