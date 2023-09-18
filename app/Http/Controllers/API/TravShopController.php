@@ -1569,7 +1569,7 @@ class TravShopController extends Controller
                 $res_data['fee'] = $data_payment['fee'];
                 $res_data['bill'] = $data_payment['bill'];
                 $kios = [];
-                log::info($data->updated_at.'AWALNYA STATUSNYA INI '.$data->status);
+                log::info($data->updated_at.' INIT STATUSNYA INI '.$data->status);
                 if ($res_data['pay_status'] === '1' && $data->status === TransOrder::WAITING_PAYMENT) {
                     $data->status = TransOrder::PAYMENT_SUCCESS;
                     if ($data->order_type == TransOrder::POS) {
@@ -1577,7 +1577,7 @@ class TravShopController extends Controller
                     }
                     $data->save();
                     DB::commit();
-                    log::info($data->updated_at.'DIGANTI YA jadi '.$data->status);
+                    // log::info($data->updated_at.'DIGANTI YA jadi '.$data->status);
 
 
                     if ($data->order_type == TransOrder::ORDER_TRAVOY && $data->status != TransOrder::DONE) {
@@ -1656,10 +1656,10 @@ class TravShopController extends Controller
                             }
                             $data->save();
                             DB::commit();
-                            log::info($data->updated_at.'DIUPDATE JADI GINIYA'. $data->status);
+                            // log::info($data->updated_at.'DIUPDATE JADI GINIYA'. $data->status);
                             return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                         } else {
-                            log::info($data->updated_at.'SEMENTARA GINI'. $data->status);
+                            // log::info($data->updated_at.'SEMENTARA GINI'. $data->status);
                             $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                                 'data' => $kios,
                                 'payment' => $kios,
@@ -1679,7 +1679,7 @@ class TravShopController extends Controller
                 }
                 $data->payment()->update(['data' => $res_data]);
             }
-            log::info('MAMPIR GAN');
+            // log::info('MAMPIR GAN');
             DB::commit();
             return response()->json($res);
         } catch (\Throwable $th) {
