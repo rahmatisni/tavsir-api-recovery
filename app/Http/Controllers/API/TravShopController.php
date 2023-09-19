@@ -1668,7 +1668,9 @@ class TravShopController extends Controller
             return response()->json($res);
         } catch (\Throwable $th) {
             // DB::rollBack();
-            return response()->json(['error' => 'Coba Kembali'], 500);
+            return response()->json(['error' => (string) $th], 500);
+
+            // return response()->json(['error' => 'Coba Kembali'], 500);
         }
     }
 
