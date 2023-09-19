@@ -1161,7 +1161,7 @@ class TravShopController extends Controller
                         if (str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES')) {
                             $data->status = TransOrder::DONE;
                         } else {
-                            $data->status = TransOrder::DONE;
+                            $data->status = TransOrder::PAYMENT_SUCCESS;
                         }
                     }
 
@@ -1544,7 +1544,7 @@ class TravShopController extends Controller
                         $data->status = TransOrder::DONE;
                     }
                     $data->save();
-                    if ($data->order_type === TransOrder::ORDER_TRAVOY && $data->status !== TransOrder::DONE) {
+                    if ($data->order_type === TransOrder::ORDER_TRAVOY && $data->status === TransOrder::PAYMENT_SUCCESS) {
                         if ($data->description == 'single') {
                             $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
                             Log::info(['bayar depan => ', $kios]);
