@@ -45,6 +45,8 @@ class Kernel extends HttpKernel
             // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+
+            
         ],
     ];
 
@@ -68,5 +70,7 @@ class Kernel extends HttpKernel
         'client' => CheckClientCredentials::class,
         'is_admin' => \App\Http\Middleware\IsAdmin::class,
         'role' => \App\Http\Middleware\RoleMiddleware::class,
+        'customthrottle' => \App\Http\Middleware\CustomThrottleMiddleware::class,
+
     ];
 }

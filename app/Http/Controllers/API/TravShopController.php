@@ -58,7 +58,9 @@ class TravShopController extends Controller
         $this->stock_service = $stock_service;
         $this->trans_sharing_service = $trans_sharing_service;
         $this->kiosBankService = $kiosBankService;
+      
     }
+
 
 
     public function tableList(Request $request)
@@ -1136,6 +1138,7 @@ class TravShopController extends Controller
 
     public function statusPayment(Request $request, $id)
     {
+        
         $data = TransOrder::with('payment_method')->findOrfail($id);
         try {
             DB::beginTransaction();
@@ -1158,7 +1161,7 @@ class TravShopController extends Controller
                         if (str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES')) {
                             $data->status = TransOrder::DONE;
                         } else {
-                            $data->status = TransOrder::DONE;
+                            $data->status = TransOrder::PAYMENT_SUCCESS;
                         }
                     }
 
@@ -1335,20 +1338,12 @@ class TravShopController extends Controller
 
             $data_payment = $data->payment->data;
             if ($data->payment_method->code_name == 'pg_dd_bri') {
-                if (!$request->otp) {
-                    return response()->json([
-                        "message" => "The given data was invalid.",
-                        "errors" => [
-                            "otp" => [
-                                "The otp field is required."
-                            ]
-                        ]
-                    ], 422);
-                }
                 $payload = $data_payment;
-                $payload['otp'] = $request->otp;
                 $payload['submerchant_id'] = $data->sub_merchant_id;
-                $res = PgJmto::paymentDD($payload);
+                $payload['payrefnum'] = $data_payment['refnum'];
+                $res = PgJmto::statusDD($payload);
+                // $res = PgJmto::paymentDD($payload);
+
                 if ($res->successful()) {
                     $res = $res->json();
 
@@ -1360,8 +1355,6 @@ class TravShopController extends Controller
                             ]
                         ], 422);
                     }
-
-                    //Cek if pay_refnum null dianggap gagal
                     $is_dd_pg_success = $res['responseData']['pay_refnum'] ?? null;
                     if ($is_dd_pg_success == null) {
                         return response()->json([
@@ -1372,7 +1365,6 @@ class TravShopController extends Controller
                         ], 422);
                     }
 
-                    $res['responseData']['card_id'] = $request->card_id;
                     $respon = $res['responseData'];
                     if ($data->payment === null) {
                         $payment = new TransPayment();
@@ -1498,7 +1490,6 @@ class TravShopController extends Controller
                             ]
                         ], 422);
                     }
-
                     $res['responseData']['card_id'] = $payload['card_id'] ?? '';
                     $respon = $res['responseData'];
                     if ($data->payment === null) {
@@ -1544,13 +1535,16 @@ class TravShopController extends Controller
                 $res_data['bill'] = $data_payment['bill'];
                 $kios = [];
 
-                if ($res_data['pay_status'] == '1' && $data->status == TransOrder::WAITING_PAYMENT) {
-                    $data->status = TransOrder::PAYMENT_SUCCESS;
-                    if ($data->order_type == TransOrder::POS) {
+                if ($res_data['pay_status'] === '1') {
+                    if($data->status == TransOrder::WAITING_PAYMENT) {
+                        $data->status = TransOrder::PAYMENT_SUCCESS;
+                        $data->save();
+                    }
+                    if ($data->order_type === TransOrder::POS) {
                         $data->status = TransOrder::DONE;
                     }
                     $data->save();
-                    if ($data->order_type == TransOrder::ORDER_TRAVOY && $data->status != TransOrder::DONE) {
+                    if ($data->order_type === TransOrder::ORDER_TRAVOY && $data->status === TransOrder::PAYMENT_SUCCESS) {
                         if ($data->description == 'single') {
                             $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
                             Log::info(['bayar depan => ', $kios]);
@@ -1601,7 +1595,7 @@ class TravShopController extends Controller
                                     'payment' => $kios,
 
                                 ]);
-                                $data->status = TransOrder::READY;
+                                $data->status = TransOrder::PAYMENT_SUCCESS;
                                 $data->save();
                                 DB::commit();
                                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
@@ -1635,6 +1629,8 @@ class TravShopController extends Controller
         } catch (\Throwable $th) {
             // DB::rollBack();
             return response()->json(['error' => (string) $th], 500);
+
+            // return response()->json(['error' => 'Coba Kembali'], 500);
         }
     }
 

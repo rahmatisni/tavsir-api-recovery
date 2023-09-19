@@ -23,7 +23,7 @@ function rupiah($angka)
 function cleansings($angka)
 {
 
-    $variable = $str = ltrim($angka, "0"); 
+    $variable = $str = ltrim($angka, "0");
     ;
     return $variable;
 
@@ -60,14 +60,14 @@ class TsOrderResource extends JsonResource
                 $temps = $this->log_kiosbank->data;
                 $temps['data'] = [];
                 // $slice = ['harga_kios'];
-                $param = ['Admin_Bank', 'Total', 'Jumlah_Pembayaran','Angsuran','Materai', 'Pembelian_Token','PPJ','PPN','Rp_Stroom/token','Total_Pembayaran'];
+                $param = ['Admin_Bank', 'Total', 'Jumlah_Pembayaran', 'Angsuran', 'Materai', 'Pembelian_Token', 'PPJ', 'PPN', 'Rp_Stroom/token', 'Total_Pembayaran'];
                 $slice = ['Harga_kios'];
                 $cleansing = ['Daya', 'Jumlah_KWH'];
                 $minus = ['Diskon'];
 
                 // dd($temps);
                 foreach ($temp as $key => $val) {
-                   
+
                     $key = ucwords(preg_replace("/(?<=[a-zA-Z])(?=[A-Z])/", "_", $key));
                     switch ($key) {
                         case ($key == "A_B"):
@@ -127,33 +127,30 @@ class TsOrderResource extends JsonResource
                         default:
                             $key = $key;
                     }
-                 
-                    if (in_array($key, $param)) {
-                        // $temps['data'][$key] = 1;
-                        $temps['data'][$key] = rupiah((int) $val);
-                    } 
-                    elseif (in_array($key, $minus)) {
-                        // $temps['data'][$key] = '-'.rupiah((int) $val);
-                    } 
-                    elseif (in_array($key, $slice)) {
-                    } 
-                 elseif (in_array($key, $cleansing)) {
-                    $temps['data'][$key] = cleansings($val);
-                }
-                    else {
-                        // if ( $temps['data'][$key] == 'Harga_kios'){
-                        //     $temps['data'][$key] = 2;
-                        // }
-                        $temps['data'][$key] = $val;
 
+                    if (in_array($key, $param)) {
+                        $temps['data'][$key] = rupiah((int) $val);
+                    } elseif (in_array($key, $minus)) {
+                    } elseif (in_array($key, $slice)) {
+                    } elseif (in_array($key, $cleansing)) {
+                        $temps['data'][$key] = cleansings($val);
+                    }
+                  
+                     else {
+                   
+                        $temps['data'][$key] = $val;
                     }
                 }
             }
-            // if (!$temps['data']['Diskon'])
-            // {
-                $temps['data']['Diskon'] = '-'.rupiah((int) $this->discount);
-            // }
-
+            
+                
+            $temps['data']['Diskon'] = '-' . rupiah((int) $this->discount);
+            unset($temps['sessionID']);
+            unset($temps['customerID']);
+            unset($temps['merchantID']);
+            unset($temps['referenceID']);
+            unset($temps['productID']);
+            unset($temps['diskon']);
 
             $rest_area_name = 'Travoy';
             $tenant_name = 'Multibiller';
