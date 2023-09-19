@@ -246,7 +246,7 @@ Route::prefix('travshop')->group(function () {
 });
 
 Route::middleware('customthrottle:1,5')->group(function () {
-    Route::get('/payment-status/{id}', [App\Http\Controllers\API\TravShopController::class, 'statusPayment']);
+    Route::get('/travshop/payment-status/{id}', [App\Http\Controllers\API\TravShopController::class, 'statusPayment']);
 });
 
 Route::get('/card', [App\Http\Controllers\API\CardController::class, 'index']);
