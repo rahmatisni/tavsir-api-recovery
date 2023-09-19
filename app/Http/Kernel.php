@@ -71,6 +71,8 @@ class Kernel extends HttpKernel
         'is_admin' => \App\Http\Middleware\IsAdmin::class,
         'role' => \App\Http\Middleware\RoleMiddleware::class,
         'customthrottle' => \App\Http\Middleware\CustomThrottleMiddleware::class,
+        'customRateLimit' => \App\Http\Middleware\CustomRateLimitMiddleware::class,
+
 
     ];
 }
