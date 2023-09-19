@@ -66,7 +66,7 @@ class RouteServiceProvider extends ServiceProvider
     {
 
         RateLimiter::for('api/travshop/payment-status/{id}', function (Request $request, $id) {
-            return Limit::perSecond(5)->by(optional($id));
+            return Limit::perSecond(1)->by(optional($id));
         });
 
         RateLimiter::for('api', function (Request $request) {
