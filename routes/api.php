@@ -234,12 +234,6 @@ Route::prefix('travshop')->group(function () {
     Route::get('/payment-order/{id}', [App\Http\Controllers\API\TravShopController::class, 'paymentByOrderId']);
     // Route::get('/payment-status/{id}', [App\Http\Controllers\API\TravShopController::class, 'statusPayment']);
 
-  
-    Route::middleware('customthrottle:1,5')->group(function () {
-        Route::get('/payment-status/{id}', [App\Http\Controllers\API\TravShopController::class, 'statusPayment']);
-    });
-    
-
     Route::get('/payment-status-manual/{id}', [App\Http\Controllers\API\TravShopController::class, 'statusPaymentManual']);
     Route::get('/payment-status-dd/{id}', [App\Http\Controllers\API\TravShopController::class, 'statusPaymentDD']);
 
@@ -251,6 +245,9 @@ Route::prefix('travshop')->group(function () {
     Route::post('/order-verification/{id}', [App\Http\Controllers\API\TravShopController::class, 'verifikasiOrder']);
 });
 
+Route::middleware('customthrottle:1,5')->group(function () {
+    Route::get('/payment-status/{id}', [App\Http\Controllers\API\TravShopController::class, 'statusPayment']);
+});
 
 Route::get('/card', [App\Http\Controllers\API\CardController::class, 'index']);
 Route::post('/card', [App\Http\Controllers\API\CardController::class, 'bind']);
