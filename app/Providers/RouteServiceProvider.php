@@ -64,8 +64,14 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function configureRateLimiting()
     {
+
+        RateLimiter::for('api/travshop/payment-status/{id}', function (Request $request, $id) {
+            return Limit::perSecond(5)->by(optional($id));
+        });
+
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(240)->by(optional($request->user())->id ?: $request->ip());
         });
+        
     }
 }

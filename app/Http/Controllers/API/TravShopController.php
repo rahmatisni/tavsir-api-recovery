@@ -1138,6 +1138,7 @@ class TravShopController extends Controller
 
     public function statusPayment(Request $request, $id)
     {
+        
         $data = TransOrder::with('payment_method')->findOrfail($id);
         try {
             DB::beginTransaction();
