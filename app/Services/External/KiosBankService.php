@@ -519,7 +519,7 @@ class KiosBankService
         $order->status = TransOrder::WAITING_PAYMENT;
 
         $product = ProductKiosBank::where('kode', $data['code'])->first();
-        if($product->integrator == 'JATELINDO')
+        if($product?->integrator == 'JATELINDO')
         {
             $res_jatelindo = JatelindoService::inquiry($data['phone'], $product)->json();
             if(($res_jatelindo['bit39'] ?? '') == '00'){
