@@ -5,11 +5,8 @@ namespace App\Services\External;
 use App\Models\Constanta\PLNAREA;
 use App\Models\KiosBank\ProductKiosBank;
 use App\Models\Product;
-use App\Models\KiosBank\ProductKiosBank;
-use App\Models\Product;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Log;
 
 class JatelindoService
