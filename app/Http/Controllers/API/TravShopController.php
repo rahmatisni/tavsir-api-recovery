@@ -441,8 +441,8 @@ class TravShopController extends Controller
 
             DB::commit();
             $data = TransOrder::findOrfail($data->id);
-            return ('oke');
-            // return response()->json(new TsOrderResource($data));
+            // return ('oke');
+            return response()->json(new TsOrderResource($data));
         } catch (\Throwable $th) {
             DB::rollback();
             return response()->json(['error' => $th->getMessage()], 500);
