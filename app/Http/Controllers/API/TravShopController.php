@@ -434,7 +434,7 @@ class TravShopController extends Controller
             $data->fee = env('PLATFORM_FEE');
             $data->sub_total = $sub_total;
             $data->total = $data->sub_total + $data->fee + $data->service_fee + $data->addon_total;
-            // $data->status = TransOrder::WAITING_CONFIRMATION_TENANT;
+            $data->status = TransOrder::WAITING_PAYMENT;
             $data->save();
 
             DB::commit();
@@ -443,7 +443,7 @@ class TravShopController extends Controller
             return response()->json(new TsOrderResource($data));
         } catch (\Throwable $th) {
             DB::rollback();
-            return response()->json(['error' => $th->getMessage()], 500);
+            return response()->json(['error' => 'Format Data Salah'], 500);
         }
     }
 
