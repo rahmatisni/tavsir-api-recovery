@@ -395,6 +395,60 @@ class TravShopController extends Controller
         }
     }
 
+    public function derekOrder(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+            $data = new TransOrder;
+            $tenant = Tenant::find($request->tenant_id);
+            // dd($tenant);
+            $data->order_type = TransOrder::ORDER_DEREK_ONLINE;
+            // $data->order_id = ($tenant->rest_area_id ?? '0') . '-' . ($tenant->id ?? '0') . '-DO-' . date('YmdHis');
+            $data->order_id = $request->order_id;
+            $data->rest_area_id = $tenant->rest_area_id;
+            $data->tenant_id = $request->tenant_id;
+            $data->business_id = $tenant->business_id;
+            $data->customer_id = $request->customer_id;
+            $data->customer_name = $request->customer_name;
+            $data->customer_phone = $request->customer_phone;
+            $data->merchant_id = $tenant->merchant_id;
+            $data->sub_merchant_id = $tenant->sub_merchant_id;
+            $data->sub_total = $request->sub_total;
+
+            $data->save();
+
+            $sub_total = $request->sub_total;
+
+            $extra_price = ExtraPrice::byTenant($data->tenant_id)->aktif()->get();
+            foreach ($extra_price as $value) {
+                $addon = new AddonPrice();
+                $addon->trans_order_id = $data->id;
+                $addon->name = $value->name;
+                $addon->price = $value->price;
+                if ($value->is_percent == 1) {
+                    $addon->price = ($sub_total * $value->price) / 100;
+                }
+
+                $addon->save();
+                $data->addon_total += $addon->price;
+            }
+
+            $data->fee = env('PLATFORM_FEE');
+            $data->sub_total = $sub_total;
+            $data->total = $data->sub_total + $data->fee + $data->service_fee + $data->addon_total;
+            // $data->status = TransOrder::WAITING_CONFIRMATION_TENANT;
+            $data->save();
+
+            DB::commit();
+            $data = TransOrder::findOrfail($data->id);
+            return ('oke');
+            // return response()->json(new TsOrderResource($data));
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return response()->json(['error' => $th->getMessage()], 500);
+        }
+    }
+
 
     public function orderByMeja($id, Request $request)
     {

@@ -32,6 +32,9 @@ class TransOrder extends BaseModel
     public const POS = 'POS';
     public const ORDER_TRAVOY = 'ORDER_TRAVOY';
 
+    public const ORDER_DEREK_ONLINE = 'DEREK_ORDER';
+
+
     public const DINE_IN = 'dine_in';
     public const TAKE_AWAY = 'take_away';
 
