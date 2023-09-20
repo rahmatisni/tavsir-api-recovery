@@ -23,7 +23,7 @@ class CreateRefProductKiosBankTable extends Migration
             $table->string('harga')->nullable();
             $table->timestamps();
             $table->unsignedInteger('is_active')->nullable();
-
+            $table->string('integrator')->nullable();
         });
     }
 
