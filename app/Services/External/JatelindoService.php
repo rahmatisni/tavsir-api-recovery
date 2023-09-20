@@ -160,6 +160,11 @@ class JatelindoService
                 $message = 'TRANSAKSI GAGAL';
                 break;
             
+            case '34':
+                $keterangan = 'Tagihan Sudah Lunas';
+                $message = 'TRANSAKSI SUKSES';
+                break;
+            
             case '47':
                 $keterangan = 'TOTAL KWH MELEBIHI BATAS MAKSIMUM';
                 $message = 'TOTAL KWH MELEBIHI BATAS MAKSIMUM';

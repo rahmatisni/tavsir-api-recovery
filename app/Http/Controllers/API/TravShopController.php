@@ -1634,7 +1634,8 @@ class TravShopController extends Controller
                             if($data->productKiosbank()->integrator == 'JATELINDO')
                             {
                                 $result_jatelindo = JatelindoService::purchase($data->log_kiosbank->data ?? [])->json();
-                                if(($result_jatelindo['bit39'] ?? '') == '00'){
+                                $rc = $result_jatelindo['bit39'] ?? '';
+                                if($rc == '00' || $rc == '34'){
                                     //return token listrik
                                     $data->status = TransOrder::DONE;
                                     $data->save();
@@ -1645,7 +1646,6 @@ class TravShopController extends Controller
                                     return response()->json(['token' => $result_jatelindo['bit62']]);
                                 }
                                 return response()->json(['status' => 422, 'data' => JatelindoService::responseTranslation($result_jatelindo)], 422);
-
                             }
                             $tagihan = $datalog['data']['data']['tagihan'] ?? $datalog['data']['data']['harga_kios'];
                             $admin = $datalog['data']['data']['adminBank'] ?? $datalog['data']['data']['AB'] ?? '000000000000';
