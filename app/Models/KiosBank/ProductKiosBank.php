@@ -17,4 +17,10 @@ class ProductKiosBank extends BaseModel
         'harga',
         'is_active'
     ];
+
+    public function getBasePriceAttribute()
+    {
+        $convert = (int) preg_replace("/[^0-9]/", '', $this->name);
+        return $convert;
+    }
 }
