@@ -222,6 +222,16 @@ class KiosBankService
                         if ($value == $v->kode) {
                             $v->status = true;
                         }
+
+                        if($v?->integrator == 'JATELINDO')
+                        {
+                            $v->status = true;
+                        }
+
+                        if($v?->integrator == 'JATELINDO')
+                        {
+                            $v->status = true;
+                        }
                     }
                 }
 
@@ -508,6 +518,23 @@ class KiosBankService
         $order->description = 'dual';
         $order->status = TransOrder::WAITING_PAYMENT;
 
+        $product = ProductKiosBank::where('kode', $data['code'])->first();
+        if($product?->integrator == 'JATELINDO')
+        {
+            $res_jatelindo = JatelindoService::inquiry($data['phone'], $product)->json();
+            if(($res_jatelindo['bit39'] ?? '') == '00'){
+                $order->sub_total = $product->base_price + ($product->harga ?? 0);
+                $order->total = $order->sub_total + $order->fee;
+                $order->save();
+                $order->log_kiosbank()->updateOrCreate(['trans_order_id' => $order->id], [
+                    'data' => $res_jatelindo
+                ]);
+                return ['code' => 200, 'data' => $order];
+            }else{
+                return ['code' => 422, 'data' => JatelindoService::responseTranslation($res_jatelindo)];
+            }
+        }
+
         $ref = explode('-', $order->order_id);
         $payload = [
             'sessionID' => $this->getSeesionId(),
@@ -527,6 +554,7 @@ class KiosBankService
         clock()->event('inquiry kios')->color('purple')->begin();
 
         try{
+       
         $res_json = $this->http('POST', self::INQUIRY, $payload);
     } catch (\Throwable $th) {
         // dd($th instanceof \Exception);

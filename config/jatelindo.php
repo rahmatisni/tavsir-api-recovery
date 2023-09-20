@@ -19,5 +19,5 @@ return [
     'bit_18' => env('JPA_BIT_18', '6012'),
     'bit_32' => env('JPA_BIT_32', '008'),
     'bit_41' => env('JPA_BIT_41', 'DEVJMT01'),
-    'bit_42' => env('JPA_BIT_41', '200900100800000')
+    'bit_42' => env('JPA_BIT_42', '200900100800000')
 ];
