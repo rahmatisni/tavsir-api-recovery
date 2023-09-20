@@ -569,16 +569,6 @@ class TravShopController extends Controller
     public function orderById($id)
     {
         $data = TransOrder::findOrfail($id);
-        if ($data->order_type == TransOrder::ORDER_TRAVOY) {
-            $product_kios = ProductKiosBank::select(
-                'kategori',
-                'sub_kategori',
-                'kode',
-                'name'
-            )->get();
-            $data->getProductKios = $product_kios;
-        }
-
         return response()->json(new TsOrderResource($data));
     }
 
