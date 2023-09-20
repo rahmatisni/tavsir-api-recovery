@@ -56,9 +56,9 @@ class JatelindoService
         $result = Http::withOptions([
             'proxy' => '172.16.4.58:8090'
         ])->post(config('jatelindo.url'), $payload);
-
+    
         Log::info([
-            'status' => self::responseTranslation($result->json()['bit39'] ?? '')?->keterangan,
+            'status' => self::responseTranslation($result->json())?->keterangan,
             'action' => 'Inquiry',
             'payload' => $payload,
             'respons' => $result->json(),
@@ -91,7 +91,7 @@ class JatelindoService
         ])->post(config('jatelindo.url'), $payload);
 
         Log::info([
-            'status' => self::responseTranslation($result->json()['bit39'] ?? '')?->keterangan,
+            'status' => self::responseTranslation($result->json())?->keterangan,
             'action' => 'Purchase',
             'payload' => $payload,
             'respons' => $result->json(),
@@ -212,5 +212,26 @@ class JatelindoService
         }
 
         return (object) array('kode' => $bit39, 'keterangan' => $keterangan, 'message' => $message);
+    }
+
+
+    public static function infoPelanggan(string $bit_48){
+
+        // $flag = substr($bit_48, 19, 1);
+        return [
+            // 'bit_48' => $bit_48,
+            // 'switcher_id' => substr($bit_48 , 0, 7),
+            // 'pelanggan_id' => $flag == 1 ? substr($bit_48, 7, 12) : '000000000000',
+            'meter_id' => substr($bit_48, 7, 11),
+            // 'flag' => $flag,
+            // 'id_transaksi' => substr($bit_48, 20, 32),
+            // 'ref_number' => substr($bit_48, 52, 32),
+            // 'vending_number' => substr($bit_48, 84, 8),
+            'nama_pelanggan' => substr($bit_48, 95, 25),
+            'tarif' => substr($bit_48, 120, 4),
+            'daya' => substr($bit_48, 124, 9),
+            // 'token_unsold_1' => '',
+            // 'token_unsold_2' => '',
+        ];
     }
 }

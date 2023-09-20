@@ -4,6 +4,7 @@ namespace App\Http\Resources\TravShop;
 
 use App\Models\KiosBank\ProductKiosBank;
 use App\Models\TransOrder;
+use App\Services\External\JatelindoService;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Collection;
 
@@ -40,19 +41,26 @@ class TsOrderResource extends JsonResource
 
     public function toArray($request)
     {
-
         $product_kios = null;
         $rest_area_name = $this->rest_area?->name ?? null;
         $tenant_name = $this->tenant->name ?? null;
         if ($this->order_type == TransOrder::ORDER_TRAVOY) {
             $product = explode('-', $this->order_id);
+            $product_kios_bank = $this->productKiosbank();
 
-            $product_kios = $this->getProductKios->where('kode', $product[0])->first();
-
-            if ($product_kios) {
-                $product_kios = $product_kios->toArray();
+            if ($product_kios_bank) {
+                $product_kios = $product_kios_bank->only([
+                    'kategori',
+                    'sub_kategori',
+                    'kode',
+                    'name'
+                ]);
                 $product_kios['handphone'] = $product[1];
-                $product_kios['token'] = $this->log_kiosbank->data['bit62'] ?? '';
+                if($product_kios_bank->integrator == 'JATELINDO'){
+                    unset($product_kios['handphone']);
+                    $product_kios = array_merge($product_kios, JatelindoService::infoPelanggan($this->log_kiosbank->data['bit48'] ?? ''));
+                    $this->status == TransOrder::DONE ? $product_kios['token'] = ( $this->log_kiosbank->data['bit62'] ?? '') : '';
+                }
             }
             $temp = $this->log_kiosbank?->data['data'] ?? null;
 

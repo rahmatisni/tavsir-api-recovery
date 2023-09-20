@@ -531,7 +531,7 @@ class KiosBankService
                 ]);
                 return ['code' => 200, 'data' => $order];
             }else{
-                return ['code' => 422, 'data' => JatelindoService::responseTranslation($res_jatelindo)];
+                return ['code' => 422, 'data' => JatelindoService::responseTranslation($res_jatelindo), 422];
             }
         }
 
