@@ -1401,8 +1401,6 @@ class TravShopController extends Controller
                     DB::commit();
                 }
                 if ($data->order_type == TransOrder::ORDER_DEREK_ONLINE) {
-
-                    $payment = $data->payment->data;
                     $travoy = $this->travoyService->detailDerek($id, $request->id_user, $request->token);
                     return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ??'']);    
 
@@ -1717,10 +1715,9 @@ class TravShopController extends Controller
                     }
 
                     if ($data->order_type == TransOrder::ORDER_DEREK_ONLINE) {
-                        $travoy = $this->travoyService->detailDerek($id, $request->id_user, $request->token);
                         $data->status = TransOrder::PAYMENT_SUCCESS;
                         $data->save();
-                        
+                        $travoy = $this->travoyService->detailDerek($id, $request->id_user, $request->token);
                         return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ??'']);    
                              
                     }
