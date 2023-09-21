@@ -21,7 +21,7 @@ class TravoyService
 
     function __construct()
     {
-        $this->baseUrl = '10.14.3.58';
+        $this->baseUrl = 'http://10.14.3.58:3000';
     }
     function http($method, $path, $payload = [])
     {
@@ -48,17 +48,20 @@ class TravoyService
         curl_close($curl);
 
         $res = json_decode($response);
+
         unset($res->data);
         return $res;
 
     }
     public function detailDerek($id, $id_user, $token)
     {
+
         $payLoad = [
             'trans_id' => $id,
             'idUser' => $id_user,
             'token' => $token
         ];
+
         
         $res_json = $this->http('GET', self::detilDerek, $payLoad);
 
