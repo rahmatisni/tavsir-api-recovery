@@ -167,13 +167,11 @@ class KiosBankController extends Controller
             return response()->json(['message' => 'Silahkan Coba Kembali', 'errors' => 'Silahkan Coba Kembali'], 500);
         }
 
-        if ($data['rc']) {
+        if (isset($data['rc'])) {
             return response()->json(['message' => $data['description'], 'errors' => $data['description']], 422);
         }
 
-
-
-        return response()->json($data);
+        return response()->json($data['data'] ?? $data, $data['code'] ?? 200);
     }
 
     public function getSubKategoriProduct()

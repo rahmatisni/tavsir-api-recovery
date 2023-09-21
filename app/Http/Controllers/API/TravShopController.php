@@ -33,6 +33,7 @@ use App\Models\TransOrder;
 use App\Models\TransOrderDetil;
 use App\Models\TransPayment;
 use App\Models\Voucher;
+use App\Services\External\JatelindoService;
 use App\Models\NumberTable;
 use App\Services\External\KiosBankService;
 use App\Services\StockServices;
@@ -43,9 +44,6 @@ use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
-
-
-
 
 class TravShopController extends Controller
 {
@@ -436,16 +434,16 @@ class TravShopController extends Controller
             $data->fee = env('PLATFORM_FEE');
             $data->sub_total = $sub_total;
             $data->total = $data->sub_total + $data->fee + $data->service_fee + $data->addon_total;
-            // $data->status = TransOrder::WAITING_CONFIRMATION_TENANT;
+            $data->status = TransOrder::WAITING_PAYMENT;
             $data->save();
 
             DB::commit();
             $data = TransOrder::findOrfail($data->id);
-            return ('oke');
-            // return response()->json(new TsOrderResource($data));
+            // return ('oke');
+            return response()->json(new TsOrderResource($data));
         } catch (\Throwable $th) {
             DB::rollback();
-            return response()->json(['error' => $th->getMessage()], 500);
+            return response()->json(['error' => 'Format Data Salah'], 500);
         }
     }
 
@@ -571,16 +569,7 @@ class TravShopController extends Controller
     public function orderById($id)
     {
         $data = TransOrder::findOrfail($id);
-        if ($data->order_type == TransOrder::ORDER_TRAVOY) {
-            $product_kios = ProductKiosBank::select(
-                'kategori',
-                'sub_kategori',
-                'kode',
-                'name'
-            )->get();
-            $data->getProductKios = $product_kios;
-        }
-
+        // dd($data);
         return response()->json(new TsOrderResource($data));
     }
 
@@ -766,13 +755,17 @@ class TravShopController extends Controller
             }
             //Cek deposit
             if ($data->order_type == TransOrder::ORDER_TRAVOY) {
-                $deposit = $this->kiosBankService->cekDeposit();
-                if ($deposit['rc'] == '00') {
-                    if ((int) $deposit['deposit'] < $data->sub_total) {
-                        return response()->json(['info' => 'Deposit ' . $deposit['deposit'] . ' < ' . $data->sub_total], 422);
+                $cekProduct = ProductKiosBank::where('kode', $data->codeProductKiosbank())->first();
+                //Skip jika jatelindo
+                if($cekProduct?->integrator != 'JATELINDO'){
+                    $deposit = $this->kiosBankService->cekDeposit();
+                    if ($deposit['rc'] == '00') {
+                        if ((int) $deposit['deposit'] < $data->sub_total) {
+                            return response()->json(['info' => 'Deposit ' . $deposit['deposit'] . ' < ' . $data->sub_total], 422);
+                        }
+                    } else {
+                        return response()->json(['info' => 'Deposit ', 'data' => $deposit], 422);
                     }
-                } else {
-                    return response()->json(['info' => 'Deposit ', 'data' => $deposit], 422);
                 }
             }
 
@@ -782,6 +775,26 @@ class TravShopController extends Controller
             $payment_method = PaymentMethod::find($request->payment_method_id);
             if ($data->order_type != TransOrder::ORDER_TRAVOY) {
                 $data->total = $data->sub_total + $data->addon_total + $data->fee;
+
+                 //Cek stok
+                $error = [];
+                foreach ($data->detil as $value) {
+                    if ($value->product) {
+                        if ($value->product->stock < $value->qty) {
+                            $error['product'][] = $value->qty . ' qty order ' . $value->product->name . ' is invalid. stock available is ' . $value->product->stock;
+                        }
+
+                        if (!$value->product->is_active) {
+                            $error['product'][] = $value->product->name . ' is not active';
+                        }
+                    } else {
+                        $error[]['Product '] = 'Product not available';
+                    }
+                }
+
+                if (count($error) > 0) {
+                    throw ValidationException::withMessages($error);
+                }
             }
             switch ($payment_method->code_name) {
                 case 'pg_va_mandiri':
@@ -1200,6 +1213,10 @@ class TravShopController extends Controller
                 $kios = [];
                 if ($data->order_type == TransOrder::ORDER_TRAVOY) {
 
+                    if($data->productKiosbank()->integrator == 'JATELINDO'){
+                        return response()->json(['token' => $data->log_kiosbank->data['bit62'] ?? '']);
+                    }
+
                     $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
                     $adminBank = $datalog['data']['data']['adminBank'] ?? '000000000000';
                     $refid = $datalog['data']['referenceID'];
@@ -1234,8 +1251,9 @@ class TravShopController extends Controller
                     //     // }
                     // }
 
-                    $rc_coll = array('2', '10', '12', '15', '17', '18', '27', '34', '37', '40', '41', '42', '46', '60', '61', '62', '64', '65', '68', '69', '70', '72', '73', '74', '75', '78', '79', '80', '83', '85', '86');
+                    // $rc_coll = array('2', '10', '12', '15', '17', '18', '27', '34', '37', '40', '41', '42', '46', '60', '61', '62', '64', '65', '68', '69', '70', '72', '73', '74', '75', '78', '79', '80', '83', '85', '86');
 
+                    $rc_coll = array('2', '10', '12', '15', '17', '18', '27', '34', '37', '40', '41', '42', '46', '60', '62', '64', '65', '68', '69', '70', '72', '73', '74', '75', '78', '79', '80', '83', '85', '86');
 
                     // $rc_coll = array('9999');
 
@@ -1605,6 +1623,22 @@ class TravShopController extends Controller
                         }
                         if ($data->description == 'dual') {
                             $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
+                            if($data->productKiosbank()->integrator == 'JATELINDO')
+                            {
+                                $result_jatelindo = JatelindoService::purchase($data->log_kiosbank->data ?? [])->json();
+                                $rc = $result_jatelindo['bit39'] ?? '';
+                                if($rc == '00' || $rc == '34'){
+                                    //return token listrik
+                                    $data->status = TransOrder::DONE;
+                                    $data->save();
+                                    $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
+                                        'data' => $result_jatelindo
+                                    ]);
+                                    DB::commit();
+                                    return response()->json(['token' => $result_jatelindo['bit62']]);
+                                }
+                                return response()->json(['status' => 422, 'data' => JatelindoService::responseTranslation($result_jatelindo)], 422);
+                            }
                             $tagihan = $datalog['data']['data']['tagihan'] ?? $datalog['data']['data']['harga_kios'];
                             $admin = $datalog['data']['data']['adminBank'] ?? $datalog['data']['data']['AB'] ?? '000000000000';
                             $total = $datalog['data']['data']['total'] ?? $datalog['data']['data']['harga_kios'] ?? $tagihan;
@@ -1733,7 +1767,8 @@ class TravShopController extends Controller
                     //     // }
                     // }
 
-                    $rc_coll = array('2', '10', '12', '15', '17', '18', '27', '34', '37', '40', '41', '42', '46', '60', '61', '62', '64', '65', '68', '69', '70', '72', '73', '74', '75', '78', '79', '80', '83', '85', '86');
+                    // $rc_coll = array('2', '10', '12', '15', '17', '18', '27', '34', '37', '40', '41', '42', '46', '60', '61', '62', '64', '65', '68', '69', '70', '72', '73', '74', '75', '78', '79', '80', '83', '85', '86');
+                    $rc_coll = array('2', '10', '12', '15', '17', '18', '27', '34', '37', '40', '41', '42', '46', '60', '62', '64', '65', '68', '69', '70', '72', '73', '74', '75', '78', '79', '80', '83', '85', '86');
 
 
                     // $rc_coll = array('9999');
@@ -2224,7 +2259,8 @@ class TravShopController extends Controller
                     //     // }
                     // }
 
-                    $rc_coll = array('2', '10', '12', '15', '17', '18', '27', '34', '37', '40', '41', '42', '46', '60', '61', '62', '64', '65', '68', '69', '70', '72', '73', '74', '75', '78', '79', '80', '83', '85', '86', '19');
+                    // $rc_coll = array('2', '10', '12', '15', '17', '18', '27', '34', '37', '40', '41', '42', '46', '60', '61', '62', '64', '65', '68', '69', '70', '72', '73', '74', '75', '78', '79', '80', '83', '85', '86', '19');
+                    $rc_coll = array('2', '10', '12', '15', '17', '18', '27', '34', '37', '40', '41', '42', '46', '60', '62', '64', '65', '68', '69', '70', '72', '73', '74', '75', '78', '79', '80', '83', '85', '86');
 
 
                     // $rc_coll = array('9999');

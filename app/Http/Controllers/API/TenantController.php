@@ -33,7 +33,7 @@ class TenantController extends Controller
     public function store(TenantRequest $request)
     {
         $data = new Tenant();
-        $data->fill($request->all());
+        $data->fill($request->validated());
         $data->save();
 
         $saldo = new TransSaldo();
