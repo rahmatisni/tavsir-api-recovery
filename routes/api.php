@@ -248,7 +248,7 @@ Route::prefix('travshop')->group(function () {
 });
 
 
-Route::middleware('customRateLimit:key,120,10')->group(function () {
+Route::middleware('customRateLimit:key,1,10')->group(function () {
     Route::get('/travshop/payment-status/{id}', [App\Http\Controllers\API\TravShopController::class, 'statusPayment']);
 });
 

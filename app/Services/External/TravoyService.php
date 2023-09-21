@@ -21,7 +21,7 @@ class TravoyService
 
     function __construct()
     {
-        $this->baseUrl = 'http://10.14.3.58:3000';
+        $this->baseUrl = env('TRAVOY_URL');
     }
     function http($method, $path, $payload = [])
     {
