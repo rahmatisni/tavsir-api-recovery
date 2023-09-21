@@ -1718,7 +1718,7 @@ class TravShopController extends Controller
                         $data->status = TransOrder::PAYMENT_SUCCESS;
                         $data->save();
                         $travoy = $this->travoyService->detailDerek($id, $request->id_user, $request->token);
-                        return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ??'']);    
+                        return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoyx' => $travoy ??'']);    
                              
                     }
                     foreach ($data->detil as $key => $value) {
