@@ -36,6 +36,7 @@ use App\Models\Voucher;
 use App\Services\External\JatelindoService;
 use App\Models\NumberTable;
 use App\Services\External\KiosBankService;
+use App\Services\External\TravoyService;
 use App\Services\StockServices;
 use App\Services\TransSharingServices;
 use Illuminate\Support\Facades\DB;
@@ -50,12 +51,14 @@ class TravShopController extends Controller
     protected $stock_service;
     protected $trans_sharing_service;
     protected $kiosBankService;
+    protected $travoyService;
 
-    public function __construct(StockServices $stock_service, TransSharingServices $trans_sharing_service, KiosBankService $kiosBankService)
+    public function __construct(StockServices $stock_service, TransSharingServices $trans_sharing_service, KiosBankService $kiosBankService, TravoyService $travoyService)
     {
         $this->stock_service = $stock_service;
         $this->trans_sharing_service = $trans_sharing_service;
         $this->kiosBankService = $kiosBankService;
+        $this->travoyService = $travoyService;
       
     }
 
@@ -1205,8 +1208,8 @@ class TravShopController extends Controller
 
     public function statusPayment(Request $request, $id)
     {
-        
         $data = TransOrder::with('payment_method')->findOrfail($id);
+
         try {
             DB::beginTransaction();
             if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::DONE || $data->status == TransOrder::READY) {
@@ -1396,6 +1399,13 @@ class TravShopController extends Controller
                     ]);
                     $data->save();
                     DB::commit();
+                }
+                if ($data->order_type == TransOrder::ORDER_DEREK_ONLINE) {
+
+                    $payment = $data->payment->data;
+                    $travoy = $this->travoyService->detailDerek($id, $request->id_user, $request->token);
+                    return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ??'']);    
+
                 }
                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
             }
@@ -1601,6 +1611,7 @@ class TravShopController extends Controller
                 $data->sub_merchant_id
 
             );
+
             if ($res['status'] == 'success') {
                 $res_data = $res['responseData'];
                 $res_data['fee'] = $data_payment['fee'];
@@ -1703,6 +1714,12 @@ class TravShopController extends Controller
                             DB::commit();
                             return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                         }
+                    }
+
+                    if ($data->order_type == TransOrder::ORDER_DEREK_ONLINE) {
+                        $travoy = $this->travoyService->detailDerek($id, $request->id_user, $request->token);
+                        return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ??'']);   
+                         
                     }
                     foreach ($data->detil as $key => $value) {
                         $this->stock_service->updateStockProduct($value);
