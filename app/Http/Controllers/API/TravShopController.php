@@ -1617,7 +1617,7 @@ class TravShopController extends Controller
                 $kios = [];
 
                 if ($res_data['pay_status'] === '1') {
-                    if($data->status == TransOrder::WAITING_PAYMENT) {
+                    if($data->status === TransOrder::WAITING_PAYMENT) {
                         $data->status = TransOrder::PAYMENT_SUCCESS;
                         $data->save();
                     }
@@ -1715,8 +1715,8 @@ class TravShopController extends Controller
                     }
 
                     if ($data->order_type === TransOrder::ORDER_DEREK_ONLINE) {
-                        $data->status = TransOrder::PAYMENT_SUCCESS;
-                        $data->save();
+                        // $data->status = TransOrder::PAYMENT_SUCCESS;
+                        // $data->save();
                         $travoy = $this->travoyService->detailDerek($id, $request->id_user, $request->token);
                         return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoyx' => $travoy ??'']);    
                              
