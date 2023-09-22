@@ -1535,6 +1535,13 @@ class TravShopController extends Controller
                     }
                     $data->save();
                     //Cek Payment kios
+                    if ($data->order_type === TransOrder::ORDER_DEREK_ONLINE) {
+                        $data->save();
+                        DB::commit();
+
+                        $travoy = $this->travoyService->detailDerek($id, $request->id_user, $request->token);
+                        return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
+                    }
                     if ($data->order_type == TransOrder::ORDER_TRAVOY && $data->status != TransOrder::DONE) {
                         if ($data->description == 'single') {
                             $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
@@ -1604,6 +1611,7 @@ class TravShopController extends Controller
                             return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                         }
                     }
+                    
                     //End payment kios
                     foreach ($data->detil as $key => $value) {
                         $this->stock_service->updateStockProduct($value);
