@@ -1204,10 +1204,11 @@ class TravShopController extends Controller
 
 
 
-    public function payKios($data, $id) {
+    public function payKios($data, $id)
+    {
 
         DB::beginTransaction();
-        $kios= [];
+        $kios = [];
 
         if ($data->description == 'single') {
             $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
@@ -1305,7 +1306,7 @@ class TravShopController extends Controller
             DB::beginTransaction();
             if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::DONE || $data->status == TransOrder::READY) {
                 $kios = [];
-                if ($data->order_type == TransOrder::ORDER_TRAVOY) {
+                if ($data->order_type == TransOrder::ORDER_TRAVOY && $data->status != TransOrder::DONE) {
 
                     if ($data->productKiosbank()->integrator == 'JATELINDO') {
                         return response()->json(['token' => $data->log_kiosbank->data['bit62'] ?? '']);
@@ -1611,7 +1612,7 @@ class TravShopController extends Controller
                             return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                         }
                     }
-                    
+
                     //End payment kios
                     foreach ($data->detil as $key => $value) {
                         $this->stock_service->updateStockProduct($value);
@@ -1705,8 +1706,8 @@ class TravShopController extends Controller
                     }
                     if ($data->order_type === TransOrder::POS) {
                         $data->status = TransOrder::DONE;
-                    }  
-                    $data->save();             
+                    }
+                    $data->save();
                     if ($data->order_type === TransOrder::ORDER_DEREK_ONLINE) {
                         $data->status = TransOrder::PAYMENT_SUCCESS;
                         $data->save();
