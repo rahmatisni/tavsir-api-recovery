@@ -1329,7 +1329,8 @@ class TravShopController extends Controller
                             $data->status = TransOrder::PAYMENT_SUCCESS;
                         }
                     }
-                    $rc_coll = array('2', '10', '12', '15', '17', '18', '27', '34', '37', '40', '41', '42', '46', '60', '62', '64', '65', '68', '69', '70', '72', '73', '74', '75', '78', '79', '80', '83', '85', '86');
+                    // $rc_coll = array('2', '10', '12', '15', '17', '18', '27', '34', '37', '40', '41', '42', '46', '60', '62', '64', '65', '68', '69', '70', '72', '73', '74', '75', '78', '79', '80', '83', '85', '86');
+                    $rc_coll = array('x');
 
                     if (in_array($kios['rc'], $rc_coll)) {
 
@@ -1603,7 +1604,6 @@ class TravShopController extends Controller
                             return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                         }
                     }
-                    
                     //End payment kios
                     foreach ($data->detil as $key => $value) {
                         $this->stock_service->updateStockProduct($value);
