@@ -1686,12 +1686,19 @@ class TravShopController extends Controller
                     if ($data->status === TransOrder::WAITING_PAYMENT) {
                         $data->status = TransOrder::PAYMENT_SUCCESS;
                         $data->save();
+                        if ($data->order_type === TransOrder::ORDER_TRAVOY) {
+                            $this->payKios($data, $id);
+                        }
                     }
                     if ($data->order_type === TransOrder::POS) {
                         $data->status = TransOrder::DONE;
                     }
+                   
+
+                    
                     $data->save();
 
+                    
                     if ($data->order_type === TransOrder::ORDER_DEREK_ONLINE) {
                         $data->status = TransOrder::PAYMENT_SUCCESS;
                         $data->save();
