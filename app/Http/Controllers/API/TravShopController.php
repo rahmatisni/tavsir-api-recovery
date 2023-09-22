@@ -1537,7 +1537,7 @@ class TravShopController extends Controller
                     if ($data->order_type == TransOrder::POS) {
                         $data->status = TransOrder::DONE;
                     }
-
+                    
                     $data->save();
                     //Cek Payment kios
                     if ($data->order_type === TransOrder::ORDER_DEREK_ONLINE) {
@@ -1546,11 +1546,6 @@ class TravShopController extends Controller
 
                         $travoy = $this->travoyService->detailDerek($id, $request->id_user, $request->token);
                         return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
-                    }
-                    if ($data->order_type == TransOrder::ORDER_TRAVOY && $data->status != TransOrder::DONE) {
-                        if ($data->order_type === TransOrder::ORDER_TRAVOY) {
-                            $this->payKios($data, $id);
-                        }
                     }
 
                     //End payment kios
@@ -1604,10 +1599,24 @@ class TravShopController extends Controller
                     }
 
                     $data->status = TransOrder::PAYMENT_SUCCESS;
+
+                    if ($data->order_type === TransOrder::ORDER_TRAVOY) {
+                        $this->payKios($data, $id);
+                    }
                     if ($data->order_type == TransOrder::POS) {
                         $data->status = TransOrder::DONE;
                     }
+                    
                     $data->save();
+                    //Cek Payment kios
+                    if ($data->order_type === TransOrder::ORDER_DEREK_ONLINE) {
+                        $data->save();
+                        DB::commit();
+
+                        $travoy = $this->travoyService->detailDerek($id, $request->id_user, $request->token);
+                        return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
+                    }
+                    
                     foreach ($data->detil as $key => $value) {
                         $this->stock_service->updateStockProduct($value);
                     }
