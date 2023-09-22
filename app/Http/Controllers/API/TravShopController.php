@@ -1207,6 +1207,7 @@ class TravShopController extends Controller
     public function payKios($data, $id) {
 
         DB::beginTransaction();
+        $kios= [];
 
         if ($data->description == 'single') {
             $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
@@ -1236,6 +1237,7 @@ class TravShopController extends Controller
             Log::info(['bayar depan => ', $kios]);
 
         }
+
         $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
         $kios['data']['harga'] = $kios['data']['harga'] ?? ($data->sub_total ?? '0');
         // $kios['data']['nama'] = $kios['data']['nama'] ?? $datalog['data']['data']['nama'] ?? '-';
@@ -1684,13 +1686,12 @@ class TravShopController extends Controller
                 $res_data['fee'] = $data_payment['fee'];
                 $res_data['bill'] = $data_payment['bill'];
                 $kios = [];
-
                 if ($res_data['pay_status'] === '1') {
                     if ($data->status === TransOrder::WAITING_PAYMENT) {
                         $data->status = TransOrder::PAYMENT_SUCCESS;
                         $data->save();
                         if ($data->order_type === TransOrder::ORDER_TRAVOY) {
-                            $call = $this->payKios($data, $id);
+                            $this->payKios($data, $id);
                         }
                     }
                     if ($data->order_type === TransOrder::POS) {
