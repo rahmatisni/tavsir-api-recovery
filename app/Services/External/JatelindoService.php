@@ -101,6 +101,44 @@ class JatelindoService
         return $result;
     }
 
+    public static function advice(array $payload)
+    {
+        $payload ["mti"] = "0220";
+        $payload ["bit3"] = self::advice;
+
+        $result =  Http::withOptions([
+            'proxy' => '172.16.4.58:8090'
+        ])->post(config('jatelindo.url'), $payload);
+
+        Log::info([
+            'status' => self::responseTranslation($result->json())?->keterangan,
+            'action' => 'Advice',
+            'payload' => $payload,
+            'respons' => $result->json(),
+        ]);
+
+        return $result;
+    }
+
+    public static function repeat(array $payload)
+    {
+        $payload ["mti"] = "0221";
+        $payload ["bit3"] = self::repeat;
+
+        $result =  Http::withOptions([
+            'proxy' => '172.16.4.58:8090'
+        ])->post(config('jatelindo.url'), $payload);
+
+        Log::info([
+            'status' => self::responseTranslation($result->json())?->keterangan,
+            'action' => 'Repeate',
+            'payload' => $payload,
+            'respons' => $result->json(),
+        ]);
+
+        return $result;
+    }
+
     public static function responseTranslation($response){
         $keterangan = '';
         $message = '';
