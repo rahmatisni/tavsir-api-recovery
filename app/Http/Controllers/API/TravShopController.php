@@ -1321,13 +1321,13 @@ class TravShopController extends Controller
                     $kios['data']['harga'] = $data->sub_total ?? '0';
                     $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '-';
                     if ($kios['rc'] == '00' || $kios['rc'] == "00" || $kios['rc'] == 00) {
-                        if (strpos($kios['description'] ?? $kios['data']['status'], 'BERHASIL')) {
+                        if (str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL')) {
                             $data->status = TransOrder::DONE;
                         }
-                        if (strpos($kios['description'] ?? $kios['data']['status'], 'SUKSES')) {
+                        if (str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES')) {
                             $data->status = TransOrder::DONE;
                         } else {
-                            log::info($kios['description'].' casenya masuk sini');
+                            // log::info($kios['description'].' casenya masuk sini');
                             $data->status = TransOrder::PAYMENT_SUCCESS;
                         }
                     }
