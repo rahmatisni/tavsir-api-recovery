@@ -1327,6 +1327,7 @@ class TravShopController extends Controller
                         if (str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES')) {
                             $data->status = TransOrder::DONE;
                         } else {
+                            log::info($kios['description'].' casenya masuk sini');
                             $data->status = TransOrder::PAYMENT_SUCCESS;
                         }
                     }
