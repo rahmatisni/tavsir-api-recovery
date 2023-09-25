@@ -322,36 +322,27 @@ class TavsirController extends Controller
                 'message' => 'Order sudah di refund'
             ], 400);
         }
-        $status = $data->detil->pluck('status')->toArray();
-        $result = array_intersect($status, [null, TransOrderDetil::STATUS_WAITING]);
-        if (!empty($result)) {
-            return response()->json([
-                'message' => 'Terdapat order yang belum dikonfirmasi tenant'
-            ], 400);
-        }
         $total_refund = 0;
-        $order_refund = $data->detil->where('status', TransOrderDetil::STATUS_CANCEL);
-        if ($order_refund->count() == 0) {
-            return response()->json([
-                'message' => 'Tidak ada order yang di Cancel'
-            ], 400);
-        }
+        $order_refund = $data->detil;
+
         foreach ($order_refund as $v) {
             $total_refund += $v->total_price;
         }
-        $data->sub_total = $data->sub_total - $total_refund;
-        $data->total = $data->sub_total + $data->fee;
         $data->is_refund = 1;
+        $data->status = TransOrder::REFUND;
         $data->save();
         $data->payment->data = [
             'cash' => $data->pay_amount,
             'total' => $data->total,
-            'kembalian' => $data->pay_amount - $data->total
+            'kembalian' => $data->pay_amount - $data->total,
+            'jumlah_refund' => $data->total
         ];
         $data->payment->save();
 
         return response()->json([
-            'message' => 'Refund sebesar ' . $total_refund
+            'message' => 'Refund sebesar ' . $total_refund, 'data' =>
+            new TrOrderResource($data)
+
         ]);
     }
 
@@ -701,7 +692,7 @@ class TavsirController extends Controller
     //     $travshop = ['5', '6', '7', '8', '9', '10'];
     //     $tavsir = ['1', '2', '3', '10'];
 
-       
+
 
     //     if ($request->trans_order_id) {
     //         $trans_order = TransOrder::with('tenant')->findOrfail($request->trans_order_id);
@@ -728,7 +719,7 @@ class TavsirController extends Controller
     //                 }
     //             }
     //         }
-          
+
 
     //         foreach ($paymentMethods as $value) {
     //             Log::warning($value);
@@ -757,12 +748,12 @@ class TavsirController extends Controller
     //             //         $value->travshop = false;
     //             //         $value->tavsir = false;
     //             //     }
-               
+
     //             // }
 
 
     //             if ($value?->sof_id) {
-                   
+
     //                 // tenant_is_verified
     //                 // if ($tenant_is_verified || $trans_order->order_type == TransOrder::ORDER_TRAVOY) {
 
@@ -777,8 +768,8 @@ class TavsirController extends Controller
     //                     $value->percentage = $data['is_presentage'] ?? null;
     //                     $x = $data['value'] ?? 'x';
     //                     $state = $data['is_presentage'] ?? null;
-    
-    
+
+
     //                     if ($state == (false || null)) {
     //                         $value->fee = $data['value'] ?? null;
     //                     } else {
@@ -808,18 +799,16 @@ class TavsirController extends Controller
         $travshop = ['5', '6', '7', '8', '9', '10'];
         $tavsir = ['1', '2', '3', '10'];
 
-       
+
 
         if ($request->trans_order_id) {
             $trans_order = TransOrder::with('tenant')->findOrfail($request->trans_order_id);
             $param_removes = Tenant::where('id', $trans_order->tenant_id)->first();
-            if ($param_removes == null)
-            {
-                $removes =[1,2];
+            if ($param_removes == null) {
+                $removes = [1, 2];
+            } else {
+                $removes = json_decode($param_removes?->list_payment) ?? [1, 2, 3];
             }
-            else {
-                $removes = json_decode($param_removes?->list_payment) ?? [1,2,3];
-            }          
 
             $tenant = $trans_order->tenant;
             $tenant_is_verified = $tenant?->is_verified;
@@ -841,7 +830,7 @@ class TavsirController extends Controller
                     }
                 }
             }
-          
+
 
             foreach ($paymentMethods as $value) {
                 Log::warning($value);
@@ -870,34 +859,32 @@ class TavsirController extends Controller
                         $value->travshop = false;
                         $value->tavsir = false;
                     }
-               
+
                 }
 
 
                 if ($value?->sof_id) {
-                   
+
                     // tenant_is_verified
                     // if ($tenant_is_verified || $trans_order->order_type == TransOrder::ORDER_TRAVOY) {
 
-                    if($value?->sof_id == null)
-                    {
+                    if ($value?->sof_id == null) {
                         $value->percentage = null;
                         $value->fee = null;
-                    }
-                    else {
+                    } else {
                         $data = PgJmto::tarifFee($value->sof_id, $value->payment_method_id, $value->sub_merchant_id, $trans_order->sub_total);
                         Log::warning($data);
                         $value->percentage = $data['is_presentage'] ?? null;
                         $x = $data['value'] ?? 'x';
                         $state = $data['is_presentage'] ?? null;
-    
-    
+
+
                         if ($state == (false || null)) {
                             $value->fee = $data['value'] ?? null;
                         } else {
                             $value->fee = (int) ceil((float) $x / 100 * $trans_order->sub_total);
                         }
-                    } 
+                    }
                 }
             }
 

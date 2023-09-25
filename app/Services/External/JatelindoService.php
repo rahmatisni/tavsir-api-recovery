@@ -5,6 +5,7 @@ namespace App\Services\External;
 use App\Models\Constanta\PLNAREA;
 use App\Models\KiosBank\ProductKiosBank;
 use App\Models\Product;
+use App\Models\TransOrder;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -215,9 +216,31 @@ class JatelindoService
     }
 
 
-    public static function infoPelanggan(string $bit_48){
+    public static function infoPelanggan(string $bit_48, string $trans_order_status)
+    {
+        //example bit48 respon inquiry
+        // $bit_48='JTL53L314234567895514444444444072A0D669D717D6E63AD027984D0147380007210ZD3233B973EE3BF82C6E7247BINDAH PUTRI              I3  000054321';
+        if($trans_order_status == TransOrder::WAITING_PAYMENT){
+            return [
+                // 'bit_48' => $bit_48,
+                // 'switcher_id' => substr($bit_48 , 0, 7),
+                // 'pelanggan_id' => $flag == 1 ? substr($bit_48, 7, 12) : '000000000000',
+                'meter_id' => substr($bit_48, 7, 11),
+                // 'flag' => $flag,
+                // 'id_transaksi' => substr($bit_48, 20, 32),
+                // 'ref_number' => substr($bit_48, 52, 32),
+                // 'vending_number' => substr($bit_48, 84, 8),
+                'nama_pelanggan' => substr($bit_48, 95, 25),
+                'tarif' => substr($bit_48, 120, 4),
+                'daya' => substr($bit_48, 124, 9),
+                // 'token_unsold_1' => '',
+                // 'token_unsold_2' => '',
+                // $flag = substr($bit_48, 19, 1);
+            ];
+        }
 
-        // $flag = substr($bit_48, 19, 1);
+        //example bit48 respon payment
+        // $bit_48 = 'JTL53L314234567895514444444444072A0D669D717D6E63AD027984D0147380007210ZD3233B973EE3BF82C6E7247B00112233INDAH PUTRI              I3  000054321120000000000200000000002000002040820000019996200000197942000001939802200000016212349404851423456789520230920140953';
         return [
             // 'bit_48' => $bit_48,
             // 'switcher_id' => substr($bit_48 , 0, 7),
@@ -227,11 +250,12 @@ class JatelindoService
             // 'id_transaksi' => substr($bit_48, 20, 32),
             // 'ref_number' => substr($bit_48, 52, 32),
             // 'vending_number' => substr($bit_48, 84, 8),
-            'nama_pelanggan' => substr($bit_48, 95, 25),
-            'tarif' => substr($bit_48, 120, 4),
-            'daya' => substr($bit_48, 124, 9),
+            'nama_pelanggan' => substr($bit_48, 103, 25),
+            'tarif' => substr($bit_48, 128, 4),
+            'daya' => substr($bit_48, 132, 9),
             // 'token_unsold_1' => '',
             // 'token_unsold_2' => '',
+            // $flag = substr($bit_48, 19, 1);
         ];
     }
 }
