@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+
 use App\Http\Requests\TsCreatePaymentRequest;
 use App\Http\Resources\SaldoResource;
 use App\Http\Controllers\Controller;
@@ -53,6 +54,7 @@ use App\Services\StockServices;
 use App\Services\TransSharingServices;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -314,7 +316,7 @@ class TavsirController extends Controller
         ]);
     }
 
-    public function orderRefund($id)
+    public function orderRefund(Request $request, $id)
     {
         $data = TransOrder::byRole()->findOrfail($id);
         if ($data->is_refund) {
@@ -322,6 +324,13 @@ class TavsirController extends Controller
                 'message' => 'Order sudah di refund'
             ], 400);
         }
+
+        $user = auth()->user();
+        if (!Hash::check($request->pin, $user->pin)) {
+            return response()->json(['message' => 'PIN salah'], 400);
+        }
+
+
         $total_refund = 0;
         $order_refund = $data->detil;
 
