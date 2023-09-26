@@ -49,6 +49,7 @@ use App\Models\TransPayment;
 use App\Models\TransSaldo;
 use App\Models\TransSharing;
 use App\Models\TransStock;
+use App\Models\User;
 use App\Models\Voucher;
 use App\Services\StockServices;
 use App\Services\TransSharingServices;
@@ -325,11 +326,23 @@ class TavsirController extends Controller
             ], 400);
         }
 
-        $user = auth()->user();
-        if (!Hash::check($request->pin, $user->pin)) {
-            return response()->json(['message' => 'PIN salah'], 400);
-        }
 
+        $user = auth()->user();
+        $tenant_id = $user->tenant_id;
+        $tenant = User::where('tenant_id', $tenant_id)->where('role', User::TENANT)->get();
+
+        if (!Hash::check($request->pin_casheer, $user->pin)) {
+            return response()->json(['message' => 'PIN Kasir salah'], 400);
+        }
+        $validator = 0;
+        foreach ($tenant as $x) {
+            if (Hash::check($request->pin_tenant, $x->password)) {
+                $validator = 1;
+            }
+        }
+        if ($validator == 0) {
+            return response()->json(['message' => 'Password Tenant salah'], 400);
+        }
 
         $total_refund = 0;
         $order_refund = $data->detil;
@@ -349,7 +362,8 @@ class TavsirController extends Controller
         $data->payment->save();
 
         return response()->json([
-            'message' => 'Refund sebesar ' . $total_refund, 'data' =>
+            'message' => 'Refund sebesar ' . $total_refund,
+            'data' =>
             new TrOrderResource($data)
 
         ]);

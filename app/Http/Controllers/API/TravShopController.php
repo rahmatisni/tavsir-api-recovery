@@ -842,52 +842,51 @@ class TravShopController extends Controller
                     }
                     break;
 
-                case 'pg_va_bsi':
-                    $payment_payload = [
-                        "sof_code" => $payment_method->code,
-                        'bill_id' => $data->order_id,
-                        'bill_name' => 'GetPay',
-                        'amount' => (string) $data->total,
-                        'desc' => $data->tenant->name ?? 'Travoy',
-                        "exp_date" => Carbon::now()->addMinutes(5)->format('Y-m-d H:i:s'),
-                        "va_type" => "close",
-                        'phone' => $request->customer_phone,
-                        'email' => $request->customer_email,
-                        'customer_name' => $request->customer_name,
-                        "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id,
-                    ];
-
-                    $res = PgJmto::vaCreate(
-                        $payment_method->code,
-                        $data->order_id,
-                        'GetPay',
-                        $data->total,
-                        $data->tenant->name ?? 'Travoy',
-                        $request->customer_phone,
-                        $request->customer_email,
-                        $request->customer_name,
-                        $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
-                    );
-                    if ($res['status'] == 'success') {
-                        $pay = null;
-                        if ($data->payment === null) {
-                            $pay = new TransPayment();
-                            $pay->data = $res['responseData'];
-                            $data->payment()->save($pay);
+                    case 'pg_va_bsi':
+                        $payment_payload = [
+                            "sof_code" => $payment_method->code,
+                            'bill_id' => $data->order_id,
+                            'bill_name' => 'GetPay',
+                            'amount' => (string) $data->total,
+                            'desc' => $data->tenant->name ?? 'Travoy',
+                            "exp_date" => Carbon::now()->addMinutes(5)->format('Y-m-d H:i:s'),
+                            "va_type" => "close",
+                            'phone' => $request->customer_phone,
+                            'email' => $request->customer_email,
+                            'customer_name' => $request->customer_name,
+                            "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id,
+                        ];
+    
+                        $res = PgJmto::vaCreate(
+                            $payment_method->code,
+                            $data->order_id,
+                            'GetPay',
+                            $data->total,
+                            $data->tenant->name ?? 'Travoy',
+                            $request->customer_phone,
+                            $request->customer_email,
+                            $request->customer_name,
+                            $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
+                        );
+                        if ($res['status'] == 'success') {
+                            $pay = null;
+                            if ($data->payment === null) {
+                                $pay = new TransPayment();
+                                $pay->data = $res['responseData'];
+                                $data->payment()->save($pay);
+                            } else {
+                                $pay = $data->payment;
+                                $pay->data = $res['responseData'];
+                                $pay->save();
+                            }
+                            $data->service_fee = $pay->data['fee'];
+                            $data->total = $data->total + $data->service_fee;
+                            $data->sub_merchant_id = $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id;
+                            $data->save();
                         } else {
-                            $pay = $data->payment;
-                            $pay->data = $res['responseData'];
-                            $pay->save();
+                            return response()->json([$res], 500);
                         }
-                        $data->service_fee = $pay->data['fee'];
-                        $data->total = $data->total + $data->service_fee;
-                        $data->sub_merchant_id = $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id;
-                        $data->save();
-                    } else {
-                        return response()->json([$res], 500);
-                    }
-                    break;
-
+                        break;
 
 
                 case 'pg_va_bri':
