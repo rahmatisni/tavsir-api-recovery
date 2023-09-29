@@ -1268,26 +1268,37 @@ class TravShopController extends Controller
                 $res_jatelindo = null;
                 $result_jatelindo = [];
                 if(isset($datalog['is_advice'])){
+                    Log::info('is advice == true');
                     $res_jatelindo = JatelindoService::repeat($data->log_kiosbank->data ?? []);
                 }else{
+                    Log::info('is advice == false');
                     $res_jatelindo = JatelindoService::purchase($data->log_kiosbank->data ?? []);
                     if($res_jatelindo->json() == null){
+                        Log::info('Jatelindo reposne not null');
                         $res_jatelindo = JatelindoService::advice($data->log_kiosbank->data ?? []);
                         $result_jatelindo['is_advice'] = true;
                     }
                 }
 
                 $result_jatelindo = array_merge($result_jatelindo, $res_jatelindo->json());
+                
+                Log::info('result merge');
+                Log::info($result_jatelindo);
+                Log::info($res_jatelindo->json());
+
                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                     'data' => $result_jatelindo
                 ]);
                 $rc = $result_jatelindo['bit39'] ?? '';
+                Log::info('RC is'.$rc);
                 if ($rc == '00') {
                     //return token listrik
                     $data->status = TransOrder::DONE;
                     $data->save();
+                     Log::info('DONE');
+                     Log::info('bit 48 : '.$result_jatelindo['bit48']);
+                    $info = JatelindoService::infoPelanggan($result_jatelindo['bit48'] ?? '', $data);
                     DB::commit();
-                    $info = JatelindoService::infoPelanggan($result_jatelindo['48'] ?? '', $data);
                     return response()->json($info);
                 }
                 DB::commit();
