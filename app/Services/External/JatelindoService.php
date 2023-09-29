@@ -260,40 +260,100 @@ class JatelindoService
         // $bit_48='JTL53L314234567895514444444444072A0D669D717D6E63AD027984D0147380007210ZD3233B973EE3BF82C6E7247BINDAH PUTRI              I3  000054321';
         if($trans_order_status == TransOrder::WAITING_PAYMENT){
             return [
-                // 'bit_48' => $bit_48,
                 // 'switcher_id' => substr($bit_48 , 0, 7),
-                // 'pelanggan_id' => $flag == 1 ? substr($bit_48, 7, 12) : '000000000000',
                 'meter_id' => substr($bit_48, 7, 11),
-                // 'flag' => $flag,
-                // 'id_transaksi' => substr($bit_48, 20, 32),
-                // 'ref_number' => substr($bit_48, 52, 32),
-                // 'vending_number' => substr($bit_48, 84, 8),
+                'pelanggan_id' => substr($bit_48, 18, 12),
+                'flag' => substr($bit_48, 30, 1),
+                'transaksi_id' => substr($bit_48, 31, 32),
+                'ref_id' => substr($bit_48, 63, 32),
                 'nama_pelanggan' => substr($bit_48, 95, 25),
                 'tarif' => substr($bit_48, 120, 4),
                 'daya' => substr($bit_48, 124, 9),
-                // 'token_unsold_1' => '',
-                // 'token_unsold_2' => '',
-                // $flag = substr($bit_48, 19, 1);
             ];
         }
+        // JTL53L314234567895514444444444002637C4CB219F7E6BD35869C540406000007210Z10FF81DF3853FC1B7BC7ECD2INDAH PUTRI              I3  000054321
 
+        // JTL53L3 Switcher ID 7
+        // 14234567895 Meter ID 11
+        // 514444444444 pelngggan ID 12
+        // 0 falag 1
+        // 02637C4CB219F7E6BD35869C54040600 Trx ID 32
+        // 0007210Z10FF81DF3853FC1B7BC7ECD2 Ref ID 32
+        // 00112233
+        // INDAH PUTRI              
+        // I3  
+        // 000054321
+        // 1  //Pembelian token baru = 0 / 1 token unsold
+        // 2 //
+        // 0000000000 //Biaya admin
+        // 2 //
+        // 0000000000 //biaya materai
+        // 2
+        // 0000020408 // PPN Rp. 204,08
+        // 2
+        // 0000019996 // PPJU
+        // 2
+        // 0000019794 // Angsuran
+        // 2
+        // 000001939802 // Nial Minor Pembelian Listrik
+        // 2
+        // 0000001621 // jumlah Kwh
+        // 23464176114234567895 // token
+        // 20230926161426 //tanggal lunas
+        
         //example bit48 respon payment
         // $bit_48 = 'JTL53L314234567895514444444444072A0D669D717D6E63AD027984D0147380007210ZD3233B973EE3BF82C6E7247B00112233INDAH PUTRI              I3  000054321120000000000200000000002000002040820000019996200000197942000001939802200000016212349404851423456789520230920140953';
-        return [
+        
             // 'bit_48' => $bit_48,
-            // 'switcher_id' => substr($bit_48 , 0, 7),
-            // 'pelanggan_id' => $flag == 1 ? substr($bit_48, 7, 12) : '000000000000',
-            'meter_id' => substr($bit_48, 7, 11),
-            // 'flag' => $flag,
-            // 'id_transaksi' => substr($bit_48, 20, 32),
-            // 'ref_number' => substr($bit_48, 52, 32),
-            // 'vending_number' => substr($bit_48, 84, 8),
-            'nama_pelanggan' => substr($bit_48, 103, 25),
-            'tarif' => substr($bit_48, 128, 4),
-            'daya' => substr($bit_48, 132, 9),
-            // 'token_unsold_1' => '',
-            // 'token_unsold_2' => '',
-            // $flag = substr($bit_48, 19, 1);
+        $switcher_id = substr($bit_48 , 0, 7);
+        $meter_id = substr($bit_48, 7, 11);
+        $pelanggan_id = substr($bit_48, 18, 12);
+        $flag = substr($bit_48, 30, 1);
+        $transaksi_id = substr($bit_48, 31, 32);
+        $ref_id = substr($bit_48, 63, 32);
+        $vending_number = substr($bit_48, 95, 8);
+        $nama_pelanggan = substr($bit_48, 103, 25);
+        $tarif = substr($bit_48, 128, 4);
+        $daya = substr($bit_48, 132, 9);
+        $pilihan_pembelian =  substr($bit_48, 141, 1); //Generat token baru atau token unsold
+        $digit_admin =  substr($bit_48, 142, 1); //Digit belakang koma
+        $biaya_admin =  substr($bit_48, 143, 10); //Biaya Admin
+        $digit_materai =  substr($bit_48, 153, 1); //Digit belakang koma
+        $biaya_materai =  substr($bit_48, 154, 10); //Biaya Materai
+        $digit_ppn =  substr($bit_48, 164, 1); //Digit belakang koma
+        $biaya_ppn =  substr($bit_48, 165, 10); //Biaya PPN
+        $digit_ppju =  substr($bit_48, 175, 1); //Digit belakang koma
+        $biaya_ppju =  substr($bit_48, 176, 10); //Biaya PPJU
+        $digit_angsuran =  substr($bit_48, 186, 1); //Digit belakang koma
+        $biaya_angsuran =  substr($bit_48, 187, 10); //Biaya Angsuran
+        $digit_pembelian =  substr($bit_48, 197, 1); //Digit belakang koma
+        $biaya_pembelian =  substr($bit_48, 198, 12); //Biaya Pembelian listrik
+        $digit_kwh =  substr($bit_48, 210, 1); //Digit belakang koma
+        $biaya_kwh =  substr($bit_48, 211, 10); //Biaya Kwh
+        $token =  substr($bit_48, 221, 20); //Token
+        $tanggal_lunas =  substr($bit_48, 241, 14); //Tanggal lunas 
+
+        return [
+            'meter_id' => $meter_id,
+            'pelanggan_id' => $pelanggan_id,
+            'flag' => $flag,
+            'transaksi_id' => $transaksi_id,
+            'ref_id' => $ref_id,
+            'vending_number' => $vending_number,
+            'nama_pelanggan' => $nama_pelanggan,
+            'tarif' => $tarif,
+            'daya' => $daya,
+            'pilihan_pembelian' => $pilihan_pembelian,
+            'biaya_admin' => 'Rp. '.number_format(substr($biaya_admin,0,-$digit_admin),0,',','.'),
+            'biaya_materai' => 'Rp. '.number_format(substr($biaya_materai,0,-$digit_materai),0,',','.'),
+            'biaya_ppn' => 'Rp. '.number_format(substr($biaya_ppn,0,-$digit_ppn),0,',','.'),
+            'biaya_ppju' => 'Rp. '.number_format(substr($biaya_ppju,0,-$digit_ppju),0,',','.'),
+            'biaya_angsuran' => 'Rp. '.number_format(substr($biaya_angsuran,0,-$digit_angsuran),0,',','.'),
+            'biaya_pembelian' => 'Rp. '.number_format(substr($biaya_pembelian,0,-$digit_pembelian),0,',','.'),
+            'jumlah_kwh' => number_format($biaya_kwh,0,',','.'),
+            'token' => wordwrap($token,4,' ', true),
+            'tanggal_lunas' => Carbon::parse($tanggal_lunas)->format('Y-m-d H:i:s'),
         ];
     }
+
 }

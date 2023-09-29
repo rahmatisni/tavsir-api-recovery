@@ -1265,18 +1265,32 @@ class TravShopController extends Controller
         if ($data->description == 'dual') {
             $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
             if ($data->productKiosbank()->integrator == 'JATELINDO') {
-                $result_jatelindo = JatelindoService::purchase($data->log_kiosbank->data ?? [])->json();
+                $res_jatelindo = null;
+                $result_jatelindo = [];
+                if(isset($datalog['is_advice'])){
+                    $res_jatelindo = JatelindoService::repeat($data->log_kiosbank->data ?? []);
+                }else{
+                    $res_jatelindo = JatelindoService::purchase($data->log_kiosbank->data ?? []);
+                    if($res_jatelindo->json() == null){
+                        $res_jatelindo = JatelindoService::advice($data->log_kiosbank->data ?? []);
+                        $result_jatelindo['is_advice'] = true;
+                    }
+                }
+
+                $result_jatelindo = array_merge($result_jatelindo, $res_jatelindo->json());
+                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
+                    'data' => $result_jatelindo
+                ]);
                 $rc = $result_jatelindo['bit39'] ?? '';
-                if ($rc == '00' || $rc == '34') {
+                if ($rc == '00') {
                     //return token listrik
                     $data->status = TransOrder::DONE;
                     $data->save();
-                    $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-                        'data' => $result_jatelindo
-                    ]);
                     DB::commit();
-                    return response()->json(['token' => $result_jatelindo['bit62']]);
+                    $info = JatelindoService::infoPelanggan($result_jatelindo['48'] ?? '', $data);
+                    return response()->json($info);
                 }
+                DB::commit();
                 return response()->json(['status' => 422, 'data' => JatelindoService::responseTranslation($result_jatelindo)], 422);
             }
             $tagihan = $datalog['data']['data']['tagihan'] ?? $datalog['data']['data']['harga_kios'];
