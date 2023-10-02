@@ -257,7 +257,7 @@ class TravShopController extends Controller
                 $payload = array(
                     'id' => $data->id,
                     'type' => 'click',
-                    'action' => 'tavsir_order'
+                    'action' => 'tavsir_order_takengo'
                 );
                 $result = sendNotif($ids, 'Info', 'Pemberitahuan order baru TAKE N GO ' . $data->order_id, $payload);
             }
@@ -373,7 +373,7 @@ class TravShopController extends Controller
                 $payload = array(
                     'id' => $data->id,
                     'type' => 'click',
-                    'action' => 'tavsir_order'
+                    'action' => 'tavsir_order_so'
                 );
                 $result = sendNotif($ids, 'Info', 'Pemberitahuan order baru TAKE N GO ' . $data->order_id, $payload);
             }
