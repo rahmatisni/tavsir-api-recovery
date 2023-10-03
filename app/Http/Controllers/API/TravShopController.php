@@ -1273,10 +1273,14 @@ class TravShopController extends Controller
                 }else{
                     Log::info('is advice == false');
                     $res_jatelindo = JatelindoService::purchase($data->log_kiosbank->data ?? []);
-                    if($res_jatelindo->json() == null){
+                    $res = $res_jatelindo->json();
+                    $rc = $res['bit39'] ?? '';
+                    if ($rc == '18') {
                         Log::info('Jatelindo reposne not null');
-                        $res_jatelindo = JatelindoService::advice($data->log_kiosbank->data ?? []);
-                        $result_jatelindo['is_advice'] = true;
+                        $advice = JatelindoService::advice($data->log_kiosbank->data ?? []);
+                        if($advice->json()['bit39'] !== '00'){
+                            $result_jatelindo['is_advice'] = true;
+                        }
                     }
                 }
 
@@ -1290,7 +1294,6 @@ class TravShopController extends Controller
                     'data' => $result_jatelindo
                 ]);
                 $rc = $result_jatelindo['bit39'] ?? '';
-                Log::info('RC is'.$rc);
                 if ($rc == '00') {
                     //return token listrik
                     $data->status = TransOrder::DONE;
