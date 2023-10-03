@@ -67,7 +67,6 @@ class StockServices
                 ->byTenant()
                 ->keluar()
                 ->when($name = $filter['name'] ?? '', function ($q) use ($name) {
-                    dd($name);
                     $q->whereHas('product', function ($qq) use ($name) {
                         $qq->where('name', 'like', '%' . $name . '%');
                     });
