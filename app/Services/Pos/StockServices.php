@@ -61,12 +61,13 @@ class StockServices
     }
 
 
-    public function stockKeluar()
+    public function stockKeluar($search = null, $filter = [])
     {
         return TransStock::with('product')
                 ->byTenant()
                 ->keluar()
                 ->when($name = $filter['name'] ?? '', function ($q) use ($name) {
+                    dd($name);
                     $q->whereHas('product', function ($qq) use ($name) {
                         $qq->where('name', 'like', '%' . $name . '%');
                     });
