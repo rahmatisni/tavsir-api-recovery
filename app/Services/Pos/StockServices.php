@@ -33,19 +33,25 @@ class StockServices
         return TransStock::with('product')
             ->byTenant()
             ->masuk()
-            ->when($status = $filter['status'] ?? '', function ($q) use ($status) {
-                $q->whereHas('product', function ($qq) use ($status) {
-                    $qq->where('status', $status);
+            ->when($name = $filter['name'] ?? '', function ($q) use ($name) {
+                $q->whereHas('product', function ($qq) use ($name) {
+                    $qq->where('name', 'like', '%' . $name . '%');
                 });
-            })->when($category_id = $filter['product_id'] ?? '', function ($q) use ($category_id) {
+            })
+            ->when($sku = $filter['sku'] ?? '', function ($q) use ($sku) {
+                $q->whereHas('product', function ($qq) use ($sku) {
+                    $qq->where('sku', 'like', '%' . $sku . '%');
+                });
+            })
+            ->when($category_id = $filter['category_id'] ?? '', function ($q) use ($category_id) {
                 $q->whereHas('product', function ($qq) use ($category_id) {
                     $qq->where('category_id', $category_id);
                 });
-            })->when(($filter['status'] ?? '') == '0', function ($q) {
+            })->when(($filter['is_active'] ?? '') == '0', function ($q) {
                 $q->whereHas('product', function ($qq) {
                     $qq->where('is_active', 0);
                 });
-            })->when(($filter['status'] ?? '') == '1', function ($q) {
+            })->when(($filter['is_active'] ?? '') == '1', function ($q) {
                 $q->whereHas('product', function ($qq) {
                     $qq->where('is_active', 1);
                 });
