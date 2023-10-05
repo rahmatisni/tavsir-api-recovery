@@ -1265,44 +1265,43 @@ class TravShopController extends Controller
         if ($data->description == 'dual') {
             $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
             if ($data->productKiosbank()->integrator == 'JATELINDO') {
-                $res_jatelindo = null;
-                $result_jatelindo = [];
-                if(isset($datalog['is_advice'])){
-                    Log::info('is advice == true');
-                    $res_jatelindo = JatelindoService::repeat($data->log_kiosbank->data ?? []);
-                }else{
-                    Log::info('is advice == false');
-                    $res_jatelindo = JatelindoService::purchase($data->log_kiosbank->data ?? []);
-                    $res = $res_jatelindo->json();
-                    $rc = $res['bit39'] ?? '';
-                    if ($rc == '18') {
-                        Log::info('Jatelindo reposne not null');
-                        $advice = JatelindoService::advice($data->log_kiosbank->data ?? []);
-                        if($advice->json()['bit39'] !== '00'){
-                            $result_jatelindo['is_advice'] = true;
-                        }
+                //1. Purchase
+                $res_jatelindo = JatelindoService::purchase($data->log_kiosbank->data ?? []);
+                $result_jatelindo = $res_jatelindo->json();
+                $rc = $result_jatelindo['bit39'] ?? '';
+                //2. Cek req timout code 18
+                if($rc == '18'){
+                    //3. Advice 1 kali
+                    $res_jatelindo = JatelindoService::advice($data->log_kiosbank->data ?? []);
+                    $result_jatelindo = $res_jatelindo->json();
+                    $rc = $result_jatelindo['bit39'] ?? '';
+                    //4. Cek advice timout
+                    if($rc == '18'){
+                        //5. Advice Repeate max 3x percobaan
+                        $try = 1;
+                        do {
+                            $res_jatelindo = JatelindoService::repeat($data->log_kiosbank->data ?? []);
+                            $result_jatelindo = $res_jatelindo->json();
+                            $rc = $result_jatelindo['bit39'] ?? '';
+                            $try ++;
+                        } while ($try <= 3 && $rc == '18');
                     }
                 }
 
-                $result_jatelindo = array_merge($result_jatelindo, $res_jatelindo->json());
-                
-                Log::info('result merge');
-                Log::info($result_jatelindo);
-                Log::info($res_jatelindo->json());
-
-                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-                    'data' => $result_jatelindo
-                ]);
-                $rc = $result_jatelindo['bit39'] ?? '';
                 if ($rc == '00') {
                     //return token listrik
                     $data->status = TransOrder::DONE;
                     $data->save();
-                     Log::info('DONE');
-                     Log::info('bit 48 : '.$result_jatelindo['bit48']);
+                    Log::info('DONE');
+                    Log::info('bit 48 : '.$result_jatelindo['bit48']);
+                    $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
+                        'data' => $result_jatelindo
+                    ]);
                     $info = JatelindoService::infoPelanggan($result_jatelindo['bit48'] ?? '', $data);
                     DB::commit();
                     return response()->json($info);
+                }else{
+                    return response()->json(['status' => 422, 'data' => JatelindoService::responseTranslation($result_jatelindo)], 422);
                 }
                 DB::commit();
                 return response()->json(['status' => 422, 'data' => JatelindoService::responseTranslation($result_jatelindo)], 422);
@@ -1609,7 +1608,7 @@ class TravShopController extends Controller
 
                     $data->status = TransOrder::PAYMENT_SUCCESS;
                     if ($data->order_type === TransOrder::ORDER_TRAVOY) {
-                        $this->payKios($data, $id);
+                        return $this->payKios($data, $id);
                     }
                     if ($data->order_type == TransOrder::POS) {
                         $data->status = TransOrder::DONE;
@@ -1678,7 +1677,7 @@ class TravShopController extends Controller
                     $data->status = TransOrder::PAYMENT_SUCCESS;
 
                     if ($data->order_type === TransOrder::ORDER_TRAVOY) {
-                        $this->payKios($data, $id);
+                        return $this->payKios($data, $id);
                     }
                     if ($data->order_type == TransOrder::POS) {
                         $data->status = TransOrder::DONE;
@@ -1727,7 +1726,7 @@ class TravShopController extends Controller
                         $data->status = TransOrder::PAYMENT_SUCCESS;
                         $data->save();
                         if ($data->order_type === TransOrder::ORDER_TRAVOY) {
-                            $this->payKios($data, $id);
+                            return $this->payKios($data, $id);
                         }
                     }
                     if ($data->order_type === TransOrder::POS) {

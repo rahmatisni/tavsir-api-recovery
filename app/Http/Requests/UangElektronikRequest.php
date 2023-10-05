@@ -45,6 +45,7 @@ class UangElektronikRequest extends FormRequest
                 }
             ],
             'code' => 'required',
+            'flag' => 'nullable',
         ];
     }
 }

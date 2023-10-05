@@ -17,11 +17,15 @@ class JatelindoService
     public const advice = "172000";
     public const repeat = "173000";
 
-    public static function inquiry(string $id_pelanggan, ProductKiosBank $product)
+    public static function inquiry(int $flag = 0, string $id_pelanggan, ProductKiosBank $product)
     {
         $date = Carbon::now();
         $md = $date->format('md');
         $his = $date->format('his');
+        $id = str_pad($id_pelanggan, 11, '0', STR_PAD_LEFT).'000000000000'.'0';
+        if($flag != 0){
+            $id = '00000000000'.str_pad($id_pelanggan, 12, '0', STR_PAD_LEFT).'1';
+        }
         $payload = [
             "mti" => "0200",
             "bit2" => '053502',
@@ -38,7 +42,7 @@ class JatelindoService
             "bit41" => config('jatelindo.bit_41'),
             "bit42" => config('jatelindo.bit_42'),
             //Format SwitcherID + MeterID (11 digit) + PelangganID (12 digit) + Flag MeterID (0) atau PelangganID (1)  
-            "bit48" => 'JTL53L3'.str_pad($id_pelanggan, 11, '0', STR_PAD_LEFT).'000000000000'.'0',
+            "bit48" => 'JTL53L3'.$id,
             "bit49" => "360", // COUNTRY CURRENCY CODE NUMBER IDR 
         ];
 
@@ -316,23 +320,22 @@ class JatelindoService
         $tarif = substr($bit_48, 128, 4);
         $daya = substr($bit_48, 132, 9);
         $pilihan_pembelian =  substr($bit_48, 141, 1); //Generat token baru atau token unsold
-        $digit_admin =  substr($bit_48, 142, 1); //Digit belakang koma
+        $digit_admin =  empty(substr($bit_48, 142, 1)) ? 0 : substr($bit_48, 142, 1); //Digit belakang koma
         $biaya_admin =  substr($bit_48, 143, 10); //Biaya Admin
-        $digit_materai =  substr($bit_48, 153, 1); //Digit belakang koma
+        $digit_materai =  empty(substr($bit_48, 153, 1)) ? 0 : substr($bit_48, 153, 1); //Digit belakang koma
         $biaya_materai =  substr($bit_48, 154, 10); //Biaya Materai
-        $digit_ppn =  substr($bit_48, 164, 1); //Digit belakang koma
+        $digit_ppn =  empty(substr($bit_48, 164, 1)) ? 0 : substr($bit_48, 164, 1); //Digit belakang koma
         $biaya_ppn =  substr($bit_48, 165, 10); //Biaya PPN
-        $digit_ppju =  substr($bit_48, 175, 1); //Digit belakang koma
+        $digit_ppju =  empty(substr($bit_48, 175, 1)) ? 0 : substr($bit_48, 175, 1); //Digit belakang koma
         $biaya_ppju =  substr($bit_48, 176, 10); //Biaya PPJU
-        $digit_angsuran =  substr($bit_48, 186, 1); //Digit belakang koma
+        $digit_angsuran =  empty(substr($bit_48, 186, 1)) ? 0 : substr($bit_48, 186, 1); //Digit belakang koma
         $biaya_angsuran =  substr($bit_48, 187, 10); //Biaya Angsuran
-        $digit_pembelian =  substr($bit_48, 197, 1); //Digit belakang koma
+        $digit_pembelian =  empty(substr($bit_48, 197, 1)) ? 0 : substr($bit_48, 197, 1); //Digit belakang koma
         $biaya_pembelian =  substr($bit_48, 198, 12); //Biaya Pembelian listrik
-        $digit_kwh =  substr($bit_48, 210, 1); //Digit belakang koma
-        $biaya_kwh =  substr($bit_48, 211, 10); //Biaya Kwh
+        $digit_kwh =  empty(substr($bit_48, 210, 1)) ? 0 : substr($bit_48, 210, 1); //Digit belakang koma
+        $biaya_kwh = (int) substr($bit_48, 211, 10); //Biaya Kwh
         $token =  substr($bit_48, 221, 20); //Token
         $tanggal_lunas =  substr($bit_48, 241, 14); //Tanggal lunas 
-
         return [
             'meter_id' => $meter_id,
             'pelanggan_id' => $pelanggan_id,
@@ -344,12 +347,12 @@ class JatelindoService
             'tarif' => $tarif,
             'daya' => $daya,
             'pilihan_pembelian' => $pilihan_pembelian,
-            'biaya_admin' => 'Rp. '.number_format(substr($biaya_admin,0,-$digit_admin),0,',','.'),
-            'biaya_materai' => 'Rp. '.number_format(substr($biaya_materai,0,-$digit_materai),0,',','.'),
-            'biaya_ppn' => 'Rp. '.number_format(substr($biaya_ppn,0,-$digit_ppn),0,',','.'),
-            'biaya_ppju' => 'Rp. '.number_format(substr($biaya_ppju,0,-$digit_ppju),0,',','.'),
-            'biaya_angsuran' => 'Rp. '.number_format(substr($biaya_angsuran,0,-$digit_angsuran),0,',','.'),
-            'biaya_pembelian' => 'Rp. '.number_format(substr($biaya_pembelian,0,-$digit_pembelian),0,',','.'),
+            'biaya_admin' => 'Rp. '.number_format( (int) substr($biaya_admin,0,-$digit_admin),0,',','.'),
+            'biaya_materai' => 'Rp. '.number_format((int) substr($biaya_materai,0,-$digit_materai),0,',','.'),
+            'biaya_ppn' => 'Rp. '.number_format((int) substr($biaya_ppn,0,-$digit_ppn),0,',','.'),
+            'biaya_ppju' => 'Rp. '.number_format((int) substr($biaya_ppju,0,-$digit_ppju),0,',','.'),
+            'biaya_angsuran' => 'Rp. '.number_format((int) substr($biaya_angsuran,0,-$digit_angsuran),0,',','.'),
+            'biaya_pembelian' => 'Rp. '.number_format((int) substr($biaya_pembelian,0,-$digit_pembelian),0,',','.'),
             'jumlah_kwh' => number_format($biaya_kwh,0,',','.'),
             'token' => wordwrap($token,4,' ', true),
             'tanggal_lunas' => Carbon::parse($tanggal_lunas)->format('Y-m-d H:i:s'),
