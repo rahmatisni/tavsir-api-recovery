@@ -30,7 +30,7 @@ class StockServices
     
     public function stockMasuk($search = null, $filter = [])
     {
-        return TragnsStock::with('product')
+        return TransStock::with('product')
             ->byTenant()
             ->masuk()
             ->when($status = $filter['status'] ?? '', function ($q) use ($status) {
