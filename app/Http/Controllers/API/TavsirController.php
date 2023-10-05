@@ -827,6 +827,9 @@ class TavsirController extends Controller
         if ($request->trans_order_id) {
             $trans_order = TransOrder::with('tenant')->findOrfail($request->trans_order_id);
             $param_removes = Tenant::where('id', $trans_order->tenant_id)->first();
+
+            // dd($param_removes->list_payment);
+
             if ($param_removes == null) {
                 $removes = [1, 2];
             } else {
@@ -877,7 +880,7 @@ class TavsirController extends Controller
 
                 if ($trans_order->order_type != TransOrder::ORDER_TRAVOY) {
 
-                    if (!in_array($value->id, $removes)) {
+                    if (in_array($value->id, $removes)) {
                         $value->self_order = false;
                         $value->travshop = false;
                         $value->tavsir = false;
@@ -915,8 +918,7 @@ class TavsirController extends Controller
 
         // $merchant = PgJmto::listSubMerchant();
         // log::info($merchant);
-
-        $paymentMethods = $paymentMethods->whereNotIn('id', $remove);
+        // $paymentMethods = $paymentMethods->whereNotIn('id', $remove);
         return response()->json($paymentMethods);
     }
     public function createPayment(TsCreatePaymentRequest $request, $id)
