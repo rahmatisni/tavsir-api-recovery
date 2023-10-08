@@ -4,6 +4,7 @@ namespace App\Services\External;
 
 use App\Models\Constanta\PLNAREA;
 use App\Models\KiosBank\ProductKiosBank;
+use App\Models\LogKiosbank;
 use App\Models\Product;
 use App\Models\TransOrder;
 use Carbon\Carbon;
@@ -258,57 +259,22 @@ class JatelindoService
     }
 
 
-    public static function infoPelanggan(string $bit_48, string $trans_order_status)
+    public static function infoPelanggan(LogKiosbank $log, string $trans_order_status)
     {
-        //example bit48 respon inquiry
-        // $bit_48='JTL53L314234567895514444444444072A0D669D717D6E63AD027984D0147380007210ZD3233B973EE3BF82C6E7247BINDAH PUTRI              I3  000054321';
-        if($trans_order_status == TransOrder::WAITING_PAYMENT){
-            return [
-                // 'switcher_id' => substr($bit_48 , 0, 7),
-                'meter_id' => substr($bit_48, 7, 11),
-                'pelanggan_id' => substr($bit_48, 18, 12),
-                'flag' => substr($bit_48, 30, 1),
-                'transaksi_id' => substr($bit_48, 31, 32),
-                'ref_id' => substr($bit_48, 63, 32),
-                'nama_pelanggan' => substr($bit_48, 95, 25),
-                'tarif' => substr($bit_48, 120, 4),
-                'daya' => substr($bit_48, 124, 9),
-            ];
-        }
-        // JTL53L314234567895514444444444002637C4CB219F7E6BD35869C540406000007210Z10FF81DF3853FC1B7BC7ECD2INDAH PUTRI              I3  000054321
+        $bit_48 = $log->data['bit48'] ?? '';
+        $bit_61 = $log->data['bit61'] ?? ($log->data['bit62'] ?? '');
+        $bit_62 = $log->data['bit62'] ?? '';
 
-        // JTL53L3 Switcher ID 7
-        // 14234567895 Meter ID 11
-        // 514444444444 pelngggan ID 12
-        // 0 falag 1
-        // 02637C4CB219F7E6BD35869C54040600 Trx ID 32
-        // 0007210Z10FF81DF3853FC1B7BC7ECD2 Ref ID 32
-        // 00112233
-        // INDAH PUTRI              
-        // I3  
-        // 000054321
-        // 1  //Pembelian token baru = 0 / 1 token unsold
-        // 2 //
-        // 0000000000 //Biaya admin
-        // 2 //
-        // 0000000000 //biaya materai
-        // 2
-        // 0000020408 // PPN Rp. 204,08
-        // 2
-        // 0000019996 // PPJU
-        // 2
-        // 0000019794 // Angsuran
-        // 2
-        // 000001939802 // Nial Minor Pembelian Listrik
-        // 2
-        // 0000001621 // jumlah Kwh
-        // 23464176114234567895 // token
-        // 20230926161426 //tanggal lunas
-        
-        //example bit48 respon payment
-        // $bit_48 = 'JTL53L314234567895514444444444072A0D669D717D6E63AD027984D0147380007210ZD3233B973EE3BF82C6E7247B00112233INDAH PUTRI              I3  000054321120000000000200000000002000002040820000019996200000197942000001939802200000016212349404851423456789520230920140953';
-        
-            // 'bit_48' => $bit_48,
+        $kode_distirbusi =  substr($bit_61, 0, 2);
+        $unit_service =  substr($bit_61, 2, 5);
+        $phone_unit_service =  substr($bit_61, 7, 15);
+        $max_kwh =  ltrim(substr($bit_61, 22, 5),'0');
+        $total_token_unsold =  substr($bit_61, 27, 1);
+        $harga_token_unsold_1 =  substr($bit_61, 28, 11);
+        $harga_token_unsold_2 =  substr($bit_61, 39, 11);
+
+       
+
         $switcher_id = substr($bit_48 , 0, 7);
         $meter_id = substr($bit_48, 7, 11);
         $pelanggan_id = substr($bit_48, 18, 12);
@@ -336,6 +302,24 @@ class JatelindoService
         $biaya_kwh = (int) substr($bit_48, 211, 10); //Biaya Kwh
         $token =  substr($bit_48, 221, 20); //Token
         $tanggal_lunas =  substr($bit_48, 241, 14); //Tanggal lunas 
+
+        if($trans_order_status == TransOrder::WAITING_PAYMENT){
+            return [
+                'meter_id' => substr($bit_48, 7, 11),
+                'pelanggan_id' => substr($bit_48, 18, 12),
+                'flag' => substr($bit_48, 30, 1),
+                'transaksi_id' => substr($bit_48, 31, 32),
+                'ref_id' => substr($bit_48, 63, 32),
+                'nama_pelanggan' => substr($bit_48, 95, 25),
+                'tarif' => substr($bit_48, 120, 4),
+                'daya' => ltrim(substr($bit_48, 124, 9),'0'),
+                'pilihan_token' => substr($bit_48, 133, 1),
+                'total_token_unsold' => $total_token_unsold,
+                'token_unsold_1' => number_format((int) $harga_token_unsold_1,0,',','.'),
+                'token_unsold_2' => number_format((int) $harga_token_unsold_2,0,',','.'),
+            ];
+        }
+
         return [
             'meter_id' => $meter_id,
             'pelanggan_id' => $pelanggan_id,
@@ -356,6 +340,8 @@ class JatelindoService
             'jumlah_kwh' => number_format($biaya_kwh,0,',','.'),
             'token' => wordwrap($token,4,' ', true),
             'tanggal_lunas' => Carbon::parse($tanggal_lunas)->format('Y-m-d H:i:s'),
+            'max_kwh' => $max_kwh,
+            'informasi' => $bit_62,
         ];
     }
 

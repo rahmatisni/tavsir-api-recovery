@@ -523,6 +523,11 @@ class KiosBankService
         {
             $res_jatelindo = JatelindoService::inquiry($data['flag'] ?? 0, $data['phone'], $product)->json();
             if(($res_jatelindo['bit39'] ?? '') == '00'){
+                $pilihan_token = $data['pilihan_token'] ?? 0;
+                Log::info('Pilihan Token '.$pilihan_token);
+                Log::info('bit 48 '.$res_jatelindo['bit48']);
+                $res_jatelindo['bit48'] = $res_jatelindo['bit48'].$pilihan_token;
+                Log::info('bit 48 add pilihan '.$res_jatelindo['bit48']);
                 $order->sub_total = $product->base_price + ($product->harga ?? 0);
                 $order->total = $order->sub_total + $order->fee;
                 $order->save();

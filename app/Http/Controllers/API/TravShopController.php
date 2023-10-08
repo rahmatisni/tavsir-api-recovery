@@ -1286,21 +1286,16 @@ class TravShopController extends Controller
                         } while ($try <= 3 && $rc == '18');
                     }
                 }
-                Log::info('last RC now'.$rc);
 
                 if ($rc == '00') {
                     //return token listrik
                     $data->status = TransOrder::DONE;
-                    $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
+                    $log_kios = $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                         'data' => $result_jatelindo
                     ]);
                     $data->save();
-                    Log::info('Status Order'. $data->status);
-                    Log::info('bit 48 : '.$result_jatelindo['bit48']);
-                    $info = JatelindoService::infoPelanggan($result_jatelindo['bit48'] ?? '', $data);
                     DB::commit();
-                    Log::info('Log kios');
-                    Log::info($data->log_kiosbank);
+                    $info = JatelindoService::infoPelanggan($log_kios, $data->status);
                     return response()->json($info);
                 }else{
                     return response()->json(['status' => 422, 'data' => JatelindoService::responseTranslation($result_jatelindo)], 422);
