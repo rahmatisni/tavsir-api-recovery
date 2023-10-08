@@ -273,8 +273,6 @@ class JatelindoService
         $harga_token_unsold_1 =  substr($bit_61, 28, 11);
         $harga_token_unsold_2 =  substr($bit_61, 39, 11);
 
-       
-
         $switcher_id = substr($bit_48 , 0, 7);
         $meter_id = substr($bit_48, 7, 11);
         $pelanggan_id = substr($bit_48, 18, 12);
