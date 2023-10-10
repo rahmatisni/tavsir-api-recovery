@@ -372,7 +372,7 @@ class TravShopController extends Controller
             }
 
 
-            $data->status = TransOrder::WAITING_CONFIRMATION_TENANT;
+            // $data->status = TransOrder::WAITING_CONFIRMATION_TENANT;
             $data->save();
             $data->detil()->saveMany($order_detil_many);
 
