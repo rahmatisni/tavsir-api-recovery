@@ -355,6 +355,23 @@ class TravShopController extends Controller
             $data->fee = env('PLATFORM_FEE');
             $data->sub_total = $sub_total;
             $data->total = $data->sub_total + $data->fee + $data->service_fee + $data->addon_total;
+
+
+            switch($tenant->in_selforder){
+                case 1:
+                    $data->status = TransOrder::WAITING_CONFIRMATION_TENANT;
+                    break;
+
+                case 2:
+                    $data->status = TransOrder::WAITING_PAYMENT;
+                    break;
+                    
+                default :
+                    return response()->json(['error' =>'Hubungi Admin Untuk Aktivasi Fitur Self ORder'], 422);
+                break;
+            }
+
+
             $data->status = TransOrder::WAITING_CONFIRMATION_TENANT;
             $data->save();
             $data->detil()->saveMany($order_detil_many);
