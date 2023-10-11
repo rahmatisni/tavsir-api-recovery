@@ -1408,7 +1408,7 @@ class TavsirController extends Controller
             $data = $data->where(function ($query) {
                 $query->where('casheer_id', auth()->user()->id)
                     ->orWhereNull('casheer_id');
-            })->get();
+            })->where('tenant_id',auth()->user()->tenant_id)->get();
         } else {
             $data = $data->get();
         }
