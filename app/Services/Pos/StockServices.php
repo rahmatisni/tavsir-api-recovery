@@ -33,6 +33,16 @@ class StockServices
         return TransStock::with('product')
             ->byTenant()
             ->masuk()
+            ->when($name = $filter['name'] ?? '', function ($q) use ($name) {
+                $q->whereHas('product', function ($qq) use ($name) {
+                    $qq->where('name', 'like', '%' . $name . '%');
+                });
+            })
+            ->when($sku = $filter['sku'] ?? '', function ($q) use ($sku) {
+                $q->whereHas('product', function ($qq) use ($sku) {
+                    $qq->where('sku', 'like', '%' . $sku . '%');
+                });
+            })
             ->when($status = $filter['status'] ?? '', function ($q) use ($status) {
                 $q->whereHas('product', function ($qq) use ($status) {
                     $qq->where('status', $status);
