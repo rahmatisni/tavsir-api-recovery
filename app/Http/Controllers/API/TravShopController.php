@@ -644,8 +644,8 @@ class TravShopController extends Controller
         $removes = [];
         $remove = [];
 
-        $self_order = ['5', '7', '9'];
-        $travshop = ['5', '6', '7', '8', '9', '10'];
+        $self_order = ['5', '7', '9','11'];
+        $travshop = ['5', '6', '7', '8', '9', '10','11'];
         $tavsir = ['1', '2', '3', '10'];
 
 
