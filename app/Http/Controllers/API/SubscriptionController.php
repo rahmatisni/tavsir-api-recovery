@@ -122,9 +122,19 @@ class SubscriptionController extends Controller
     {
         $limit = Subscription::byOwner()->get();
         $data = Tenant::byOwner()->get();
+        $kuota_tenant = $limit->where('status_aktivasi', Subscription::AKTIF)->sum('limit_tenant');
+        $tenant_aktif = $data->where('is_subscription', 1)->count();
+
+        $kuota_kasir = $limit->where('status_aktivasi', Subscription::AKTIF)->sum('limit_cashier');
+        $kasir_aktif = User::where('role', User::CASHIER)->where('is_subscription',1)->whereIn('tenant_id', $data->pluck('id')->toArray())->count();
+        
         $result = [
-            'limit_tenant' => $limit->where('status_aktivasi', Subscription::AKTIF)->sum('limit_tenant'),
-            'limit_kasir' => $limit->where('status_aktivasi', Subscription::AKTIF)->sum('limit_cashier'),
+            'kuota_tenant' => $kuota_tenant,
+            'tenant_aktif' => $tenant_aktif,
+            'tenant_belum_terpakai' => $kuota_tenant - $tenant_aktif,
+            'kuota_kasir' => $kuota_kasir,
+            'kasir_aktif' => $kasir_aktif,
+            'kasir_belum_terpakai' => $kuota_kasir - $kasir_aktif,
             'tenant' => MemberTenantResource::collection($data)
         ];
         return response()->json($result);
