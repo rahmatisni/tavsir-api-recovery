@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:api')->group(function () {
     Route::get('/profile', [App\Http\Controllers\API\AuthController::class, 'profile']);
+    Route::post('/profile', [App\Http\Controllers\API\AuthController::class, 'updateProfile']);
     Route::post('/pin', [App\Http\Controllers\API\AuthController::class, 'pinStore']);
     Route::post('/reset-pin', [App\Http\Controllers\API\AuthController::class, 'resetPin']);
     Route::post('/open-cashier', [App\Http\Controllers\API\AuthController::class, 'openCashier']);
@@ -171,7 +172,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/subscription/reject/{id}', [App\Http\Controllers\API\SubscriptionController::class, 'reject']);
         Route::post('/subscription/kuota-kasir', [App\Http\Controllers\API\SubscriptionController::class, 'kuotaKasirTenant']);
         Route::get('/subscription/tenant-owner', [App\Http\Controllers\API\SubscriptionController::class, 'showMemberTenantOwner']);
-        Route::get('/subscription/tenant-cashier', [App\Http\Controllers\API\SubscriptionController::class, 'showKasirTenant']);
+        Route::get('/subscription/tenant-cashier/{id?}', [App\Http\Controllers\API\SubscriptionController::class, 'showKasirTenant']);
         Route::post('/subscription/mapping-tenant', [App\Http\Controllers\API\SubscriptionController::class, 'maapingSubscriptionTenant']);
         Route::post('/subscription/mapping-kasir', [App\Http\Controllers\API\SubscriptionController::class, 'maapingSubscriptionKasir']);
         Route::get('/subscription', [App\Http\Controllers\API\SubscriptionController::class, 'index']);

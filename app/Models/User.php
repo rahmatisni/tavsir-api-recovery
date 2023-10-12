@@ -103,4 +103,16 @@ class User extends Authenticatable
     {
         return $this->hasMany('App\OauthAccessToken');
     }
+
+    public function setPhotoAttribute($value)
+    {
+        $file = request()->file('photo');
+        if (is_file($file)) {
+            $file = request()->file('photo')->store('images');
+            if (file_exists($this->photo)) {
+                unlink($this->photo);
+            }
+            $this->attributes['photo'] = $file;
+        }
+    }
 }

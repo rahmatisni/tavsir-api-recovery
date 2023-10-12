@@ -7,9 +7,9 @@ use App\Http\Requests\BukaTutupTenantRequest;
 use App\Http\Requests\CloseCashierRequest;
 use App\Http\Requests\PinRequest;
 use App\Http\Requests\PinStoreRequest;
+use App\Http\Requests\UpdateProfileRequest;
 use App\Http\Resources\ProfileResource;
 use App\Models\TransCashbox;
-use App\Models\TransOperasional;
 use App\Models\TransOperational;
 use App\Models\TransOrder;
 use App\Models\User;
@@ -130,6 +130,17 @@ class AuthController extends Controller
     public function profile()
     {
         return response()->json(new ProfileResource(auth()->user()));
+    }
+
+    public function updateProfile(UpdateProfileRequest $request)
+    {
+        $user = auth()->user();
+        $user = User::findOrfail($user->id);
+        $user->name = $request->name;
+        $user->photo = $request->photo;
+        $user->save();
+
+        return response()->json(new ProfileResource($user));
     }
 
     public function resetPin()

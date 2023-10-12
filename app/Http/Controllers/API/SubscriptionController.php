@@ -190,23 +190,26 @@ class SubscriptionController extends Controller
     }
 
 
-    public function showKasirTenant()
+    public function showKasirTenant($id)
     {
-
         if (auth()->user()->role == 'OWNER') {
             $limit = Subscription::byOwner(auth()->user()->business_id)->get();
             $data = User::where('role', User::CASHIER)->where('business_id', auth()->user()->business_id)->get();
-            // dd('oke',[$data, $limit]);
+            $tenant_id = $id;
         } else {
             $limit = Subscription::byOwner(auth()->user()->tenant->business_id)->get();
             $data = User::where('role', User::CASHIER)->where('tenant_id', auth()->user()->tenant_id)->get();
-
+            $tenant_id = auth()->user()->tenant_id;
         }
-        // $limit = Subscription::byOwner(auth()->user()->tenant->business_id)->get();
-        // $data = User::where('role', User::CASHIER)->where('tenant_id', auth()->user()->tenant_id)->get();
+        $tenant = Tenant::findOrfail($tenant_id);
+        $kuota_aktif = $data->where('is_subscription',1)->count();
+        $kuota_belum_terpakai = ($tenant->kuota_kasir ?? 0) - $kuota_aktif;
         $result = [
+            'tenant_name' => $tenant->name,
             'limit_kasir' => $limit->where('status_aktivasi', Subscription::AKTIF)->sum('limit_cashier'),
-            'kuota_kasir' => Tenant::findOrfail(auth()->user()->tenant_id)->kuota_kasir ?? 0,
+            'kuota_kasir' => $tenant->kuota_kasir ?? 0,
+            'kuota_aktif' => $kuota_aktif,
+            'kuota_belum_terpakai' => $kuota_belum_terpakai,
             'cashier' => CashierTenantResource::collection($data),
         ];
         return response()->json($result);

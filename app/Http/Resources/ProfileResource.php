@@ -49,6 +49,7 @@ class ProfileResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
+            'photo' => $this->photo ? asset($this->photo) : null,
             'is_admin' => $this->is_admin,
             'tenant_id' => $this->tenant_id,
             'tenant_name' => $this->tenant->name ?? '',
