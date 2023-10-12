@@ -21,7 +21,7 @@ class NumberTableController extends Controller
      */
     public function index()
     {
-        return response()->json(NumberTable::byTenant()->get());
+        return response()->json(NumberTable::byTenant()->myWhereLike(['name'], request()->search)->get());
     }
 
     /**
