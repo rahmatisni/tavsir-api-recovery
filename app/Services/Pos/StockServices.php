@@ -171,4 +171,13 @@ class StockServices
         Excel::import($stock, $payload['file']);
         return $stock->gethasil();
     }
+
+    public function listProduk(){
+        $data = Product::byTenant()->byType(ProductType::PRODUCT)->orderby('name','asc')->get();
+        return $data;
+    }
+    public function listProdukRAW(){
+        $data = Product::byTenant()->byType(ProductType::BAHAN_BAKU)->orderby('name','asc')->get();
+        return $data;
+    }
 }

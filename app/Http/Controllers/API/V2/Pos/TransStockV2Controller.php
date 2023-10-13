@@ -80,4 +80,14 @@ class TransStockV2Controller extends Controller
         $data = $this->service->changeStatus($id);
         return $this->response($data);
     }
+    public function listproduk()
+    {
+        $data = $this->service->listProduk();
+        return $this->response($data);
+    }
+    public function listprodukRAW()
+    {
+        $data = $this->service->listProdukRAW();
+        return $this->response($data);
+    }
 }
