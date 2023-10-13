@@ -15,6 +15,13 @@ class ProductV2Resource extends JsonResource
      */
     public function toArray($request)
     {
+        $cek_product_have_not_active = $this->trans_product_raw->where('is_active',0)->count();
+        $stock = $this->stock;
+        if($this->is_composit == 1){
+            if($cek_product_have_not_active > 0){
+                $stock = 0;
+            }
+        }
         return [
             'id' => $this->id,
             'type' => $this->type,
@@ -30,7 +37,7 @@ class ProductV2Resource extends JsonResource
             'price_min' => $this->price_min,
             'price_max' => $this->price_max,
             'price_capital' => $this->price_capital,
-            'stock' => $this->stock,
+            'stock' => $stock,
             'stock_min' => $this->stock_min,
             'satuan_id' => $this->satuan_id,
             'satuan_name' => $this->satuan?->name,
