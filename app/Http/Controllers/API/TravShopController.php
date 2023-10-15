@@ -185,6 +185,8 @@ class TravShopController extends Controller
             $data->save();
 
             $sub_total = 0;
+            $margin = 0;
+
             foreach ($request->product as $k => $v) {
 
                 $product = Product::byType(ProductType::PRODUCT)->find($v['product_id']);
@@ -216,10 +218,13 @@ class TravShopController extends Controller
                 }
                 $order_detil->customize = json_encode($customize_x);
                 $order_detil->qty = $v['qty'];
+                $raw_margin = $order_detil->price_capital * $v['qty'];
+
                 $order_detil->total_price = $order_detil->price * $v['qty'];
                 $order_detil->note = $v['note'];
 
                 $sub_total += $order_detil->total_price;
+                $margin += $raw_margin;
 
                 $order_detil_many[] = $order_detil;
             }
@@ -238,6 +243,7 @@ class TravShopController extends Controller
             }
 
             $data->fee = env('PLATFORM_FEE');
+            $data->margin = $sub_total-$margin;
             $data->sub_total = $sub_total;
             $data->total = $data->sub_total + $data->fee + $data->service_fee + $data->addon_total;
             $data->status = TransOrder::WAITING_CONFIRMATION_TENANT;
@@ -301,6 +307,7 @@ class TravShopController extends Controller
             $order_detil_many = [];
             $data->save();
 
+            $margin = 0;
             $sub_total = 0;
             foreach ($request->product as $k => $v) {
 
@@ -334,10 +341,11 @@ class TravShopController extends Controller
                 $order_detil->customize = json_encode($customize_x);
                 $order_detil->qty = $v['qty'];
                 $order_detil->total_price = $order_detil->price * $v['qty'];
+                $raw_margin = $order_detil->price_capital * $v['qty'];
                 $order_detil->note = $v['note'];
 
                 $sub_total += $order_detil->total_price;
-
+                $margin += $raw_margin;
                 $order_detil_many[] = $order_detil;
             }
             $extra_price = ExtraPrice::byTenant($data->tenant_id)->aktif()->get();
