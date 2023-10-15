@@ -49,6 +49,7 @@ class TransOrderSeeder extends Seeder
                 $detil->product_id = $product->id;
                 $detil->product_name = $product->name;
                 $detil->customize = json_encode($customize_order);
+                $detil->price_capital = $product->price_capital;
                 $detil->base_price = $product->price;
                 $detil->price = $price;
                 $detil->qty = $qty;

@@ -537,7 +537,7 @@ class TavsirController extends Controller
                 $order_detil->trans_order_id = $data->id;
                 $order_detil->product_id = $product->id;
                 $order_detil->product_name = $product->name;
-                $order_detil->capital_price = $product->capital_price;
+                $order_detil->price_capital = $product->price_capital;
                 $order_detil->base_price = $product->price;
                 $order_detil->price = $product->price;
                 $customize_x = array();

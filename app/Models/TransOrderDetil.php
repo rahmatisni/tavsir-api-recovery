@@ -18,7 +18,7 @@ class TransOrderDetil extends BaseModel
         'product_id',
         'product_name',
         'customize',
-        'capital_price',
+        'price_capital',
         'price',
         'qty',
         'total_price',
