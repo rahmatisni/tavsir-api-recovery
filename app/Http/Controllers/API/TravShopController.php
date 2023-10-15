@@ -192,7 +192,7 @@ class TravShopController extends Controller
                 $order_detil->trans_order_id = $data->id;
                 $order_detil->product_id = $product->id;
                 $order_detil->product_name = $product->name;
-                $order_detil->base_price = $product->price;
+                $order_detil->base_price = $product->price_capital;
                 $order_detil->price = $product->price;
                 $customize_x = array();
                 foreach ($v['customize'] as $key => $value) {
@@ -308,7 +308,7 @@ class TravShopController extends Controller
                 $order_detil->trans_order_id = $data->id;
                 $order_detil->product_id = $product->id;
                 $order_detil->product_name = $product->name;
-                $order_detil->base_price = $product->price;
+                $order_detil->base_price = $product->price_capital;
                 $order_detil->price = $product->price;
                 $customize_x = array();
                 foreach ($v['customize'] as $key => $value) {
