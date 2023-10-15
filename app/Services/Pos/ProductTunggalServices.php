@@ -86,7 +86,7 @@ class ProductTunggalServices
     }
 
 
-    public function update($id, array $paylod)
+public function update($id, array $paylod)
     {
         $data = $this->show($id);
         try {
