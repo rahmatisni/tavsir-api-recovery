@@ -173,7 +173,7 @@ class StockServices
     }
 
     public function listProduk(){
-        $data = Product::byTenant()->byType(ProductType::PRODUCT)->orderby('name','asc')->get();
+        $data = Product::byTenant()->byType(ProductType::PRODUCT)->where('is_composit', 0)->orderby('name','asc')->get();
         return $data;
     }
     public function listProdukRAW(){
