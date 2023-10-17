@@ -152,9 +152,9 @@ class PgJmto extends Model
 
     public static function vaCreate($sof_code, $bill_id, $bill_name, $amount, $desc, $phone, $email, $customer_name, $sub_merchant_id)
     {
-        if ($amount > 1000000) {
-            throw new Exception("The amount must be less than 1000000", 422);
-        }
+        // if ($amount > 1000000) {
+        //     throw new Exception("The amount must be less than 1000000", 422);
+        // }
 
         $payload = [
             "sof_code" => $sof_code,
