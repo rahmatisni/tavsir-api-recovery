@@ -12,6 +12,7 @@ class KuotaKasirTenantRequest extends FormRequest
     protected $subsciption_aktif = 0;
     protected $sisa_kuota = 0;
     protected $kasir_aktif = 0;
+    protected $min = 0;
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -36,13 +37,16 @@ class KuotaKasirTenantRequest extends FormRequest
         // dump($sum_limit);
 
         $this->sisa_kuota = $this->subsciption_aktif - Tenant::byOwner()->sum('kuota_kasir');
-       
+        if($this->kuota_kasir < $this->sisa_kuota)
+        {
+            $this->min = $this->kasir_aktif;
+        }       
         // dump($this->sisa_kuota);
         // dd('x');
 
         return [
             'tenant_id' => ['required','exists:ref_tenant,id,business_id,'.auth()->user()->business_id],
-            'kuota_kasir' => ['required', 'integer', 'min:'.$this->kasir_aktif, 'max:'.$this->sisa_kuota]
+            'kuota_kasir' => ['required', 'integer', 'min:'.$this->min, 'max:'.$this->sisa_kuota]
         ];
     }
 
