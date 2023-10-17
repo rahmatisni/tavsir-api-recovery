@@ -216,7 +216,7 @@ class SubscriptionController extends Controller
         $kuota_belum_terpakai = ($tenant->kuota_kasir ?? 0) - $kuota_aktif;
         $result = [
             'tenant_name' => $tenant->name,
-            'limit_kasir' => $limit->where('status_aktivasi', Subscription::AKTIF)->sum('limit_cashier'),
+            'total_kasir' => $limit->where('status_aktivasi', Subscription::AKTIF)->sum('limit_cashier'),
             'kuota_kasir' => $tenant->kuota_kasir ?? 0,
             'kuota_aktif' => $kuota_aktif,
             'kuota_belum_terpakai' => $kuota_belum_terpakai,
