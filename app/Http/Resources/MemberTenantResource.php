@@ -20,7 +20,7 @@ class MemberTenantResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'is_subscription' => $this->is_subscription,
-            'cashier_subscription' => $this->cashear->count(),
+            'cashier_subscription' => $this->cashear->where('is_subscription',1)->count(),
             'kuota_kasir' => $this->kuota_kasir ?? 0,
         ];
         return $data;

@@ -73,6 +73,7 @@ class ProductBahanBakuServices
     public function delete($id)
     {
         $data = $this->show($id);
+        //Cek data digunakan
         $data->trans_stock()->delete();
         $data->delete();
         return true;
