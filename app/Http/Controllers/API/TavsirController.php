@@ -1070,7 +1070,7 @@ class TavsirController extends Controller
                         $payment_method->code,
                         $data->order_id,
                         'GetPay',
-                        $data->total,
+                        str_pad($data->total, 12, '0', STR_PAD_LEFT),
                         $data->tenant->name ?? 'Travoy',
                         $data->tenant->phone,
                         $data->tenant->email,
@@ -1078,7 +1078,6 @@ class TavsirController extends Controller
                         $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
                     );
 
-                    // dd($res);
                     if (isset($res['status']) && $res['status'] == 'success') {
                         $pay = null;
                         if ($data->payment === null) {

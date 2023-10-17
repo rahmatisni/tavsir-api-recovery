@@ -27,7 +27,7 @@ class LaJmto extends Model
         // if ($method == 'GET') {
         //     $request_body = '';
         // }
-        $signature = hash('sha512', $cid . ':' . $request_body . ':' . 'Bearer ' . $secretkey);
+        $signature = hash('sha512', $cid . ':' . $request_body . ':' . $secretkey);
         // dump($signature);
         // $privateKey = env('PG_PRIVATE_KEY');
         // $publicKey = env('PG_PUBLIC_KEY');
@@ -40,14 +40,16 @@ class LaJmto extends Model
     public static function service($method, $path, $payload)
     {
         $signature = self::generateSignature($payload);
+        // dd($payload, $signature);
+
         switch ($method) {
             case 'POST':
                 clock()->event("LA{$path}")->color('purple')->begin();
                 $response = Http::withHeaders([
                     'Content-Type' => 'Application/json',
-                    'cid' =>  env('LA_CID'),
+                    'cid' => env('LA_CID'),
                     'Signature' => $signature
-                    ])
+                ])
                     ->timeout(10)
                     ->retry(1, 100)
                     ->withoutVerifying()
@@ -59,14 +61,14 @@ class LaJmto extends Model
             case 'GET':
                 $response = Http::withHeaders([
                     'Content-Type' => 'Application/json',
-                    'cid' =>  env('LA_CID'),
+                    'cid' => env('LA_CID'),
                     'Signature' => $signature
-                    ])
+                ])
                     ->timeout(10)
                     ->retry(1, 100)
                     ->withoutVerifying()
                     ->get(env('LA_BASE_URL') . $path, $payload);
-                    clock()->event("LA{$path}")->end();
+                clock()->event("LA{$path}")->end();
 
                 return $response;
 
@@ -81,20 +83,21 @@ class LaJmto extends Model
     {
 
         $payload = [
-            "sof_code" => $sof_code,
-            "bill_id" => $bill_id,
-            "bill_name" => $bill_name,
-            "amount" => (string) $amount,
-            "desc" => $desc,
-            "exp_date" => Carbon::now()->addMinutes(5)->format('Y-m-d H:i:s'),
-            "va_type" => "close",
-            "phone" => $phone,
-            "email" => $email,
-            "customer_name" => $customer_name,
-            "submerchant_id" => $sub_merchant_id
+            "fee" => "000000020000",
+            "amount" => $amount,
+            "city" => "Jakarta",
+            "postalCode" => "12190",
+            "merchantName" => env('LA_MERCHANT_NAME'),
+            "merchantID" => env('LA_MERCHANT_ID'),
+            "merchantPan" => "9360091100245670000",
+            "merchantCriteria" => "UME",
+            "merchantTrxID" => "BEJO1234567890",
+            "partnerMerchantID" => "12345678910",
+            "nationalMerchantID" => "9183947593748374836"
         ];
 
         if (env('LA_FAKE_RESPON') === true) {
+            
 
             // $fake_respo_create_va = [
             //     "status" => "success",
@@ -124,13 +127,13 @@ class LaJmto extends Model
                 "responseData" => [
                     "sof_code" => $sof_code,
                     "va_number" => "7777700100299999",
-                    "bill" => $payload['amount'],
-                    "bill_id" => $payload['bill_id'],
-                    "bill_name" => $payload['bill_name'],
-                    "exp_date" => $payload['exp_date'],
-                    "phone" => $payload['phone'],
-                    "email" => $payload['email'],
-                    "customer_name" => $payload['customer_name'],
+                    "bill" => $amount,
+                    "bill_id" => $bill_id,
+                    "bill_name" => $bill_name,
+                    "exp_date" => '',
+                    "phone" => $phone,
+                    "email" => $email,
+                    "customer_name" => $customer_name,
                     "fee" => 0,
                     "responseCode" => "00",
                     "responseMessage" => "Success",
@@ -203,7 +206,7 @@ class LaJmto extends Model
                         // "amount" => $amount
                     ]
                 ]
-            ]; 
+            ];
             Http::fake([
                 env('LA_BASE_URL') . '/transaction/inform/status' => function () use ($fake_respon_status_va) {
                     return Http::response($fake_respon_status_va, 200);
