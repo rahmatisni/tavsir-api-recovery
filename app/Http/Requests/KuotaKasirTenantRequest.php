@@ -36,7 +36,7 @@ class KuotaKasirTenantRequest extends FormRequest
         // $sum_limit =  $this->subsciption_aktif;
         // dump($sum_limit);
 
-        $this->sisa_kuota = $this->subsciption_aktif - Tenant::byOwner()->sum('kuota_kasir');
+        $this->sisa_kuota = $this->subsciption_aktif - (Tenant::byOwner()->sum('kuota_kasir') - (Tenant::find($this->tenant_id ?? 0)?->kuota_kasir ?? 0));
         if($this->kuota_kasir < $this->sisa_kuota)
         {
             $this->min = $this->kasir_aktif;
