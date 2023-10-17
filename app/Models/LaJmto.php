@@ -17,51 +17,6 @@ use Illuminate\Support\Str;
 class LaJmto extends Model
 {
 
-    public static function getToken()
-    {
-        $token = Redis::get('token_pg');
-        if (!$token) {
-            $now = Carbon::now();
-            $hours = Carbon::now()->addMinute(59);
-            $diff = $now->diffInMinutes($hours) * 60;
-            $token = self::generateToken()['access_token'] ?? '';
-            if ($token == '') {
-                // throw new Exception("token not found",422);
-            }
-            Redis::set('token_pg', $token);
-            Redis::expire('token_pg', $diff);
-        }
-        return $token;
-    }
-
-    public static function generateToken()
-    {
-        if (env('PG_FAKE_RESPON') === true) {
-            //for fake
-            Http::fake([
-                env('PG_BASE_URL') . '/oauth/token' => function () {
-                    return Http::response([
-                        'access_token' => 'ini-fake-access-token',
-                        "token_type" => "Bearer",
-                        "expires_in" => 36000,
-                        "scope" => "resource.WRITE resource.READ"
-                    ], 200);
-                },
-            ]);
-            //end fake
-        }
-
-        clock()->event('oauth token')->color('purple')->begin();
-        $response = Http::withHeaders([
-            'Accept' => 'application/json',
-            'Authorization' => 'Basic ' . base64_encode(env('PG_CLIENT_ID') . ':' . env('PG_CLIENT_SECRET')),
-            'Content-Type' => 'application/json',
-        ])
-            ->withoutVerifying()
-            ->post(env('PG_BASE_URL') . '/oauth/token', ['grant_type' => 'client_credentials']);
-        clock()->event("oauth token")->end();
-        return $response->json();
-    }
 
     public static function generateSignature($method, $path, $token, $timestamp, $request_body)
     {
@@ -152,9 +107,6 @@ class LaJmto extends Model
 
     public static function qrCreate($sof_code, $bill_id, $bill_name, $amount, $desc, $phone, $email, $customer_name, $sub_merchant_id)
     {
-        // if ($amount > 1000000) {
-        //     throw new Exception("The amount must be less than 1000000", 422);
-        // }
 
         $payload = [
             "sof_code" => $sof_code,
