@@ -13,8 +13,19 @@ class TrProductResource extends JsonResource
      * @param  \Illuminate\Http\Request  $request
      * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
      */
+
+     
     public function toArray($request)
     {
+
+        $cek_product_have_not_active = $this->trans_product_raw->where('is_active',0)->count();
+        $stock = $this->stock;
+        if($this->is_composit == 1){
+            if($cek_product_have_not_active > 0){
+                $stock = 0;
+            }
+        }
+
         return [
             'id' => $this->id,
             'sku' => $this->sku,
@@ -25,10 +36,11 @@ class TrProductResource extends JsonResource
             'photo' => $this->photo ? asset($this->photo) : null,
             'discount' => $this->discount,
             'price' => $this->price,
-            'stock' => $this->stock,
+            'stock' => $stock,
             'is_active' => $this->is_active,
             'description' => $this->description,
             'customize' => CustomizeResource::collection($this->customize),
         ];
     }
+    
 }
