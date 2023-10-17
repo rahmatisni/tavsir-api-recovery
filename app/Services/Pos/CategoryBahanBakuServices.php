@@ -45,7 +45,7 @@ class CategoryBahanBakuServices
     {
         $data = Product::byType(ProductType::BAHAN_BAKU)->where('category_id', $id)->count();
         if ($data > 0) {
-            return response()->json(['message' => 'Kategori tidak dapat dihapus karna sudah digunakan pada produk'], 422);
+            return false;
         }
         $data = $this->show($id);
         $data->delete();
