@@ -71,7 +71,8 @@ class CategoryBahanBakuController extends Controller
         if($data == false){
             return response()->json(['message' => 'Kategori tidak dapat dihapus karna sudah digunakan pada produk'], 422);
         }
-        return response()->json(['message' => 'Kategori bahan baku berhasil dihapus!'], 200);
+        // return response()->json(['message' => 'Kategori bahan baku berhasil dihapus!'], 200);
+        return $this->response($data);
 
 
     }
