@@ -41,7 +41,7 @@ use App\Models\TransOrder;
 use App\Models\TransOrderDetil;
 use App\Models\PaymentMethod;
 use App\Models\PgJmto;
-use App\Models\LAJmto;
+use App\Models\LaJmto;
 
 use App\Models\RestArea;
 use App\Models\Tenant;
