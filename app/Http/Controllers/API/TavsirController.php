@@ -1077,7 +1077,9 @@ class TavsirController extends Controller
                         $data->nomor_name,
                         $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
                     );
-                    if ($res['status'] == 'success') {
+
+                    // dd($res);
+                    if (isset($res['status']) && $res['status'] == 'success') {
                         $pay = null;
                         if ($data->payment === null) {
                             $pay = new TransPayment();
@@ -1735,7 +1737,7 @@ class TavsirController extends Controller
                     $data_payment['amount']
                 );
     
-                if ($res['status'] == 'success') {
+                if (isset($res['status']) && $res['status'] == 'success') {
                     $res_data = $res['responseData'];
                     $res_data['fee'] = $data_payment['fee'];
                     $res_data['bill'] = $data_payment['bill'];
@@ -1768,6 +1770,9 @@ class TavsirController extends Controller
                         return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                     }
                     $data->payment()->update(['data' => $res_data]);
+                }
+                else {
+                    return response()->json($res, 500);
                 }
                 DB::commit();
                 return response()->json($res);

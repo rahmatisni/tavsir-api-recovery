@@ -18,83 +18,55 @@ class LaJmto extends Model
 {
 
 
-    public static function generateSignature($method, $path, $token, $timestamp, $request_body)
+    public static function generateSignature($request_body)
     {
         $request_body = json_encode($request_body);
+        $cid = env('LA_CID');
+        $secretkey = env('LA_SECRETKEY');
 
-        if ($method == 'GET') {
-            $request_body = '';
-        }
-        $has_body = hash('sha256', $request_body);
-
-        $data = $method . ':' . $path . ':' . 'Bearer ' . $token . ':' . $has_body . ':' . $timestamp;
-
-        $privateKey = env('PG_PRIVATE_KEY');
-        $publicKey = env('PG_PUBLIC_KEY');
-        openssl_sign($data, $signature, $privateKey, 'sha256WithRSAEncryption');
-        $sign = Base64::encode($signature);
-        $verify = openssl_verify($data, $signature, $publicKey, 'sha256WithRSAEncryption');
-        return $sign;
+        // if ($method == 'GET') {
+        //     $request_body = '';
+        // }
+        $signature = hash('sha512', $cid . ':' . $request_body . ':' . 'Bearer ' . $secretkey);
+        // dump($signature);
+        // $privateKey = env('PG_PRIVATE_KEY');
+        // $publicKey = env('PG_PUBLIC_KEY');
+        // openssl_sign($data, $signature, $privateKey, 'sha256WithRSAEncryption');
+        // $sign = Base64::encode($signature);
+        // $verify = openssl_verify($data, $signature, $publicKey, 'sha256WithRSAEncryption');
+        return $signature;
     }
 
     public static function service($method, $path, $payload)
     {
-        $token = self::getToken();
-        $timestamp = Carbon::now()->format('c');
-        $signature = self::generateSignature($method, $path, $token, $timestamp, $payload);
+        $signature = self::generateSignature($payload);
         switch ($method) {
             case 'POST':
-                clock()->event("pg{$path}")->color('purple')->begin();
+                clock()->event("LA{$path}")->color('purple')->begin();
                 $response = Http::withHeaders([
-                    'JMTO-TIMESTAMP' => $timestamp,
-                    'JMTO-SIGNATURE' => $signature,
-                    'JMTO-DEVICE-ID' => env('PG_DEVICE_ID', '123456789'),
-                    'CHANNEL-ID' => 'PC',
-                    'JMTO-LATITUDE' => '106.8795316',
-                    'JMTO-LONGITUDE' => '-6.2927969',
                     'Content-Type' => 'Application/json',
-                    'Authorization' => 'Bearer ' . $token,
-                    'JMTO-IP-CLIENT' => '172.0.0.1',
-                    'JMTO-REQUEST-ID' => '123456789',
-                ])
+                    'cid' =>  env('LA_CID'),
+                    'Signature' => $signature
+                    ])
                     ->timeout(10)
                     ->retry(1, 100)
                     ->withoutVerifying()
-                    ->post(env('PG_BASE_URL') . $path, $payload);
-                clock()->event("pg{$path}")->end();
+                    ->post(env('LA_BASE_URL') . $path, $payload);
+                clock()->event("LA{$path}")->end();
 
-                // $bad = $response?->getStatusCode();
-                // Log::error($bad);
-                // if ($bad === 400 || $bad === 504) {
-                //     $fake_respo_create_bad = [
-                //         "status" => 400,
-                //         "responseData" => [
-                //             "is_presentage" => null,
-                //             "value" => null
-                //         ]
-                //     ];
-
-                //     return $fake_respo_create_bad;
-                //     // You don't need a break statement here as it's not inside a loop.
-                // }
                 return $response;
+
             case 'GET':
                 $response = Http::withHeaders([
-                    'JMTO-TIMESTAMP' => $timestamp,
-                    'JMTO-SIGNATURE' => $signature,
-                    'JMTO-DEVICE-ID' => env('PG_DEVICE_ID', '123456789'),
-                    'CHANNEL-ID' => 'PC',
-                    'JMTO-LATITUDE' => '106.8795316',
-                    'JMTO-LONGITUDE' => '-6.2927969',
                     'Content-Type' => 'Application/json',
-                    'Authorization' => 'Bearer ' . $token,
-                    'JMTO-IP-CLIENT' => '172.0.0.1',
-                    'JMTO-REQUEST-ID' => '123456789',
-                ])
+                    'cid' =>  env('LA_CID'),
+                    'Signature' => $signature
+                    ])
                     ->timeout(10)
                     ->retry(1, 100)
                     ->withoutVerifying()
-                    ->get(env('PG_BASE_URL') . $path, $payload);
+                    ->get(env('LA_BASE_URL') . $path, $payload);
+                    clock()->event("LA{$path}")->end();
 
                 return $response;
 
@@ -122,78 +94,71 @@ class LaJmto extends Model
             "submerchant_id" => $sub_merchant_id
         ];
 
-        if (env('PG_FROM_TRAVOY') === true) {
-            return Http::withoutVerifying()->post(env('TRAVOY_URL') . '/pg-jmto', [
-                'method' => 'POST',
-                'path' => '/va/create',
-                'payload' => $payload
-            ])->json();
-        }
+        if (env('LA_FAKE_RESPON') === true) {
 
-        if (env('PG_FAKE_RESPON') === true) {
+            // $fake_respo_create_va = [
+            //     "status" => "success",
+            //     "rc" => "0000",
+            //     "rcm" => "success",
+            //     "responseData" => [
+            //         "sof_code" => $sof_code,
+            //         "va_number" => "7777700100299999",
+            //         "bill" => $payload['amount'],
+            //         "fee" => "1000",
+            //         "amount" => (string) $amount + 1000,
+            //         "bill_id" => $payload['bill_id'],
+            //         "bill_name" => $payload['bill_name'],
+            //         "desc" => $payload['desc'],
+            //         "exp_date" => $payload['exp_date'],
+            //         "refnum" => "VA" . Carbon::now()->format('YmdHis'),
+            //         "phone" => $payload['phone'],
+            //         "email" => $payload['email'],
+            //         "customer_name" => $payload['customer_name'],
+            //     ],
+            //     "requestData" => $payload
+            // ];
             $fake_respo_create_va = [
                 "status" => "success",
                 "rc" => "0000",
-                "rcm" => "success",
+                "msg" => "success",
                 "responseData" => [
                     "sof_code" => $sof_code,
                     "va_number" => "7777700100299999",
                     "bill" => $payload['amount'],
-                    "fee" => "1000",
-                    "amount" => (string) $amount + 1000,
                     "bill_id" => $payload['bill_id'],
                     "bill_name" => $payload['bill_name'],
-                    "desc" => $payload['desc'],
                     "exp_date" => $payload['exp_date'],
-                    "refnum" => "VA" . Carbon::now()->format('YmdHis'),
                     "phone" => $payload['phone'],
                     "email" => $payload['email'],
                     "customer_name" => $payload['customer_name'],
-                ],
-                "requestData" => $payload
+                    "fee" => 0,
+                    "responseCode" => "00",
+                    "responseMessage" => "Success",
+                    "qrString" => "00020101021226700017COM.TELKOMSEL.WWW0119936009110024567000002159203310116150010303UME520411115802ID5907Chatime6007Jakarta61051219062180114BEJO12345678905303360550202560320054031006304A1DE",
+                    "merchantTrxID" => $bill_id,
+                    "amount" => $amount,
+                    "trxid" => $bill_id,
+                    "desc" => $desc,
+                    "opt_key" => "",
+                    "opt_value" => "",
+                    "LINK_URL" => "https://linkaja.id/applink/payment?data=8hAr3Yn8TsCQGSEINbjHA7cv5iTiHNcx90k31IjBJQTNQMLXVdW1Kc_yNmF3nLYWY6_aDrSwYgB9JeeiAJ1c0iunWIak6K_2Ojstgv8uv_lg5rTed5PUthNdXm-EcqMLO2aLeabCF-qjgH2yvbg7TnNZlmLkkYi8_nEfHmpAG_ffrbTrHw3wa4-LT61VwrLYR3e3-8VaOlDRbQpNU5Al5wxSt8SmCH24gOvmESiQRTF3a4OHdgKCrJTtn15Fqm0YYOdClKAeCUqC4k8qEg_xUdeeF54B2G9yF3rY1-Cook1TzFl5nl739mYBvCmXUVcgTPG0wqhxkCqQ98FO0X97p9AENIoV6zFZeyks6hsFWopwoyRo1ZcgfFfrg_j8zR2ZhVB9v2xKfYGFnj1SIUyvHYwuwrau5c8Qb-0-GWhEzlSeDBHxfTZJuw==",
+                    "refnum" => "LINK62785f8fc668a"
+                ]
             ];
 
             Http::fake([
-                env('PG_BASE_URL') . '/va/create' => function () use ($fake_respo_create_va) {
+                env('LA_BASE_URL') . '/qr/generate' => function () use ($fake_respo_create_va) {
                     return Http::response($fake_respo_create_va, 200);
                 }
             ]);
             //end fake
         }
 
-        // $res = self::service('POST', '/va/create', $payload);
-        $res = [
-            "status" => "success",
-            "rc" => "0000",
-            "msg" => "success",
-            "responseData" => [
-                "sof_code" => $sof_code,
-                "va_number" => "7777700100299999",
-                "bill" => $payload['amount'],
-                "bill_id" => $payload['bill_id'],
-                "bill_name" => $payload['bill_name'],
-                "exp_date" => $payload['exp_date'],
-                "phone" => $payload['phone'],
-                "email" => $payload['email'],
-                "customer_name" => $payload['customer_name'],
-                "fee" => 0,
-                "responseCode" => "00",
-                "responseMessage" => "Success",
-                "qrString" => "00020101021226700017COM.TELKOMSEL.WWW0119936009110024567000002159203310116150010303UME520411115802ID5907Chatime6007Jakarta61051219062180114BEJO12345678905303360550202560320054031006304A1DE",
-                "merchantTrxID" => $bill_id,
-                "amount" => $amount,
-                "trxid" => $bill_id,
-                "desc" => $desc,
-                "opt_key" => "",
-                "opt_value" => "",
-                "LINK_URL" => "https://linkaja.id/applink/payment?data=8hAr3Yn8TsCQGSEINbjHA7cv5iTiHNcx90k31IjBJQTNQMLXVdW1Kc_yNmF3nLYWY6_aDrSwYgB9JeeiAJ1c0iunWIak6K_2Ojstgv8uv_lg5rTed5PUthNdXm-EcqMLO2aLeabCF-qjgH2yvbg7TnNZlmLkkYi8_nEfHmpAG_ffrbTrHw3wa4-LT61VwrLYR3e3-8VaOlDRbQpNU5Al5wxSt8SmCH24gOvmESiQRTF3a4OHdgKCrJTtn15Fqm0YYOdClKAeCUqC4k8qEg_xUdeeF54B2G9yF3rY1-Cook1TzFl5nl739mYBvCmXUVcgTPG0wqhxkCqQ98FO0X97p9AENIoV6zFZeyks6hsFWopwoyRo1ZcgfFfrg_j8zR2ZhVB9v2xKfYGFnj1SIUyvHYwuwrau5c8Qb-0-GWhEzlSeDBHxfTZJuw==",
-                "refnum" => "LINK62785f8fc668a"
-            ]
-        ];
-
+        $res = self::service('POST', '/qr/generate', $payload);
+        // dd($res->json());
         Log::info($payload);
-        Log::info('Va create res', $res);
-        return $res;
+        // Log::info('Va create res', $res);
+        return $res->json();
     }
 
     public static function qrStatus($sof_code, $bill_id, $va_number, $refnum, $phone, $email, $customer_name, $submerchant_id, $amount)
@@ -209,79 +174,77 @@ class LaJmto extends Model
             "submerchant_id" => $submerchant_id ?? ''
         ];
 
-        if (env('PG_FROM_TRAVOY') === true) {
-            return Http::withoutVerifying()->post(env('TRAVOY_URL') . '/pg-jmto', [
-                'method' => 'POST',
-                'path' => '/va/cekstatus',
-                'payload' => $payload
-            ])->json();
-        }
-
-        if (env('PG_FAKE_RESPON') === true) {
+        if (env('LA_FAKE_RESPON') === true) {
             //for fake
             $fake_respon_status_va = [
                 "status" => "success",
                 "rc" => "0000",
-                "rcm" => "success",
+                "msg" => "success",
                 "responseData" => [
-                    "sof_code" => $payload['sof_code'],
-                    "bill_id" => $payload['bill_id'],
-                    "va_number" => $payload['va_number'],
                     "pay_status" => "1",
-                    "amount" => "99999.00",
-                    "bill_name" => "FAKE BILL NAME",
-                    "desc" => "FAKE DESC",
-                    "exp_date" => "2022-08-12 00:00:00",
-                    "refnum" => "VA20220811080829999999",
-                    "phone" => $payload['phone'],
-                    "email" => $payload['email'],
-                    "customer_name" => $payload['customer_name'],
-                ],
-                "requestData" => $payload
-            ];
+                    "sof_code" => $sof_code,
+                    "bill" => $amount,
+                    "fee" => 0,
+                    "amount" => $amount,
+                    "trxid" => $bill_id,
+                    "remarks" => "",
+                    "refnum" => "",
+                    "pay_refnum" => "",
+                    "email" => $email,
+                    "phone" => $phone,
+                    "customer_name" => $customer_name,
+                    "status" => "00",
+                    "message" => "SUCCESS",
+                    "data" => [
+                        "bill_id" => $bill_id,
+                        "trxId" => $bill_id,
+                        "fromAccount" => "9360001430000034980",
+                        "trxDate" => "0719185915",
+                        // "amount" => $amount
+                    ]
+                ]
+            ]; 
             Http::fake([
-                env('PG_BASE_URL') . '/va/cekstatus' => function () use ($fake_respon_status_va) {
+                env('LA_BASE_URL') . '/transaction/inform/status' => function () use ($fake_respon_status_va) {
                     return Http::response($fake_respon_status_va, 200);
                 }
             ]);
             //end fake
         }
 
-        // $res = self::service('POST', '/va/cekstatus', $payload);
-        $res = [
-            "status" => "success",
-            "rc" => "0000",
-            "msg" => "success",
-            "responseData" => [
-                "pay_status" => "1",
-                "sof_code" => $sof_code,
-                "bill" => $amount,
-                "fee" => 0,
-                "amount" => $amount,
-                "trxid" => $bill_id,
-                "remarks" => "",
-                "refnum" => "",
-                "pay_refnum" => "",
-                "email" => $email,
-                "phone" => $phone,
-                "customer_name" => $customer_name,
-                "status" => "00",
-                "message" => "SUCCESS",
-                "data" => [
-                    "bill_id" => $bill_id,
-                    "trxId" => $bill_id,
-                    "fromAccount" => "9360001430000034980",
-                    "trxDate" => "0719185915",
-                    // "amount" => $amount
-                ]
-            ]
-        ];
+        $res = self::service('POST', '/transaction/inform/status', $payload);
+        // $res = [
+        //     "status" => "success",
+        //     "rc" => "0000",
+        //     "msg" => "success",
+        //     "responseData" => [
+        //         "pay_status" => "1",
+        //         "sof_code" => $sof_code,
+        //         "bill" => $amount,
+        //         "fee" => 0,
+        //         "amount" => $amount,
+        //         "trxid" => $bill_id,
+        //         "remarks" => "",
+        //         "refnum" => "",
+        //         "pay_refnum" => "",
+        //         "email" => $email,
+        //         "phone" => $phone,
+        //         "customer_name" => $customer_name,
+        //         "status" => "00",
+        //         "message" => "SUCCESS",
+        //         "data" => [
+        //             "bill_id" => $bill_id,
+        //             "trxId" => $bill_id,
+        //             "fromAccount" => "9360001430000034980",
+        //             "trxDate" => "0719185915",
+        //             // "amount" => $amount
+        //         ]
+        //     ]
+        // ];
 
 
         Log::info($payload);
-        Log::info('Va create res', $res);
-        return $res;
-        Log::info(['Payload PG =>', $payload, 'Va status => ', $res->json()]);
+        // Log::info(['Payload PG =>', $payload, 'Va status => ', $res->json()]);
         return $res->json();
     }
 
