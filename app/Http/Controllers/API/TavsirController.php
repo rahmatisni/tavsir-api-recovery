@@ -822,26 +822,35 @@ class TavsirController extends Controller
     public function paymentMethod(Request $request)
     {
         $paymentMethods = PaymentMethod::all();
-        $removes = [];
-        $remove = [];
-
-        $self_order = ['5', '7', '9'];
-        $travshop = ['5', '6', '7', '8', '9', '10'];
-        $tavsir = ['1', '2', '3', '10'];
-
-
-
+        $self_order = [5,7,9,11];
+        $travshop = [5, 6, 7, 8, 9, 11];
+        $tavsir = [1,2,3,4,10];
+        
         if ($request->trans_order_id) {
             $trans_order = TransOrder::with('tenant')->findOrfail($request->trans_order_id);
             $param_removes = Tenant::where('id', $trans_order->tenant_id)->first();
+            if($param_removes == null && $trans_order->order_type == 'ORDER_TRAVOY'){
+                $self_order =[];
+                $travshop = [5, 6, 7, 8, 9, 11];
+                $tavsir = [];
 
-            // dd($param_removes->list_payment);
-
-            if ($param_removes == null) {
-                $removes = [1, 2];
-            } else {
-                $removes = json_decode($param_removes?->list_payment) ?? [1, 2, 3];
             }
+            else {
+                $intersect = json_decode($param_removes->list_payment);           
+                if($param_removes->list_payment == null){
+                    $self_order = [];
+                    $travshop = [];
+                    $tavsir = [1,2];
+                }
+                else {
+                    $self_order = array_intersect($self_order, $intersect);
+                    $travshop = array_intersect($travshop, $intersect);
+                    $tavsir = array_intersect($tavsir, $intersect);
+                }
+
+            }
+           
+
 
             $tenant = $trans_order->tenant;
             $tenant_is_verified = $tenant?->is_verified;
@@ -876,24 +885,29 @@ class TavsirController extends Controller
 
                 if (in_array($value->id, $self_order)) {
                     $value->self_order = true;
+                    // dump(['so',$value->id, $self_order,true]);
                 }
 
                 if (in_array($value->id, $travshop)) {
                     $value->travshop = true;
+
+                    // dump(['tng',$value->id, $travshop,true]);
                 }
                 if (in_array($value->id, $tavsir)) {
                     $value->tavsir = true;
+
+                    // dump(['pos',$value->id, $travshop, true]);
                 }
 
-                if ($trans_order->order_type != TransOrder::ORDER_TRAVOY) {
+                // if ($trans_order->order_type != TransOrder::ORDER_TRAVOY) {
 
-                    if (in_array($value->id, $removes)) {
-                        $value->self_order = false;
-                        $value->travshop = false;
-                        $value->tavsir = false;
-                    }
+                //     if (in_array($value->id, $removes)) {
+                //         $value->self_order = false;
+                //         $value->travshop = false;
+                //         $value->tavsir = false;
+                //     }
 
-                }
+                // }
 
 
                 if ($value?->sof_id) {
@@ -923,12 +937,14 @@ class TavsirController extends Controller
 
         }
 
+        // dd('x');
+
         // $merchant = PgJmto::listSubMerchant();
         // log::info($merchant);
         // $paymentMethods = $paymentMethods->whereNotIn('id', $remove);
         return response()->json($paymentMethods);
     }
-
+    
     public function createPayment(TsCreatePaymentRequest $request, $id)
     {
 
