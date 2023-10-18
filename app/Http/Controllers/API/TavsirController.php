@@ -1086,7 +1086,7 @@ class TavsirController extends Controller
                         $payment_method->code,
                         $data->order_id,
                         'GetPay',
-                        str_pad($data->total, 12, '0', STR_PAD_LEFT),
+                        $data->total,
                         $data->tenant->name ?? 'Travoy',
                         $data->tenant->phone,
                         $data->tenant->email,
@@ -1740,22 +1740,12 @@ class TavsirController extends Controller
 
             if ($data->payment_method->code_name == 'pg_link_aja') {
                 $res = LAJmto::qrStatus(
-                    $data_payment['sof_code'],
-                    $data_payment['bill_id'],
-                    $data_payment['va_number'],
-                    $data_payment['refnum'],
-                    $data_payment['phone'],
-                    $data_payment['email'],
-                    $data_payment['customer_name'],
-                    // $data_payment['submerchant_id']
-                    $data->sub_merchant_id,
-                    $data_payment['amount']
+                    $data_payment['bill_id']
                 );
     
                 if (isset($res['status']) && $res['status'] == 'success') {
                     $res_data = $res['responseData'];
                     $res_data['fee'] = $data_payment['fee'];
-                    $res_data['bill'] = $data_payment['bill'];
                     $kios = [];
                     if ($res_data['pay_status'] === '1') {
                         if ($data->status === TransOrder::WAITING_PAYMENT) {

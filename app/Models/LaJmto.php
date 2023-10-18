@@ -27,14 +27,16 @@ class LaJmto extends Model
         // if ($method == 'GET') {
         //     $request_body = '';
         // }
-        $signature = hash('sha512', $cid . ':' . $request_body . ':' . $secretkey);
+        $signature = $cid . ':' . $request_body . ':' . $secretkey;
+        $hmacSignature = hash_hmac('sha512', $signature, $secretkey);
+
         // dump($signature);
         // $privateKey = env('PG_PRIVATE_KEY');
         // $publicKey = env('PG_PUBLIC_KEY');
         // openssl_sign($data, $signature, $privateKey, 'sha256WithRSAEncryption');
         // $sign = Base64::encode($signature);
         // $verify = openssl_verify($data, $signature, $publicKey, 'sha256WithRSAEncryption');
-        return $signature;
+        return $hmacSignature;
     }
 
     public static function service($method, $path, $payload)
@@ -81,19 +83,19 @@ class LaJmto extends Model
 
     public static function qrCreate($sof_code, $bill_id, $bill_name, $amount, $desc, $phone, $email, $customer_name, $sub_merchant_id)
     {
+        // dd($bill_id);
 
         $payload = [
-            "fee" => "000000020000",
-            "amount" => $amount,
+            "fee"  =>str_pad(env('PLATFORM_FEE'), 12, '0', STR_PAD_LEFT),
+            "amount" =>str_pad($amount, 12, '0', STR_PAD_LEFT),
             "city" => "Jakarta",
             "postalCode" => "12190",
             "merchantName" => env('LA_MERCHANT_NAME'),
             "merchantID" => env('LA_MERCHANT_ID'),
-            "merchantPan" => "9360091100245670000",
+            "merchantPan" => env('LA_MERCHANT_PAN'),
             "merchantCriteria" => "UME",
-            "merchantTrxID" => "BEJO1234567890",
-            "partnerMerchantID" => "12345678910",
-            "nationalMerchantID" => "9183947593748374836"
+            "merchantTrxID" => str_replace('-', '', $bill_id),
+            "partnerMerchantID" => "12345678910", //tenant merchdant i
         ];
 
         if (env('LA_FAKE_RESPON') === true) {
@@ -157,24 +159,62 @@ class LaJmto extends Model
             //end fake
         }
 
-        $res = self::service('POST', '/qr/generate', $payload);
-        // dd($res->json());
-        Log::info($payload);
+        $res = self::service('POST', '/qr/generate', $payload)->json();
+        // dd($res);
+        if($res['responseCode'] == 00){
+        $response = [
+            "status" => "success",
+            "rc" => "0000",
+            "msg" => "success",
+            "responseData" => [
+                "sof_code" => $sof_code,
+                "bill_id" => $bill_id,
+                "bill_name" => $bill_name,
+                "exp_date" => '',
+                "phone" => $phone,
+                "email" => $email,
+                "customer_name" => $customer_name,
+                "fee" => 0,
+                "responseCode" => $res['responseCode'],
+                "responseMessage" => $res['responseMessage'],
+                "qrString" =>  $res['qrString'],
+                "merchantTrxID" => $res['merchantTrxID'],
+                "amount" => $amount,
+                "trxid" => $bill_id,
+                "desc" => $desc,
+                "opt_key" => "",
+                "opt_value" => "",
+                "LINK_URL" => "https://linkaja.id/applink/payment?data=8hAr3Yn8TsCQGSEINbjHA7cv5iTiHNcx90k31IjBJQTNQMLXVdW1Kc_yNmF3nLYWY6_aDrSwYgB9JeeiAJ1c0iunWIak6K_2Ojstgv8uv_lg5rTed5PUthNdXm-EcqMLO2aLeabCF-qjgH2yvbg7TnNZlmLkkYi8_nEfHmpAG_ffrbTrHw3wa4-LT61VwrLYR3e3-8VaOlDRbQpNU5Al5wxSt8SmCH24gOvmESiQRTF3a4OHdgKCrJTtn15Fqm0YYOdClKAeCUqC4k8qEg_xUdeeF54B2G9yF3rY1-Cook1TzFl5nl739mYBvCmXUVcgTPG0wqhxkCqQ98FO0X97p9AENIoV6zFZeyks6hsFWopwoyRo1ZcgfFfrg_j8zR2ZhVB9v2xKfYGFnj1SIUyvHYwuwrau5c8Qb-0-GWhEzlSeDBHxfTZJuw==",
+                "refnum" => "LINK62785f8fc668a"
+            ]
+        ];
+        return $response;
+
+        }
+        else {
+            $response = [
+                "status" => "error",
+                "rc" => $res['responseCode'],
+                "msg" => $res['responseMessage'],
+            ];
+             
+            return $response;
+        }
+        // Log::info([$payload, $response]);
         // Log::info('Va create res', $res);
-        return $res->json();
+        // return $response;
     }
 
-    public static function qrStatus($sof_code, $bill_id, $va_number, $refnum, $phone, $email, $customer_name, $submerchant_id, $amount)
+    public static function qrStatus($bill_id)
     {
+        // $payload = [
+        //     env('LA_MERCHANT_ID'),
+        //     "merchantTrxID" =>str_replace('-', '', $bill_id)
+        // ];
+        
         $payload = [
-            "sof_code" => $sof_code,
-            "bill_id" => $bill_id,
-            "va_number" => $va_number,
-            "refnum" => $refnum,
-            "phone" => $phone,
-            "email" => $email,
-            "customer_name" => $customer_name,
-            "submerchant_id" => $submerchant_id ?? ''
+            "merchantID" =>  '605111309311801',
+            "merchantTrxID" => 'TEST7329893845'
         ];
 
         if (env('LA_FAKE_RESPON') === true) {
@@ -215,7 +255,8 @@ class LaJmto extends Model
             //end fake
         }
 
-        $res = self::service('POST', '/transaction/inform/status', $payload);
+        $res = self::service('POST', '/transaction/inform/status', $payload)->json();
+        // dd($res);
         // $res = [
         //     "status" => "success",
         //     "rc" => "0000",
@@ -245,11 +286,47 @@ class LaJmto extends Model
         //     ]
         // ];
 
+        if($res['status'] == 00){
+            $response = [
+                "status" => "success",
+                "rc" => "0000",
+                "msg" => "success",
+                "responseData" => [
+                    "pay_status" => '1',
+                    "bill_id" => $bill_id,
+                    "fee" => 0,
+                    "responseMessage" => $res['message'],
+                    "merchantTrxID" => $res['data']['trxId'],
+                    "trxid" =>$res['data']['trxId'],
+                    "fromAccount" =>$res['data']['fromAccount'],
+                    "trxDate" =>  $res['data']['trxDate'],
+                    "amount" => $res['data']['amount'],
+                ]
+            ];
+            return $response;
+    
+            }
+            else {
+                $response = [
+                    "status" => "error",
+                    "rc" => $res['status'],
+                    "msg" => $res['message'],
+                ];
+                 
+                return $response;
+            }
+            // 
 
-        Log::info($payload);
-        // Log::info(['Payload PG =>', $payload, 'Va status => ', $res->json()]);
-        return $res->json();
+
+        // Log::info($payload);
+        // // Log::info(['Payload PG =>', $payload, 'Va status => ', $res->json()]);
+        // return $res;
     }
+
+
+
+    // 
+    // 
 
     public static function vaBriDelete($sof_code, $bill_id, $va_number, $refnum, $phone, $email, $customer_name)
     {
