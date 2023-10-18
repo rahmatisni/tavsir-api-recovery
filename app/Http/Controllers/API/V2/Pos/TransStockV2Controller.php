@@ -86,13 +86,13 @@ class TransStockV2Controller extends Controller
     {
         $data = $this->service->listProduk();
         // return $data;
-        return ['data' => response()->json(DropDownResource::collection($data))];
+        return DropDownResource::collection($data);
     }
     public function listprodukRAW()
     {
         $data = $this->service->listProdukRAW();
         // return $data;
-        return ['data' => response()->json(DropDownResource::collection($data))];
+        return DropDownResource::collection($data);
 
     }
 }
