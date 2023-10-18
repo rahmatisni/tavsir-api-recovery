@@ -21,7 +21,7 @@ class DropDownResource extends JsonResource
             "name" => $this->name,
             "sku" =>  $this->sku,
             "category_id" => $this->category_id,
-            "photo" => $this->photo,
+            'photo' => $this->photo ? asset($this->photo) : null,
             "discount" => $this->discount,
             "price" => $this->price,
             "is_active" => $this->is_active,
