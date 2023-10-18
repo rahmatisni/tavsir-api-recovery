@@ -7,6 +7,8 @@ use App\Http\Requests\TransStockStoreRequest;
 use App\Http\Resources\Pos\TransStockDetilResource;
 use App\Http\Resources\Pos\TransStockKartuResource;
 use App\Http\Resources\Pos\TransStockResource;
+use App\Http\Resources\Pos\DropDownResource;
+
 use App\Models\User;
 use App\Services\Pos\StockServices;
 use Illuminate\Http\Request;
@@ -83,11 +85,12 @@ class TransStockV2Controller extends Controller
     public function listproduk()
     {
         $data = $this->service->listProduk();
-        return $this->response($data);
+        return response()->json(DropDownResource::collection($data));
     }
     public function listprodukRAW()
     {
         $data = $this->service->listProdukRAW();
-        return $this->response($data);
+        return response()->json(DropDownResource::collection($data));
+
     }
 }

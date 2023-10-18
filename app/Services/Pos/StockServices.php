@@ -173,11 +173,9 @@ class StockServices
     }
 
     public function listProduk(){
-        $data = Product::byTenant()->byType(ProductType::PRODUCT)->where('is_composit', 0)->orderby('name','asc')->get();
-        return $data;
+        return Product::with('category','customize','tenant','satuan')->byTenant()->byType(ProductType::PRODUCT)->where('is_composit', 0)->orderby('name','asc')->get();
     }
     public function listProdukRAW(){
-        $data = Product::byTenant()->byType(ProductType::BAHAN_BAKU)->orderby('name','asc')->get();
-        return $data;
+        return Product::with('category','customize','tenant','satuan')->byTenant()->byType(ProductType::BAHAN_BAKU)->orderby('name','asc')->get();
     }
 }
