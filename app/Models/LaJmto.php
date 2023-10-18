@@ -146,8 +146,10 @@ class LaJmto extends Model
                     "desc" => $desc,
                     "opt_key" => "",
                     "opt_value" => "",
-                    "LINK_URL" => "https://linkaja.id/applink/payment?data=8hAr3Yn8TsCQGSEINbjHA7cv5iTiHNcx90k31IjBJQTNQMLXVdW1Kc_yNmF3nLYWY6_aDrSwYgB9JeeiAJ1c0iunWIak6K_2Ojstgv8uv_lg5rTed5PUthNdXm-EcqMLO2aLeabCF-qjgH2yvbg7TnNZlmLkkYi8_nEfHmpAG_ffrbTrHw3wa4-LT61VwrLYR3e3-8VaOlDRbQpNU5Al5wxSt8SmCH24gOvmESiQRTF3a4OHdgKCrJTtn15Fqm0YYOdClKAeCUqC4k8qEg_xUdeeF54B2G9yF3rY1-Cook1TzFl5nl739mYBvCmXUVcgTPG0wqhxkCqQ98FO0X97p9AENIoV6zFZeyks6hsFWopwoyRo1ZcgfFfrg_j8zR2ZhVB9v2xKfYGFnj1SIUyvHYwuwrau5c8Qb-0-GWhEzlSeDBHxfTZJuw==",
-                    "refnum" => "LINK62785f8fc668a"
+                    "LINK_URL" => "",
+                    "refnum" => "",
+                    "merchantName" => env('LA_MERCHANT_NAME'),
+                    "nationalMerchantID" => "9183947593748374836"
                 ]
             ];
 
@@ -170,9 +172,9 @@ class LaJmto extends Model
                 "sof_code" => $sof_code,
                 "bill_id" => $bill_id,
                 "bill_name" => $bill_name,
-                "exp_date" => '',
                 "phone" => $phone,
                 "email" => $email,
+                "exp_date" => Carbon::now(),
                 "customer_name" => $customer_name,
                 "fee" => 0,
                 "responseCode" => $res['responseCode'],
