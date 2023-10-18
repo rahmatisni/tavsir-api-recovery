@@ -174,7 +174,7 @@ class LaJmto extends Model
                 "bill_name" => $bill_name,
                 "phone" => $phone,
                 "email" => $email,
-                "exp_date" => Carbon::now(),
+                "exp_date" => Carbon::now()->addMinutes(5)->format('Y-m-d H:i:s'),
                 "customer_name" => $customer_name,
                 "fee" => 0,
                 "responseCode" => $res['responseCode'],
