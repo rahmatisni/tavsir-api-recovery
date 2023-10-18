@@ -173,9 +173,13 @@ class StockServices
     }
 
     public function listProduk(){
-        return Product::with('category','customize','tenant','satuan')->byTenant()->byType(ProductType::PRODUCT)->where('is_composit', 0)->orderby('name','asc')->get();
+        return Product::
+        // with('category','customize','tenant','satuan')->
+        byTenant()->byType(ProductType::PRODUCT)->where('is_composit', 0)->orderby('name','asc')->get();
     }
     public function listProdukRAW(){
-        return Product::with('category','customize','tenant','satuan')->byTenant()->byType(ProductType::BAHAN_BAKU)->orderby('name','asc')->get();
+        return Product::
+        // with('category','customize','tenant','satuan')->
+        byTenant()->byType(ProductType::BAHAN_BAKU)->orderby('name','asc')->get();
     }
 }
