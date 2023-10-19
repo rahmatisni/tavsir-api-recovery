@@ -134,10 +134,12 @@ class LaJmto extends Model
 
         // Get the last element
         $lastElement = end($parts);
+        // "fee"  =>str_pad(env('PLATFORM_FEE'), 12, '0', STR_PAD_LEFT),
+        //     "amount" =>str_pad($amount, 12, '0', STR_PAD_LEFT),
 
         $payload = [
-            "fee"  =>str_pad(env('PLATFORM_FEE'), 12, '0', STR_PAD_LEFT),
-            "amount" =>str_pad($amount, 12, '0', STR_PAD_LEFT),
+            "fee"  =>0,
+            "amount" =>$amount,
             "city" => "Jakarta",
             "postalCode" => "12190",
             "merchantName" => env('LA_MERCHANT_NAME'),
