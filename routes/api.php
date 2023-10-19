@@ -172,7 +172,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/subscription/reject/{id}', [App\Http\Controllers\API\SubscriptionController::class, 'reject']);
         Route::post('/subscription/kuota-kasir', [App\Http\Controllers\API\SubscriptionController::class, 'kuotaKasirTenant']);
         Route::get('/subscription/tenant-owner', [App\Http\Controllers\API\SubscriptionController::class, 'showMemberTenantOwner']);
-        Route::get('/subscription/tenant-cashier/{id?}', [App\Http\Controllers\API\SubscriptionController::class, 'showKasirTenant']);
+        Route::get('/subscription/tenant-cashier/{id}', [App\Http\Controllers\API\SubscriptionController::class, 'showKasirTenant']);
         Route::post('/subscription/mapping-tenant', [App\Http\Controllers\API\SubscriptionController::class, 'maapingSubscriptionTenant']);
         Route::post('/subscription/mapping-kasir', [App\Http\Controllers\API\SubscriptionController::class, 'maapingSubscriptionKasir']);
         Route::get('/subscription', [App\Http\Controllers\API\SubscriptionController::class, 'index']);

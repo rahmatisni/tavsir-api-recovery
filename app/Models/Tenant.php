@@ -140,4 +140,10 @@ class Tenant extends BaseModel
     {
         return $query->where('business_id', auth()->user()->business_id);
     }
+
+    public function scopeByTenant($query)
+    {
+        return $query->where('tenant_id', auth()->user()->tenant_id);
+    }
+
 }

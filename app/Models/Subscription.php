@@ -17,6 +17,8 @@ class Subscription extends BaseModel
 
     public const JMRB = 'JMRB';
     public const OWNER = 'OWNER';
+    public const TENANT = 'TENANT';
+
 
     public const TERKONFIRMASI = 'TERKONFIRMASI';
     public const MENUNGGU_KONFIRMASI = 'MENUNGGU KONFIRMASI';
@@ -84,6 +86,11 @@ class Subscription extends BaseModel
     public function scopeByOwner($query, $business_id = null)
     {
         return $query->where('super_merchant_id', $business_id ?? auth()->user()->business_id);
+    }
+    
+    public function scopeByTenant($query, $tenant_id = null)
+    {
+        return $query->where('super_merchant_id', $tenant_id ?? auth()->user()->tenant_id);
     }
 
     public function scopelimitTenant($query)
