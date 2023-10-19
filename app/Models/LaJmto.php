@@ -262,9 +262,12 @@ class LaJmto extends Model
 
     public static function qrStatus($bill_id)
     {
+        $parts = explode("-", $bill_id);
+        // Get the last element
+        $lastElement = end($parts);
         // $payload = [
         //     env('LA_MERCHANT_ID'),
-        //     "merchantTrxID" =>str_replace('-', '', $bill_id)
+        //     "merchantTrxID" =>$lastElement
         // ];
         
         $payload = [
