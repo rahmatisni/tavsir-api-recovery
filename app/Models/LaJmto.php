@@ -190,6 +190,8 @@ class LaJmto extends Model
                 "refnum" => "LINK62785f8fc668a"
             ]
         ];
+        Log::info([$payload, $response]);
+
         return $response;
 
         }
@@ -199,10 +201,10 @@ class LaJmto extends Model
                 "rc" => $res['responseCode'],
                 "msg" => $res['responseMessage'],
             ];
-             
+            Log::info([$payload, $response]);
+
             return $response;
         }
-        // Log::info([$payload, $response]);
         // Log::info('Va create res', $res);
         // return $response;
     }
@@ -305,6 +307,8 @@ class LaJmto extends Model
                     "amount" => $res['data']['amount'],
                 ]
             ];
+            Log::info([$payload, $response]);
+
             return $response;
     
             }
@@ -315,6 +319,8 @@ class LaJmto extends Model
                     "msg" => $res['message'],
                 ];
                  
+                Log::info([$payload, $response]);
+
                 return $response;
             }
             // 
