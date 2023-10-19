@@ -214,7 +214,7 @@ class LaJmto extends Model
         }
 
         $res = self::service('POST', '/qr/generate', $payload)->json();
-        // dd($res);
+        Log::info([$payload, $res]);
         if($res['responseCode'] == 00){
         $response = [
             "status" => "success",
@@ -266,15 +266,15 @@ class LaJmto extends Model
         $parts = explode("-", $bill_id);
         // Get the last element
         $lastElement = end($parts);
-        // $payload = [
-        //     env('LA_MERCHANT_ID'),
-        //     "merchantTrxID" =>$lastElement
-        // ];
-        
         $payload = [
-            "merchantID" =>  '605111309311801',
-            "merchantTrxID" => 'TEST7329893845'
+            "merchantID" =>env('LA_MERCHANT_ID'),
+            "merchantTrxID" =>$lastElement
         ];
+        
+        // $payload = [
+        //     "merchantID" =>  '605111309311801',
+        //     "merchantTrxID" => 'TEST7329893845'
+        // ];
 
         if (env('LA_FAKE_RESPON') === true) {
             //for fake
@@ -315,7 +315,7 @@ class LaJmto extends Model
         }
 
         $res = self::service('POST', '/transaction/inform/status', $payload)->json();
-        // dd($res);
+        Log::info([$payload, $res]);
         // $res = [
         //     "status" => "success",
         //     "rc" => "0000",
@@ -437,6 +437,8 @@ class LaJmto extends Model
         }
 
         $res = self::refund('POST', '/transaction', $payload)->json();
+        Log::info([$payload, $res]);
+
         // $res = [
         //     "status" => "success",
         //     "rc" => "0000",
