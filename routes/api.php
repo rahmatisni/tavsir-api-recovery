@@ -156,6 +156,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/payment-order', [App\Http\Controllers\API\TavsirController::class, 'paymentOrder']);
         Route::post('/create-payment/{id}', [App\Http\Controllers\API\TavsirController::class, 'createPayment']);
         Route::get('/payment-status/{id}', [App\Http\Controllers\API\TavsirController::class, 'statusPayment']);
+        // Route::post('/CallbackLinkAjaQRIS', [App\Http\Controllers\API\TavsirController::class, 'CallbackLinkAjaQRIS']);
         Route::post('/refund/{id}', [App\Http\Controllers\API\TavsirController::class, 'orderRefund']);
 
 
@@ -276,6 +277,8 @@ Route::post('payment-gateway/va/cekstatus', [App\Http\Controllers\API\PaymentGat
 Route::post('payment-gateway/va/delete', [App\Http\Controllers\API\PaymentGatewayController::class, 'vaDelete']);
 Route::post('payment-gateway/dd/inquiry', [App\Http\Controllers\API\PaymentGatewayController::class, 'ddInquiry']);
 Route::post('payment-gateway/dd/payment', [App\Http\Controllers\API\PaymentGatewayController::class, 'ddPayment']);
+
+Route::post('/CallbackLinkAjaQRIS', [App\Http\Controllers\API\TavsirController::class, 'CallbackLinkAjaQRIS']);
 
 
 

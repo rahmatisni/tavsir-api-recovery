@@ -42,6 +42,8 @@ use App\Models\TransOrderDetil;
 use App\Models\PaymentMethod;
 use App\Models\PgJmto;
 use App\Models\LaJmto;
+use App\Models\CallbackLA;
+
 
 use App\Models\RestArea;
 use App\Models\Tenant;
@@ -513,7 +515,7 @@ class TavsirController extends Controller
             if (!$data) {
                 $data = new TransOrder();
                 $data->order_type = TransOrder::POS;
-                $data->order_id = (auth()->user()->tenant->rest_area_id ?? '0') . '-' . (auth()->user()->tenant_id ?? '0') . '-POS-' . date('YmdHis');
+                $data->order_id = (auth()->user()->tenant->rest_area_id ?? '0') . '-' . (auth()->user()->tenant_id ?? '0') . '-POS-' . date('YmdHis').rand(0,100);
                 $data->status = TransOrder::CART;
                 $data->nomor_name = $request->nomor_name;
 
@@ -2153,5 +2155,31 @@ class TavsirController extends Controller
     {
         $data = TransOrderArsip::where('trans_order_id', $id)->get();
         return response()->json($data);
+    }
+
+    public function CallbackLinkAjaQRIS(Request $request){
+
+        $trans = TransOrder::where('order_id', 'like', '%'.$request['trx_id'])->first();
+        if(!$trans){
+            $datax = [
+                "responseCode"=>"03",
+                "transactionID"=>$request->msg,
+                "notificationMessage"=>"Dont Try Bro!"
+            ];
+            return response($datax, 422);
+        }
+        $data = new CallbackLA();
+        DB::beginTransaction();
+        $data->trans_order_id = $trans->id;
+        $data->data = json_encode($request->all());
+        $data->save();
+        DB::commit();
+        $datax = [
+            "responseCode"=>"00",
+            "transactionID"=>$request->msg,
+            "notificationMessage"=>"dummy"
+        ];
+        return response()->json($datax);
+
     }
 }

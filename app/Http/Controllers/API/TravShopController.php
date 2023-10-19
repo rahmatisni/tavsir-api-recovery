@@ -171,7 +171,7 @@ class TravShopController extends Controller
             $data = new TransOrder;
             $tenant = Tenant::find($request->tenant_id);
             $data->order_type = TransOrder::ORDER_TAKE_N_GO;
-            $data->order_id = ($tenant->rest_area_id ?? '0') . '-' . ($tenant->id ?? '0') . '-TNG-' . date('YmdHis');
+            $data->order_id = ($tenant->rest_area_id ?? '0') . '-' . ($tenant->id ?? '0') . '-TNG-' . date('YmdHis').rand(0,100);
             $data->rest_area_id = $tenant->rest_area_id;
             $data->tenant_id = $request->tenant_id;
             $data->business_id = $tenant->business_id;
@@ -294,7 +294,7 @@ class TravShopController extends Controller
             $data = new TransOrder;
             $tenant = Tenant::find($request->tenant_id);
             $data->order_type = TransOrder::ORDER_SELF_ORDER;
-            $data->order_id = ($tenant->rest_area_id ?? '0') . '-' . ($tenant->id ?? '0') . '-SO-' . date('YmdHis');
+            $data->order_id = ($tenant->rest_area_id ?? '0') . '-' . ($tenant->id ?? '0') . '-SO-' . date('YmdHis').rand(0,100);
             $data->rest_area_id = $tenant->rest_area_id;
             $data->tenant_id = $request->tenant_id;
             $data->business_id = $tenant->business_id;
