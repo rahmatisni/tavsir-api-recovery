@@ -200,14 +200,21 @@ class SubscriptionController extends Controller
     }
 
 
-    public function showKasirTenant($id)
+    public function showKasirTenant($id = null)
     {
-        if (auth()->user()->role == 'OWNER') {
+        if ($id === null) {
+            $id = null;
+        }
+
+        if (auth()->user()->role == 'OWNER' && $id) {
             $limit = Subscription::byOwner(auth()->user()->business_id)->get();
             $data = User::where('role', User::CASHIER)->where('tenant_id', $id)->get();
             $tenant_id = $id;
-        } else {
-            $limit = Subscription::byTenant(auth()->user()->tenant->id)->get();
+        } 
+       
+        else {
+            $limit = Subscription::byTenant(auth()->user()->tenant_id)->get();
+            // dd(auth()->user());
             $data = User::where('role', User::CASHIER)->where('tenant_id', auth()->user()->tenant_id)->get();
             $tenant_id = auth()->user()->tenant_id;
         }
