@@ -81,6 +81,52 @@ class LaJmto extends Model
 
     }
 
+    public static function refund($method, $path, $payload)
+    {
+        $signature = self::generateSignature($payload);
+        // dd($payload, $signature);
+
+        switch ($method) {
+            case 'POST':
+                clock()->event("LA{$path}")->color('purple')->begin();
+                $response = Http::withHeaders([
+                    'Content-Type' => 'Application/json',
+                    'cid' => env('LA_CID'),
+                    'Signature' => $signature,
+                    'client-id' =>env('la_client_id'),
+                    'x-api-key'=> env('x_api_key')
+                ])
+                    ->timeout(10)
+                    ->retry(1, 100)
+                    ->withoutVerifying()
+                    ->post(env('LA_REFUND_URL') . $path, $payload);
+                clock()->event("LA{$path}")->end();
+
+                return $response;
+
+            case 'GET':
+                $response = Http::withHeaders([
+                    'Content-Type' => 'Application/json',
+                    'cid' => env('LA_CID'),
+                    'Signature' => $signature,
+                    'client-id' =>env('la_client_id'),
+                    'x-api-key'=> env('x_api_key')
+                ])
+                    ->timeout(10)
+                    ->retry(1, 100)
+                    ->withoutVerifying()
+                    ->get(env('LA_REFUND_URL') . $path, $payload);
+                clock()->event("LA{$path}")->end();
+
+                return $response;
+
+            default:
+                # code...
+                break;
+        }
+
+    }
+
     public static function qrCreate($sof_code, $bill_id, $bill_name, $amount, $desc, $phone, $email, $customer_name, $sub_merchant_id)
     {
         // dd($bill_id);
@@ -337,6 +383,125 @@ class LaJmto extends Model
     }
 
 
+
+    public static function qrRefund($payload)
+    {
+        // $payload = [
+        //     env('LA_MERCHANT_ID'),
+        //     "merchantTrxID" =>str_replace('-', '', $bill_id)
+        // ];
+
+        
+       
+
+        if (env('LA_FAKE_RESPON') === true) {
+            //for fake
+            $fake_respon_status_va = [
+                "status" => "success",
+                "rc" => "0000",
+                "msg" => "success",
+                "responseData" => [
+                    "pay_status" => "1",
+                    "sof_code" => $sof_code,
+                    "bill" => $amount,
+                    "fee" => 0,
+                    "amount" => $amount,
+                    "trxid" => $bill_id,
+                    "remarks" => "",
+                    "refnum" => "",
+                    "pay_refnum" => "",
+                    "email" => $email,
+                    "phone" => $phone,
+                    "customer_name" => $customer_name,
+                    "status" => "00",
+                    "message" => "SUCCESS",
+                    "data" => [
+                        "bill_id" => $bill_id,
+                        "trxId" => $bill_id,
+                        "fromAccount" => "9360001430000034980",
+                        "trxDate" => "0719185915",
+                        // "amount" => $amount
+                    ]
+                ]
+            ];
+            Http::fake([
+                env('LA_REFUND_URL') . '/transaction' => function () use ($fake_respon_status_va) {
+                    return Http::response($fake_respon_status_va, 200);
+                }
+            ]);
+            //end fake
+        }
+
+        $res = self::refund('POST', '/transaction', $payload)->json();
+        // $res = [
+        //     "status" => "success",
+        //     "rc" => "0000",
+        //     "msg" => "success",
+        //     "responseData" => [
+        //         "pay_status" => "1",
+        //         "sof_code" => $sof_code,
+        //         "bill" => $amount,
+        //         "fee" => 0,
+        //         "amount" => $amount,
+        //         "trxid" => $bill_id,
+        //         "remarks" => "",
+        //         "refnum" => "",
+        //         "pay_refnum" => "",
+        //         "email" => $email,
+        //         "phone" => $phone,
+        //         "customer_name" => $customer_name,
+        //         "status" => "00",
+        //         "message" => "SUCCESS",
+        //         "data" => [
+        //             "bill_id" => $bill_id,
+        //             "trxId" => $bill_id,
+        //             "fromAccount" => "9360001430000034980",
+        //             "trxDate" => "0719185915",
+        //             // "amount" => $amount
+        //         ]
+        //     ]
+        // ];
+
+        if($res['status'] == 00){
+            $response = [
+                "status" => "success",
+                "rc" => "0000",
+                "msg" => "success",
+                "responseData" => [
+                    "pay_status" => '1',
+                    "bill_id" => $bill_id,
+                    "fee" => 0,
+                    "responseMessage" => $res['message'],
+                    "merchantTrxID" => $res['data']['trxId'],
+                    "trxid" =>$res['data']['trxId'],
+                    "fromAccount" =>$res['data']['fromAccount'],
+                    "trxDate" =>  $res['data']['trxDate'],
+                    "amount" => $res['data']['amount'],
+                ]
+            ];
+            Log::info([$payload, $response]);
+
+            return $response;
+    
+            }
+            else {
+                $response = [
+                    "status" => "error",
+                    "rc" => $res['status'],
+                    "msg" => $res['message'],
+                ];
+                 
+                Log::info([$payload, $response]);
+
+                return $response;
+            }
+            // 
+
+
+        // Log::info($payload);
+        // // Log::info(['Payload PG =>', $payload, 'Va status => ', $res->json()]);
+        // return $res;
+    }
 
     // 
     // 

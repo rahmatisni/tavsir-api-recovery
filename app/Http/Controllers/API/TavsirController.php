@@ -348,6 +348,30 @@ class TavsirController extends Controller
             return response()->json(['message' => 'Password Tenant salah'], 400);
         }
 
+        if($data->payment_method_id == 4){
+            $parts = explode("-", $data->order_id);
+            $lastElement = end($parts);
+
+            $payload = [
+                "commandID"=>"ReverseTransaction",
+                "originatorConversationID"=>"REF-".$lastElement,
+                "originalReceiptNumber"=>$data->order_id,
+                "trxAmount"=>$data->total,
+                "merchantTrxID"=>$lastElement
+            ];
+            $refund_la = LaJmto::qrRefund($payload);
+            if($refund_la['status'] == '00'){
+
+            }
+            else {
+                return response()->json([
+                    'message' => 'Refund sebesar ' . $data->total . ' gagal!',      
+                    'data' =>  $refund_la
+                ],422);
+            }
+            
+        }
+
         $total_refund = 0;
         $order_refund = $data->detil;
 
