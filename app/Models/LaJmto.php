@@ -84,6 +84,10 @@ class LaJmto extends Model
     public static function qrCreate($sof_code, $bill_id, $bill_name, $amount, $desc, $phone, $email, $customer_name, $sub_merchant_id)
     {
         // dd($bill_id);
+        $parts = explode("-", $bill_id);
+
+        // Get the last element
+        $lastElement = end($parts);
 
         $payload = [
             "fee"  =>str_pad(env('PLATFORM_FEE'), 12, '0', STR_PAD_LEFT),
@@ -94,10 +98,11 @@ class LaJmto extends Model
             "merchantID" => env('LA_MERCHANT_ID'),
             "merchantPan" => env('LA_MERCHANT_PAN'),
             "merchantCriteria" => "UME",
-            "merchantTrxID" => str_replace('-', '', $bill_id),
+            "merchantTrxID" => str_replace('-', '', $lastElement),
             "partnerMerchantID" => "12345678910", //tenant merchdant i
         ];
 
+        
         if (env('LA_FAKE_RESPON') === true) {
             
 
