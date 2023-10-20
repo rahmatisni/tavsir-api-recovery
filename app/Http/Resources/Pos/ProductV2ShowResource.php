@@ -47,7 +47,7 @@ class ProductV2ShowResource extends JsonResource
             'satuan_type' => $this->satuan?->type,
             'description' => $this->description,
             'customize' => CustomizeResource::collection($this->customize),
-            'trans_product_raw' => RawDetilResource::collection($this->trans_product_raw),
+            'trans_product_raw' => RawDetilResource::collection($this->trans_product_raw()->withTrashed()->get()),
         ];
     }
 }

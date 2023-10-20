@@ -48,7 +48,7 @@ class ProductTunggalUpdateRequest extends FormRequest
 
         if($product->is_composit == 1){
             $rule['raw'] = 'required|array';
-            $rule['raw.*.child_id'] = 'integer|exists:ref_product,id,type,'.ProductType::BAHAN_BAKU.',tenant_id,'.auth()->user()->tenant_id;
+            $rule['raw.*.child_id'] = 'integer|exists:ref_product,id,type,'.ProductType::BAHAN_BAKU.',tenant_id,'.auth()->user()->tenant_id.',deleted_at,NULL';
             $rule['raw.*.qty'] = 'integer|min:1|max:999';
         }
 

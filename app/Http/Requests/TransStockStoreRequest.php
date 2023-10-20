@@ -24,7 +24,7 @@ class TransStockStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'product_id' => 'integer|exists:ref_product,id,tenant_id,'.auth()->user()->tenant_id,
+            'product_id' => 'integer|exists:ref_product,id,tenant_id,'.auth()->user()->tenant_id.',deleted_at,NULL',
             'stock' => 'required|numeric|min:1|max:999',
             'price_capital' => 'required|numeric|min:0|max:100000000',
             'keterangan' => 'nullable|string|max:255',

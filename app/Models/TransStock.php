@@ -17,6 +17,8 @@ class TransStock extends BaseModel
         'product_id',
         'tenant_id',
         'current_stock',
+        'recent_stock',
+        'stock_type',
         'stock_amount',
         'description',
         'price_capital',
@@ -27,14 +29,14 @@ class TransStock extends BaseModel
 
     public function product()
     {
-        return $this->belongsTo(Product::class, 'product_id');
+        return $this->belongsTo(Product::class, 'product_id')->withTrashed();
     }
 
     public function scopeByTenant($query)
     {
         $query->whereHas('product', function ($q) {
-            $q->byTenant();
-        }, 1);
+            $q->byTenant()->withTrashed();
+        });
     }
 
     public function creator()

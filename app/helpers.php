@@ -68,3 +68,11 @@ function  codefikasiNomor($phone)
         ];
     return $code[$code_phone] ?? null;
 }
+
+function helperThrowErrorvalidation($arrayError = [
+        'filed1' => 'Error1',
+        'filed2' => 'Error2',
+    ]){
+    $error = \Illuminate\Validation\ValidationException::withMessages($arrayError);
+    throw $error;
+}

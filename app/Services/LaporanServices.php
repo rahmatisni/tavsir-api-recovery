@@ -240,7 +240,7 @@ class LaporanServices
         $order_type = $request->order_type;
         $payment_method_id = $request->payment_method_id;
 
-        $data = TransOrder::done()
+        $data = TransOrder::with('tenant')->done()
             ->when(($tanggal_awal && $tanggal_akhir),
                 function ($q) use ($tanggal_awal, $tanggal_akhir) {
                     return $q->whereBetween(
@@ -279,6 +279,8 @@ class LaporanServices
             array_push($hasil, [
                 'waktu_transaksi' => (string) $value->created_at,
                 'id_transaksi' => $value->order_id,
+                'tenant_id' => $value->tenant_id,
+                'tenant_name' => $value->tenant->name ?? '',
                 'total_product' => $count,
                 'total_addon' => $value->addon_total ?? 0,
                 'total_sub_total' => $value->sub_total,

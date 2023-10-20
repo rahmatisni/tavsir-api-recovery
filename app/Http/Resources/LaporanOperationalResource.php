@@ -16,6 +16,8 @@ class LaporanOperationalResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'tenant_id' => $this->tenant_id,
+            'tenant_name' => $this->tenant->name ?? '',
             'periode' => $this->periode,
             'waktu_buka' => $this->start_date,
             'waktu_tutup' => $this->end_date,

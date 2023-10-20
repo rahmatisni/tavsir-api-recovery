@@ -17,6 +17,7 @@ use App\Models\Business;
 use App\Models\PriceSubscription;
 use App\Models\Subscription;
 use App\Models\Tenant;
+use App\Models\TransOperational;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -250,8 +251,18 @@ class SubscriptionController extends Controller
             return response()->json(['message' => 'Tenant invalid'], 422);
         }
         if ($request->status == 'false') {
+            //Cek toko open
+            $is_tenant_open = TransOperational::where('tenant_id', $request->id)->whereNull('end_date')->count();
+            if($is_tenant_open > 0){
+                helperThrowErrorvalidation(['id' => 'Tenant ini terdapat '.$is_tenant_open.' toko yang beroperasi']);
+            }
             $aktivasi_tenant->is_subscription = 0;
+            $aktivasi_tenant->kuota_kasir = 0;
             $aktivasi_tenant->save();
+            foreach ($aktivasi_tenant->cashear as $value) {
+                $value->is_subscription = 0;
+                $value->save();
+            }
             return response()->json(['message' => 'Unsubscription success']);
         }
         $kuota = Subscription::byOwner()->get()->where('status_aktivasi', Subscription::AKTIF)->sum('limit_tenant');
