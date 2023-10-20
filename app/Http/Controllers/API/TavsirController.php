@@ -621,8 +621,8 @@ class TavsirController extends Controller
             $data->total = $data->sub_total + $data->fee + $data->service_fee + $data->addon_total;
 
             $tenant = Tenant::where('id', auth()->user()->tenant_id)->first();
-            if($tenant->sharing_amount){
-                $tenant_sharing = json_decode($tenant->sharing_amount);
+            if($tenant->sharing_config){
+                $tenant_sharing = json_decode($tenant->sharing_config);
                 foreach ($tenant_sharing as $value) {
                     $harga = (int)($data->sub_total)+(int)($data->addon_total);
                     $sharing_amount_unround = (($value/100) * $harga);
@@ -631,7 +631,7 @@ class TavsirController extends Controller
                 }
                 $data->sharing_code = $tenant->sharing_code ?? null;
                 $data->sharing_amount = $sharing_amount ?? null;
-                $data->sharing_proportion = $tenant->sharing_amount ?? null;
+                $data->sharing_proportion = $tenant->sharing_config ?? null;
             }
             $data->save();
             $data->detil()->saveMany($order_detil_many);

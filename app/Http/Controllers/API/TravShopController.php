@@ -247,8 +247,8 @@ class TravShopController extends Controller
             $data->sub_total = $sub_total;
             $data->total = $data->sub_total + $data->fee + $data->service_fee + $data->addon_total;
             $tenant = Tenant::where('id', $request->tenant_id)->first();
-            if($tenant->sharing_amount){
-                $tenant_sharing = json_decode($tenant->sharing_amount);
+            if($tenant->sharing_config){
+                $tenant_sharing = json_decode($tenant->sharing_config);
                 foreach ($tenant_sharing as $value) {
                     $harga = (int)($data->sub_total)+(int)($data->addon_total);
                     $sharing_amount_unround = (($value/100) * $harga);
@@ -257,7 +257,7 @@ class TravShopController extends Controller
                 }
                 $data->sharing_code = $tenant->sharing_code ?? null;
                 $data->sharing_amount = $sharing_amount ?? null;
-                $data->sharing_proportion = $tenant->sharing_amount ?? null;
+                $data->sharing_proportion = $tenant->sharing_config ?? null;
             }
             $data->status = TransOrder::WAITING_CONFIRMATION_TENANT;
             $data->save();
@@ -379,8 +379,8 @@ class TravShopController extends Controller
             $data->sub_total = $sub_total;
             $data->total = $data->sub_total + $data->fee + $data->service_fee + $data->addon_total;
             $tenant = Tenant::where('id', $request->tenant_id)->first();
-            if($tenant->sharing_amount){
-                $tenant_sharing = json_decode($tenant->sharing_amount);
+            if($tenant->sharing_config){
+                $tenant_sharing = json_decode($tenant->sharing_config);
                 foreach ($tenant_sharing as $value) {
                     $harga = (int)($data->sub_total)+(int)($data->addon_total);
                     $sharing_amount_unround = (($value/100) * $harga);
@@ -389,7 +389,7 @@ class TravShopController extends Controller
                 }
                 $data->sharing_code = $tenant->sharing_code ?? null;
                 $data->sharing_amount = $sharing_amount ?? null;
-                $data->sharing_proportion = $tenant->sharing_amount ?? null;
+                $data->sharing_proportion = $tenant->sharing_config ?? null;
             }
 
             switch($tenant->in_selforder){

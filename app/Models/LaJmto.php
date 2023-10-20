@@ -254,6 +254,9 @@ class LaJmto extends Model
                 "status" => "error",
                 "rc" => $res['responseCode'],
                 "msg" => $res['responseMessage'],
+                "responseData" => [
+                    "pay_status" => "0"
+                ]
             ];
             Log::info([$payload, $response]);
 
