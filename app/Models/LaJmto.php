@@ -253,10 +253,7 @@ class LaJmto extends Model
             $response = [
                 "status" => "error",
                 "rc" => $res['responseCode'],
-                "msg" => $res['responseMessage'],
-                "responseData" => [
-                    "pay_status" => "0"
-                ]
+                "msg" => $res['responseMessage']
             ];
             Log::info([$payload, $response]);
 
@@ -379,6 +376,9 @@ class LaJmto extends Model
                     "status" => "error",
                     "rc" => $res['status'],
                     "msg" => $res['message'],
+                    "responseData" => [
+                        "pay_status" => "0"
+                    ]
                 ];
                  
                 Log::info([$payload, $response]);
