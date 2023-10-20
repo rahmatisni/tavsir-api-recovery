@@ -629,7 +629,7 @@ class TavsirController extends Controller
                 }
                 $data->sharing_code = $tenant->sharing_code ?? null;
                 $data->sharing_amount = $sharing_amount ?? null;
-                $data->sharing_proportion = $tenant->sharing_proportion ?? null;
+                $data->sharing_proportion = $tenant->sharing_amount ?? null;
             }
             $data->save();
             $data->detil()->saveMany($order_detil_many);
