@@ -46,7 +46,7 @@ class AuthController extends Controller
                     ], 200);
                 }
                 if ($user->role == User::TENANT) {
-                    if($user->tenant->is_subscription == 0){
+                    if($user?->tenant?->is_subscription != 1){
                         $response = ["message" => 'Tenant not subscription'];
                         return response($response, 422);
                     }

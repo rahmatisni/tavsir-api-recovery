@@ -99,7 +99,7 @@ class StockServices
 
     public function showMasukKeluar($id)
     {
-        return TransStock::byTenant()->findOrfail($id);
+        return TransStock::with(['product'])->byTenant()->findOrfail($id);
     }
 
     public function storeMasuk($payload)
@@ -125,7 +125,7 @@ class StockServices
             return $data;
         } catch (\Throwable $th) {
             DB::rollBack();
-            abort(['message' => $th->getMessage()], 422);
+            throw $th;
         }
     }
 

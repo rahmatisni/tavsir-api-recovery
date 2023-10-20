@@ -5,6 +5,7 @@ namespace App\Services\Pos;
 use App\Models\Constanta\ProductType;
 use App\Models\Product;
 use App\Models\RawProduct;
+use App\Models\TransProductRaw;
 use App\Models\TransStock;
 use App\Models\TransStockRaw;
 use Illuminate\Support\Facades\DB;
@@ -73,9 +74,29 @@ class ProductBahanBakuServices
     public function delete($id)
     {
         $data = $this->show($id);
-        //Cek data digunakan
-        $data->trans_stock()->delete();
-        $data->delete();
-        return true;
+        $cek = TransProductRaw::where('child_id', $id)->count();
+        if($cek > 0){
+            helperThrowErrorvalidation([
+                'id' => 'Bahan baku dipakai di '.$cek.' product',
+            ]);
+        }
+        try {
+            DB::beginTransaction();
+            $data->trans_stock()->create([
+                'stock_type' => TransStock::OUT,
+                'recent_stock' => $data->stock,
+                'stock_amount' => $data->stock,
+                'price_capital' => $data->price_capital,
+                'total_capital' => $data->price_capital * $data->stock,
+                'created_by' => auth()->user()->id,
+            ]);
+            $data->delete();
+            Db::commit();
+            return true;
+
+        } catch (\Throwable $th) {
+            Db::rollBack();
+            throw $th;
+        }
     }
 }

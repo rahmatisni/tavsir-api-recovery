@@ -24,7 +24,7 @@ class TransStockRequest extends FormRequest
     public function rules()
     {
         return [
-            'product_id' => 'required|exists:ref_product,id',
+            'product_id' => 'required|exists:ref_product,id,deleted_at,NULL',
             'stock' => 'required|numeric|min:1|max:999',
             'keterangan' => 'nullable|string|max:255',
         ];
