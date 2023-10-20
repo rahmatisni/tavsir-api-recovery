@@ -1078,6 +1078,7 @@ class TavsirController extends Controller
                         if ($data->payment === null) {
                             $pay = new TransPayment();
                             $pay->data = $res['responseData'];
+                            $pay->inquiry = json_encode($res);
                             $data->payment()->save($pay);
                         } else {
                             $pay = $data->payment;
@@ -1125,6 +1126,7 @@ class TavsirController extends Controller
                         if ($data->payment === null) {
                             $pay = new TransPayment();
                             $pay->data = $res['responseData'];
+                            $pay->inquiry = json_encode($res);
                             $data->payment()->save($pay);
                         } else {
                             $pay = $data->payment;
@@ -1267,6 +1269,7 @@ class TavsirController extends Controller
                         if ($data->payment === null) {
                             $payment = new TransPayment();
                             $payment->data = $respon;
+                            $payment->inquiry = json_encode($respon);
                             $payment->trans_order_id = $data->id;
                             $payment->save();
                         } else {
@@ -1340,6 +1343,7 @@ class TavsirController extends Controller
                         $respon = $res['responseData'];
                         if ($data->payment === null) {
                             $payment = new TransPayment();
+                            $payment->inquiry = json_encode($respon);
                             $payment->data = $respon;
                             $payment->trans_order_id = $data->id;
                             $payment->save();
@@ -1615,6 +1619,9 @@ class TavsirController extends Controller
                     return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
 
                 }
+                if($data->payment_method_id == '4'){
+
+                }
                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
             }
 
@@ -1658,6 +1665,7 @@ class TavsirController extends Controller
                     $respon = $res['responseData'];
                     if ($data->payment === null) {
                         $payment = new TransPayment();
+                        $payment->payment = json_encode($respon);
                         $payment->data = $respon;
                         $data->payment()->save($payment);
                     } else {
@@ -1727,6 +1735,7 @@ class TavsirController extends Controller
                     $respon = $res['responseData'];
                     if ($data->payment === null) {
                         $payment = new TransPayment();
+                        $payment->payment = json_encode($respon);
                         $payment->data = $respon;
                         $data->payment()->save($payment);
                     } else {
@@ -1797,6 +1806,9 @@ class TavsirController extends Controller
                         foreach ($data->detil as $key => $value) {
                             $this->stock_service->updateStockProduct($value);
                         }
+                        $pay = TransPayment::where('trans_order_id', $data->id)->first();
+                        $pay->data = $res_data;
+                        $pay->save();
                     } else {
                         return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                     }
@@ -1993,6 +2005,11 @@ class TavsirController extends Controller
                         'total' => $data->total,
                         'kembalian' => $request->cash - $data->total
                     ];
+                    $payment->payment = [
+                        'cash' => $request->cash,
+                        'total' => $data->total,
+                        'kembalian' => $request->cash - $data->total
+                    ];
                     $data->payment()->save($payment);
                     $data->payment_method_id = $request->payment_method_id;
                     $data->payment_id = $payment->id;
@@ -2064,6 +2081,7 @@ class TavsirController extends Controller
                     $payment = new TransPayment();
                     $payment->trans_order_id = $data->id;
                     $payment->data = $payment_payload;
+                    $payment->payment = $payment_payload;
                     $data->payment()->save($payment);
                     $data->payment_method_id = $request->payment_method_id;
                     $data->payment_id = $payment->id;

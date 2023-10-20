@@ -239,8 +239,10 @@ class LaJmto extends Model
                 "opt_key" => "",
                 "opt_value" => "",
                 "LINK_URL" => "https://linkaja.id/applink/payment?data=8hAr3Yn8TsCQGSEINbjHA7cv5iTiHNcx90k31IjBJQTNQMLXVdW1Kc_yNmF3nLYWY6_aDrSwYgB9JeeiAJ1c0iunWIak6K_2Ojstgv8uv_lg5rTed5PUthNdXm-EcqMLO2aLeabCF-qjgH2yvbg7TnNZlmLkkYi8_nEfHmpAG_ffrbTrHw3wa4-LT61VwrLYR3e3-8VaOlDRbQpNU5Al5wxSt8SmCH24gOvmESiQRTF3a4OHdgKCrJTtn15Fqm0YYOdClKAeCUqC4k8qEg_xUdeeF54B2G9yF3rY1-Cook1TzFl5nl739mYBvCmXUVcgTPG0wqhxkCqQ98FO0X97p9AENIoV6zFZeyks6hsFWopwoyRo1ZcgfFfrg_j8zR2ZhVB9v2xKfYGFnj1SIUyvHYwuwrau5c8Qb-0-GWhEzlSeDBHxfTZJuw==",
-                "refnum" => "LINK62785f8fc668a"
-            ]
+                "refnum" => $res['merchantTrxID']
+            ],
+            "la_response" => $res
+
         ];
         Log::info([$payload, $response]);
 
@@ -359,8 +361,10 @@ class LaJmto extends Model
                     "trxid" =>$res['data']['trxId'],
                     "fromAccount" =>$res['data']['fromAccount'],
                     "trxDate" =>  $res['data']['trxDate'],
-                    "amount" => $res['data']['amount'],
-                ]
+                    "amount" => substr($res['data']['amount'], 0, -2),
+                    "refnum" => $res['data']['trxId']
+                ],
+                "la_response" => $res
             ];
             Log::info([$payload, $response]);
 
