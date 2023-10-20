@@ -2078,7 +2078,7 @@ class TavsirController extends Controller
                     $payment = new TransPayment();
                     $payment->trans_order_id = $data->id;
                     $payment->data = $payment_payload;
-                    $payment->payment = $payment_payload;
+                    $payment->payment = json_encode($payment_payload);
                     $data->payment()->save($payment);
                     $data->payment_method_id = $request->payment_method_id;
                     $data->payment_id = $payment->id;
