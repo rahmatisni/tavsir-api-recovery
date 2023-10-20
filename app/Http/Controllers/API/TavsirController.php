@@ -625,7 +625,7 @@ class TavsirController extends Controller
                 $tenant_sharing = json_decode($tenant->sharing_amount);
                 foreach ($tenant_sharing as $value) {
                     $sharing_amount_unround = ($value/100) * ($data->sub_total + $data->addon_total);
-                    $sharing_amount[] = number_format($sharing_amount_unround, 2, '.', '');
+                    $sharing_amount[] = floatval($sharing_amount_unround);
                 }
                 $data->sharing_code = $tenant->sharing_code ?? null;
                 $data->sharing_amount = $sharing_amount ?? null;
