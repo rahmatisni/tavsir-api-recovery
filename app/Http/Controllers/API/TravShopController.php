@@ -246,6 +246,17 @@ class TravShopController extends Controller
             $data->margin = $sub_total-$margin;
             $data->sub_total = $sub_total;
             $data->total = $data->sub_total + $data->fee + $data->service_fee + $data->addon_total;
+            $tenant = Tenant::where('id', $request->tenant_id)->first();
+            if($tenant->sharing_amount){
+                $tenant_sharing = json_decode($tenant->sharing_amount);
+                foreach ($tenant_sharing as $value) {
+                    $sharing_amount_unround = ($value/100) * ($data->sub_total + $data->addon_total);
+                    $sharing_amount[] = round($sharing_amount_unround, 0, PHP_ROUND_HALF_UP);
+                }
+                $data->sharing_code = $tenant->sharing_code ?? null;
+                $data->sharing_amount = $sharing_amount ?? null;
+                $data->sharing_proportion = $tenant->sharing_amount ?? null;
+            }
             $data->status = TransOrder::WAITING_CONFIRMATION_TENANT;
             $data->save();
             $data->detil()->saveMany($order_detil_many);
@@ -365,7 +376,17 @@ class TravShopController extends Controller
             $data->fee = env('PLATFORM_FEE');
             $data->sub_total = $sub_total;
             $data->total = $data->sub_total + $data->fee + $data->service_fee + $data->addon_total;
-
+            $tenant = Tenant::where('id', $request->tenant_id)->first();
+            if($tenant->sharing_amount){
+                $tenant_sharing = json_decode($tenant->sharing_amount);
+                foreach ($tenant_sharing as $value) {
+                    $sharing_amount_unround = ($value/100) * ($data->sub_total + $data->addon_total);
+                    $sharing_amount[] = round($sharing_amount_unround, 0, PHP_ROUND_HALF_UP);
+                }
+                $data->sharing_code = $tenant->sharing_code ?? null;
+                $data->sharing_amount = $sharing_amount ?? null;
+                $data->sharing_proportion = $tenant->sharing_amount ?? null;
+            }
 
             switch($tenant->in_selforder){
                 case 1:
