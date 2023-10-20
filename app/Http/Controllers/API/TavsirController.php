@@ -626,16 +626,13 @@ class TavsirController extends Controller
                 foreach ($tenant_sharing as $value) {
                     $harga = (int)($data->sub_total)+(int)($data->addon_total);
                     $sharing_amount_unround = (($value/100) * $harga);
-                    $sharing_amount[] = ($value/100).'|'.$harga.'|'.$sharing_amount_unround;
-
-                    // dump([$value,$harga, $sharing_amount_unround, $data->sub_total,$data->addon_total]);
-
+                    // $sharing_amount[] = ($value/100).'|'.$harga.'|'.$sharing_amount_unround;
+                    $sharing_amount[] = $sharing_amount_unround;
                 }
                 $data->sharing_code = $tenant->sharing_code ?? null;
                 $data->sharing_amount = $sharing_amount ?? null;
                 $data->sharing_proportion = $tenant->sharing_amount ?? null;
             }
-            // dd($harga);
             $data->save();
             $data->detil()->saveMany($order_detil_many);
             DB::commit();
