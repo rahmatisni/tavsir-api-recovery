@@ -626,7 +626,8 @@ class TavsirController extends Controller
                 foreach ($tenant_sharing as $value) {
                     $harga = ceil($data->sub_total)+ceil($data->addon_total);
                     $sharing_amount_unround = (($value/100) * $harga);
-                    $sharing_amount[] = $sharing_amount_unround;
+                    $sharing_amount[] = number_format($sharing_amount_unround, 2, '.', '');
+
                     // dump([$value,$harga, $sharing_amount_unround, $data->sub_total,$data->addon_total]);
 
                 }
