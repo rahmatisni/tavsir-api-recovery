@@ -2000,16 +2000,13 @@ class TavsirController extends Controller
                     }
                     $payment = new TransPayment();
                     $payment->trans_order_id = $data->id;
-                    $payment->data = [
+                    $cash =  [
                         'cash' => $request->cash,
                         'total' => $data->total,
                         'kembalian' => $request->cash - $data->total
                     ];
-                    $payment->payment = [
-                        'cash' => $request->cash,
-                        'total' => $data->total,
-                        'kembalian' => $request->cash - $data->total
-                    ];
+                    $payment->data = $cash;
+                    $payment->payment = json_encode($cash);
                     $data->payment()->save($payment);
                     $data->payment_method_id = $request->payment_method_id;
                     $data->payment_id = $payment->id;
