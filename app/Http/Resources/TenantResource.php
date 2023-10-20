@@ -37,6 +37,7 @@ class TenantResource extends JsonResource
             'phone' => $this->phone,
             'manager' => $this->manager,
             'photo_url' => $this->photo_url ? asset($this->photo_url) : null,
+            'url_self_order' => $this->url_self_order,
             'merchant_id' => $this->merchant_id,
             'sub_merchant_id' => $this->sub_merchant_id,
             'is_open' => $this->is_open,

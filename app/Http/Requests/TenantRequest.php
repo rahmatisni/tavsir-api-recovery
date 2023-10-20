@@ -49,6 +49,7 @@ class TenantRequest extends FormRequest
             'sub_merchant_id' => 'nullable|integer',
             'is_open' => 'required|boolean',
             'in_takengo' => 'required|boolean',
+            'url_self_order' => 'nullable|max:255',
         ];
     }
 }
