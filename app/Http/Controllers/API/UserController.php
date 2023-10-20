@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Exports\UserExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserActivationRequest;
 use App\Models\User;
 use App\Http\Requests\UserRequest;
 use App\Models\Subscription;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UserController extends Controller
 {
@@ -16,8 +19,10 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($export)
     {
+        $order_by =  request()->order_by ?? 'id';
+        $sort_by = request()-> sort_by ?? 'desc';
         $data = User::when($name = request()->name, function ($q) use ($name) {
             $q->where('name', 'like', '%' . $name . '%');
         })->when($email = request()->email, function ($q) use ($email) {
@@ -32,8 +37,14 @@ class UserController extends Controller
             return $q->where('role', $role);
         })->when($rest_area_id = request()->rest_area_id, function ($q) use ($rest_area_id) {
             return $q->where('rest_area_id', $rest_area_id);
-        })->get();
-
+        })->when($sort = request()->sort, function ($q) use ($sort) {
+            return $q->where('rest_area_id', $sort);
+        })
+        ->orderBy($order_by, $sort_by)
+        ->get();
+        if(request()->export == true){
+            Excel::download(new UserExport($data), 'user ' . Carbon::now()->format('d-m-Y') . '.xlsx');
+        }
         return response()->json($data);
     }
 

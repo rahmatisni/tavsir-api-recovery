@@ -25,6 +25,9 @@ class LaporanPenjualanResource extends JsonResource
             array_push($pilihan_price,  (int)$v->pilihan_price);
         };
         return [
+            'tenant_id' => $this->product->tenant_id ?? '',
+            'tenant_name' => $this->product->tenant->name ?? '',
+            'sku' => $this->product->sku ?? '',
             'sku' => $this->product->sku ?? '',
             'nama_product' => ($this->product->name ?? ''),
             'nama_varian' => ($product_detil ?? ''),
