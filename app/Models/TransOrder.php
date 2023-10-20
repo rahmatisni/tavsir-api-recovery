@@ -62,6 +62,8 @@ class TransOrder extends BaseModel
         'is_save',
         'rating',
         'description',
+        'sharing_code',
+        'sharing_amount'
     ];
 
     public function trans_order_arsip()

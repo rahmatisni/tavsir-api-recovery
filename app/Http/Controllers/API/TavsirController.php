@@ -547,6 +547,7 @@ class TavsirController extends Controller
             if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::DONE) {
                 return response()->json(['message' => 'Order status ' . $data->statusLabel()], 400);
             }
+            $data->sharing_code = $tenant->sharing_code ?? null;
             $data->rest_area_id = auth()->user()->tenant->rest_area_id ?? null;
             $data->tenant_id = auth()->user()->tenant_id;
             $data->business_id = auth()->user()->business_id;
@@ -619,6 +620,15 @@ class TavsirController extends Controller
             $data->sub_total = $sub_total;
             $data->total = $data->sub_total + $data->fee + $data->service_fee + $data->addon_total;
 
+            $tenant = Tenant::where('id', auth()->user()->tenant_id)->first();
+            if($tenant->sharing_amount){
+                $tenant_sharing = json_decode($tenant->sharing_amount);
+                foreach ($tenant_sharing as $value) {
+                    $sharing_amount[] = ($value/100) * ($data->sub_total + $data->addon_total);
+                }
+                $data->sharing_code = $tenant->sharing_code ?? null;
+                $data->sharing_amount = $sharing_amount ?? null;
+            }
             $data->save();
             $data->detil()->saveMany($order_detil_many);
             DB::commit();
