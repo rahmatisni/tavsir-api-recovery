@@ -176,7 +176,7 @@ class UserController extends Controller
                 'message' => 'Tenant tidak memiliki subscription'
             ]);
         }
-        if ($subscription->status != Subscription::ACTIVE) {
+        if ($subscription->status != Subscription::AKTIF) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Subscription is not active'
