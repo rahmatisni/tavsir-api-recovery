@@ -1910,7 +1910,7 @@ class TavsirController extends Controller
         $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer', 'trans_edc.bank')->when($status = request()->status, function ($q) use ($status) {
             // if (strpos($status, '[') !== false && strpos($status, ']') !== false) {
             //     $status = explode(",", trim($status, "[]"));
-            if (json_decode(request()->$status,true)) {
+            if (json_encode(request()->$status,true)) {
                 $q->whereIn('status', $status);
             } else {
                 $q->where('status', $status);
