@@ -74,6 +74,9 @@ class TransStockV2Controller extends Controller
     public function storeKeluar(TransStockStoreRequest $request)
     {
         $data = $this->service->storeKeluar($request->validated());
+        if($data === 0) {
+            return response()->json(['message'=>'Jumlah stok keluar tidak boleh melebihi stok!'], 422);
+        }
         return $this->response($data);
     }
 

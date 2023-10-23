@@ -137,6 +137,10 @@ class StockServices
             $data->product_id = $payload['product_id'];
             $data->stock_type = $data::OUT;
             $data->recent_stock = $data->product->stock;
+            if ($data->recent_stock < $payload['stock']){
+                DB::rollBack();
+                return $data = 0;
+            }
             $data->stock_amount = $payload['stock'];
             $data->keterangan = $payload['keterangan'];
             $data->price_capital = $payload['price_capital'];
