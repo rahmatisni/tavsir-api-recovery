@@ -1092,7 +1092,7 @@ class TavsirController extends Controller
                         if ($data->payment === null) {
                             $pay = new TransPayment();
                             $pay->data = $res['responseData'];
-                            $pay->inquiry = json_encode($res);
+                            $pay->inquiry = $res;
                             $data->payment()->save($pay);
                         } else {
                             $pay = $data->payment;
@@ -1140,7 +1140,8 @@ class TavsirController extends Controller
                         if ($data->payment === null) {
                             $pay = new TransPayment();
                             $pay->data = $res['responseData'];
-                            $pay->inquiry = json_encode($res);
+                            $pay->inquiry = $res;
+
                             $data->payment()->save($pay);
                         } else {
                             $pay = $data->payment;
@@ -1283,7 +1284,7 @@ class TavsirController extends Controller
                         if ($data->payment === null) {
                             $payment = new TransPayment();
                             $payment->data = $respon;
-                            $payment->inquiry = json_encode($respon);
+                            $payment->inquiry = $respon;
                             $payment->trans_order_id = $data->id;
                             $payment->save();
                         } else {
@@ -1357,7 +1358,7 @@ class TavsirController extends Controller
                         $respon = $res['responseData'];
                         if ($data->payment === null) {
                             $payment = new TransPayment();
-                            $payment->inquiry = json_encode($respon);
+                            $payment->inquiry = $respon;
                             $payment->data = $respon;
                             $payment->trans_order_id = $data->id;
                             $payment->save();
@@ -1679,7 +1680,7 @@ class TavsirController extends Controller
                     $respon = $res['responseData'];
                     if ($data->payment === null) {
                         $payment = new TransPayment();
-                        $payment->payment = json_encode($respon);
+                        $payment->payment = $respon;
                         $payment->data = $respon;
                         $data->payment()->save($payment);
                     } else {
@@ -1749,7 +1750,7 @@ class TavsirController extends Controller
                     $respon = $res['responseData'];
                     if ($data->payment === null) {
                         $payment = new TransPayment();
-                        $payment->payment = json_encode($respon);
+                        $payment->payment = $respon;
                         $payment->data = $respon;
                         $data->payment()->save($payment);
                     } else {
@@ -1822,8 +1823,10 @@ class TavsirController extends Controller
                         }
                         $pay = TransPayment::where('trans_order_id', $data->id)->first();
                         $pay->data = $res_data;
+                        $pay->payment = $res_data;
                         $pay->save();
                     } else {
+                        
                         return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                     }
                     $data->payment()->update(['data' => $res_data]);
@@ -2020,7 +2023,7 @@ class TavsirController extends Controller
                         'kembalian' => $request->cash - $data->total
                     ];
                     $payment->data = $cash;
-                    $payment->payment = json_encode($cash);
+                    $payment->payment = $cash;
                     $data->payment()->save($payment);
                     $data->payment_method_id = $request->payment_method_id;
                     $data->payment_id = $payment->id;
@@ -2092,7 +2095,7 @@ class TavsirController extends Controller
                     $payment = new TransPayment();
                     $payment->trans_order_id = $data->id;
                     $payment->data = $payment_payload;
-                    $payment->payment = json_encode($payment_payload);
+                    $payment->payment = $payment_payload;
                     $data->payment()->save($payment);
                     $data->payment_method_id = $request->payment_method_id;
                     $data->payment_id = $payment->id;
