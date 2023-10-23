@@ -1908,16 +1908,11 @@ class TavsirController extends Controller
         $queryOrder .= "ELSE 9 END";
 
         $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer', 'trans_edc.bank')->when($status = request()->status, function ($q) use ($status) {
-            // if (strpos($status, '[') !== false && strpos($status, ']') !== false) {
-            //     $status = explode(",", trim($status, "[]"));
-            if (json_encode(request()->$status,true)) {
+            if (is_array($status)) {
                 $q->whereIn('status', $status);
             } else {
                 $q->where('status', $status);
             }
-            // } else {
-            //     $q->where('status', $status);
-            // }
         })
             ->when($start_date = $request->start_date, function ($q) use ($start_date) {
                 $q->whereDate('created_at', '>=', date("Y-m-d", strtotime($start_date)));
