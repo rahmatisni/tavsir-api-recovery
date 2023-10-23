@@ -1908,6 +1908,7 @@ class TavsirController extends Controller
         $queryOrder .= "ELSE 9 END";
 
         $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer', 'trans_edc.bank')->when($status = request()->status, function ($q) use ($status) {
+    
             if (is_array($status)) {
                 $q->whereIn('status', $status);
             } else {
