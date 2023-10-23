@@ -1908,9 +1908,13 @@ class TavsirController extends Controller
         $queryOrder .= "ELSE 9 END";
 
         $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer', 'trans_edc.bank')->when($status = request()->status, function ($q) use ($status) {
-            $status = explode(",", trim($status, "[]"));
-            if (is_array($status)) {
-                $q->whereIn('status', $status);
+            if (strpos($status, '[') !== false && strpos($status, ']') !== false) {
+                $status = explode(",", trim($status, "[]"));
+                if (is_array($status)) {
+                    $q->whereIn('status', $status);
+                } else {
+                    $q->where('status', $status);
+                }
             } else {
                 $q->where('status', $status);
             }
