@@ -16,7 +16,7 @@ class ProductBahanBakuServices
     {
         return Product::byType(ProductType::BAHAN_BAKU)
                         ->byTenant()
-                        ->myWhereLike(['name','sku'], $search)
+                        ->myWhereLike(['name','sku','is_active','category_id'], $search)
                         ->orderByDesc('id')
                         ->paginate();
     }
