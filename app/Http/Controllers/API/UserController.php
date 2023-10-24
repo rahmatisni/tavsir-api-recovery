@@ -19,7 +19,7 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($export)
+    public function index()
     {
         $order_by =  request()->order_by ?? 'id';
         $sort_by = request()-> sort_by ?? 'desc';
