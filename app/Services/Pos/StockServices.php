@@ -47,9 +47,13 @@ class StockServices
                 $q->whereHas('product', function ($qq) use ($status) {
                     $qq->where('status', $status);
                 });
-            })->when($category_id = $filter['product_id'] ?? '', function ($q) use ($category_id) {
+            })->when($category_id = $filter['category_id'] ?? '', function ($q) use ($category_id) {
                 $q->whereHas('product', function ($qq) use ($category_id) {
                     $qq->where('category_id', $category_id);
+                });
+            })->when($product_id = $filter['product_id'] ?? '', function ($q) use ($product_id) {
+                $q->whereHas('product', function ($qq) use ($product_id) {
+                    $qq->where('product_id', $product_id);
                 });
             })->when(($filter['status'] ?? '') == '0', function ($q) {
                 $q->whereHas('product', function ($qq) {
@@ -83,6 +87,11 @@ class StockServices
                 ->when($category_id = $filter['category_id'] ?? '', function ($q) use ($category_id) {
                     $q->whereHas('product', function ($qq) use ($category_id) {
                         $qq->where('category_id', $category_id);
+                    });
+                })
+                ->when($product_id = $filter['product_id'] ?? '', function ($q) use ($product_id) {
+                    $q->whereHas('product', function ($qq) use ($product_id) {
+                        $qq->where('product_id', $product_id);
                     });
                 })->when(($filter['is_active'] ?? '') == '0', function ($q) {
                     $q->whereHas('product', function ($qq) {
