@@ -25,7 +25,7 @@ class RestArea extends BaseModel
 
     public function ruas()
     {
-        return $this->belongsTo(Ruas::class, 'ruas_id');
+        return $this->belongsTo(Ruas::class, 'ruas_id')->withTrashed();
     }
 
     public function tenant()
