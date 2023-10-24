@@ -17,10 +17,10 @@ class RestAreaController extends Controller
      */
     public function index()
     {
-        $data = RestArea::withTrashed()->when($name = request()->name, function ($q) use ($name) {
+        $data = RestArea::when($name = request()->name, function ($q) use ($name) {
             return $q->where('name', 'like', "%$name%");
         });
-        $data = $data->get();
+        $data = $data->withTrashed()->get();
 
         if (request()->lat && request()->lon) {
             $data = $data->filter(function ($item) {
