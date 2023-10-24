@@ -348,28 +348,27 @@ class TavsirController extends Controller
             return response()->json(['message' => 'Password Tenant salah'], 400);
         }
 
-        if($data->payment_method_id == 4){
+        if ($data->payment_method_id == 4) {
             $parts = explode("-", $data->order_id);
             $lastElement = end($parts);
 
             $payload = [
-                "commandID"=>"ReverseTransaction",
-                "originatorConversationID"=>"REF-".$lastElement,
-                "originalReceiptNumber"=>$data->order_id,
-                "trxAmount"=>$data->total,
-                "merchantTrxID"=>$lastElement
+                "commandID" => "ReverseTransaction",
+                "originatorConversationID" => "REF-" . $lastElement,
+                "originalReceiptNumber" => $data->order_id,
+                "trxAmount" => $data->total,
+                "merchantTrxID" => $lastElement
             ];
             $refund_la = LaJmto::qrRefund($payload);
-            if($refund_la['status'] == '00'){
+            if ($refund_la['status'] == '00') {
 
-            }
-            else {
+            } else {
                 return response()->json([
-                    'message' => 'Refund sebesar ' . $data->total . ' gagal!',      
-                    'data' =>  $refund_la
-                ],422);
+                    'message' => 'Refund sebesar ' . $data->total . ' gagal!',
+                    'data' => $refund_la
+                ], 422);
             }
-            
+
         }
 
         $total_refund = 0;
@@ -392,7 +391,7 @@ class TavsirController extends Controller
         return response()->json([
             'message' => 'Refund sebesar ' . $total_refund,
             'data' =>
-            new TrOrderResource($data)
+                new TrOrderResource($data)
 
         ]);
     }
@@ -539,7 +538,7 @@ class TavsirController extends Controller
             if (!$data) {
                 $data = new TransOrder();
                 $data->order_type = TransOrder::POS;
-                $data->order_id = (auth()->user()->tenant->rest_area_id ?? '0') . '-' . (auth()->user()->tenant_id ?? '0') . '-POS-' . date('YmdHis').rand(0,100);
+                $data->order_id = (auth()->user()->tenant->rest_area_id ?? '0') . '-' . (auth()->user()->tenant_id ?? '0') . '-POS-' . date('YmdHis') . rand(0, 100);
                 $data->status = TransOrder::CART;
                 $data->nomor_name = $request->nomor_name;
 
@@ -602,7 +601,7 @@ class TavsirController extends Controller
             }
 
             $extra_price = ExtraPrice::byTenant($data->tenant_id)->aktif()->get();
-            $data->margin = $sub_total-$margin;
+            $data->margin = $sub_total - $margin;
             $data->addon_total = 0;
             $data->addon_price()->delete();
             foreach ($extra_price as $value) {
@@ -621,11 +620,11 @@ class TavsirController extends Controller
             $data->total = $data->sub_total + $data->fee + $data->service_fee + $data->addon_total;
 
             $tenant = Tenant::where('id', auth()->user()->tenant_id)->first();
-            if($tenant->sharing_config){
+            if ($tenant->sharing_config) {
                 $tenant_sharing = json_decode($tenant->sharing_config);
                 foreach ($tenant_sharing as $value) {
-                    $harga = (int)($data->sub_total)+(int)($data->addon_total);
-                    $sharing_amount_unround = (($value/100) * $harga);
+                    $harga = (int) ($data->sub_total) + (int) ($data->addon_total);
+                    $sharing_amount_unround = (($value / 100) * $harga);
                     // $sharing_amount[] = ($value/100).'|'.$harga.'|'.$sharing_amount_unround;
                     $sharing_amount[] = $sharing_amount_unround;
                 }
@@ -862,34 +861,32 @@ class TavsirController extends Controller
     public function paymentMethod(Request $request)
     {
         $paymentMethods = PaymentMethod::all();
-        $self_order = [5,7,9,11];
+        $self_order = [5, 7, 9, 11];
         $travshop = [5, 6, 7, 8, 9, 11];
-        $tavsir = [1,2,3,4,10];
-        
+        $tavsir = [1, 2, 3, 4, 10];
+
         if ($request->trans_order_id) {
             $trans_order = TransOrder::with('tenant')->findOrfail($request->trans_order_id);
             $param_removes = Tenant::where('id', $trans_order->tenant_id)->first();
-            if($param_removes == null && $trans_order->order_type == 'ORDER_TRAVOY'){
-                $self_order =[];
+            if ($param_removes == null && $trans_order->order_type == 'ORDER_TRAVOY') {
+                $self_order = [];
                 $travshop = [5, 6, 7, 8, 9, 11];
                 $tavsir = [];
 
-            }
-            else {
-                $intersect = json_decode($param_removes->list_payment);           
-                if($param_removes->list_payment == null){
+            } else {
+                $intersect = json_decode($param_removes->list_payment);
+                if ($param_removes->list_payment == null) {
                     $self_order = [];
                     $travshop = [];
-                    $tavsir = [1,2];
-                }
-                else {
+                    $tavsir = [1, 2];
+                } else {
                     $self_order = array_intersect($self_order, $intersect);
                     $travshop = array_intersect($travshop, $intersect);
                     $tavsir = array_intersect($tavsir, $intersect);
                 }
 
             }
-           
+
 
 
             $tenant = $trans_order->tenant;
@@ -984,7 +981,7 @@ class TavsirController extends Controller
         // $paymentMethods = $paymentMethods->whereNotIn('id', $remove);
         return response()->json($paymentMethods);
     }
-    
+
     public function createPayment(TsCreatePaymentRequest $request, $id)
     {
 
@@ -1159,7 +1156,7 @@ class TavsirController extends Controller
                     break;
                 case stristr($payment_method, 'tav_qr'):
 
-                // case 'tav_qr':
+                    // case 'tav_qr':
 
 
                     $voucher = Voucher::where('hash', request()->voucher)
@@ -1223,7 +1220,7 @@ class TavsirController extends Controller
 
                 case stristr($payment_method, 'pg_dd_bri'):
 
-                // case 'pg_dd_bri':
+                    // case 'pg_dd_bri':
                     $bind = Bind::where('id', $request->card_id)->first();
                     $bind_before = TransPayment::where('trans_order_id', $data->id)->first();
 
@@ -1304,7 +1301,7 @@ class TavsirController extends Controller
 
                 case stristr($payment_method, 'pg_dd_mandiri'):
 
-                // case 'pg_dd_mandiri':
+                    // case 'pg_dd_mandiri':
                     $bind = Bind::where('id', $request->card_id)->first();
                     $bind_before = TransPayment::where('trans_order_id', $data->id)->first();
 
@@ -1390,7 +1387,7 @@ class TavsirController extends Controller
         }
     }
 
-    
+
     // public function statusPayment(Request $request, $id)
     // {
     //     $kios = [];
@@ -1634,7 +1631,7 @@ class TavsirController extends Controller
                     return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
 
                 }
-                if($data->payment_method_id == '4'){
+                if ($data->payment_method_id == '4') {
 
                 }
                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
@@ -1792,7 +1789,7 @@ class TavsirController extends Controller
                 $res = LAJmto::qrStatus(
                     $data_payment['bill_id']
                 );
-    
+
                 if (isset($res['status']) && $res['status'] == 'success') {
                     $res_data = $res['responseData'];
                     $res_data['fee'] = $data_payment['fee'];
@@ -1813,10 +1810,10 @@ class TavsirController extends Controller
                             $data->status = TransOrder::PAYMENT_SUCCESS;
                             $data->save();
                             DB::commit();
-    
+
                             $travoy = $this->travoyService->detailDerek($id, $request->id_user, $request->token);
                             return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
-    
+
                         }
                         foreach ($data->detil as $key => $value) {
                             $this->stock_service->updateStockProduct($value);
@@ -1829,8 +1826,7 @@ class TavsirController extends Controller
                         return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                     }
                     $data->payment()->update(['data' => $res_data]);
-                }
-                else {
+                } else {
                     return response()->json($res, 500);
                 }
                 DB::commit();
@@ -1908,7 +1904,9 @@ class TavsirController extends Controller
         $queryOrder .= "ELSE 9 END";
 
         $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer', 'trans_edc.bank')->when($status = request()->status, function ($q) use ($status) {
-    
+
+            $inputString = trim($status, '[]');
+            $status = explode(', ', $inputString);
             if (is_array($status)) {
                 $q->whereIn('status', $status);
             } else {
@@ -2017,7 +2015,7 @@ class TavsirController extends Controller
                     }
                     $payment = new TransPayment();
                     $payment->trans_order_id = $data->id;
-                    $cash =  [
+                    $cash = [
                         'cash' => $request->cash,
                         'total' => $data->total,
                         'kembalian' => $request->cash - $data->total
@@ -2213,7 +2211,8 @@ class TavsirController extends Controller
         return response()->json($data);
     }
 
-    public function CallbackLinkAjaQRIS(Request $request){
+    public function CallbackLinkAjaQRIS(Request $request)
+    {
 
         // $trans = TransOrder::where('order_id', 'like', '%'.$request['trx_id'])->first();
         // if(!$trans){
@@ -2231,9 +2230,9 @@ class TavsirController extends Controller
         // $data->save();
         // DB::commit();
         $datax = [
-            "responseCode"=>"00",
-            "transactionID"=>$request->msg,
-            "notificationMessage"=>"dummy"
+            "responseCode" => "00",
+            "transactionID" => $request->msg,
+            "notificationMessage" => "dummy"
         ];
         return response()->json($datax);
 
