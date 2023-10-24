@@ -17,7 +17,7 @@ class RestAreaController extends Controller
      */
     public function index()
     {
-        $data = RestArea::when($name = request()->name, function ($q) use ($name) {
+        $data = RestArea::withTrashed()->when($name = request()->name, function ($q) use ($name) {
             return $q->where('name', 'like', "%$name%");
         });
         $data = $data->get();
