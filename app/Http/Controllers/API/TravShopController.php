@@ -865,6 +865,9 @@ class TravShopController extends Controller
 
                 if (in_array($value->id, $self_order)) {
                     $value->self_order = true;
+                    if($value->id === 4){
+                        $value->fee = 0;
+                    }
                     // dump(['so',$value->id, $self_order,true]);
                 }
 
