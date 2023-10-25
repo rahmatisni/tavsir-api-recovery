@@ -17,6 +17,7 @@ class RekapTransOrderResource extends JsonResource
         // return parent::toArray($request);
         return [
             'created_at' => (string) $this->created_at,
+            'trans_order_id' => $this->id,
             'order_id' => $this->order_id,
             'total_product' => $this->detil->count(),
             'total' => $this->total,
