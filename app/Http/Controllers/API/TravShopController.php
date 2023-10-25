@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Resources\Tavsir\TrOrderResource;
 use App\Models\LogKiosbank;
+use App\Models\LaJmto;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TsCreatePaymentRequest;
@@ -1262,7 +1263,55 @@ class TravShopController extends Controller
                     }
                     return response()->json($respon->json(), 400);
                     break;
-
+                    case stristr($payment_method, 'pg_link_aja'):
+                        $payment_payload = [
+                            "sof_code" => $payment_method->code,
+                            'bill_id' => $data->order_id,
+                            'bill_name' => 'GetPay',
+                            'amount' => (string) $data->total,
+                            'desc' => $data->tenant->name ?? 'Travoy',
+                            "exp_date" => Carbon::now()->addMinutes(5)->format('Y-m-d H:i:s'),
+                            "va_type" => "close",
+                            'phone' => $data->tenant->phone,
+                            'email' => $data->tenant->email,
+                            'customer_name' => $data->nomor_name,
+                            "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id,
+                        ];
+    
+                        $res = LaJmto::qrCreate(
+                            $payment_method->code,
+                            $data->order_id,
+                            'GetPay',
+                            $data->total,
+                            $data->tenant->name ?? 'Travoy',
+                            $data->tenant->phone,
+                            $data->tenant->email,
+                            $data->nomor_name,
+                            $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
+                        );
+    
+                        if (isset($res['status']) && $res['status'] == 'success') {
+                            $pay = null;
+                            if ($data->payment === null) {
+                                $pay = new TransPayment();
+                                $pay->data = $res['responseData'];
+                                $pay->inquiry = $res;
+    
+                                $data->payment()->save($pay);
+                            } else {
+                                $pay = $data->payment;
+                                $pay->data = $res['responseData'];
+                                $pay->save();
+                            }
+                            $data->service_fee = $pay->data['fee'];
+                            $data->total = $data->total + $data->service_fee;
+                            $data->sub_merchant_id = $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id;
+                            $data->save();
+                        } else {
+                            return response()->json([$res], 500);
+                        }
+    
+                        break;
                 default:
                     return response()->json(['error' => $payment_method->name . ' Coming Soon'], 500);
 
@@ -1771,6 +1820,53 @@ class TravShopController extends Controller
                 return response()->json($res->json(), 400);
             }
 
+            if ($data->payment_method->code_name == 'pg_link_aja') {
+                $res = LAJmto::qrStatus(
+                    $data_payment['bill_id']
+                );
+
+                if (isset($res['status']) && $res['status'] == 'success') {
+                    $res_data = $res['responseData'];
+                    $res_data['fee'] = $data_payment['fee'];
+                    $kios = [];
+                    if ($res_data['pay_status'] === '1') {
+                        if ($data->status === TransOrder::WAITING_PAYMENT) {
+                            $data->status = TransOrder::PAYMENT_SUCCESS;
+                            $data->save();
+                            if ($data->order_type === TransOrder::ORDER_TRAVOY) {
+                                return $this->payKios($data, $id);
+                            }
+                        }
+                        if ($data->order_type === TransOrder::POS) {
+                            $data->status = TransOrder::DONE;
+                        }
+                        $data->save();
+                        if ($data->order_type === TransOrder::ORDER_DEREK_ONLINE) {
+                            $data->status = TransOrder::PAYMENT_SUCCESS;
+                            $data->save();
+                            DB::commit();
+
+                            $travoy = $this->travoyService->detailDerek($id, $request->id_user, $request->token);
+                            return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
+
+                        }
+                        foreach ($data->detil as $key => $value) {
+                            $this->stock_service->updateStockProduct($value);
+                        }
+                        $pay = TransPayment::where('trans_order_id', $data->id)->first();
+                        $pay->data = $res_data;
+                        $pay->payment = $res_data;
+                        $pay->save();
+                    } else {
+                        return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
+                    }
+                    $data->payment()->update(['data' => $res_data]);
+                } else {
+                    return response()->json($res, 500);
+                }
+                DB::commit();
+                return response()->json($res);
+            }
             $res = PgJmto::vaStatus(
                 $data_payment['sof_code'],
                 $data_payment['bill_id'],
