@@ -865,7 +865,6 @@ class TravShopController extends Controller
 
                 if (in_array($value->id, $self_order)) {
                     $value->self_order = true;
-                   
                     // dump(['so',$value->id, $self_order,true]);
                 }
 
@@ -898,7 +897,7 @@ class TravShopController extends Controller
 
                     if ($value?->sof_id == null) {
                         $value->percentage = null;
-                        $value->fee = 0;
+                        $value->fee = null;
                     } else {
                         $data = PgJmto::tarifFee($value->sof_id, $value->payment_method_id, $value->sub_merchant_id, $trans_order->sub_total);
                         Log::warning($data);
@@ -914,6 +913,10 @@ class TravShopController extends Controller
                         }
                     }
                 }
+                if($value->id == 4){
+                    $value->fee = 0;
+                }
+               
             }
 
         }
