@@ -443,7 +443,7 @@ class LaJmto extends Model
             //end fake
         }
 
-        $res = self::refund('POST', '/transaction', $payload)->json();
+        $res = self::refund('POST', '/transaction/reverse', $payload)->json();
         Log::info([$payload, $res]);
 
         // $res = [

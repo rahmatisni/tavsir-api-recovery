@@ -1820,7 +1820,7 @@ class TavsirController extends Controller
                         }
                         $pay = TransPayment::where('trans_order_id', $data->id)->first();
                         $pay->data = $res_data;
-                        $pay->payment = $res_data;
+                        $pay->payment = $res;
                         $pay->save();
                     } else {
                         return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
