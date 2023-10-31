@@ -42,7 +42,11 @@ class StockServices
                 );
                 foreach ($fcm_token as $value) {
                     if ($value->fcm_token) {
-                        $result = sendNotif($value->fcm_token, 'Info', 'Stock product ' . $product_name . ' ' . $update_stock, $payload);
+                        $result = sendNotif($value->fcm_token, ' ⚠ Oops.. Stok Paket '.$product_name.' Menipis!', 'Stock product ' . $product_name . ' sisa ' . $update_stock . '. Segera tambahkan stok ya!
+                        ', $payload);
+                        // ⚠ Oops.. Stok Paket Ayam Goreng Menipis!
+                        // Stok Paket Ayam Goreng sisa 9. Segera tambahkan stok ya!
+
                     }
                 }
             }
