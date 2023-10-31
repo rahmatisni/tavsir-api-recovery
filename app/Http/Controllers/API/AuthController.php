@@ -60,9 +60,9 @@ class AuthController extends Controller
                         if ($user->fcm_token) {
                             $payload = array(
                                 'type' => 'click',
-                                'action' => 'relogin'
+                                'action' => 'relogin',
                             );
-                            sendNotif($user->fcm_token, 'Login di perangkat lain', $payload);
+                            sendNotif($user->fcm_token, '❗Anda telah keluar dari Getpay❗','User anda telah digunakan diperangkat lain!', $payload);
                         }
                     }
                     $user->accessTokens()->delete();
