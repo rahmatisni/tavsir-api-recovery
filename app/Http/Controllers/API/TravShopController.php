@@ -2022,6 +2022,22 @@ class TravShopController extends Controller
                         if ($data->order_type === TransOrder::ORDER_TRAVOY) {
                             return $this->payKios($data, $id);
                         }
+                        if ($data->order_type === TransOrder::ORDER_SELF_ORDER){
+                            $fcm_token = User::where([['casheer_id', $data->casheer_id]])->get();
+                            $ids = array();
+                            foreach ($fcm_token as $val) {
+                                if ($val['fcm_token'] != null && $val['fcm_token'] != '')
+                                    array_push($ids, $val['fcm_token']);
+                            }
+                            if ($ids != '') {
+                                $payload = array(
+                                    'id' => $data->id,
+                                    'type' => 'click',
+                                    'action' => 'payment_success'
+                                );
+                                $result = sendNotif($ids, '🛎 Pesanan ID '.$data->order_id.' Telah Dibayar!', 'Yuukk segera siapkan pesanan', $payload);
+                            }
+                        }
                     }
                     if ($data->order_type === TransOrder::POS) {
                         $data->status = TransOrder::DONE;
