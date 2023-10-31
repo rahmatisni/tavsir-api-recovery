@@ -2009,7 +2009,7 @@ class TavsirController extends Controller
         //             ->orWhereNull('casheer_id');
         //     })->where('tenant_id', auth()->user()->tenant_id)->get();
         // } else {
-            $data = $data ->orderByRaw($queryOrder)->orderBy('created_at', 'desc')->get();
+            $data = $data->orderByRaw($queryOrder)->orderBy('created_at', 'desc')->get();
         // }
 
         // )->when($sort = request()->sort, function ($q) use ($sort) {
