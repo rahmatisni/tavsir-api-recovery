@@ -280,7 +280,7 @@ class TravShopController extends Controller
                     'type' => 'click',
                     'action' => 'tavsir_order_takengo'
                 );
-                $result = sendNotif($ids, 'Info', 'Pemberitahuan order baru TAKE N GO ' . $data->order_id, $payload);
+                $result = sendNotif($ids, '🛎 Yeay! Ada Pesanan Baru', 'Kamu mendapatkan pesanan baru dengan ID '.$data->id.'. Segera lakukan konfirmasi pesanan tersedia dan siapkan pesanan!', $payload);
             }
             if ($data->order_type == TransOrder::ORDER_TRAVOY) {
                 $product_kios = ProductKiosBank::select(
@@ -428,7 +428,7 @@ class TravShopController extends Controller
                     'type' => 'click',
                     'action' => 'tavsir_order_so'
                 );
-                $result = sendNotif($ids, 'Info', 'Pemberitahuan order baru Self Order ' . $data->order_id, $payload);
+                $result = sendNotif($ids, '🛎 Yeay! Ada Pesanan Baru', 'Kamu mendapatkan pesanan baru dengan ID '.$data->id.'. Segera lakukan konfirmasi pesanan tersedia dan siapkan pesanan!', $payload);
             }
             if ($data->order_type == TransOrder::ORDER_TRAVOY) {
                 $product_kios = ProductKiosBank::select(
