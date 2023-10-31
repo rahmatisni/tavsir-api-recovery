@@ -1948,6 +1948,8 @@ class TavsirController extends Controller
     }
     public function orderHistory(Request $request)
     {
+        $identifier = auth()->user()->id;
+
         $queryOrder = "CASE WHEN status = 'QUEUE' THEN 1 ";
         $queryOrder .= "WHEN status = 'WAITING_OPEN' THEN 2 ";
         $queryOrder .= "WHEN status = 'WAITING_CONFIRMATION_TENANT' THEN 3 ";
@@ -1986,25 +1988,29 @@ class TavsirController extends Controller
                 return $q->where('order_id', 'like', "%$filter%");
             })->when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
             $q->where('tenant_id', $tenant_id);
-        })->when($order_type = request()->order_type, function ($q) use ($order_type) {
-            $q->where('order_type', $order_type);
-        })
+            })->when($order_type = request()->order_type, function ($q) use ($order_type) {
+                $q->where('order_type', $order_type);
+            })
             ->when($customer_name = request()->customer_name, function ($q) use ($customer_name) {
                 $q->where('customer_name', $customer_name)->orwhere('nomor_name', $customer_name);
-            })->orderByRaw($queryOrder)->orderBy('created_at', 'desc');
-        if (!request()->sort) {
-            // $data = $data->orderBy('updated_at', 'desc');
+            })
+        // if (!request()->sort) {
+        //     // $data = $data->orderBy('updated_at', 'desc');
 
-        }
+        // }
+        ->when(auth()->user()->role == 'CASHIER', function ($q) use ($identifier) {
+            $q->where('casheer_id', $identifier)->orWhereNull('casheer_id');
+            });
+        //    ;
 
-        if (auth()->user()->role == 'CASHIER') {
-            $data = $data->where(function ($query) {
-                $query->where('casheer_id', auth()->user()->id)
-                    ->orWhereNull('casheer_id');
-            })->where('tenant_id', auth()->user()->tenant_id)->get();
-        } else {
-            $data = $data->get();
-        }
+        // if (auth()->user()->role == 'CASHIER') {
+        //     $data = $data->where(function ($query) {
+        //         $query->where('casheer_id', auth()->user()->id)
+        //             ->orWhereNull('casheer_id');
+        //     })->where('tenant_id', auth()->user()->tenant_id)->get();
+        // } else {
+            $data = $data ->orderByRaw($queryOrder)->orderBy('created_at', 'desc')->get();
+        // }
 
         // )->when($sort = request()->sort, function ($q) use ($sort) {
         //     if (is_array($sort)) {
