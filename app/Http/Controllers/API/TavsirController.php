@@ -1902,17 +1902,18 @@ class TavsirController extends Controller
         // $queryOrder .= "WHEN status = 'DONE' THEN 8 ";
         // $queryOrder .= "WHEN status = 'CANCEL' THEN 9 ";
         // $queryOrder .= "ELSE 9 END";
+        $identifier = auth()->user()->id;
 
-        $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer', 'trans_edc.bank')->when($status = request()->status, function ($q) use ($status) {
-
-            // $inputString = trim($status, '[]');
-            // $status = explode(', ', $inputString);
-            if (is_array($status)) {
-                $q->whereIn('status', $status);
-            } else {
-                $q->where('status', $status);
-            }
-        })
+        $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer', 'trans_edc.bank')
+            ->when($status = request()->status, function ($q) use ($status) {
+                // $inputString = trim($status, '[]');
+                // $status = explode(', ', $inputString);
+                if (is_array($status)) {
+                    $q->whereIn('status', $status);
+                } else {
+                    $q->where('status', $status);
+                }
+            })
             ->when($start_date = $request->start_date, function ($q) use ($start_date) {
                 $q->whereDate('created_at', '>=', date("Y-m-d", strtotime($start_date)));
             })
@@ -1930,24 +1931,17 @@ class TavsirController extends Controller
                 return $q->where('order_id', 'like', "%$filter%");
             })->when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
             $q->where('tenant_id', $tenant_id);
-        })->when($order_type = request()->order_type, function ($q) use ($order_type) {
-            $q->where('order_type', $order_type);
-        })
+            })->when($order_type = request()->order_type, function ($q) use ($order_type) {
+                $q->where('order_type', $order_type);
+            })
             ->when($customer_name = request()->customer_name, function ($q) use ($customer_name) {
                 $q->where('customer_name', $customer_name)->orwhere('nomor_name', $customer_name);
+            })
+            ->when(auth()->user()->role == 'CASHIER', function ($q) use ($identifier) {
+            $q->where('casheer_id', $identifier);
             });
-     
-        if (auth()->user()->role == 'CASHIER') {
-            $data = $data->where(function ($query) {
-                $query->where('casheer_id', auth()->user()->id)
-                    ->orWhereNull('casheer_id');
-            })->where('tenant_id', auth()->user()->tenant_id);
-        } 
-        if (!request()->sort) {
-            $data = $data->orderby('created_at', 'desc')->get();
-        }else {
-            $data = $data->get();
-        }
+            $data = $data->orderBy('created_at', 'DESC')->get();
+            
         return response()->json(TrOrderResource::collection($data));
     }
     public function orderHistory(Request $request)
