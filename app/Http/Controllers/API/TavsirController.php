@@ -1971,11 +1971,12 @@ class TavsirController extends Controller
                     $q->where('status', $status);
                 }
             })
-            ->when($start_date = $request->start_date, function ($q) use ($start_date) {
-                return $q->whereDate('created_at', '>=', date("Y-m-d", strtotime($start_date)));
+            ->when($start_date = request()->start_date, function ($q) use ($start_date) {
+                // dd(date("Y-m-d", strtotime($start_date)));
+                $q->whereDate('created_at', '>=', date("Y-m-d", strtotime($start_date)));
             })
-            ->when($end_date = $request->end_date, function ($q) use ($end_date) {
-                return $q->whereDate('created_at', '<=', date("Y-m-d", strtotime($end_date)));
+            ->when($end_date = request()->end_date, function ($q) use ($end_date) {
+                $q->whereDate('created_at', '<=', date("Y-m-d", strtotime($end_date)));
             })
             ->when($statusnot = request()->statusnot, function ($q) use ($statusnot) {
                 if (is_array($statusnot)) {
@@ -1997,11 +1998,13 @@ class TavsirController extends Controller
                 $q->where('customer_name', $customer_name)->orwhere('nomor_name', $customer_name);
             })
             ->when(auth()->user()->role == 'CASHIER', function ($q) use ($identifier) {
-                $q->whereNull('casheer_id')->orWhere('casheer_id', $identifier);
+                // $q->whereNull('casheer_id')->orWhere('casheer_id', $identifier);
+                $q->whereIn('casheer_id', [$identifier, null]);
                 // $q->where('casheer_id', [$identifier,null]);
             });
         $data = $data->orderByRaw($queryOrder)->orderBy('created_at', 'DESC')->get();
-
+        // $datax = $data->get();
+        // dd($datax);
         return response()->json(TrOrderResource::collection($data));
     }
 
