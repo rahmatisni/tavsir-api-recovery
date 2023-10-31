@@ -1933,17 +1933,17 @@ class TavsirController extends Controller
                 return $q->where('order_id', 'like', "%$filter%");
             })->when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
             $q->where('tenant_id', $tenant_id);
-            })->when($order_type = request()->order_type, function ($q) use ($order_type) {
-                $q->where('order_type', $order_type);
-            })
+        })->when($order_type = request()->order_type, function ($q) use ($order_type) {
+            $q->where('order_type', $order_type);
+        })
             ->when($customer_name = request()->customer_name, function ($q) use ($customer_name) {
                 $q->where('customer_name', $customer_name)->orwhere('nomor_name', $customer_name);
             })
             ->when(auth()->user()->role == 'CASHIER', function ($q) use ($identifier) {
-            $q->where('casheer_id', $identifier);
+                $q->where('casheer_id', $identifier);
             });
-            $data = $data->orderBy('created_at', 'DESC')->get();
-            
+        $data = $data->orderBy('created_at', 'DESC')->get();
+
         return response()->json(TrOrderResource::collection($data));
     }
     public function orderHistory(Request $request)
@@ -1961,16 +1961,16 @@ class TavsirController extends Controller
         $queryOrder .= "WHEN status = 'CANCEL' THEN 9 ";
         $queryOrder .= "ELSE 9 END";
 
-        $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer', 'trans_edc.bank')->when($status = request()->status, function ($q) use ($status) {
-
-            // $inputString = trim($status, '[]');
-            // $status = explode(', ', $inputString);
-            if (is_array($status)) {
-                $q->whereIn('status', $status);
-            } else {
-                $q->where('status', $status);
-            }
-        })
+        $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer', 'trans_edc.bank')
+            ->when($status = request()->status, function ($q) use ($status) {
+                if (is_array($status)) {
+                    // $jsonArray = str_replace(['[', ']', '"'], '', $status);
+                    // $array = explode(',', $jsonArray[0]);
+                    $q->whereIn('status', $status);
+                } else {
+                    $q->where('status', $status);
+                }
+            })
             ->when($start_date = $request->start_date, function ($q) use ($start_date) {
                 $q->whereDate('created_at', '>=', date("Y-m-d", strtotime($start_date)));
             })
@@ -1979,6 +1979,8 @@ class TavsirController extends Controller
             })
             ->when($statusnot = request()->statusnot, function ($q) use ($statusnot) {
                 if (is_array($statusnot)) {
+                    // $jsonArray = str_replace(['[', ']', '"'], '', $statusnot);
+                    // $array = explode(',', $jsonArray[0]);
                     $q->whereNotIn('status', $statusnot);
                 } else {
                     $q->whereNotIn('status', $statusnot);
@@ -1987,39 +1989,18 @@ class TavsirController extends Controller
             ->when($filter = request()->filter, function ($q) use ($filter) {
                 return $q->where('order_id', 'like', "%$filter%");
             })->when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
-            $q->where('tenant_id', $tenant_id);
-            })->when($order_type = request()->order_type, function ($q) use ($order_type) {
-                $q->where('order_type', $order_type);
-            })
+           return $q->where('tenant_id', $tenant_id);
+        })->when($order_type = $request->order_type, function ($q) use ($order_type) {
+            $q->where('order_type', $order_type);
+        })
             ->when($customer_name = request()->customer_name, function ($q) use ($customer_name) {
                 $q->where('customer_name', $customer_name)->orwhere('nomor_name', $customer_name);
             })
-        // if (!request()->sort) {
-        //     // $data = $data->orderBy('updated_at', 'desc');
-
-        // }
-        ->when(auth()->user()->role == 'CASHIER', function ($q) use ($identifier) {
-            $q->where('casheer_id', $identifier)->orWhereNull('casheer_id');
+            ->when(auth()->user()->role == 'CASHIER', function ($q) use ($identifier) {
+                $q->where('casheer_id', $identifier);
             });
-        //    ;
+        $data = $data->orderByRaw($queryOrder)->orderBy('created_at', 'DESC')->get();
 
-        // if (auth()->user()->role == 'CASHIER') {
-        //     $data = $data->where(function ($query) {
-        //         $query->where('casheer_id', auth()->user()->id)
-        //             ->orWhereNull('casheer_id');
-        //     })->where('tenant_id', auth()->user()->tenant_id)->get();
-        // } else {
-            $data = $data->orderByRaw($queryOrder)->orderBy('created_at', 'desc')->get();
-        // }
-
-        // )->when($sort = request()->sort, function ($q) use ($sort) {
-        //     if (is_array($sort)) {
-        //         foreach ($sort as $val) {
-        //             $jsonx = explode("&", $val);
-        //             $q->orderBy($jsonx[0], $jsonx[1]);
-        //         }
-        //     }
-        // }
         return response()->json(TrOrderResource::collection($data));
     }
 
