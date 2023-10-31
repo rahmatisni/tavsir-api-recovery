@@ -1998,7 +1998,10 @@ class TavsirController extends Controller
                 $q->where('customer_name', $customer_name)->orwhere('nomor_name', $customer_name);
             })
             ->when(auth()->user()->role == 'CASHIER', function ($q) use ($identifier) {
-                $q->where('casheer_id', $identifier)->orWhere('casheer_id', NULL);
+                $q->where('casheer_id', $identifier);
+            })
+            ->when(auth()->user()->role == 'CASHIER', function ($q) use ($identifier) {
+                $q->where('casheer_id', NULL);
             });
         $data = $data->orderByRaw($queryOrder)->orderBy('created_at', 'DESC')->get();
         // $datax = $data->get();
