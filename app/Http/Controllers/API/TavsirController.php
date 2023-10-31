@@ -1999,8 +1999,7 @@ class TavsirController extends Controller
             })
             ->when(auth()->user()->role == 'CASHIER', function ($q) use ($identifier) {
                 // $q->whereNull('casheer_id')->orWhere('casheer_id', $identifier);
-                $q->whereIn('casheer_id', [$identifier, null]);
-                // $q->where('casheer_id', [$identifier,null]);
+                $q->whereIn('casheer_id', $identifier)->orWhereNull('casheer_id');
             });
         $data = $data->orderByRaw($queryOrder)->orderBy('created_at', 'DESC')->get();
         // $datax = $data->get();
