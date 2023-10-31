@@ -58,7 +58,11 @@ class AuthController extends Controller
                     }
                     if ($count > 0) {
                         if ($user->fcm_token) {
-                            sendNotif($user->fcm_token, 'Login di perangkat lain', []);
+                            $payload = array(
+                                'type' => 'click',
+                                'action' => 'relogin'
+                            );
+                            sendNotif($user->fcm_token, 'Login di perangkat lain', $payload);
                         }
                     }
                     $user->accessTokens()->delete();
