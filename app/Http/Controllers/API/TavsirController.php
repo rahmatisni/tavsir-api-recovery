@@ -2001,7 +2001,7 @@ class TavsirController extends Controller
                 $q->where('casheer_id', $identifier);
             })
             ->when(auth()->user()->role == 'CASHIER', function ($q) use ($identifier) {
-                $q->where('casheer_id', NULL);
+                $q->orwhere('casheer_id', NULL);
             });
         $data = $data->orderByRaw($queryOrder)->orderBy('created_at', 'DESC')->get();
         // $datax = $data->get();
