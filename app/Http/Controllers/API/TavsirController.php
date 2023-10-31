@@ -1906,10 +1906,10 @@ class TavsirController extends Controller
 
         $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer', 'trans_edc.bank')
             ->when($status = request()->status, function ($q) use ($status) {
-                // $inputString = trim($status, '[]');
-                // $status = explode(', ', $inputString);
                 if (is_array($status)) {
-                    $q->whereIn('status', $status);
+                    $jsonArray = str_replace(['[', ']', '"'], '', $status);
+                    $array = explode(',', $jsonArray[0]);
+                    $q->whereIn('status', $array);
                 } else {
                     $q->where('status', $status);
                 }
@@ -1922,7 +1922,9 @@ class TavsirController extends Controller
             })
             ->when($statusnot = request()->statusnot, function ($q) use ($statusnot) {
                 if (is_array($statusnot)) {
-                    $q->whereNotIn('status', $statusnot);
+                    $jsonArray = str_replace(['[', ']', '"'], '', $statusnot);
+                    $array = explode(',', $jsonArray[0]);
+                    $q->whereNotIn('status', $array);
                 } else {
                     $q->whereNotIn('status', $statusnot);
                 }
