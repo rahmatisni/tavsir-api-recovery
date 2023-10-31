@@ -1972,10 +1972,10 @@ class TavsirController extends Controller
                 }
             })
             ->when($start_date = $request->start_date, function ($q) use ($start_date) {
-                $q->whereDate('created_at', '>=', date("Y-m-d", strtotime($start_date)));
+                return $q->whereDate('created_at', '>=', date("Y-m-d", strtotime($start_date)));
             })
             ->when($end_date = $request->end_date, function ($q) use ($end_date) {
-                $q->whereDate('created_at', '<=', date("Y-m-d", strtotime($end_date)));
+                return $q->whereDate('created_at', '<=', date("Y-m-d", strtotime($end_date)));
             })
             ->when($statusnot = request()->statusnot, function ($q) use ($statusnot) {
                 if (is_array($statusnot)) {
