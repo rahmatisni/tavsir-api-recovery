@@ -36,7 +36,7 @@ class TrOrderResource extends JsonResource
             "payment_name" => $this->payment_method && $this->payment_method->name != null ? $this->payment_method->name : '',
             "payment_id" => $this->payment_id,
             "voucher_id" => $this->voucher_id,
-            'casheer_id' => $this->casheer_id,
+            'casheer_id' => $this->casheer_id ?? null,
             'sub_total' => $this->sub_total,
             'discount' => $this->discount,
             'total' => $this->total,

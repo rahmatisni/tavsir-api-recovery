@@ -1988,9 +1988,9 @@ class TavsirController extends Controller
                 }
             })
             ->when($filter = request()->filter, function ($q) use ($filter) {
-                return $q->where('order_id', 'like', "%$filter%");
+                $q->where('order_id', 'like', "%$filter%");
             })->when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
-           return $q->where('tenant_id', $tenant_id);
+            $q->where('tenant_id', $tenant_id);
         })->when($order_type = $request->order_type, function ($q) use ($order_type) {
             $q->where('order_type', $order_type);
         })
@@ -1998,14 +1998,16 @@ class TavsirController extends Controller
                 $q->where('customer_name', $customer_name)->orwhere('nomor_name', $customer_name);
             })
             ->when(auth()->user()->role == 'CASHIER', function ($q) use ($identifier) {
-                $q->where('casheer_id', $identifier);
-            })
-            ->when(auth()->user()->role == 'CASHIER', function ($q) use ($identifier) {
-                $q->orwhere('casheer_id', NULL);
+                // $q->where('casheer_id', $identifier);
+                $q->where(function ($q) use ($identifier) {
+                    $q->where('casheer_id', $identifier)->Orwhere('casheer_id',NULL);
+                });
+                
             });
+
         $data = $data->orderByRaw($queryOrder)->orderBy('created_at', 'DESC')->get();
         // $datax = $data->get();
-        // dd($datax);
+        // dd($data);
         return response()->json(TrOrderResource::collection($data));
     }
 
