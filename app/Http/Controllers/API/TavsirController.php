@@ -1877,7 +1877,7 @@ class TavsirController extends Controller
                 } else {
                     return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                 }
-                $data->payment()->update(['data' => $res_data]);
+                $data->payment()->update(['data' => $res_data, 'payment' => $res_data]);
             }
             DB::commit();
             return response()->json($res);
@@ -1891,6 +1891,65 @@ class TavsirController extends Controller
 
 
     public function orderList(Request $request)
+    {
+        // $queryOrder = "CASE WHEN status = 'QUEUE' THEN 1 ";
+        // $queryOrder .= "WHEN status = 'WAITING_OPEN' THEN 2 ";
+        // $queryOrder .= "WHEN status = 'WAITING_CONFIRMATION_TENANT' THEN 3 ";
+        // $queryOrder .= "WHEN status = 'WAITING_CONFIRMATION_USER' THEN 4 ";
+        // $queryOrder .= "WHEN status = 'WAITING_PAYMENT' THEN 5 ";
+        // $queryOrder .= "WHEN status = 'READY' THEN 6 ";
+        // $queryOrder .= "WHEN status = 'PAYMENT_SUCCESS' THEN 7 ";
+        // $queryOrder .= "WHEN status = 'DONE' THEN 8 ";
+        // $queryOrder .= "WHEN status = 'CANCEL' THEN 9 ";
+        // $queryOrder .= "ELSE 9 END";
+
+        $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer', 'trans_edc.bank')->when($status = request()->status, function ($q) use ($status) {
+
+            // $inputString = trim($status, '[]');
+            // $status = explode(', ', $inputString);
+            if (is_array($status)) {
+                $q->whereIn('status', $status);
+            } else {
+                $q->where('status', $status);
+            }
+        })
+            ->when($start_date = $request->start_date, function ($q) use ($start_date) {
+                $q->whereDate('created_at', '>=', date("Y-m-d", strtotime($start_date)));
+            })
+            ->when($end_date = $request->end_date, function ($q) use ($end_date) {
+                $q->whereDate('created_at', '<=', date("Y-m-d", strtotime($end_date)));
+            })
+            ->when($statusnot = request()->statusnot, function ($q) use ($statusnot) {
+                if (is_array($statusnot)) {
+                    $q->whereNotIn('status', $statusnot);
+                } else {
+                    $q->whereNotIn('status', $statusnot);
+                }
+            })
+            ->when($filter = request()->filter, function ($q) use ($filter) {
+                return $q->where('order_id', 'like', "%$filter%");
+            })->when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
+            $q->where('tenant_id', $tenant_id);
+        })->when($order_type = request()->order_type, function ($q) use ($order_type) {
+            $q->where('order_type', $order_type);
+        })
+            ->when($customer_name = request()->customer_name, function ($q) use ($customer_name) {
+                $q->where('customer_name', $customer_name)->orwhere('nomor_name', $customer_name);
+            });
+        if (!request()->sort) {
+            $data = $data->orderby('created_at', 'desc');
+        }
+        if (auth()->user()->role == 'CASHIER') {
+            $data = $data->where(function ($query) {
+                $query->where('casheer_id', auth()->user()->id)
+                    ->orWhereNull('casheer_id');
+            })->where('tenant_id', auth()->user()->tenant_id)->get();
+        } else {
+            $data = $data->get();
+        }
+        return response()->json(TrOrderResource::collection($data));
+    }
+    public function orderHistory(Request $request)
     {
         $queryOrder = "CASE WHEN status = 'QUEUE' THEN 1 ";
         $queryOrder .= "WHEN status = 'WAITING_OPEN' THEN 2 ";
@@ -1960,6 +2019,7 @@ class TavsirController extends Controller
         // }
         return response()->json(TrOrderResource::collection($data));
     }
+
 
     public function orderById($id)
     {

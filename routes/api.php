@@ -149,6 +149,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/count-cart-saved', [App\Http\Controllers\API\TavsirController::class, 'countCarSaved']);
         Route::get('/order/{id}', [App\Http\Controllers\API\TavsirController::class, 'orderById']);
         Route::get('/order-list', [App\Http\Controllers\API\TavsirController::class, 'orderList']);
+        Route::get('/order-history', [App\Http\Controllers\API\TavsirController::class, 'orderHistory']);
         Route::post('/order', [App\Http\Controllers\API\TavsirController::class, 'order']);
         Route::post('/order-confirmation/{id}', [App\Http\Controllers\API\TavsirController::class, 'orderConfirm']);
         Route::get('/payment-method', [App\Http\Controllers\API\TavsirController::class, 'paymentMethod']);
