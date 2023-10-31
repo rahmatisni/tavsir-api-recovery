@@ -428,7 +428,7 @@ class TravShopController extends Controller
                     'type' => 'click',
                     'action' => 'tavsir_order_so'
                 );
-                $result = sendNotif($ids, 'Info', 'Pemberitahuan order baru TAKE N GO ' . $data->order_id, $payload);
+                $result = sendNotif($ids, 'Info', 'Pemberitahuan order baru Self Order ' . $data->order_id, $payload);
             }
             if ($data->order_type == TransOrder::ORDER_TRAVOY) {
                 $product_kios = ProductKiosBank::select(
