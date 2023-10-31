@@ -1892,16 +1892,16 @@ class TavsirController extends Controller
 
     public function orderList(Request $request)
     {
-        // $queryOrder = "CASE WHEN status = 'QUEUE' THEN 1 ";
-        // $queryOrder .= "WHEN status = 'WAITING_OPEN' THEN 2 ";
-        // $queryOrder .= "WHEN status = 'WAITING_CONFIRMATION_TENANT' THEN 3 ";
-        // $queryOrder .= "WHEN status = 'WAITING_CONFIRMATION_USER' THEN 4 ";
-        // $queryOrder .= "WHEN status = 'WAITING_PAYMENT' THEN 5 ";
-        // $queryOrder .= "WHEN status = 'READY' THEN 6 ";
-        // $queryOrder .= "WHEN status = 'PAYMENT_SUCCESS' THEN 7 ";
-        // $queryOrder .= "WHEN status = 'DONE' THEN 8 ";
-        // $queryOrder .= "WHEN status = 'CANCEL' THEN 9 ";
-        // $queryOrder .= "ELSE 9 END";
+        $queryOrder = "CASE WHEN status = 'QUEUE' THEN 1 ";
+        $queryOrder .= "WHEN status = 'WAITING_OPEN' THEN 2 ";
+        $queryOrder .= "WHEN status = 'WAITING_CONFIRMATION_TENANT' THEN 3 ";
+        $queryOrder .= "WHEN status = 'WAITING_CONFIRMATION_USER' THEN 4 ";
+        $queryOrder .= "WHEN status = 'WAITING_PAYMENT' THEN 5 ";
+        $queryOrder .= "WHEN status = 'READY' THEN 6 ";
+        $queryOrder .= "WHEN status = 'PAYMENT_SUCCESS' THEN 7 ";
+        $queryOrder .= "WHEN status = 'DONE' THEN 8 ";
+        $queryOrder .= "WHEN status = 'CANCEL' THEN 9 ";
+        $queryOrder .= "ELSE 9 END";
         $identifier = auth()->user()->id;
 
         $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer', 'trans_edc.bank')
@@ -1939,10 +1939,18 @@ class TavsirController extends Controller
             ->when($customer_name = request()->customer_name, function ($q) use ($customer_name) {
                 $q->where('customer_name', $customer_name)->orwhere('nomor_name', $customer_name);
             })
-            ->when(auth()->user()->role == 'CASHIER', function ($q) use ($identifier) {
-                $q->where('casheer_id', $identifier);
+            // ->when(auth()->user()->role == 'CASHIER', function ($q) use ($identifier) {
+            //     $q->where('casheer_id', $identifier);
+            // });
+             ->when(auth()->user()->role == 'CASHIER', function ($q) use ($identifier) {
+                // $q->where('casheer_id', $identifier);
+                $q->where(function ($q) use ($identifier) {
+                    $q->where('casheer_id', $identifier)->Orwhere('casheer_id',NULL);
+                });
+                
             });
-        $data = $data->orderBy('created_at', 'DESC')->get();
+        // $data = $data->orderBy('created_at', 'DESC')->get();
+        $data = $data->orderByRaw($queryOrder)->orderBy('created_at', 'DESC')->get();
 
         return response()->json(TrOrderResource::collection($data));
     }
