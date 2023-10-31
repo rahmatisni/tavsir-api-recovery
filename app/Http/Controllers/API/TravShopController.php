@@ -2023,7 +2023,7 @@ class TravShopController extends Controller
                             return $this->payKios($data, $id);
                         }
                         if ($data->order_type === TransOrder::ORDER_SELF_ORDER || TransOrder::ORDER_TAKE_N_GO){
-                            $fcm_token = User::where([['casheer_id', $data->casheer_id]])->get();
+                            $fcm_token = User::where([['id', $data->casheer_id]])->get();
                             $ids = array();
                             foreach ($fcm_token as $val) {
                                 if ($val['fcm_token'] != null && $val['fcm_token'] != '')
