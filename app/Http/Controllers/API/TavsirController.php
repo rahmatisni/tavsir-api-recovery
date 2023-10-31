@@ -1936,15 +1936,16 @@ class TavsirController extends Controller
             ->when($customer_name = request()->customer_name, function ($q) use ($customer_name) {
                 $q->where('customer_name', $customer_name)->orwhere('nomor_name', $customer_name);
             });
-        if (!request()->sort) {
-            $data = $data->orderby('created_at', 'desc');
-        }
+     
         if (auth()->user()->role == 'CASHIER') {
             $data = $data->where(function ($query) {
                 $query->where('casheer_id', auth()->user()->id)
                     ->orWhereNull('casheer_id');
-            })->where('tenant_id', auth()->user()->tenant_id)->get();
-        } else {
+            })->where('tenant_id', auth()->user()->tenant_id);
+        } 
+        if (!request()->sort) {
+            $data = $data->orderby('created_at', 'desc')->get();
+        }else {
             $data = $data->get();
         }
         return response()->json(TrOrderResource::collection($data));
