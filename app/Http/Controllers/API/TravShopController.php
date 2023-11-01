@@ -172,7 +172,7 @@ class TravShopController extends Controller
             $data = new TransOrder;
             $tenant = Tenant::find($request->tenant_id);
             $data->order_type = TransOrder::ORDER_TAKE_N_GO;
-            $data->order_id = ($tenant->rest_area_id ?? '0') . '-' . ($tenant->id ?? '0') . '-TNG-' . date('YmdHis').rand(0,100);
+            $data->order_id = ($tenant->rest_area_id ?? '0') . '-' . ($tenant->id ?? '0') . '-TNG-' . date('YmdHis') . rand(0, 100);
             $data->rest_area_id = $tenant->rest_area_id;
             $data->tenant_id = $request->tenant_id;
             $data->business_id = $tenant->business_id;
@@ -244,15 +244,15 @@ class TravShopController extends Controller
             }
 
             $data->fee = env('PLATFORM_FEE');
-            $data->margin = $sub_total-$margin;
+            $data->margin = $sub_total - $margin;
             $data->sub_total = $sub_total;
             $data->total = $data->sub_total + $data->fee + $data->service_fee + $data->addon_total;
             $tenant = Tenant::where('id', $request->tenant_id)->first();
-            if($tenant->sharing_config){
+            if ($tenant->sharing_config) {
                 $tenant_sharing = json_decode($tenant->sharing_config);
                 foreach ($tenant_sharing as $value) {
-                    $harga = (int)($data->sub_total)+(int)($data->addon_total);
-                    $sharing_amount_unround = (($value/100) * $harga);
+                    $harga = (int) ($data->sub_total) + (int) ($data->addon_total);
+                    $sharing_amount_unround = (($value / 100) * $harga);
                     // $sharing_amount[] = ($value/100).'|'.$harga.'|'.$sharing_amount_unround;
                     $sharing_amount[] = $sharing_amount_unround;
                 }
@@ -280,7 +280,7 @@ class TravShopController extends Controller
                     'type' => 'click',
                     'action' => 'tavsir_order_takengo'
                 );
-                $result = sendNotif($ids, '🛎 Yeay! Ada Pesanan Baru Take N Go', 'Kamu mendapatkan pesanan baru dengan ID '.$data->order_id.'. Segera lakukan konfirmasi pesanan tersedia dan siapkan pesanan!', $payload);
+                $result = sendNotif($ids, '🛎 Yeay! Ada Pesanan Baru Take N Go', 'Kamu mendapatkan pesanan baru dengan ID ' . $data->order_id . '. Segera lakukan konfirmasi pesanan tersedia dan siapkan pesanan!', $payload);
             }
             if ($data->order_type == TransOrder::ORDER_TRAVOY) {
                 $product_kios = ProductKiosBank::select(
@@ -308,7 +308,8 @@ class TravShopController extends Controller
             $data = new TransOrder;
             $tenant = Tenant::find($request->tenant_id);
             $data->order_type = TransOrder::ORDER_SELF_ORDER;
-            $data->order_id = ($tenant->rest_area_id ?? '0') . '-' . ($tenant->id ?? '0') . '-SO-' . date('YmdHis').rand(0,100);
+            $data->consume_type = $request->consume_type;
+            $data->order_id = ($tenant->rest_area_id ?? '0') . '-' . ($tenant->id ?? '0') . '-SO-' . date('YmdHis') . rand(0, 100);
             $data->rest_area_id = $tenant->rest_area_id;
             $data->tenant_id = $request->tenant_id;
             $data->business_id = $tenant->business_id;
@@ -380,11 +381,11 @@ class TravShopController extends Controller
             $data->sub_total = $sub_total;
             $data->total = $data->sub_total + $data->fee + $data->service_fee + $data->addon_total;
             $tenant = Tenant::where('id', $request->tenant_id)->first();
-            if($tenant->sharing_config){
+            if ($tenant->sharing_config) {
                 $tenant_sharing = json_decode($tenant->sharing_config);
                 foreach ($tenant_sharing as $value) {
-                    $harga = (int)($data->sub_total)+(int)($data->addon_total);
-                    $sharing_amount_unround = (($value/100) * $harga);
+                    $harga = (int) ($data->sub_total) + (int) ($data->addon_total);
+                    $sharing_amount_unround = (($value / 100) * $harga);
                     // $sharing_amount[] = ($value/100).'|'.$harga.'|'.$sharing_amount_unround;
                     $sharing_amount[] = $sharing_amount_unround;
                 }
@@ -393,7 +394,7 @@ class TravShopController extends Controller
                 $data->sharing_proportion = $tenant->sharing_config ?? null;
             }
 
-            switch($tenant->in_selforder){
+            switch ($tenant->in_selforder) {
                 case 1:
                     $data->status = TransOrder::WAITING_CONFIRMATION_TENANT;
                     break;
@@ -401,10 +402,10 @@ class TravShopController extends Controller
                 case 2:
                     $data->status = TransOrder::WAITING_PAYMENT;
                     break;
-                    
-                default :
-                    return response()->json(['error' =>'Hubungi Admin Untuk Aktivasi Fitur Self ORder'], 422);
-                break;
+
+                default:
+                    return response()->json(['error' => 'Hubungi Admin Untuk Aktivasi Fitur Self ORder'], 422);
+                    break;
             }
 
 
@@ -428,7 +429,7 @@ class TravShopController extends Controller
                     'type' => 'click',
                     'action' => 'tavsir_order_so'
                 );
-                $result = sendNotif($ids, '🛎 Yeay! Ada Pesanan Baru-Self Order', 'Kamu mendapatkan pesanan baru dengan ID '.$data->order_id.'. Segera lakukan konfirmasi pesanan tersedia dan siapkan pesanan!', $payload);
+                $result = sendNotif($ids, '🛎 Yeay! Ada Pesanan Baru-Self Order', 'Kamu mendapatkan pesanan baru dengan ID ' . $data->order_id . '. Segera lakukan konfirmasi pesanan tersedia dan siapkan pesanan!', $payload);
             }
             if ($data->order_type == TransOrder::ORDER_TRAVOY) {
                 $product_kios = ProductKiosBank::select(
@@ -541,6 +542,21 @@ class TravShopController extends Controller
         $data->total = $data->sub_total + $data->addon_total + $data->fee + $data->service_fee;
         $data->save();
         DB::commit();
+
+        $fcm_token = User::where([['tenant_id', $data->tenant_id]])->get();
+        $ids = array();
+        foreach ($fcm_token as $val) {
+            if ($val['fcm_token'] != null && $val['fcm_token'] != '')
+                array_push($ids, $val['fcm_token']);
+        }
+        if ($ids != '') {
+            $payload = array(
+                'id' => $data->id,
+                'type' => 'click',
+                'action' => 'payment_casheer'
+            );
+            $result = sendNotif($ids, '💵 Terdapat Request Pembayaran dengan ID '.$data->order_id, 'Customer dengan nomor meja ' . $data->nomor_name.' mengajukan pembayaran di kasir', $payload);
+        }
         return response()->json($data);
     }
 
@@ -680,7 +696,7 @@ class TravShopController extends Controller
     //     $self_order = [5,7,9,11];
     //     $travshop = [5, 6, 7, 8, 9, 11];
     //     $tavsir = [1,2,3,4,10];
-        
+
     //     if ($request->trans_order_id) {
     //         $trans_order = TransOrder::with('tenant')->findOrfail($request->trans_order_id);
     //         $param_removes = Tenant::where('id', $trans_order->tenant_id)->first();
@@ -704,7 +720,7 @@ class TravShopController extends Controller
     //             }
 
     //         }
-           
+
 
 
     //         $tenant = $trans_order->tenant;
@@ -913,10 +929,10 @@ class TravShopController extends Controller
                         }
                     }
                 }
-                if($value->id == 4){
+                if ($value->id == 4) {
                     $value->fee = 0;
                 }
-               
+
             }
 
         }
@@ -1043,51 +1059,51 @@ class TravShopController extends Controller
                     }
                     break;
 
-                    case 'pg_va_bsi':
-                        $payment_payload = [
-                            "sof_code" => $payment_method->code,
-                            'bill_id' => $data->order_id,
-                            'bill_name' => 'GetPay',
-                            'amount' => (string) $data->total,
-                            'desc' => $data->tenant->name ?? 'Travoy',
-                            "exp_date" => Carbon::now()->addMinutes(5)->format('Y-m-d H:i:s'),
-                            "va_type" => "close",
-                            'phone' => $request->customer_phone,
-                            'email' => $request->customer_email,
-                            'customer_name' => $request->customer_name,
-                            "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id,
-                        ];
-    
-                        $res = PgJmto::vaCreate(
-                            $payment_method->code,
-                            $data->order_id,
-                            'GetPay',
-                            $data->total,
-                            $data->tenant->name ?? 'Travoy',
-                            $request->customer_phone,
-                            $request->customer_email,
-                            $request->customer_name,
-                            $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
-                        );
-                        if ($res['status'] == 'success') {
-                            $pay = null;
-                            if ($data->payment === null) {
-                                $pay = new TransPayment();
-                                $pay->data = $res['responseData'];
-                                $data->payment()->save($pay);
-                            } else {
-                                $pay = $data->payment;
-                                $pay->data = $res['responseData'];
-                                $pay->save();
-                            }
-                            $data->service_fee = $pay->data['fee'];
-                            $data->total = $data->total + $data->service_fee;
-                            $data->sub_merchant_id = $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id;
-                            $data->save();
+                case 'pg_va_bsi':
+                    $payment_payload = [
+                        "sof_code" => $payment_method->code,
+                        'bill_id' => $data->order_id,
+                        'bill_name' => 'GetPay',
+                        'amount' => (string) $data->total,
+                        'desc' => $data->tenant->name ?? 'Travoy',
+                        "exp_date" => Carbon::now()->addMinutes(5)->format('Y-m-d H:i:s'),
+                        "va_type" => "close",
+                        'phone' => $request->customer_phone,
+                        'email' => $request->customer_email,
+                        'customer_name' => $request->customer_name,
+                        "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id,
+                    ];
+
+                    $res = PgJmto::vaCreate(
+                        $payment_method->code,
+                        $data->order_id,
+                        'GetPay',
+                        $data->total,
+                        $data->tenant->name ?? 'Travoy',
+                        $request->customer_phone,
+                        $request->customer_email,
+                        $request->customer_name,
+                        $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
+                    );
+                    if ($res['status'] == 'success') {
+                        $pay = null;
+                        if ($data->payment === null) {
+                            $pay = new TransPayment();
+                            $pay->data = $res['responseData'];
+                            $data->payment()->save($pay);
                         } else {
-                            return response()->json([$res], 500);
+                            $pay = $data->payment;
+                            $pay->data = $res['responseData'];
+                            $pay->save();
                         }
-                        break;
+                        $data->service_fee = $pay->data['fee'];
+                        $data->total = $data->total + $data->service_fee;
+                        $data->sub_merchant_id = $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id;
+                        $data->save();
+                    } else {
+                        return response()->json([$res], 500);
+                    }
+                    break;
 
 
                 case 'pg_va_bri':
@@ -1393,55 +1409,55 @@ class TravShopController extends Controller
                     return response()->json($respon->json(), 400);
                     break;
 
-                    case 'pg_link_aja':
-                        $payment_payload = [
-                            "sof_code" => $payment_method->code,
-                            'bill_id' => $data->order_id,
-                            'bill_name' => 'GetPay',
-                            'amount' => (string) $data->total,
-                            'desc' => $data->tenant->name ?? 'Travoy',
-                            "exp_date" => Carbon::now()->addMinutes(5)->format('Y-m-d H:i:s'),
-                            "va_type" => "close",
-                            'phone' => $data->tenant->phone,
-                            'email' => $data->tenant->email,
-                            'customer_name' => $data->nomor_name,
-                            "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id,
-                        ];
-    
-                        $res = LaJmto::qrCreate(
-                            $payment_method->code,
-                            $data->order_id,
-                            'GetPay',
-                            $data->total,
-                            $data->tenant->name ?? 'Travoy',
-                            $data->tenant->phone,
-                            $data->tenant->email,
-                            $data->nomor_name,
-                            $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
-                        );
-    
-                        if (isset($res['status']) && $res['status'] == 'success') {
-                            $pay = null;
-                            if ($data->payment === null) {
-                                $pay = new TransPayment();
-                                $pay->data = $res['responseData'];
-                                $pay->inquiry = $res;
-    
-                                $data->payment()->save($pay);
-                            } else {
-                                $pay = $data->payment;
-                                $pay->data = $res['responseData'];
-                                $pay->save();
-                            }
-                            $data->service_fee = $pay->data['fee'];
-                            $data->total = $data->total + $data->service_fee;
-                            $data->sub_merchant_id = $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id;
-                            $data->save();
+                case 'pg_link_aja':
+                    $payment_payload = [
+                        "sof_code" => $payment_method->code,
+                        'bill_id' => $data->order_id,
+                        'bill_name' => 'GetPay',
+                        'amount' => (string) $data->total,
+                        'desc' => $data->tenant->name ?? 'Travoy',
+                        "exp_date" => Carbon::now()->addMinutes(5)->format('Y-m-d H:i:s'),
+                        "va_type" => "close",
+                        'phone' => $data->tenant->phone,
+                        'email' => $data->tenant->email,
+                        'customer_name' => $data->nomor_name,
+                        "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id,
+                    ];
+
+                    $res = LaJmto::qrCreate(
+                        $payment_method->code,
+                        $data->order_id,
+                        'GetPay',
+                        $data->total,
+                        $data->tenant->name ?? 'Travoy',
+                        $data->tenant->phone,
+                        $data->tenant->email,
+                        $data->nomor_name,
+                        $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
+                    );
+
+                    if (isset($res['status']) && $res['status'] == 'success') {
+                        $pay = null;
+                        if ($data->payment === null) {
+                            $pay = new TransPayment();
+                            $pay->data = $res['responseData'];
+                            $pay->inquiry = $res;
+
+                            $data->payment()->save($pay);
                         } else {
-                            return response()->json([$res], 500);
+                            $pay = $data->payment;
+                            $pay->data = $res['responseData'];
+                            $pay->save();
                         }
-    
-                        break;
+                        $data->service_fee = $pay->data['fee'];
+                        $data->total = $data->total + $data->service_fee;
+                        $data->sub_merchant_id = $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id;
+                        $data->save();
+                    } else {
+                        return response()->json([$res], 500);
+                    }
+
+                    break;
                 default:
                     return response()->json(['error' => $payment_method->name . ' Coming Soon'], 500);
 
@@ -1518,21 +1534,21 @@ class TravShopController extends Controller
                 $result_jatelindo = $res_jatelindo->json();
                 $rc = $result_jatelindo['bit39'] ?? '';
                 //2. Cek req timout code 18
-                if($rc == '18'){
+                if ($rc == '18') {
                     //3. Advice 1 kali
                     $res_jatelindo = JatelindoService::advice($data->log_kiosbank->data ?? []);
                     $result_jatelindo = $res_jatelindo->json();
                     $rc = $result_jatelindo['bit39'] ?? '';
                     //4. Cek advice timout
-                    if($rc == '18'){
+                    if ($rc == '18') {
                         //5. Advice Repeate max 3x percobaan
                         $try = 1;
                         do {
                             $res_jatelindo = JatelindoService::repeat($data->log_kiosbank->data ?? []);
                             $result_jatelindo = $res_jatelindo->json();
                             $rc = $result_jatelindo['bit39'] ?? '';
-                            $try ++;
-                            Log::info('RC '.$try.' : '.$rc);
+                            $try++;
+                            Log::info('RC ' . $try . ' : ' . $rc);
                         } while ($try <= 3 && $rc == '18');
                     }
                 }
@@ -1547,7 +1563,7 @@ class TravShopController extends Controller
                     DB::commit();
                     $info = JatelindoService::infoPelanggan($log_kios, $data->status);
                     return response()->json($info);
-                }else{
+                } else {
                     return response()->json(['status' => 422, 'data' => JatelindoService::responseTranslation($result_jatelindo)], 422);
                 }
                 DB::commit();
@@ -1967,7 +1983,7 @@ class TravShopController extends Controller
                                 return $this->payKios($data, $id);
                             }
                         }
-                        if ($data->order_type === TransOrder::ORDER_SELF_ORDER || TransOrder::ORDER_TAKE_N_GO){
+                        if ($data->order_type === TransOrder::ORDER_SELF_ORDER || TransOrder::ORDER_TAKE_N_GO) {
                             $fcm_token = User::where([['id', $data->casheer_id]])->get();
                             $ids = array();
                             foreach ($fcm_token as $val) {
@@ -1980,10 +1996,10 @@ class TravShopController extends Controller
                                     'type' => 'click',
                                     'action' => 'payment_success'
                                 );
-                                $result = sendNotif($ids, '💰Pesanan Telah Dibayar', 'Yuukk segera siapkan pesanan atas transaksi'.$data->order_id, $payload);
+                                $result = sendNotif($ids, '💰Pesanan Telah Dibayar', 'Yuukk segera siapkan pesanan atas transaksi' . $data->order_id, $payload);
                             }
                         }
-                        
+
                         if ($data->order_type === TransOrder::POS) {
                             $data->status = TransOrder::DONE;
                         }
@@ -2039,7 +2055,7 @@ class TravShopController extends Controller
                         if ($data->order_type === TransOrder::ORDER_TRAVOY) {
                             return $this->payKios($data, $id);
                         }
-                        if ($data->order_type === TransOrder::ORDER_SELF_ORDER || TransOrder::ORDER_TAKE_N_GO){
+                        if ($data->order_type === TransOrder::ORDER_SELF_ORDER || TransOrder::ORDER_TAKE_N_GO) {
                             $fcm_token = User::where([['id', $data->casheer_id]])->get();
                             $ids = array();
                             foreach ($fcm_token as $val) {
@@ -2052,7 +2068,7 @@ class TravShopController extends Controller
                                     'type' => 'click',
                                     'action' => 'payment_success'
                                 );
-                                $result = sendNotif($ids, '💰Pesanan Telah Dibayar', 'Yuukk segera siapkan pesanan atas transaksi'.$data->order_id, $payload);
+                                $result = sendNotif($ids, '💰Pesanan Telah Dibayar', 'Yuukk segera siapkan pesanan atas transaksi' . $data->order_id, $payload);
                             }
                         }
                     }
