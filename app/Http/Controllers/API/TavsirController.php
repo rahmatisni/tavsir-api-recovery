@@ -666,7 +666,8 @@ class TavsirController extends Controller
         $data = TransOrder::whereIn('id', $request->id)
             ->where('tenant_id', '=', auth()->user()->tenant_id)
             ->where('order_type', '=', TransOrder::POS)
-            ->where('status', '=', TransOrder::CART)
+            // ->where('status', '=', TransOrder::CART)
+            ->whereIn('status',[TransOrder::CART, TransOrder::WAITING_PAYMENT])
             ->get();
 
         $deleteDetail = TransOrderDetil::whereIn('trans_order_id', $request->id)->delete();
