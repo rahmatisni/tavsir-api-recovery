@@ -56,6 +56,7 @@ class AuthController extends Controller
                         $response = ["message" => "Not Subscription"];
                         return response($response, 422);
                     }
+                    
                     if ($count > 0) {
                         if ($user->fcm_token) {
                             $payload = array(
@@ -125,6 +126,9 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
+        // $user = User::where('email', auth()->user()->email)->first();
+        User::where('id',auth()->user()->id)->update(['fcm_token' => NULL]);
+
         $request->user()->token()->delete();
         return response()->json([
             'message' => 'Successfully logged out'
