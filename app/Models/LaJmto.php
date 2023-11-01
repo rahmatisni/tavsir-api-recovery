@@ -378,7 +378,8 @@ class LaJmto extends Model
                     "msg" => $res['message'],
                     "responseData" => [
                         "pay_status" => "0"
-                    ]
+                    ],
+                    "la_response" => $res
                 ];
                  
                 Log::info([$payload, $response]);

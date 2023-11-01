@@ -1839,7 +1839,7 @@ class TavsirController extends Controller
                         $pay->payment = $res;
                         $pay->save();
                     } else {
-                        return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
+                        return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios, 'payment_info' => $res['la_response']['message']]);
                     }
                     $data->payment()->update(['data' => $res_data]);
                 } else {
