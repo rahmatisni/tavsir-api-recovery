@@ -108,9 +108,15 @@ public function update($id, array $paylod)
     public function delete($id)
     {
         $data = $this->show($id);
-        $data->trans_stock()->delete();
-        $data->customize()->sync([]);
-        $data->delete();
-        return true;
+        if($data->stock > 0 && $data->is_composit == 0){
+            return "Kosongkan Stock Terlebih Dahulu";
+        }
+        else {
+            $data->trans_stock()->delete();
+            $data->customize()->sync([]);
+            $data->delete();
+            return true;
+        }
+    
     }
 }

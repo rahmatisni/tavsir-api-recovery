@@ -1959,14 +1959,13 @@ class TavsirController extends Controller
             //     $q->where('casheer_id', $identifier);
             // });
              ->when(auth()->user()->role == 'CASHIER', function ($q) use ($identifier) {
-                // $q->where('casheer_id', $identifier);
-                $q->where(function ($q) use ($identifier) {
-                    $q->where('casheer_id', $identifier)->Orwhere('casheer_id',NULL);
-                });
-                
+                $q->where('casheer_id', $identifier);
+                // $q->where(function ($q) use ($identifier) {
+                //     $q->where('casheer_id', $identifier)->Orwhere('casheer_id',NULL);
+                // });                
             });
-        // $data = $data->orderBy('created_at', 'DESC')->get();
-        $data = $data->orderByRaw($queryOrder)->orderBy('created_at', 'DESC')->get();
+        $data = $data->orderBy('created_at', 'DESC')->get();
+        // $data = $data->orderByRaw($queryOrder)->orderBy('created_at', 'DESC')->get();
 
         return response()->json(TrOrderResource::collection($data));
     }
