@@ -77,7 +77,9 @@ class TransStockV2Controller extends Controller
         if($data === 0) {
             return response()->json(['message'=>'Jumlah stok keluar tidak boleh melebihi stok!'], 422);
         }
-        return $this->response($data);
+        return response()->json(['message'=>'Stok keluar berhasil dikelola!'], 200);
+
+        // return $this->response($data);
     }
 
     public function changeStatus($id)

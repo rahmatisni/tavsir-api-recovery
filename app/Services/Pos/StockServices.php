@@ -158,7 +158,7 @@ class StockServices
             $data->product()->update(['stock' => $data->lates_stock]);
             DB::commit();
             return $data;
-            return response()->json($data);
+            // return response()->json($data);
         } catch (\Throwable $th) {
             DB::rollBack();
             abort(['message' => $th->getMessage()], 422);
