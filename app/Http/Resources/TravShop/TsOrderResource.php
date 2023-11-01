@@ -174,6 +174,7 @@ class TsOrderResource extends JsonResource
             'tenant_is_open' => $this->tenant ? ($this->tenant->is_open == 1 ? true : false) : false,
             'order_id' => $this->order_id,
             'order_type' => $this->order_type,
+            'consume_type' => $this->consume_type,
             'customer_id' => $this->customer_id,
             'customer_name' => $this->customer_name,
             'customer_phone' => $this->customer_phone,
