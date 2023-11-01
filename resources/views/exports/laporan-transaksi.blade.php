@@ -18,6 +18,7 @@
     <table>
         <thead>
             <tr>
+                <th>Tenant</th>
                 <th>Waktu Transaksi</th>
                 <th>ID Transaksi</th>
                 <th>Total Product</th>
@@ -33,7 +34,7 @@
         <tbody>
             @foreach($record as $value)
             <tr>
-                <td>{{$value['waktu_transaksi']}}</td>
+                <td>{{$value['tenant']}}</td>
                 <td>{{$value['id_transaksi']}}</td>
                 <td>{{$value['total_product']}} item</td>
                 <td style="white-space: nowrap;">{{ $value['fee'] }}</td>
@@ -48,7 +49,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="2">Total</td>
+                <td colspan="3">Total</td>
                 <td>{{$total_product}} item</td>
                 <td>{{$fee}}</td>
                 <td>{{$service_fee}}</td>

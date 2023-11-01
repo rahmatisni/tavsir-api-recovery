@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Exports\TenantExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TenantRequest;
 use App\Http\Requests\BukaTutupTokoRequest;
@@ -10,7 +11,9 @@ use App\Models\Tenant;
 use App\Models\User;
 use App\Models\TransSaldo;
 use App\Models\TransOperational;
+use Carbon\Carbon;
 use DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class TenantController extends Controller
 {
@@ -121,5 +124,10 @@ class TenantController extends Controller
     {
         $tenant->delete();
         return response()->json($tenant);
+    }
+
+    public function export(){
+        $record = Tenant::with('business','rest_area','ruas','order','category_tenant')->get();
+        return Excel::download(new TenantExport(), 'Tenant ' . Carbon::now()->format('d-m-Y') . '.xlsx');
     }
 }

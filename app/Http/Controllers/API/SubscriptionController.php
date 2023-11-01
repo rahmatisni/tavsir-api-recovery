@@ -37,9 +37,18 @@ class SubscriptionController extends Controller
 
     public function index()
     {
+        $queryOrder = "CASE WHEN detail_aktivasi = 'MENUNGGU KONFIRMASI' THEN 1 ";
+        $queryOrder .= "WHEN detail_aktivasi = 'TERKONFIRMASI' THEN 2 ";
+        $queryOrder .= "WHEN detail_aktivasi = 'DITOLAK' THEN 3 ";
+        $queryOrder .= "ELSE 3 END";
+
         $data = Subscription::when($business_id = request()->business_id, function ($q) use ($business_id) {
             return $q->where('business_id', $business_id);
-        })->get();
+        })
+        ->mySortOrder(request())
+        ->orderByRaw($queryOrder)
+        ->get();
+    
         $record = [
             'total_data' => $data->count(),
             'total_active' => $data->where('status_aktivasi', Subscription::AKTIF)->count(),

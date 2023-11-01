@@ -39,6 +39,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/rest-area/update-status', [App\Http\Controllers\API\RestAreaController::class, 'updateStatus']);
     Route::apiResource('rest-area', App\Http\Controllers\API\RestAreaController::class);
     Route::apiResource('business', App\Http\Controllers\API\BusinessController::class);
+    Route::post('tenant/export', [App\Http\Controllers\API\TenantController::class, 'export']);
     Route::apiResource('tenant', App\Http\Controllers\API\TenantController::class);
     Route::apiResource('supertenant', App\Http\Controllers\API\SupertenantController::class);
 
@@ -60,6 +61,8 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/user/approve-reset-pin/{id}', [App\Http\Controllers\API\UserController::class, 'approveResetPin']);
     Route::post('/user/reject-reset-pin/{id}', [App\Http\Controllers\API\UserController::class, 'rejectResetPin']);
     Route::post('/user/activation/{id}', [App\Http\Controllers\API\UserController::class, 'activationUserCashier']);
+    Route::post('/user/export', [App\Http\Controllers\API\UserController::class, 'export']);
+    Route::post('/user/export-pin', [App\Http\Controllers\API\UserController::class, 'exportReqPin']);
     Route::apiResource('user', App\Http\Controllers\API\UserController::class);
     Route::apiResource('ruas', App\Http\Controllers\API\RuasController::class);
     Route::get('/rekap-pendapatan', [App\Http\Controllers\API\RekapPendapatanController::class, 'index']);

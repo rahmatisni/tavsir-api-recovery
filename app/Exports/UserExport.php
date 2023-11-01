@@ -13,6 +13,6 @@ class UserExport implements FromView
 
     public function view(): View
     {
-        return view('exports.user', $this->data);
+        return view('exports.user', ['record' => $this->data]);
     }
 }

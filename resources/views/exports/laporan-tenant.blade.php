@@ -18,6 +18,7 @@
         <thead>
             <tr>
                 <th>No</th>
+                <th>Tenant</th>
                 <th>Rest Area</th>
                 <th>Tenant</th>
             </tr>
@@ -26,6 +27,7 @@
             @foreach($record as $key => $value)
             <tr>
                 <td>{{ $loop->iteration }}</td>
+                <td>{{ $value->tenant->name ?? '' }}</td>
                 <td>{{ $value->rest_area->name ?? '' }}</td>
                 <td>{{ $value->name }}</td>
             </tr>

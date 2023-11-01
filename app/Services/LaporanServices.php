@@ -277,6 +277,7 @@ class LaporanServices
             $item_count += $count;
 
             array_push($hasil, [
+                'tenant' => $value->tenant->name ?? '',
                 'waktu_transaksi' => (string) $value->created_at,
                 'id_transaksi' => $value->order_id,
                 'tenant_id' => $value->tenant_id,

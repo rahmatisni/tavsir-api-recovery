@@ -31,7 +31,6 @@ class TenantResource extends JsonResource
             'address' => $this->address,
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
-            'rest_area_id' => $this->rest_area_id,
             'time_start' => $this->time_start,
             'time_end' => $this->time_end,
             'phone' => $this->phone,
