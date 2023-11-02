@@ -444,7 +444,7 @@ class LaJmto extends Model
             //end fake
         }
 
-        $res = self::refund('POST', '/transaction/reverse', $payload)->json();
+        $res = self::refund('POST', '/transactions', $payload)->json();
         Log::info([$payload, $res]);
 
         // $res = [
@@ -481,17 +481,19 @@ class LaJmto extends Model
                 "status" => "success",
                 "rc" => "0000",
                 "msg" => "success",
-                "responseData" => [
-                    "pay_status" => '1',
-                    "bill_id" => $bill_id,
-                    "fee" => 0,
-                    "responseMessage" => $res['message'],
-                    "merchantTrxID" => $res['data']['trxId'],
-                    "trxid" =>$res['data']['trxId'],
-                    "fromAccount" =>$res['data']['fromAccount'],
-                    "trxDate" =>  $res['data']['trxDate'],
-                    "amount" => $res['data']['amount'],
-                ]
+                // "responseData" => [
+                //     "pay_status" => '1',
+                //     "bill_id" => $res,
+                //     "fee" => 0,
+                //     "responseMessage" => $res['message'],
+                //     "merchantTrxID" => $res['data']['trxId'],
+                //     "trxid" =>$res['data']['trxId'],
+                //     "fromAccount" =>$res['data']['fromAccount'],
+                //     "trxDate" =>  $res['data']['trxDate'],
+                //     "amount" => $res['data']['amount'],
+                // ],
+                "la_response" => $res
+
             ];
             Log::info([$payload, $response]);
 
