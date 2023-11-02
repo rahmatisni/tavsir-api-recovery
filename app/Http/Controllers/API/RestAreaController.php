@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\RestArea;
+use App\Models\Tenant;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RestAreaRequest;
@@ -79,6 +80,13 @@ class RestAreaController extends Controller
      */
     public function destroy(RestArea $restArea)
     {
+        $tenant = Tenant::where('rest_area_id',$restArea->id)->count();
+        if($tenant > 0) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'area '.$restArea->name. ' masih memiliki tenant aktif!'
+            ], 422);
+        }
         $restArea->delete();
         return response()->noContent();
     }
