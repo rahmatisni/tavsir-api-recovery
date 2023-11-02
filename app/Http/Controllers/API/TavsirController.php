@@ -330,7 +330,6 @@ class TavsirController extends Controller
             ], 400);
         }
 
-
         $user = auth()->user();
         $tenant_id = $user->tenant_id;
         $tenant = User::where('tenant_id', $tenant_id)->where('role', User::TENANT)->get();
@@ -351,16 +350,17 @@ class TavsirController extends Controller
         if ($data->payment_method_id == 4) {
             $parts = explode("-", $data->order_id);
             $lastElement = end($parts);
+            $originalID = $data->payment->payment['la_response']['data']['trxId'];
 
             $payload = [
                 "commandID" => "ReverseTransaction",
-                "originatorConversationID" => "REF-" . $lastElement,
-                "originalReceiptNumber" => $data->order_id,
+                "originatorConversationID" => $lastElement,
+                "originalReceiptNumber" => $originalID,
                 "trxAmount" => $data->total,
                 "merchantTrxID" => $lastElement
             ];
             $refund_la = LaJmto::qrRefund($payload);
-            if ($refund_la['status'] == '00') {
+            if ($refund_la['status'] == 'success') {
 
             } else {
                 return response()->json([
