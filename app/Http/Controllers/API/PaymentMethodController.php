@@ -18,7 +18,7 @@ class PaymentMethodController extends Controller
     public function index(Request $request)
     {
         $paymentMethods = PaymentMethod::all();
-        $intersect = json_decode(Tenant::find(auth()->user()->tenant_id == 0 ? $request->tenant_id : '')->list_payment ?? '[]');
+        $intersect = json_decode(Tenant::find(auth()->user()->tenant_id == 0 ? $request->tenant_id : auth()->user()->tenant_id)->list_payment ?? '[]');
     
         foreach ($paymentMethods as $value) {  
             if (in_array($value->id, $intersect)) {
