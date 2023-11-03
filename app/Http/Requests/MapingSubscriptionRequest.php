@@ -23,9 +23,16 @@ class MapingSubscriptionRequest extends FormRequest
      */
     public function rules()
     {
-        return [
+        $rule = [
             'id' => 'required',
             'status' => 'required|in:true,false',
         ];
+
+        if(auth()->user()->role == 'OWNER')
+        {
+            $rule['tenant_id'] = 'required|exists:ref_tenant,id,business_id.'.auth()->user()->business_id;
+        }
+
+        return $rule;
     }
 }

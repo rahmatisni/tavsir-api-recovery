@@ -288,7 +288,7 @@ class SubscriptionController extends Controller
     public function maapingSubscriptionKasir(MapingSubscriptionRequest $request)
     {
         if (auth()->user()->role == 'OWNER') {
-            $kasirAll = User::where('business_id', auth()->user()->business_id)->where('role', User::CASHIER)->get();
+            $kasirAll = User::where('tenant_id', $request->tenant_id)->where('role', User::CASHIER)->get();
 
         } else {
             $kasirAll = User::where('tenant_id', auth()->user()->tenant_id)->where('role', User::CASHIER)->get();
