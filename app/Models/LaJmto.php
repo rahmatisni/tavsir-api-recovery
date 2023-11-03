@@ -44,6 +44,7 @@ class LaJmto extends Model
         $signature = self::generateSignature($payload);
         // dd($payload, $signature);
 
+        
         switch ($method) {
             case 'POST':
                 clock()->event("LA{$path}")->color('purple')->begin();
