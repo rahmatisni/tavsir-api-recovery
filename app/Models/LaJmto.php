@@ -231,6 +231,7 @@ class LaJmto extends Model
                 "fee" => 0,
                 "responseCode" => $res['responseCode'],
                 "responseMessage" => $res['responseMessage'],
+                "qrName" => $payload['merchantName'],
                 "qrString" =>  $res['qrString'],
                 "merchantTrxID" => $res['merchantTrxID'],
                 "amount" => $amount,
