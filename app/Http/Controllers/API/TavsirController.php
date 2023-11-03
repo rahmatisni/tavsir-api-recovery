@@ -2305,7 +2305,7 @@ class TavsirController extends Controller
             ];
             return response($datax, 422);
         }
-        log::info($request);
+        log::info([$request, $trans]);
         $data = new CallbackLA();
         DB::beginTransaction();
         $data->trans_order_id = $trans->id;
