@@ -1787,6 +1787,13 @@ class TavsirController extends Controller
             }
 
             if ($data->payment_method->code_name == 'pg_link_aja') {
+
+                // $userAgent = $request->header('User-Agent');
+
+                // Check the User-Agent header
+                // if (strpos($userAgent, 'PostmanRuntime/7.34.0') !== false) {
+                //     return response()->json(['status' => 'ERROR', 'payment_info' => 'Illegal Host Access!'],422);
+                // }            
                 $res = LAJmto::qrStatus(
                     $data_payment['bill_id']
                 );
@@ -2289,25 +2296,26 @@ class TavsirController extends Controller
     public function CallbackLinkAjaQRIS(Request $request)
     {
 
-        // $trans = TransOrder::where('order_id', 'like', '%'.$request['trx_id'])->first();
-        // if(!$trans){
-        //     $datax = [
-        //         "responseCode"=>"03",
-        //         "transactionID"=>$request->msg,
-        //         "notificationMessage"=>"Dont Try Bro!"
-        //     ];
-        //     return response($datax, 422);
-        // }
-        // $data = new CallbackLA();
-        // DB::beginTransaction();
-        // $data->trans_order_id = $trans->id;
-        // $data->data = json_encode($request->all());
-        // $data->save();
-        // DB::commit();
+        $trans = TransOrder::where('order_id', 'like', '%'.$request['trx_id'])->first();
+        if(!$trans){
+            $datax = [
+                "responseCode"=>"03",
+                "transactionID"=>$request->msg,
+                "notificationMessage"=>"Dont Try Bro!"
+            ];
+            return response($datax, 422);
+        }
+        $data = new CallbackLA();
+        DB::beginTransaction();
+        $data->trans_order_id = $trans->id;
+        $data->data = json_encode($request->all());
+        $data->save();
+        DB::commit();
+
         $datax = [
             "responseCode" => "00",
             "transactionID" => $request->msg,
-            "notificationMessage" => "dummy"
+            "notificationMessage" => "Transaksi Sukses"
         ];
         return response()->json($datax);
 
