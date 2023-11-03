@@ -1,10 +1,11 @@
 <?php
 
 namespace App\Http\Controllers\API;
-
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PaymentMethodRequest;
 use App\Models\PaymentMethod;
+use App\Models\Tenant;
 use App\Models\PgJmto;
 
 class PaymentMethodController extends Controller
@@ -14,9 +15,19 @@ class PaymentMethodController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $paymentMethods = PaymentMethod::all();
+        $intersect = json_decode(Tenant::find(auth()->user()->tenant_id == 0 ? $request->tenant_id : '')->list_payment ?? '[]');
+    
+        foreach ($paymentMethods as $value) {  
+            if (in_array($value->id, $intersect)) {
+                $value->is_active = true;
+            }
+            else {
+                $value->is_active = false;
+            }
+        }
         return response()->json($paymentMethods);
     }
 
