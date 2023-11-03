@@ -138,11 +138,14 @@ class SubscriptionController extends Controller
 
         $kuota_kasir = $limit->where('status_aktivasi', Subscription::AKTIF)->sum('limit_cashier');
         $kasir_aktif = User::where('role', User::CASHIER)->where('is_subscription',1)->whereIn('tenant_id', $data->pluck('id')->toArray())->count();
-        
+        $all_limit_kasir_tneant = $data->sum('kuota_kasir');
+
         $result = [
             'kuota_tenant' => $kuota_tenant,
             'tenant_aktif' => $tenant_aktif,
             'tenant_belum_terpakai' => $kuota_tenant - $tenant_aktif,
+            'kasir_teraktivasi' => $all_limit_kasir_tneant,
+            'limit_kasir' => $kuota_tenant - $all_limit_kasir_tneant,
             'kuota_kasir' => $kuota_kasir,
             'kasir_aktif' => $kasir_aktif,
             'kasir_belum_terpakai' => $kuota_kasir - $kasir_aktif,
