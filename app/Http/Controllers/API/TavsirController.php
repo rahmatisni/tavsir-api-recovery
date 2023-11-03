@@ -2296,15 +2296,15 @@ class TavsirController extends Controller
     public function CallbackLinkAjaQRIS(Request $request)
     {
 
-        $trans = TransOrder::where('order_id', 'like', '%'.$request['trx_id'])->first();
-        // if(!$trans){
-        //     $datax = [
-        //         "responseCode"=>"03",
-        //         "transactionID"=>$request->msg,
-        //         "notificationMessage"=>"Dont Try Bro!"
-        //     ];
-        //     return response($datax, 422);
-        // }
+        $trans = TransOrder::where('order_id', 'like', '%'.$request->msg)->first();
+        if(!$trans){
+            $datax = [
+                "responseCode"=>"03",
+                "transactionID"=>$request->msg,
+                "notificationMessage"=>"Dont Try Bro!"
+            ];
+            return response($datax, 422);
+        }
         log::info($request);
         $data = new CallbackLA();
         DB::beginTransaction();
