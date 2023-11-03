@@ -53,6 +53,7 @@ class ProfileResource extends JsonResource
             'is_admin' => $this->is_admin,
             'tenant_id' => $this->tenant_id,
             'tenant_name' => $this->tenant->name ?? '',
+            'category_tenant_name' => $this->tenant->category_tenant->name ?? '',
             'tenant_phone' => $this->tenant->phone ?? '',
             'tenant_is_open' => $this->tenant->is_open ?? '',
             'supertenant_name' => $this->supertenant?->name ?? '',
