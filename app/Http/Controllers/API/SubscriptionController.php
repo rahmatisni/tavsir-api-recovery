@@ -7,6 +7,7 @@ use App\Http\Requests\DocumentSubscriptionRequest;
 use App\Http\Requests\ExtendRequest;
 use App\Http\Requests\KuotaKasirTenantRequest;
 use App\Http\Requests\MapingSubscriptionRequest;
+use App\Http\Requests\MapingSubscriptionTenantRequest;
 use App\Http\Requests\SubscriptionRequest;
 use App\Http\Resources\CashierTenantResource;
 use App\Http\Resources\MemberTenantResource;
@@ -251,7 +252,7 @@ class SubscriptionController extends Controller
         return response()->json(['message' => true]);
     }
 
-    public function maapingSubscriptionTenant(MapingSubscriptionRequest $request)
+    public function maapingSubscriptionTenant(MapingSubscriptionTenantRequest $request)
     {
         $tenant = Tenant::byOwner()->get();
         $tenant_has_subscription = $tenant->where('is_subscription', 1)->count();
