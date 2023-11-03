@@ -145,7 +145,7 @@ class SubscriptionController extends Controller
             'tenant_aktif' => $tenant_aktif,
             'tenant_belum_terpakai' => $kuota_tenant - $tenant_aktif,
             'kasir_teraktivasi' => $all_limit_kasir_tneant,
-            'limit_kasir' => $kuota_tenant - $all_limit_kasir_tneant,
+            'limit_kasir' => $kuota_kasir - $all_limit_kasir_tneant,
             'kuota_kasir' => $kuota_kasir,
             'kasir_aktif' => $kasir_aktif,
             'kasir_belum_terpakai' => $kuota_kasir - $kasir_aktif,
