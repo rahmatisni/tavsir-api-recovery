@@ -2304,6 +2304,7 @@ class TavsirController extends Controller
         //     ];
         //     return response($datax, 422);
         // }
+        log::info('Callback LA');
         log::info($request);
         // $data = new CallbackLA();
         // DB::beginTransaction();
