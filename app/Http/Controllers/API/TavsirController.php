@@ -2310,12 +2310,12 @@ class TavsirController extends Controller
         }
         // log::info('Callback LA');
         // log::info([$trans,$request]);
-        // $data = new CallbackLA();
-        // DB::beginTransaction();
-        // $data->trans_order_id = $trans->id ?? '1';
-        // $data->data = json_encode($request->all());
-        // $data->save();
-        // DB::commit();
+        $data = new CallbackLA();
+        DB::beginTransaction();
+        $data->trans_order_id = $trans->id;
+        $data->data = json_encode($request->all());
+        $data->save();
+        DB::commit();
 
         $datax = [
             "responseCode" => "00",
