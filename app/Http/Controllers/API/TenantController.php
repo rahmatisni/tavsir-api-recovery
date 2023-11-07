@@ -183,11 +183,11 @@ class TenantController extends Controller
                 [
                     'tenant_id' => $tenant->id,
                     'tenant_name' => $tenant->name,
-                    'in_takengo' => $tenant->in_takengo,
-                    'in_selforder' => $tenant->in_selforder,
-                    'is_scan' => $tenant->is_scan,
-                    'is_print' => $tenant->is_print,
-                    'is_composite' => $tenant->is_composite,
+                    'in_takengo' => $tenant->in_takengo ?? 0,
+                    'in_selforder' => $tenant->in_selforder ?? 0,
+                    'is_scan' => $tenant->is_scan ?? 0,
+                    'is_print' => $tenant->is_print ?? 0,
+                    'is_composite' => $tenant->is_composite ?? 0,
                 ]
         ], 200);
     }
