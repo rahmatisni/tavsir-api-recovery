@@ -148,7 +148,7 @@ class TenantController extends Controller
 
     public function setFeature(Request $request, Tenant $tenant)
     {
-        $tenant = Tenant::find($request->tenant_id);
+        $tenant = Tenant::where('id',$request->tenant_id)->firstOrFail();
         try {
             if (in_array(auth()->user()->role, [User::SUPERADMIN, User::ADMIN])) {
                 $tenant->update(array_map('intval', $request->all()));
