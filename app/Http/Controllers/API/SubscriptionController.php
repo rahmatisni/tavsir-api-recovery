@@ -306,6 +306,14 @@ class SubscriptionController extends Controller
             return response()->json(['message' => 'Tenant invalid'], 422);
         }
         if ($request->status == 'false') {
+            $is_tenant_kasir_open = TransOperational::where('tenant_id', $kasir->tenant_id)
+            ->where('casheer_id', $kasir->id)
+            ->whereNull('end_date')
+            ->count();
+            
+            if($is_tenant_kasir_open > 0){
+                helperThrowErrorvalidation(['id' => 'Kasir sedang beroperasi']);
+            }
             $kasir->is_subscription = 0;
             $kasir->save();
             return response()->json(['message' => 'Unsubscription success']);
