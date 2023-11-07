@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Exports\TenantExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TenantRequest;
+use Illuminate\Http\Request;
 use App\Http\Requests\BukaTutupTokoRequest;
 use App\Http\Resources\TenantResource;
 use App\Models\Tenant;
@@ -14,6 +15,7 @@ use App\Models\TransOperational;
 use Carbon\Carbon;
 use DB;
 use Maatwebsite\Excel\Facades\Excel;
+
 
 class TenantController extends Controller
 {
@@ -69,6 +71,31 @@ class TenantController extends Controller
         $tenant->fill($request->all());
         $tenant->save();
         return response()->json($tenant);
+    }
+     /**
+     * Update the specified resource in storage.
+     *
+     * @param  \App\Http\Requests\UpdateTenantRequest  $request
+     * @param  \App\Models\Tenant  $tenant
+     * @return \Illuminate\Http\Response
+     */
+
+     public function setPayment(Request $request,Tenant $tenant)
+     {
+        if (auth()->user()->role === 'TENANT') {
+            $tenant = Tenant::find(auth()->user()->tenant_id);
+            $tenant->update(['list_payment' => $request->list_payment]);
+            return response()->json(["status"=>'success','role'=>auth()->user()->role,'message'=>'Setting Payment Berhasil'],200);
+        }
+            if(in_array(auth()->user()->role,[User::SUPERADMIN, User::ADMIN])){
+            if(!$request->tenant_id){
+                return response()->json(["status"=>'Failed','role'=>'UNKNOWN','message'=>'No Tenant Requested'],422);
+            }
+            $tenant = Tenant::find($request->tenant_id);
+            $tenant->update(['list_payment_bucket' => $request->list_payment]);
+            return response()->json(["status"=>'success','role'=>auth()->user()->role,'message'=>'Setting Payment untuk Tenant '.$tenant->name.' Berhasil'],200);
+        }
+        return response()->json(["status"=>'Failed','role'=>'UNKNOWN','message'=>'DONT TRY'],422);
     }
     public function bukaTutupToko(BukaTutupTokoRequest $request)
     {

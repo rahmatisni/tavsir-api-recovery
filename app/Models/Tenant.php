@@ -1,10 +1,10 @@
 <?php
 
 namespace App\Models;
-
 use App\Models\BaseModel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class Tenant extends BaseModel
 {
@@ -42,6 +42,7 @@ class Tenant extends BaseModel
         'is_scan',
         'is_composite',
         'list_payment',
+        'list_payment_bucket',
         'url_self_order'
     ];
 

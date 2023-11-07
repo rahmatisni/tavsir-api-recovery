@@ -52,6 +52,8 @@ Route::middleware('auth:api')->group(function () {
     });
 
     Route::post('/tenant/buka-tutup-toko', [App\Http\Controllers\API\TenantController::class, 'bukaTutupToko']);
+    Route::post('/set-payment', [App\Http\Controllers\API\TenantController::class, 'setPayment']);
+
     Route::post('/product/update-status', [App\Http\Controllers\API\ProductController::class, 'updateStatus']);
     Route::apiResource('product', App\Http\Controllers\API\ProductController::class);
     Route::apiResource('payment-method', App\Http\Controllers\API\PaymentMethodController::class);
