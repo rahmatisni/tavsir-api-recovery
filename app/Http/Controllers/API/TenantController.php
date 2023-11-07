@@ -94,27 +94,26 @@ class TenantController extends Controller
             return response()->json(["status" => 'Failed', 'role' => auth()->user()->role, 'message' => 'ID Pembayaran Tidak Dikenali'], 422);
         }
         if (in_array(auth()->user()->role, [User::TENANT, User::OWNER])) {
-            $tenant = auth()->user()->role === User::TENANT ? Tenant::find(auth()->user()->tenant_id) : Tenant::where('business_id', auth()->user()->business_id)->where('id',$request->tenant_id)->firstOrFail();
+            $tenant = auth()->user()->role === User::TENANT ? Tenant::find(auth()->user()->tenant_id) : Tenant::where('business_id', auth()->user()->business_id)->where('id', $request->tenant_id)->firstOrFail();
             $bucket_payment = json_decode($tenant->list_payment_bucket);
             $tenant_payment = json_decode($tenant->list_payment);
             if (!in_array($request->list_payment, $bucket_payment)) {
                 return response()->json(["status" => 'Failed', 'role' => auth()->user()->role, 'message' => 'ID Pembayaran Tidak Dalam Daftar'], 422);
             }
-            if(!$tenant_payment){
-                $tenant->update(['list_payment' => [(int)$request->list_payment]]);
+            if (!$tenant_payment) {
+                $tenant->update(['list_payment' => [(int) $request->list_payment]]);
                 return response()->json(["status" => 'success', 'role' => auth()->user()->role, 'message' => 'Setting Payment Berhasil Diaktifkan'], 200);
             }
             if (($key = array_search($request->list_payment, $tenant_payment)) !== false) {
                 array_splice($tenant_payment, array_search($request->list_payment, $tenant_payment), 1);
                 $tenant->update(['list_payment' => $tenant_payment]);
                 return response()->json(["status" => 'success', 'role' => auth()->user()->role, 'message' => 'Setting Payment Berhasil Dinonaktifkan'], 200);
-            }
-            else {
-                array_push($tenant_payment,(int)$request->list_payment);
+            } else {
+                array_push($tenant_payment, (int) $request->list_payment);
                 $tenant->update(['list_payment' => $tenant_payment]);
                 return response()->json(["status" => 'success', 'role' => auth()->user()->role, 'message' => 'Setting Payment Berhasil Diaktifkan'], 200);
             }
-            
+
         }
         if (in_array(auth()->user()->role, [User::SUPERADMIN, User::ADMIN])) {
             if (!$request->tenant_id) {
@@ -123,13 +122,13 @@ class TenantController extends Controller
             $tenant = Tenant::find($request->tenant_id);
             $bucket_payment = json_decode($tenant->list_payment_bucket);
             $tenant_payment = json_decode($tenant->list_payment);
-            if(!$bucket_payment){
-                $tenant->update(['list_payment_bucket' => [(int)$request->list_payment]]);
+            if (!$bucket_payment) {
+                $tenant->update(['list_payment_bucket' => [(int) $request->list_payment]]);
                 return response()->json(["status" => 'success', 'role' => auth()->user()->role, 'message' => 'Setting Payment Berhasil Didaftarkan'], 200);
             }
             if (($key = array_search($request->list_payment, $bucket_payment)) !== false) {
                 array_splice($bucket_payment, array_search($request->list_payment, $bucket_payment), 1);
-                if($tenant_payment){
+                if ($tenant_payment) {
                     if (($key = array_search($request->list_payment, $tenant_payment)) !== false) {
                         array_splice($tenant_payment, array_search($request->list_payment, $tenant_payment), 1);
                         $tenant->update(['list_payment' => $tenant_payment]);
@@ -137,16 +136,50 @@ class TenantController extends Controller
                 }
                 $tenant->update(['list_payment_bucket' => $bucket_payment]);
                 return response()->json(["status" => 'success', 'role' => auth()->user()->role, 'message' => 'Setting Payment Berhasil Dinonaktifkan'], 200);
-            }
-            else {
-                array_push($bucket_payment,(int)$request->list_payment);
+            } else {
+                array_push($bucket_payment, (int) $request->list_payment);
                 $tenant->update(['list_payment_bucket' => $bucket_payment]);
                 return response()->json(["status" => 'success', 'role' => auth()->user()->role, 'message' => 'Setting Payment Berhasil Didaftarkan'], 200);
             }
-           
+
         }
         return response()->json(["status" => 'Failed', 'role' => 'UNKNOWN', 'message' => 'DONT TRY'], 422);
     }
+
+    public function setFeature(Request $request, Tenant $tenant)
+    {
+        $tenant = Tenant::find($request->tenant_id);
+        try {
+            if (in_array(auth()->user()->role, [User::SUPERADMIN, User::ADMIN])) {
+                $tenant->update(array_map('intval', $request->all()));
+                return response()->json($tenant);
+            }
+            return response()->json(["status" => 'Failed', 'role' => 'UNKNOWN', 'message' => 'DONT TRY'], 422);
+
+        } catch (\Throwable $th) {
+            return response()->json($th->getMessage(), 500);
+        }
+    }
+
+    public function sawFeature(Request $request, Tenant $tenant)
+    {
+        $tenant = Tenant::where('id', $request->tenant_id)->firstOrFail();
+        return response()->json([
+            "status" => 'Success',
+            'role' => '-',
+            'data' =>
+                [
+                    'tenant_id' => $tenant->id,
+                    'tenant_name' => $tenant->name,
+                    'in_takengo' => $tenant->in_takengo,
+                    'in_selforder' => $tenant->in_selforder,
+                    'is_scan' => $tenant->is_scan,
+                    'is_print' => $tenant->is_print,
+                    'is_composite' => $tenant->is_composite,
+                ]
+        ], 200);
+    }
+
     public function bukaTutupToko(BukaTutupTokoRequest $request)
     {
 

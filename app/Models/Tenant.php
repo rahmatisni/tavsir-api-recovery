@@ -34,6 +34,7 @@ class Tenant extends BaseModel
         'is_open',
         'is_verified',
         'in_takengo',
+        'in_selforder',
         'created_by',
         'created_at',
         'updated_at',
