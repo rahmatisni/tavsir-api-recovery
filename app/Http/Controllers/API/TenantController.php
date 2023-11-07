@@ -152,8 +152,20 @@ class TenantController extends Controller
         try {
             if (in_array(auth()->user()->role, [User::SUPERADMIN, User::ADMIN])) {
                 $tenant->update(array_map('intval', $request->all()));
-                return response()->json($tenant);
-            }
+                return response()->json([
+                    "status" => 'Success',
+                    'role' => '-',
+                    'data' =>
+                        [
+                            'tenant_id' => $tenant->id,
+                            'tenant_name' => $tenant->name,
+                            'in_takengo' => $tenant->in_takengo,
+                            'in_selforder' => $tenant->in_selforder,
+                            'is_scan' => $tenant->is_scan,
+                            'is_print' => $tenant->is_print,
+                            'is_composite' => $tenant->is_composite,
+                        ]
+                ], 200);            }
             return response()->json(["status" => 'Failed', 'role' => 'UNKNOWN', 'message' => 'DONT TRY'], 422);
 
         } catch (\Throwable $th) {
