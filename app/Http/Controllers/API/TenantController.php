@@ -99,6 +99,10 @@ class TenantController extends Controller
             if (!in_array($request->list_payment, $bucket_payment)) {
                 return response()->json(["status" => 'Failed', 'role' => auth()->user()->role, 'message' => 'ID Pembayaran Tidak Dalam Daftar'], 422);
             }
+            if(!$tenant_payment){
+                $tenant->update(['list_payment' => [(int)$request->list_payment]]);
+                return response()->json(["status" => 'success', 'role' => auth()->user()->role, 'message' => 'Setting Payment Berhasil Diaktifkan'], 200);
+            }
             if (($key = array_search($request->list_payment, $tenant_payment)) !== false) {
                 array_splice($tenant_payment, array_search($request->list_payment, $tenant_payment), 1);
                 $tenant->update(['list_payment' => $tenant_payment]);
@@ -118,12 +122,17 @@ class TenantController extends Controller
             $tenant = Tenant::find($request->tenant_id);
             $bucket_payment = json_decode($tenant->list_payment_bucket);
             $tenant_payment = json_decode($tenant->list_payment);
-            
+            if(!$bucket_payment){
+                $tenant->update(['list_payment_bucket' => [(int)$request->list_payment]]);
+                return response()->json(["status" => 'success', 'role' => auth()->user()->role, 'message' => 'Setting Payment Berhasil Didaftarkan'], 200);
+            }
             if (($key = array_search($request->list_payment, $bucket_payment)) !== false) {
                 array_splice($bucket_payment, array_search($request->list_payment, $bucket_payment), 1);
-                if (($key = array_search($request->list_payment, $tenant_payment)) !== false) {
-                    array_splice($tenant_payment, array_search($request->list_payment, $tenant_payment), 1);
-                    $tenant->update(['list_payment' => $tenant_payment]);
+                if($tenant_payment){
+                    if (($key = array_search($request->list_payment, $tenant_payment)) !== false) {
+                        array_splice($tenant_payment, array_search($request->list_payment, $tenant_payment), 1);
+                        $tenant->update(['list_payment' => $tenant_payment]);
+                    }
                 }
                 $tenant->update(['list_payment_bucket' => $bucket_payment]);
                 return response()->json(["status" => 'success', 'role' => auth()->user()->role, 'message' => 'Setting Payment Berhasil Dinonaktifkan'], 200);
@@ -131,7 +140,7 @@ class TenantController extends Controller
             else {
                 array_push($bucket_payment,(int)$request->list_payment);
                 $tenant->update(['list_payment_bucket' => $bucket_payment]);
-                return response()->json(["status" => 'success', 'role' => auth()->user()->role, 'message' => 'Setting Payment Berhasil Diaktifkan'], 200);
+                return response()->json(["status" => 'success', 'role' => auth()->user()->role, 'message' => 'Setting Payment Berhasil Didaftarkan'], 200);
             }
            
         }
