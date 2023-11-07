@@ -83,6 +83,7 @@ class TenantController extends Controller
 
     public function setPayment(Request $request, Tenant $tenant)
     {
+
         $paymentMethods = PaymentMethod::all();
         $ids = [];
 
@@ -93,7 +94,7 @@ class TenantController extends Controller
             return response()->json(["status" => 'Failed', 'role' => auth()->user()->role, 'message' => 'ID Pembayaran Tidak Dikenali'], 422);
         }
         if (in_array(auth()->user()->role, [User::TENANT, User::OWNER])) {
-            $tenant = auth()->user()->role === User::TENANT ? Tenant::find(auth()->user()->tenant_id) : Tenant::find($request->tenant_id)->where('business_id', auth()->user()->business_id);
+            $tenant = auth()->user()->role === User::TENANT ? Tenant::find(auth()->user()->tenant_id) : Tenant::where('business_id', auth()->user()->business_id)->where('id',$request->tenant_id)->firstOrFail();
             $bucket_payment = json_decode($tenant->list_payment_bucket);
             $tenant_payment = json_decode($tenant->list_payment);
             if (!in_array($request->list_payment, $bucket_payment)) {
