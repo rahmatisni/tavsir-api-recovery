@@ -93,7 +93,7 @@ class TenantController extends Controller
             return response()->json(["status" => 'Failed', 'role' => auth()->user()->role, 'message' => 'ID Pembayaran Tidak Dikenali'], 422);
         }
         if (in_array(auth()->user()->role, [User::TENANT, User::OWNER])) {
-            $tenant = auth()->user()->role === User::TENANT ? Tenant::find(auth()->user()->tenant_id) : Tenant::find($request->tenant_id);
+            $tenant = auth()->user()->role === User::TENANT ? Tenant::find(auth()->user()->tenant_id) : Tenant::find($request->tenant_id)->where('business_id', auth()->user()->business_id);
             $bucket_payment = json_decode($tenant->list_payment_bucket);
             $tenant_payment = json_decode($tenant->list_payment);
             if (!in_array($request->list_payment, $bucket_payment)) {
