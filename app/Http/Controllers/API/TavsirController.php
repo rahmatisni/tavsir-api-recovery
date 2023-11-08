@@ -1993,6 +1993,7 @@ class TavsirController extends Controller
         $queryOrder .= "ELSE 9 END";
 
         $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer', 'trans_edc.bank')
+        ->where('tenant_id',auth()->user()->tenant_id)
             ->when($status = request()->status, function ($q) use ($status) {
                 if (is_array($status)) {
                     // $jsonArray = str_replace(['[', ']', '"'], '', $status);
