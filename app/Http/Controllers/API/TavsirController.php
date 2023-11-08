@@ -52,6 +52,7 @@ use App\Models\TransOrderArsip;
 use App\Models\TransPayment;
 use App\Models\TransSaldo;
 use App\Models\TransSharing;
+use App\Models\Sharing;
 use App\Models\TransStock;
 use App\Models\User;
 use App\Models\Voucher;
@@ -619,18 +620,37 @@ class TavsirController extends Controller
             $data->sub_total = $sub_total;
             $data->total = $data->sub_total + $data->fee + $data->service_fee + $data->addon_total;
 
-            $tenant = Tenant::where('id', auth()->user()->tenant_id)->first();
-            if ($tenant->sharing_config) {
-                $tenant_sharing = json_decode($tenant->sharing_config);
-                foreach ($tenant_sharing as $value) {
+            // ======OLD======
+            // $tenant = Tenant::where('id', auth()->user()->tenant_id)->first();
+            // if ($tenant->sharing_config) {
+            //     $tenant_sharing = json_decode($tenant->sharing_config);
+            //     foreach ($tenant_sharing as $value) {
+            //         $harga = (int) ($data->sub_total) + (int) ($data->addon_total);
+            //         $sharing_amount_unround = (($value / 100) * $harga);
+            //         // $sharing_amount[] = ($value/100).'|'.$harga.'|'.$sharing_amount_unround;
+            //         $sharing_amount[] = $sharing_amount_unround;
+            //     }
+            //     $data->sharing_code = $tenant->sharing_code ?? null;
+            //     $data->sharing_amount = $sharing_amount ?? null;
+            //     $data->sharing_proportion = $tenant->sharing_config ?? null;
+            // }
+
+             // ======OLD======
+            $now = Carbon::now()->format('Y-m-d H:i:s');
+            $sharing = Sharing::where('tenant_id', auth()->user()->tenant_id)->whereIn('status', ['sedang_berjalan','belum_berjalan'])
+            ->where('waktu_mulai', '<=', $now)
+            ->where('waktu_selesai', '>=', $now)->first();
+            if ($sharing?->sharing_config) {
+                $nilai_sharing = json_decode($sharing->sharing_config);
+                foreach ($nilai_sharing as $value) {
                     $harga = (int) ($data->sub_total) + (int) ($data->addon_total);
                     $sharing_amount_unround = (($value / 100) * $harga);
                     // $sharing_amount[] = ($value/100).'|'.$harga.'|'.$sharing_amount_unround;
                     $sharing_amount[] = $sharing_amount_unround;
                 }
-                $data->sharing_code = $tenant->sharing_code ?? null;
+                $data->sharing_code = $sharing->sharing_code ?? null;
                 $data->sharing_amount = $sharing_amount ?? null;
-                $data->sharing_proportion = $tenant->sharing_config ?? null;
+                $data->sharing_proportion = $sharing->sharing_config ?? null;
             }
             $data->save();
             $data->detil()->saveMany($order_detil_many);

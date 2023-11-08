@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Resources\Tavsir\TrOrderResource;
 use App\Models\LogKiosbank;
 use App\Models\LaJmto;
+use App\Models\Sharing;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TsCreatePaymentRequest;
@@ -247,18 +248,21 @@ class TravShopController extends Controller
             $data->margin = $sub_total - $margin;
             $data->sub_total = $sub_total;
             $data->total = $data->sub_total + $data->fee + $data->service_fee + $data->addon_total;
-            $tenant = Tenant::where('id', $request->tenant_id)->first();
-            if ($tenant->sharing_config) {
-                $tenant_sharing = json_decode($tenant->sharing_config);
-                foreach ($tenant_sharing as $value) {
+            $now = Carbon::now()->format('Y-m-d H:i:s');
+            $sharing = Sharing::where('tenant_id', $request->tenant_id)->whereIn('status', ['sedang_berjalan','belum_berjalan'])
+            ->where('waktu_mulai', '<=', $now)
+            ->where('waktu_selesai', '>=', $now)->first();
+            if ($sharing?->sharing_config) {
+                $nilai_sharing = json_decode($sharing->sharing_config);
+                foreach ($nilai_sharing as $value) {
                     $harga = (int) ($data->sub_total) + (int) ($data->addon_total);
                     $sharing_amount_unround = (($value / 100) * $harga);
                     // $sharing_amount[] = ($value/100).'|'.$harga.'|'.$sharing_amount_unround;
                     $sharing_amount[] = $sharing_amount_unround;
                 }
-                $data->sharing_code = $tenant->sharing_code ?? null;
+                $data->sharing_code = $sharing->sharing_code ?? null;
                 $data->sharing_amount = $sharing_amount ?? null;
-                $data->sharing_proportion = $tenant->sharing_config ?? null;
+                $data->sharing_proportion = $sharing->sharing_config ?? null;
             }
             $data->status = TransOrder::WAITING_CONFIRMATION_TENANT;
             $data->save();
@@ -380,20 +384,35 @@ class TravShopController extends Controller
             $data->fee = env('PLATFORM_FEE');
             $data->sub_total = $sub_total;
             $data->total = $data->sub_total + $data->fee + $data->service_fee + $data->addon_total;
-            $tenant = Tenant::where('id', $request->tenant_id)->first();
-            if ($tenant->sharing_config) {
-                $tenant_sharing = json_decode($tenant->sharing_config);
-                foreach ($tenant_sharing as $value) {
+            // $tenant = Tenant::where('id', $request->tenant_id)->first();
+            // if ($tenant->sharing_config) {
+            //     $tenant_sharing = json_decode($tenant->sharing_config);
+            //     foreach ($tenant_sharing as $value) {
+            //         $harga = (int) ($data->sub_total) + (int) ($data->addon_total);
+            //         $sharing_amount_unround = (($value / 100) * $harga);
+            //         // $sharing_amount[] = ($value/100).'|'.$harga.'|'.$sharing_amount_unround;
+            //         $sharing_amount[] = $sharing_amount_unround;
+            //     }
+            //     $data->sharing_code = $tenant->sharing_code ?? null;
+            //     $data->sharing_amount = $sharing_amount ?? null;
+            //     $data->sharing_proportion = $tenant->sharing_config ?? null;
+            // }
+            $now = Carbon::now()->format('Y-m-d H:i:s');
+            $sharing = Sharing::where('tenant_id', $request->tenant_id)->whereIn('status', ['sedang_berjalan','belum_berjalan'])
+            ->where('waktu_mulai', '<=', $now)
+            ->where('waktu_selesai', '>=', $now)->first();
+            if ($sharing?->sharing_config) {
+                $nilai_sharing = json_decode($sharing->sharing_config);
+                foreach ($nilai_sharing as $value) {
                     $harga = (int) ($data->sub_total) + (int) ($data->addon_total);
                     $sharing_amount_unround = (($value / 100) * $harga);
                     // $sharing_amount[] = ($value/100).'|'.$harga.'|'.$sharing_amount_unround;
                     $sharing_amount[] = $sharing_amount_unround;
                 }
-                $data->sharing_code = $tenant->sharing_code ?? null;
+                $data->sharing_code = $sharing->sharing_code ?? null;
                 $data->sharing_amount = $sharing_amount ?? null;
-                $data->sharing_proportion = $tenant->sharing_config ?? null;
+                $data->sharing_proportion = $sharing->sharing_config ?? null;
             }
-
             switch ($tenant->in_selforder) {
                 case 1:
                     $data->status = TransOrder::WAITING_CONFIRMATION_TENANT;

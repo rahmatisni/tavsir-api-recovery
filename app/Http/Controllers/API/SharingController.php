@@ -19,6 +19,10 @@ class SharingController extends Controller
     {
         $waktu_mulai = request()->waktu_mulai;
         $waktu_selesai = request()->waktu_selesai;
+        $queryOrder = "CASE WHEN status = 'sedang_berjalan' THEN 1 ";
+        $queryOrder .= "WHEN status = 'belum_berjalan' THEN 2 ";
+        $queryOrder .= "WHEN status = 'sudah_berakhir' THEN 3 ";
+        $queryOrder .= "ELSE 3 END";
 
         $data = Sharing::when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
             return $q->where('tenant_id', $tenant_id);
@@ -70,7 +74,9 @@ class SharingController extends Controller
                     break;
             }
 
-        })->get();
+        })->orderByRaw($queryOrder)->orderBy('created_at', 'DESC')->get();
+
+
         return response()->json(SharingIndexResource::collection($data));
     }
 
