@@ -31,7 +31,7 @@ class SharingController extends Controller
             )->when($business_id = request()->business_id, function ($q) use ($business_id) {
                 return $q->where('business_id', $business_id);
             })->when($nomor_pks = request()->nomor_pks, function ($q) use ($nomor_pks) {
-            return $q->where('nomor_pks', $nomor_pks);
+            return $q->where('nomor_pks', 'like', "%$nomor_pks%")
         })->when($status = request()->status, function ($q) use ($status) {
             // return $q->where('status', $status);
             $now = Carbon::now()->format('Y-m-d H:i:s');

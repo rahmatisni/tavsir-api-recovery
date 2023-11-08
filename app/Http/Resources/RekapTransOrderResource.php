@@ -26,6 +26,18 @@ class RekapTransOrderResource extends JsonResource
             'bank_name' => $this->trans_edc->bank->name ?? '',
             'order_type' => $this->order_type,
             'order_type_label' => $this->labelOrderType(),
+            // 'sharing' => $this->asd(json_decode($this->sharing_code),json_decode($this->sharing_amount)),
+            'sharing_code' => json_decode($this->sharing_code),
+            'sharing_amount' => json_decode($this->sharing_amount),
         ];
     }
+
+    // public function asd($a,$b){
+    //     $arr = [];
+    //     foreach ($a as $key => $value) {
+    //         // $arr[]=[$value=>$b[$key]];
+
+    //     }
+    //     return $arr;
+    // }
 }
