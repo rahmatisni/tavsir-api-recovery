@@ -39,6 +39,12 @@ class Sharing extends BaseModel
         return $this->belongsTo(Tenant::class, 'tenant_id');
     }
 
+    public function business()
+    {
+        return $this->belongsTo(Business::class, 'business_id');
+    }
+
+
     public function supertenant()
     {
         return $this->belongsTo(Supertenant::class, 'supertenant_id');

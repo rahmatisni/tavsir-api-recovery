@@ -100,7 +100,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/laporan/customer-travoy', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanCustomerTravoy']);
     Route::post('/laporan/customer-tavqr', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanCustomerTavqr']);
 
-    Route::get('sharing', [App\Http\Controllers\API\SharingController::class, 'index']);
+    Route::post('sharing/list', [App\Http\Controllers\API\SharingController::class, 'index']);
     Route::post('sharing', [App\Http\Controllers\API\SharingController::class, 'store']);
     Route::get('/sharing/{id}', [App\Http\Controllers\API\SharingController::class, 'show']);
     Route::post('/sharing/{id}', [App\Http\Controllers\API\SharingController::class, 'update']);
