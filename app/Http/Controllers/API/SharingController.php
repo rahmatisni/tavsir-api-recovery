@@ -31,10 +31,46 @@ class SharingController extends Controller
             )->when($business_id = request()->business_id, function ($q) use ($business_id) {
                 return $q->where('business_id', $business_id);
             })->when($nomor_pks = request()->nomor_pks, function ($q) use ($nomor_pks) {
-                return $q->where('nomor_pks', $nomor_pks);
-            })->when($status = request()->status, function ($q) use ($status) {
-                return $q->where('status', $status);
-            })->get();
+            return $q->where('nomor_pks', $nomor_pks);
+        })->when($status = request()->status, function ($q) use ($status) {
+            // return $q->where('status', $status);
+            $now = Carbon::now()->format('Y-m-d H:i:s');
+
+            switch ($status) {
+                case 'belum_berjalan':
+                    // Code to execute if expression matches value1
+                    return $q
+                        // ->where('status', $status)
+                        ->where('waktu_mulai', '>=', $now);
+                    // ->where('waktu_selesai', '>=', $now);
+
+
+                    break;
+
+                case 'sudah_berakhir':
+                    // Code to execute if expression matches value2
+                    return $q
+                        // ->where('status', $status)
+                        ->where('waktu_selesai', '<', $now);
+                    break;
+
+                case 'sedang_berjalan':
+                    // Code to execute if expression matches value2
+                    // return $q->where('status', $status)
+                    return $q
+                        ->where('waktu_mulai', '<=', $now)
+                        ->where('waktu_selesai', '>=', $now);
+                    break;
+
+                // Add more cases as needed
+
+                default:
+                    // Code to execute if none of the cases match the expression
+                    return $q->where('status', $status);
+                    break;
+            }
+
+        })->get();
         return response()->json(SharingIndexResource::collection($data));
     }
 
