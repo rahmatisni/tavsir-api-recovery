@@ -19,10 +19,6 @@ class SharingController extends Controller
     {
         $waktu_mulai = request()->waktu_mulai;
         $waktu_selesai = request()->waktu_selesai;
-        $queryOrder = "CASE WHEN status = 'sedang_berjalan' THEN 1 ";
-        $queryOrder .= "WHEN status = 'belum_berjalan' THEN 2 ";
-        $queryOrder .= "WHEN status = 'sudah_berakhir' THEN 3 ";
-        $queryOrder .= "ELSE 3 END";
 
         $data = Sharing::when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
             return $q->where('tenant_id', $tenant_id);
@@ -74,17 +70,31 @@ class SharingController extends Controller
                     break;
             }
 
-        })->orderByRaw($queryOrder)->orderBy('created_at', 'DESC')->get();
+        })->get();
 
+        $collectionWithNewKey = $data->map(function ($item) {
+        $item['status'] = $this->cek_status($item['waktu_mulai'], $item['waktu_selesai'], $item['tenant_id']);
+        $item['status_code'] = $this->cek_status($item['waktu_mulai'], $item['waktu_selesai'], $item['tenant_id']) === 'sedang_berjalan' ? 1 : ($this->cek_status($item['waktu_mulai'], $item['waktu_selesai'], $item['tenant_id']) === 'sudah_berakhir' ? 3:2);
+        return $item;
+        });
+        
+        $sortedCollection = $collectionWithNewKey->sortBy('status_code');
 
-        return response()->json(SharingIndexResource::collection($data));
+        return response()->json(SharingIndexResource::collection($sortedCollection));
     }
 
     public function cek_status($start, $end, $id)
     {
-        if ($start > date((Carbon::now()->format('Y-m-d H:i:s')))) {
+        if (Carbon::now()->format('Y-m-d H:i:s') < $start) {
             return 'belum_berjalan';
+
+        } elseif (Carbon::now()->format('Y-m-d H:i:s') >= $start && Carbon::now()->format('Y-m-d H:i:s') <= $end) {
+            return 'sedang_berjalan';
+
+        } else {
+           return 'sudah_berakhir';
         }
+        
     }
     public function store(SharingRequest $request)
     {
@@ -121,6 +131,8 @@ class SharingController extends Controller
     public function show($id)
     {
         $sharing = Sharing::with('tenant')->findOrFail($id);
+        $sharing->status = $this->cek_status($sharing['waktu_mulai'], $sharing['waktu_selesai'], $sharing['tenant_id']);
+
         return response()->json(new SharingShowResource($sharing));
     }
 
