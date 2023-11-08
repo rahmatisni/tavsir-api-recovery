@@ -8,6 +8,7 @@ use App\Http\Resources\BaseResource;
 use App\Http\Resources\SharingIndexResource;
 use App\Http\Resources\SharingShowResource;
 use App\Models\Sharing;
+use App\Models\Tenant;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -27,7 +28,13 @@ class SharingController extends Controller
                     return $q->where('waktu_mulai', '>=', $waktu_mulai)
                         ->where('waktu_selesai', '<=', $waktu_selesai);
                 }
-            )->get();
+            )->when($business_id = request()->business_id, function ($q) use ($business_id) {
+                return $q->where('business_id', $business_id);
+            })->when($nomor_pks = request()->nomor_pks, function ($q) use ($nomor_pks) {
+                return $q->where('nomor_pks', $nomor_pks);
+            })->when($status = request()->status, function ($q) use ($status) {
+                return $q->where('status', $status);
+            })->get();
         return response()->json(SharingIndexResource::collection($data));
     }
 
@@ -40,6 +47,7 @@ class SharingController extends Controller
     public function store(SharingRequest $request)
     {
         // 'status' => 'required|in:sedang_berjalan,belum_berjalan,sudah_berakhir',
+        $tenant = Tenant::find($request->tenant_id);
         try {
             $validator = Sharing::where('tenant_id', $request->tenant_id)->get();
             foreach ($validator as $value) {
@@ -47,7 +55,7 @@ class SharingController extends Controller
                 if ($value->waktu_selesai > $request->waktu_selesai) {
                     return response()->json(['status' => "error", 'message' => "Terdapat PKS yang masih berlaku"], 422);
                 }
-                if ($value->waktu_mulai < $request->waktu_mulai && $request->waktu_mulai > date((Carbon::now()->format('Y-m-d H:i:s')))){
+                if ($value->waktu_mulai < $request->waktu_mulai && $request->waktu_mulai > date((Carbon::now()->format('Y-m-d H:i:s')))) {
                     $value->update(['status' => 'sudah_berakhir']);
                 }
             }
@@ -55,6 +63,7 @@ class SharingController extends Controller
             DB::beginTransaction();
             $data = new Sharing();
             $data->fill($request->all());
+            $data->business_id = $tenant->business_id;
             $data->sharing_code = $request->sharing_code;
             $data->sharing_config = $request->sharing_config;
             $data->status = $this->cek_status($request->waktu_mulai, $request->waktu_selesai, $request->tenant_id);

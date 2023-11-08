@@ -17,7 +17,7 @@ class CreateRefSharingTable extends Migration
             $table->id();
             $table->string('nama_pks');
             $table->string('nomor_pks');
-            $table->integer('supertenant_id');
+            $table->integer('business_id');
             $table->integer('tenant_id');
             $table->string('sharing_code');
             $table->string('sharing_config');
