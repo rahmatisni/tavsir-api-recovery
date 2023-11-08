@@ -17,12 +17,10 @@ class CreateRefSharingTable extends Migration
             $table->id();
             $table->string('nama_pks');
             $table->string('nomor_pks');
-            $table->unsignedInteger('pengelola_id');
-            $table->unsignedInteger('supertenant_id');
-            $table->unsignedInteger('tenant_id');
-            $table->unsignedInteger('persentase_pengelola');
-            $table->unsignedInteger('persentase_supertenant');
-            $table->unsignedInteger('persentase_tenant');
+            $table->integer('supertenant_id');
+            $table->integer('tenant_id');
+            $table->string('sharing_code');
+            $table->string('sharing_config');
             $table->date('waktu_mulai');
             $table->date('waktu_selesai');
             $table->string('status');
