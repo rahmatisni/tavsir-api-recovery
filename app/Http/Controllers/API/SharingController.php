@@ -39,7 +39,7 @@ class SharingController extends Controller
     }
     public function store(SharingRequest $request)
     {
-        // 'status' => 'required|in:sedang_berjalan,belum_berjalan,sudah_berjalan',
+        // 'status' => 'required|in:sedang_berjalan,belum_berjalan,sudah_berakhir',
         try {
             $validator = Sharing::where('tenant_id', $request->tenant_id)->get();
             foreach ($validator as $value) {
@@ -48,7 +48,7 @@ class SharingController extends Controller
                     return response()->json(['status' => "error", 'message' => "Terdapat PKS yang masih berlaku"], 422);
                 }
                 if ($value->waktu_mulai < $request->waktu_mulai && $request->waktu_mulai > date((Carbon::now()->format('Y-m-d H:i:s')))){
-                    $value->update(['status' => 'sudah_berjalan']);
+                    $value->update(['status' => 'sudah_berakhir']);
                 }
             }
 
