@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Carbon\Carbon;
 
 class SharingShowResource extends JsonResource
 {
@@ -14,6 +15,8 @@ class SharingShowResource extends JsonResource
      */
     public function toArray($request)
     {
+        $now = Carbon::now();
+
         return [
             'id' => $this->id,
             'nama_pks' => $this->nama_pks,
@@ -30,7 +33,9 @@ class SharingShowResource extends JsonResource
             // 'persentase_tenant' => $this->persentase_tenant,
             'waktu_mulai' => $this->waktu_mulai,
             'waktu_selesai' => $this->waktu_selesai,
-            'status' => $this->status,
+            // 'status' => $this->status,
+            'status' => $this->status === 'sudah_berakhir' ? 'sudah_berakhir' : $now->between($this->waktu_mulai, $this->waktu_selesai) && $this->status === 'belum_berjalan' ? 'sedang_berjalan' : 'belum_berjalan',
+
             'file' => $this->file ? asset($this->file) : null,
         ];
     }
