@@ -34,7 +34,7 @@ class SharingIndexResource extends JsonResource
             'waktu_mulai' => $this->waktu_mulai,
             'waktu_selesai' => $this->waktu_selesai,
             // 'status' => $this->status ,
-            'status' => $this->status === 'sudah_berakhir' ? 'sudah_berakhir' : $now->between($this->waktu_mulai, $this->waktu_selesai) && $this->status === 'belum_berjalan' ? 'sedang_berjalan' : 'belum_berjalan',
+            'status' => $this->status === 'sudah_berakhir' ? 'sudah_berakhir' : ($now->between($this->waktu_mulai, $this->waktu_selesai) && $this->status === 'belum_berjalan' ? 'sedang_berjalan' : 'belum_berjalan'),
             'file' => $this->file ? asset($this->file) : null,
         ];
     }
