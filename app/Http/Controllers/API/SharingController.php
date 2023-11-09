@@ -116,8 +116,8 @@ class SharingController extends Controller
             $data = new Sharing();
             $data->fill($request->all());
             $data->business_id = $tenant->business_id;
-            $data->sharing_code = $request->sharing_code;
-            $data->sharing_config = $request->sharing_config;
+            $data->sharing_code = json_decode($request->sharing_code) ?? $request->sharing_code;
+            $data->sharing_config = json_decode($request->sharing_config) ?? $request->sharing_config;
             $data->status = $this->cek_status($request->waktu_mulai, $request->waktu_selesai, $request->tenant_id);
             $data->save();
             DB::commit();
