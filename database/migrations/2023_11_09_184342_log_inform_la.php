@@ -16,8 +16,8 @@ class LogInformLa extends Migration
         //
         Schema::create('trans_cashbox', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('trans_order_id');
-            $table->text('data');
+            $table->string('trans_order_id');
+            $table->string('data');
             $table->timestamps();
             $table->text('inquiry');
             $table->text('payment');
