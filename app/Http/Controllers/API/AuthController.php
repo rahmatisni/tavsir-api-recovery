@@ -46,24 +46,24 @@ class AuthController extends Controller
                     ], 200);
                 }
                 if ($user->role == User::TENANT) {
-                    if($user?->tenant?->is_subscription != 1){
+                    if ($user?->tenant?->is_subscription != 1) {
                         $response = ["message" => 'Tenant not subscription'];
                         return response($response, 422);
                     }
                 }
-                if ($user->role == User::CASHIER) { 
-                    if($user->is_subscription == 0){
+                if ($user->role == User::CASHIER) {
+                    if ($user->is_subscription == 0) {
                         $response = ["message" => "Not Subscription"];
                         return response($response, 422);
                     }
-                    
+
                     if ($count > 0) {
                         if ($user->fcm_token) {
                             $payload = array(
                                 'type' => 'click',
                                 'action' => 'relogin',
                             );
-                            sendNotif($user->fcm_token, '❗Anda telah keluar dari Getpay❗','User anda telah digunakan diperangkat lain!', $payload);
+                            sendNotif($user->fcm_token, '❗Anda telah keluar dari Getpay❗', 'User anda telah digunakan diperangkat lain!', $payload);
                         }
                     }
                     $user->accessTokens()->delete();
@@ -71,7 +71,7 @@ class AuthController extends Controller
 
                 //Cek subscription aktif
                 $business_id = 0;
-                if(in_array($user->role,[User::OWNER, User::TENANT, User::CASHIER])){
+                if (in_array($user->role, [User::OWNER, User::TENANT, User::CASHIER])) {
                     switch ($user->role) {
                         case User::OWNER:
                             $business_id = $user->business->id ?? 0;
@@ -82,20 +82,20 @@ class AuthController extends Controller
                         case User::CASHIER:
                             $business_id = $user->tenant->business->id ?? 0;
                             break;
-                        
+
                         default:
                             # code...
                             break;
                     }
                     $subscription_end = Business::find($business_id)?->subscription_end;
-                    if($subscription_end){
+                    if ($subscription_end) {
                         $subscription_end = Carbon::parse($subscription_end);
                         $is_active = $subscription_end->lt(Carbon::now()->subDay());
-                        if($is_active){
-                            $response = ["message" => "Subscription tidak aktif, terakhir subscription ".$subscription_end->format('d F Y').' / '.$subscription_end->diffForHumans()];
+                        if ($is_active) {
+                            $response = ["message" => "Subscription tidak aktif, terakhir subscription " . $subscription_end->format('d F Y') . ' / ' . $subscription_end->diffForHumans()];
                             return response($response, 422);
                         }
-                    }else{
+                    } else {
                         $response = ["message" => "Invalid Subscription"];
                         return response($response, 422);
                     }
@@ -127,7 +127,7 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         // $user = User::where('email', auth()->user()->email)->first();
-        User::where('id',auth()->user()->id)->update(['fcm_token' => NULL]);
+        User::where('id', auth()->user()->id)->update(['fcm_token' => NULL]);
 
         $request->user()->token()->delete();
         return response()->json([
@@ -218,7 +218,7 @@ class AuthController extends Controller
                 }
 
                 $count_periode = TransOperational::where('casheer_id', $user->id)
-                    ->where('tenant_id', $user->tenant_id ?? $user->supertenant_id )
+                    ->where('tenant_id', $user->tenant_id ?? $user->supertenant_id)
                     ->whereDate('start_date', '=', date('Y-m-d'))
                     ->latest()->first();
                 if ($count_periode) {
@@ -274,10 +274,10 @@ class AuthController extends Controller
         // }
         try {
             if (Hash::check($request->pin, $user->pin)) {
-               return response()->json([
-                'status' => 'success',
-                'message' => 'PIN verification success'
-            ], 200);
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'PIN verification success'
+                ], 200);
             }
 
             return response()->json([
@@ -330,7 +330,7 @@ class AuthController extends Controller
                 $total_order = $total_order->sum('sub_total') + $total_order->sum('addon_total');
 
                 $trans_cashbox->rp_cash = $total_order;
-                $trans_cashbox->different_cashbox = $request->cashbox - $total_order  - $request->pengeluaran_cashbox;
+                $trans_cashbox->different_cashbox = $request->cashbox - $total_order - $request->pengeluaran_cashbox;
                 $trans_cashbox->input_cashbox_date = Carbon::now();
 
                 $rp_va_bri = $data_all;
@@ -379,19 +379,23 @@ class AuthController extends Controller
                 $investor = $data_all->groupBy('sharing_code')->toArray();
                 // dd($investor);
                 $tempInvestor = [];
-                foreach($investor as $k => $v) {
-                    // dump($k);
-                    $arrk = json_decode($k);
-                    foreach($arrk as $k2 => $v2) {
-                        // dump($v2);
-                        $temp = 0;
-                        foreach($v as $k3 => $v3) {
-                            $value = json_decode($v3['sharing_amount']);
-                            // dump($value[$k2]);
-                            $temp += $value[$k2];
+                if ($investor) {
+
+
+                    foreach ($investor as $k => $v) {
+                        // dump($k);
+                        $arrk = json_decode($k);
+                        foreach ($arrk as $k2 => $v2) {
+                            // dump($v2);
+                            $temp = 0;
+                            foreach ($v as $k3 => $v3) {
+                                $value = json_decode($v3['sharing_amount']);
+                                // dump($value[$k2]);
+                                $temp += $value[$k2];
+                            }
+                            // dump($temp);
+                            $tempInvestor[] = [$v2 => $temp];
                         }
-                        // dump($temp);
-                        $tempInvestor[]= [$v2=>$temp];
                     }
                 }
                 $trans_cashbox->sharing = json_encode($tempInvestor);
@@ -440,7 +444,8 @@ class AuthController extends Controller
         })->get();
         return response()->json(TsTenantResource::collection($data));
     }
-    public function notifBukaTutupToko(User $user, $info){
+    public function notifBukaTutupToko(User $user, $info)
+    {
         $data = User::where([['id', '!=', $user->id], ['tenant_id', $user->tenant_id], ['fcm_token', '!=', null], ['fcm_token', '!=', '']])->get();
         $ids = array();
         foreach ($data as $val) {
@@ -454,12 +459,12 @@ class AuthController extends Controller
                 'type' => 'action',
                 'action' => 'refresh_buka_toko'
             );
-            if($info=='tutup'){
+            if ($info == 'tutup') {
                 $result = sendNotif($ids, 'Pemberitahun', 'Pemberitahuan Toko anda di tutup sementara oleh ' . $user->name, $payload);
-            }else
-            if($info=='buka'){
-                $result = sendNotif($ids, 'Pemberitahun', 'Pemberitahuan Toko anda sudah dibukan oleh ' . $user->name, $payload);
-            }
+            } else
+                if ($info == 'buka') {
+                    $result = sendNotif($ids, 'Pemberitahun', 'Pemberitahuan Toko anda sudah dibukan oleh ' . $user->name, $payload);
+                }
             return $result;
         }
     }
@@ -473,7 +478,7 @@ class AuthController extends Controller
             $result = $this->notifBukaTutupToko($user, 'buka');
             return response()->json([
                 'status' => 'success',
-                'message' => 'Open tenant '.$tenant->name.' successfully',
+                'message' => 'Open tenant ' . $tenant->name . ' successfully',
                 'notif' => $result
             ]);
         }
@@ -493,7 +498,7 @@ class AuthController extends Controller
             $result = $this->notifBukaTutupToko($user, 'tutup');
             return response()->json([
                 'status' => 'success',
-                'message' => 'Close tenant '.$tenant->name.' successfully',
+                'message' => 'Close tenant ' . $tenant->name . ' successfully',
                 'notif' => $result
             ]);
         }
