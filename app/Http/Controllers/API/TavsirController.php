@@ -1014,6 +1014,10 @@ class TavsirController extends Controller
 
 
         try {
+            $data->nomor_name = $request->name;
+            $data->consume_type = $request->consume_type;
+            // $data->save();
+
             DB::beginTransaction();
             if (request()->order_from_qr == true) {
                 if ($data->status == TransOrder::CART || $data->status == TransOrder::PENDING || $data->status == null) {
