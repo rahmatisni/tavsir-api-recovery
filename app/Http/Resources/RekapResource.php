@@ -37,6 +37,7 @@ class RekapResource extends JsonResource
                 'rp_va_mandiri' => $this->trans_cashbox->rp_va_mandiri ?? 0,
                 'rp_va_bni' => $this->trans_cashbox->rp_va_bni ?? 0,
             ],
+            'sharing' => json_decode($this->trans_cashbox->sharing)
         ];
     }
 }

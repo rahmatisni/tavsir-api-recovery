@@ -33,6 +33,7 @@ class CreateTransCashbox extends Migration
             $table->integer('rp_total');
             $table->integer('rp_edc')->default(0);
             $table->integer('rp_addon_total')->default(0);
+            $table->text('sharing')->nullable();
             $table->timestamps();
         });
     }
