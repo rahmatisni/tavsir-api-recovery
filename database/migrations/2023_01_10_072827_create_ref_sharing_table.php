@@ -24,6 +24,7 @@ class CreateRefSharingTable extends Migration
             $table->date('waktu_mulai');
             $table->date('waktu_selesai');
             $table->string('status');
+            $table->string('deskripsi');
             $table->string('file')->nullable();
             $table->timestamps();
         });
