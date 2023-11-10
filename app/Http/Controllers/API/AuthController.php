@@ -306,129 +306,126 @@ class AuthController extends Controller
                 ], 422);
             }
 
-            try {
-                //code...
+            // try {
+            //code...
 
-                DB::beginTransaction();
+            DB::beginTransaction();
 
-                $end_date = Carbon::now();
-                $data->duration = $data->start_date->diffInSeconds($end_date);
-                $data->end_date = $end_date;
-                $data->save();
-                $trans_cashbox = $data->trans_cashbox ? $data->trans_cashbox : new TransCashbox();
-                $trans_cashbox->cashbox = $request->cashbox;
-                $trans_cashbox->pengeluaran_cashbox = $request->pengeluaran_cashbox;
-                $trans_cashbox->description = $request->description;
+            $end_date = Carbon::now();
+            $data->duration = $data->start_date->diffInSeconds($end_date);
+            $data->end_date = $end_date;
+            $data->save();
+            $trans_cashbox = $data->trans_cashbox ? $data->trans_cashbox : new TransCashbox();
+            $trans_cashbox->cashbox = $request->cashbox;
+            $trans_cashbox->pengeluaran_cashbox = $request->pengeluaran_cashbox;
+            $trans_cashbox->description = $request->description;
 
-                $data_all = TransOrder::with('payment_method')->where('status', TransOrder::DONE)
-                    ->where('tenant_id', $user->tenant_id)
-                    ->where('casheer_id', $user->id)
-                    ->whereBetween('created_at', [$data->start_date, $data->end_date])
-                    ->get();
-                $total_order = $data_all;
-                $total_order = $total_order->where('payment_method.code_name', 'cash');
-                $total_order = $total_order->sum('sub_total') + $total_order->sum('addon_total');
+            $data_all = TransOrder::with('payment_method')->where('status', TransOrder::DONE)
+                ->where('tenant_id', $user->tenant_id)
+                ->where('casheer_id', $user->id)
+                ->whereBetween('created_at', [$data->start_date, $data->end_date])
+                ->get();
+            $total_order = $data_all;
+            $total_order = $total_order->where('payment_method.code_name', 'cash');
+            $total_order = $total_order->sum('sub_total') + $total_order->sum('addon_total');
 
-                $trans_cashbox->rp_cash = $total_order;
-                $trans_cashbox->different_cashbox = $request->cashbox - $total_order - $request->pengeluaran_cashbox;
-                $trans_cashbox->input_cashbox_date = Carbon::now();
+            $trans_cashbox->rp_cash = $total_order;
+            $trans_cashbox->different_cashbox = $request->cashbox - $total_order - $request->pengeluaran_cashbox;
+            $trans_cashbox->input_cashbox_date = Carbon::now();
 
-                $rp_va_bri = $data_all;
-                $rp_va_bri = $rp_va_bri->where('payment_method.code_name', 'pg_va_bri');
-                $rp_va_bri = $rp_va_bri->sum('sub_total') + $rp_va_bri->sum('addon_total');
-                $trans_cashbox->rp_dd_bri = $rp_va_bri;
+            $rp_va_bri = $data_all;
+            $rp_va_bri = $rp_va_bri->where('payment_method.code_name', 'pg_va_bri');
+            $rp_va_bri = $rp_va_bri->sum('sub_total') + $rp_va_bri->sum('addon_total');
+            $trans_cashbox->rp_dd_bri = $rp_va_bri;
 
-                $rp_dd_bri = $data_all;
-                $rp_dd_bri = $rp_dd_bri->where('payment_method.code_name', 'pg_dd_bri');
-                $rp_dd_bri = $rp_dd_bri->sum('sub_total') + $rp_dd_bri->sum('addon_total');
-                $trans_cashbox->rp_dd_bri = $rp_dd_bri;
+            $rp_dd_bri = $data_all;
+            $rp_dd_bri = $rp_dd_bri->where('payment_method.code_name', 'pg_dd_bri');
+            $rp_dd_bri = $rp_dd_bri->sum('sub_total') + $rp_dd_bri->sum('addon_total');
+            $trans_cashbox->rp_dd_bri = $rp_dd_bri;
 
-                $rp_va_mandiri = $data_all;
-                $rp_va_mandiri = $rp_va_mandiri->where('payment_method.code_name', 'pg_va_mandiri');
-                $rp_va_mandiri = $rp_va_mandiri->sum('sub_total') + $rp_va_mandiri->sum('addon_total');
-                $trans_cashbox->rp_va_mandiri = $rp_va_mandiri;
+            $rp_va_mandiri = $data_all;
+            $rp_va_mandiri = $rp_va_mandiri->where('payment_method.code_name', 'pg_va_mandiri');
+            $rp_va_mandiri = $rp_va_mandiri->sum('sub_total') + $rp_va_mandiri->sum('addon_total');
+            $trans_cashbox->rp_va_mandiri = $rp_va_mandiri;
 
-                $rp_dd_mandiri = $data_all;
-                $rp_dd_mandiri = $rp_dd_mandiri->where('payment_method.code_name', 'pg_dd_mandiri');
-                $rp_dd_mandiri = $rp_dd_mandiri->sum('sub_total') + $rp_dd_mandiri->sum('addon_total');
-                $trans_cashbox->rp_dd_mandiri = $rp_dd_mandiri;
+            $rp_dd_mandiri = $data_all;
+            $rp_dd_mandiri = $rp_dd_mandiri->where('payment_method.code_name', 'pg_dd_mandiri');
+            $rp_dd_mandiri = $rp_dd_mandiri->sum('sub_total') + $rp_dd_mandiri->sum('addon_total');
+            $trans_cashbox->rp_dd_mandiri = $rp_dd_mandiri;
 
-                $rp_va_bni = $data_all;
-                $rp_va_bni = $rp_va_bni->where('payment_method.code_name', 'pg_va_bni');
-                $rp_va_bni = $rp_va_bni->sum('sub_total') + $rp_va_bni->sum('addon_total');
-                $trans_cashbox->rp_va_bni = $rp_va_bni;
+            $rp_va_bni = $data_all;
+            $rp_va_bni = $rp_va_bni->where('payment_method.code_name', 'pg_va_bni');
+            $rp_va_bni = $rp_va_bni->sum('sub_total') + $rp_va_bni->sum('addon_total');
+            $trans_cashbox->rp_va_bni = $rp_va_bni;
 
-                $rp_tav_qr = $data_all;
-                $rp_tav_qr = $rp_tav_qr->where('payment_method.code_name', 'tav_qr');
-                $rp_tav_qr = $rp_tav_qr->sum('sub_total') + $rp_tav_qr->sum('addon_total');
-                $trans_cashbox->rp_tav_qr = $rp_tav_qr;
+            $rp_tav_qr = $data_all;
+            $rp_tav_qr = $rp_tav_qr->where('payment_method.code_name', 'tav_qr');
+            $rp_tav_qr = $rp_tav_qr->sum('sub_total') + $rp_tav_qr->sum('addon_total');
+            $trans_cashbox->rp_tav_qr = $rp_tav_qr;
 
-                $rp_link_aja = $data_all;
-                $rp_link_aja = $rp_link_aja->where('payment_method.code_name', 'pg_link_aja');
-                $rp_link_aja = $rp_link_aja->sum('sub_total') + $rp_link_aja->sum('addon_total');
-                $trans_cashbox->rp_link_aja = $rp_link_aja;
+            $rp_link_aja = $data_all;
+            $rp_link_aja = $rp_link_aja->where('payment_method.code_name', 'pg_link_aja');
+            $rp_link_aja = $rp_link_aja->sum('sub_total') + $rp_link_aja->sum('addon_total');
+            $trans_cashbox->rp_link_aja = $rp_link_aja;
 
-                $rp_edc = $data_all;
-                $rp_edc = $rp_edc->where('payment_method.code_name', 'edc');
-                $rp_edc = $rp_edc->sum('sub_total') + $rp_edc->sum('addon_total');
-                $trans_cashbox->rp_edc = $rp_edc;
+            $rp_edc = $data_all;
+            $rp_edc = $rp_edc->where('payment_method.code_name', 'edc');
+            $rp_edc = $rp_edc->sum('sub_total') + $rp_edc->sum('addon_total');
+            $trans_cashbox->rp_edc = $rp_edc;
 
-                $trans_cashbox->rp_addon_total = $data_all->sum('addon_total');
-                $trans_cashbox->rp_total = $data_all->sum('sub_total') + $trans_cashbox->rp_addon_total;
+            $trans_cashbox->rp_addon_total = $data_all->sum('addon_total');
+            $trans_cashbox->rp_total = $data_all->sum('sub_total') + $trans_cashbox->rp_addon_total;
 
-                $investor = $data_all->groupBy('sharing_code')->toArray();
-                // dd($investor);
-                $tempInvestor = [];
-                if ($investor) {
-
-
-                    foreach ($investor as $k => $v) {
-                        // dump($k);
-                        $arrk = json_decode($k);
-                        foreach ($arrk as $k2 => $v2) {
-                            // dump($v2);
-                            $temp = 0;
-                            foreach ($v as $k3 => $v3) {
-                                $value = json_decode($v3['sharing_amount']);
-                                // dump($value[$k2]);
-                                $temp += $value[$k2];
-                            }
-                            // dump($temp);
-                            $tempInvestor[] = [$v2 => $temp];
+            $investor = $data_all->whereNotNull('sharing_code')->groupBy('sharing_code')->toArray();
+            $tempInvestor = [];
+            if (count($investor) > 0) {
+                foreach ($investor as $k => $v) {
+                    // dump($k);
+                    $arrk = json_decode($k);
+                    foreach ($arrk as $k2 => $v2) {
+                        // dump($v2);
+                        $temp = 0;
+                        foreach ($v as $k3 => $v3) {
+                            $value = json_decode($v3['sharing_amount']);
+                            // dump($value[$k2]);
+                            $temp += $value[$k2];
                         }
+                        // dump($temp);
+                        $tempInvestor[] = [$v2 => $temp];
                     }
                 }
-                $trans_cashbox->sharing = json_encode($tempInvestor);
-                $trans_cashbox->save();
-
-                // cek jika sudah ada tidak ada kasir yang open selain user ini maka toko tenant di tutup
-                $cek = TransOperational::where('casheer_id', '!=', $user->id)
-                    ->where('tenant_id', $user->tenant_id)
-                    ->whereDay('start_date', '=', date('d'))
-                    ->whereMonth('start_date', '=', date('m'))
-                    ->whereYear('start_date', '=', date('Y'))
-                    ->whereNull('end_date')
-                    ->get();
-
-                if ($cek->count() <= 0) {
-                    $tenant = Tenant::find($user->tenant_id);
-                    $tenant->update(['is_open' => 0]);
-                }
-
-
-                DB::commit();
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'Close cashier successfully',
-                    'data' => TransCashbox::find($trans_cashbox->id)
-                ]);
-            } catch (\Throwable $th) {
-                DB::rollBack();
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Error ' . $th->getMessage()
-                ]);
             }
+            $trans_cashbox->sharing = json_encode($tempInvestor);
+            $trans_cashbox->save();
+
+            // cek jika sudah ada tidak ada kasir yang open selain user ini maka toko tenant di tutup
+            $cek = TransOperational::where('casheer_id', '!=', $user->id)
+                ->where('tenant_id', $user->tenant_id)
+                ->whereDay('start_date', '=', date('d'))
+                ->whereMonth('start_date', '=', date('m'))
+                ->whereYear('start_date', '=', date('Y'))
+                ->whereNull('end_date')
+                ->get();
+
+            if ($cek->count() <= 0) {
+                $tenant = Tenant::find($user->tenant_id);
+                $tenant->update(['is_open' => 0]);
+            }
+
+
+            DB::commit();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Close cashier successfully',
+                'data' => TransCashbox::find($trans_cashbox->id)
+            ]);
+            // } catch (\Throwable $th) {
+            //     DB::rollBack();
+            //     return response()->json([
+            //         'status' => 'error',
+            //         'message' => 'Error ' . $th->getMessage()
+            //     ]);
+            // }
         }
 
         return response()->json([
