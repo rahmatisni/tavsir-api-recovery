@@ -31,6 +31,7 @@ class SharingIndexResource extends JsonResource
             'waktu_selesai' => $this->waktu_selesai,
             'status' => $this->status,
             'status_code' => $this->status_code,
+            'deskripsi' => $this->deskripsi,
             'file' => $this->file ? asset($this->file) : null,
         ];
     }
