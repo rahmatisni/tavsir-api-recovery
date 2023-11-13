@@ -101,10 +101,10 @@ class SharingController extends Controller
 
         $tenant = Tenant::find($request->tenant_id);
         try {
-            $amount = array_sum(json_decode($request->sharing_config));
-            if ($amount !== 100) {
-                return response()->json(['status' => "error", 'message' => "Proposi tidak sesuai"], 422);
-            }
+            // $amount = json_decode($request->sharing_config);
+            // if (array_sum($amount) !== 100) {
+            //     return response()->json(['status' => "error", 'message' => "Proposi tidak sesuai"], 422);
+            // }
             $validator = Sharing::where('tenant_id', $request->tenant_id)->get();
             foreach ($validator as $value) {
 
