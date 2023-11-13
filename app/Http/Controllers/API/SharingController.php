@@ -102,7 +102,7 @@ class SharingController extends Controller
         $tenant = Tenant::find($request->tenant_id);
         try {
             $file = $request->file('file');
-            $mimeType = $file->getMimeType();
+            $mimeType = $file?->getMimeType() ?? null;
 
             if ($mimeType !== 'application/pdf') {
                 return response()->json(['status' => "error", 'message' => "Format tidak sesuai!"], 422);

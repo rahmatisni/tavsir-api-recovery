@@ -42,7 +42,7 @@ class Sharing extends BaseModel
     {
         $file = request()->file('file');
         if (is_file($file)) {
-            $file = request()->file('file')->store('public/PKS'.request()->document_type);
+            $file = request()->file('file')->store('public/PKS/'.request()->document_type);
             if (file_exists($this->file)) {
                 unlink($this->file);
             }
