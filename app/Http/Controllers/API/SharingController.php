@@ -107,7 +107,7 @@ class SharingController extends Controller
                 return response()->json(['status' => "error", 'message' => "Waktu Mulai PKS tidak boleh kurang dari waktu saat ini!"], 422);
             }
             if (!$pdfFile) {
-                return response()->json(['status' => "error", 'message' => "Format tidak ssesuai!"], 422);
+                return response()->json(['status' => "error", 'message' => "Format tidak sesuai!"], 422);
             }
             $validator = Sharing::where('tenant_id', $request->tenant_id)->get();
             foreach ($validator as $value) {
