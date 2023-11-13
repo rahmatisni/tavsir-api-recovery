@@ -98,9 +98,13 @@ class SharingController extends Controller
     }
     public function store(SharingRequest $request)
     {
-        // 'status' => 'required|in:sedang_berjalan,belum_berjalan,sudah_berakhir',
+
         $tenant = Tenant::find($request->tenant_id);
         try {
+            $amount = array_sum(json_decode($request->sharing_config));
+            if ($amount !== 100) {
+                return response()->json(['status' => "error", 'message' => "Proposi tidak sesuai"], 422);
+            }
             $validator = Sharing::where('tenant_id', $request->tenant_id)->get();
             foreach ($validator as $value) {
 
@@ -111,6 +115,7 @@ class SharingController extends Controller
                     $value->update(['status' => 'sudah_berakhir']);
                 }
             }
+
 
             DB::beginTransaction();
             $data = new Sharing();
