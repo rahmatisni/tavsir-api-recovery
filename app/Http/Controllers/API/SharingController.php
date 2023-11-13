@@ -102,6 +102,7 @@ class SharingController extends Controller
         $tenant = Tenant::find($request->tenant_id);
         try {
             // $amount = json_decode($request->sharing_config);
+            // dd($amount);
             // if (array_sum($amount) !== 100) {
             //     return response()->json(['status' => "error", 'message' => "Proposi tidak sesuai"], 422);
             // }
