@@ -33,7 +33,7 @@ class SharingRequest extends FormRequest
             // 'waktu_mulai' => 'required|date|after_or_equal:now',
             // 'waktu_selesai' => 'required|date|after_or_equal:waktu_mulai',
             // 'status' => 'required|in:sedang_berjalan,belum_berjalan,sudah_berjalan',
-            'file' => 'nullable|max:5000',
+            'file' => 'nullable|max:5000|mimes:pdf',
         ];
     }
 
