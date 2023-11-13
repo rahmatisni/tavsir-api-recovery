@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class SharingShowResource extends JsonResource
 {
@@ -32,7 +33,9 @@ class SharingShowResource extends JsonResource
             'status' => $this->status,
             'status_code' => $this->status_code ?? '',
             'deskripsi' => $this->deskripsi,
-            'file' => $this->file ? asset($this->file) : null,
+            // 'file' => $this->file ? asset($this->file) : null,
+            'file' => $this->file ? url(Storage::url($this->file)) : null,
+
         ];
     }
 }
