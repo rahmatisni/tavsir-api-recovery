@@ -75,27 +75,29 @@ class RekapPendapatanController extends Controller
 
         $total_pendapatan = $total_pendapatan->sum('sub_total') + $total_addon->sum('addon_total');
         $total_addon = $total_addon->sum('addon_total');
-        $investor = $data_all->groupBy('sharing_code')->toArray();
-        // dd($investor);
+        $investor = $data_all->whereNotNull('sharing_code')->groupBy('sharing_code')->toArray();
+
+
         $tempInvestor = [];
-        foreach($investor as $k => $v) {
-            // dump($k);
-            $arrk = json_decode($k);
-            foreach($arrk as $k2 => $v2) {
-                // dump($v2);
-                $temp = 0;
-                foreach($v as $k3 => $v3) {
-                    $value = json_decode($v3['sharing_amount']);
-                    // dump($value[$k2]);
-                    $temp += $value[$k2];
+
+        if (count($investor) > 0) {
+            foreach ($investor as $k => $v) {
+                // dump($k);
+                $arrk = json_decode($k);
+                foreach ($arrk as $k2 => $v2) {
+                    // dump($v2);
+                    $temp = 0;
+                    foreach ($v as $k3 => $v3) {
+                        $value = json_decode($v3['sharing_amount']);
+                        // dump($value[$k2]);
+                        $temp += $value[$k2];
+                    }
+                    // dump($temp);
+                    $tempInvestor[] = [$v2 => $temp];
                 }
-                // dump($temp);
-                $tempInvestor[]= [$v2=>$temp];
             }
-
-           
-
         }
+
         $periode_berjalan = [
             'cashier_name' => $periode_berjalan->cashier->name ?? '',
             'start_date' => $periode_berjalan->start_date->format('Y-m-d H:i:s'),
