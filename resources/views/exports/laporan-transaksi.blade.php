@@ -35,6 +35,7 @@
             @foreach($record as $value)
             <tr>
                 <td>{{$value['tenant']}}</td>
+                <td>{{$value['waktu_transaksi']}}</td>
                 <td>{{$value['id_transaksi']}}</td>
                 <td>{{$value['total_product']}} item</td>
                 <td style="white-space: nowrap;">{{ $value['fee'] }}</td>
