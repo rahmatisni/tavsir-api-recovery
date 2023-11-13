@@ -30,8 +30,8 @@ class SharingRequest extends FormRequest
             'tenant_id' => 'required|exists:ref_tenant,id',
             'sharing_code' => 'required',
             'sharing_config' => 'required',
-            'waktu_mulai' => 'required|date|after_or_equal:now',
-            'waktu_selesai' => 'required|date|after_or_equal:waktu_mulai',
+            // 'waktu_mulai' => 'required|date|after_or_equal:now',
+            // 'waktu_selesai' => 'required|date|after_or_equal:waktu_mulai',
             // 'status' => 'required|in:sedang_berjalan,belum_berjalan,sudah_berjalan',
             'file' => 'nullable|max:5000',
         ];
