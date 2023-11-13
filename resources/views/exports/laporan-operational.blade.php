@@ -31,6 +31,7 @@
                 <th>Total Pendapatan Pembayaran Digital</th>
                 <th>Total Pendapatan Tunai</th>
                 <th>Nominal Uang Tunai</th>
+                <th>Total Addon</th>
                 <th>Nominal Koreksi</th>
                 <th>Selisih</th>
                 <th>Keterangan Koreksi</th>
