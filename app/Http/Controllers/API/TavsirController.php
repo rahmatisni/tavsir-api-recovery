@@ -47,6 +47,7 @@ use App\Models\CallbackLA;
 
 use App\Models\RestArea;
 use App\Models\Tenant;
+use App\Models\TenantLa;
 use App\Models\TransEdc;
 use App\Models\TransOrderArsip;
 use App\Models\TransPayment;
@@ -63,6 +64,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Maatwebsite\Excel\Concerns\ToArray;
 
 class TavsirController extends Controller
 {
@@ -1145,6 +1147,7 @@ class TavsirController extends Controller
                         "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id,
                     ];
 
+                    $data_la = TenantLa::where('tenant_id',$data->Tenant->id)->firstOrFail();
                     $res = LaJmto::qrCreate(
                         $payment_method->code,
                         $data->order_id,
@@ -1154,7 +1157,8 @@ class TavsirController extends Controller
                         $data->tenant->phone,
                         $data->tenant->email,
                         $data->nomor_name,
-                        $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
+                        $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id,
+                        $data_la
                     );
 
                     if (isset($res['status']) && $res['status'] == 'success') {
@@ -1817,9 +1821,11 @@ class TavsirController extends Controller
                 // Check the User-Agent header
                 // if (strpos($userAgent, 'PostmanRuntime/7.34.0') !== false) {
                 //     return response()->json(['status' => 'ERROR', 'payment_info' => 'Illegal Host Access!'],422);
-                // }            
+                // }  
+                $data_la = TenantLa::where('tenant_id',$data->tenant_id)->firstOrFail();          
                 $res = LAJmto::qrStatus(
-                    $data_payment['bill_id']
+                    $data_payment['bill_id'],
+                    $data_la
                 );
 
                 if (isset($res['status']) && $res['status'] == 'success') {

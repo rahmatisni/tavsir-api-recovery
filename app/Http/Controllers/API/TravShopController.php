@@ -30,6 +30,7 @@ use App\Models\PgJmto;
 use App\Models\Product;
 use App\Models\RestArea;
 use App\Models\Tenant;
+use App\Models\TenantLa;
 use App\Models\User;
 use App\Models\TransOrder;
 use App\Models\TransOrderDetil;
@@ -1443,6 +1444,8 @@ class TravShopController extends Controller
                         "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id,
                     ];
 
+                    $data_la = TenantLa::where('tenant_id',$data->Tenant->id)->firstOrFail();
+
                     $res = LaJmto::qrCreate(
                         $payment_method->code,
                         $data->order_id,
@@ -1452,7 +1455,8 @@ class TravShopController extends Controller
                         $data->tenant->phone,
                         $data->tenant->email,
                         $data->nomor_name,
-                        $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
+                        $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id,
+                        $data_la
                     );
 
                     if (isset($res['status']) && $res['status'] == 'success') {
@@ -1986,8 +1990,11 @@ class TravShopController extends Controller
             }
 
             if ($data->payment_method->code_name == 'pg_link_aja') {
+                $data_la = TenantLa::where('tenant_id',$data->Tenant->id)->firstOrFail();
+
                 $res = LAJmto::qrStatus(
-                    $data_payment['bill_id']
+                    $data_payment['bill_id'],
+                    $data_la
                 );
 
                 if (isset($res['status']) && $res['status'] == 'success') {

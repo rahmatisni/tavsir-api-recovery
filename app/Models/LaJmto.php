@@ -128,9 +128,8 @@ class LaJmto extends Model
 
     }
 
-    public static function qrCreate($sof_code, $bill_id, $bill_name, $amount, $desc, $phone, $email, $customer_name, $sub_merchant_id)
+    public static function qrCreate($sof_code, $bill_id, $bill_name, $amount, $desc, $phone, $email, $customer_name, $sub_merchant_id, $data_la)
     {
-        // dd($bill_id);
         $parts = explode("-", $bill_id);
 
         // Get the last element
@@ -142,12 +141,12 @@ class LaJmto extends Model
             "amount" =>str_pad($amount, 10, '0', STR_PAD_LEFT).'00',
             "city" => "Jakarta",
             "postalCode" => "12190",
-            "merchantName" => env('LA_MERCHANT_NAME'),
-            "merchantID" => env('LA_MERCHANT_ID'),
-            "merchantPan" => env('LA_MERCHANT_PAN'),
-            "merchantCriteria" => "UME",
+            "merchantName" => $data_la['merchant_name'] ?? env('LA_MERCHANT_NAME'),
+            "merchantID" =>  $data_la['merchant_id'] ?? env('LA_MERCHANT_ID'),
+            "merchantPan" =>  $data_la['merchant_pan'] ?? env('LA_MERCHANT_PAN'),
+            "merchantCriteria" =>  $data_la['merchant_criteria'] ?? "UME",
             "merchantTrxID" => str_replace('-', '', $lastElement),
-            "partnerMerchantID" => "12345678910", //tenant merchdant i
+            "partnerMerchantID" =>  $data_la['partner_mid'] ?? "12345678910", //tenant merchdant i
         ];
 
         
@@ -265,13 +264,21 @@ class LaJmto extends Model
         // return $response;
     }
 
-    public static function qrStatus($bill_id)
+    public static function qrStatus($bill_id, $data_la)
     {
         $parts = explode("-", $bill_id);
         // Get the last element
         $lastElement = end($parts);
         $payload = [
-            "merchantID" =>env('LA_MERCHANT_ID'),
+
+            // "merchantName" => $data_la['merchant_name'] ?? env('LA_MERCHANT_NAME'),
+            // "merchantID" =>  $data_la['merchant_id'] ?? env('LA_MERCHANT_ID'),
+            // "merchantPan" =>  $data_la['merchant_pan'] ?? env('LA_MERCHANT_PAN'),
+            // "merchantCriteria" =>  $data_la['merchant_criteria'] ?? "UME",
+            // "merchantTrxID" => str_replace('-', '', $lastElement),
+            // "partnerMerchantID" =>  $data_la['partner_mid'] ?? "12345678910", //tenant merchdant i
+
+            "merchantID" =>  $data_la['merchant_id'] ?? env('LA_MERCHANT_ID'),
             "merchantTrxID" =>$lastElement
         ];
         
