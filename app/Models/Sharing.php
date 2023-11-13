@@ -26,7 +26,7 @@ class Sharing extends BaseModel
     {
         $file = request()->file('file');
         if (is_file($file)) {
-            $file = request()->file('file')->store('images');
+            $file = request()->file('file')->store('pks');
             if (file_exists($this->file)) {
                 unlink($this->file);
             }
