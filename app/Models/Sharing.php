@@ -6,7 +6,11 @@ use App\Models\BaseModel;
 
 class Sharing extends BaseModel
 {
+    
     protected $table = 'ref_sharing';
+
+    public const PKS = 'PKS';
+    public const BUKTI_BAYAR = 'BUKTI BAYAR';
 
     protected $fillable = [
         'nama_pks',
@@ -38,7 +42,7 @@ class Sharing extends BaseModel
     {
         $file = request()->file('file');
         if (is_file($file)) {
-            $file = request()->file('file')->store('public/'.request()->document_type);
+            $file = request()->file('file')->store('public/PKS'.request()->document_type);
             if (file_exists($this->file)) {
                 unlink($this->file);
             }
