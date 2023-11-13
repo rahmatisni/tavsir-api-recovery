@@ -106,11 +106,12 @@ class SharingController extends Controller
             // if (array_sum($amount) !== 100) {
             //     return response()->json(['status' => "error", 'message' => "Proposi tidak sesuai"], 422);
             // }
+            if ($request->waktu_mulai < date((Carbon::now()->format('Y-m-d H:i:s')))) {
+                return response()->json(['status' => "error", 'message' => "Waktu Mulai PKS tidak boleh kurang dari waktu saat ini!"], 422);
+            }
             $validator = Sharing::where('tenant_id', $request->tenant_id)->get();
             foreach ($validator as $value) {
-                if ($request->waktu_mulai < date((Carbon::now()->format('Y-m-d H:i:s')))) {
-                    return response()->json(['status' => "error", 'message' => "Waktu Mulai PKS tidak boleh kurang dari waktu saat ini!"], 422);
-                }
+               
 
                 if ($value->waktu_selesai > $request->waktu_selesai) {
                     return response()->json(['status' => "error", 'message' => "Terdapat PKS yang masih berlaku"], 422);
