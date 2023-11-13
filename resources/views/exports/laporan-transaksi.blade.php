@@ -25,7 +25,7 @@
                 <th>Fee</th>
                 <th>Service Fee</th>
                 <th>Sub Total</th>
-                <th>Biaya Tambahan</th>
+                <th>Total Biaya Tambahan</th>
                 <th>Total</th>
                 <th>Metode Pembayaran</th>
                 <th>Jenis Transkasi</th>
