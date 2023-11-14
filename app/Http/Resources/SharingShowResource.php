@@ -35,6 +35,7 @@ class SharingShowResource extends JsonResource
             'deskripsi' => $this->deskripsi,
             // 'file' => $this->file ? asset($this->file) : null,
             'file' => $this->file ? url(Storage::url($this->file)) : null,
+            'created_at' => $this->created_at
 
         ];
     }

@@ -79,7 +79,7 @@ class SharingController extends Controller
         return $item;
         });
         
-        $sortedCollection = $collectionWithNewKey->sortBy('status_code');
+        $sortedCollection = $collectionWithNewKey->sortBy('status_code')->sortBy('waktu_mulai');
 
         return response()->json(SharingIndexResource::collection($sortedCollection));
     }
