@@ -124,6 +124,9 @@ class SharingController extends Controller
                 if ($value->waktu_mulai < $request->waktu_mulai && $request->waktu_mulai > date((Carbon::now()->format('Y-m-d H:i:s')))) {
                     $value->update(['status' => 'sudah_berakhir']);
                 }
+                if ($value->waktu_mulai < $request->waktu_mulai && $value->waktu_selesai > $request->waktu_selesai) {
+                    $value->update(['status' => 'sudah_berakhir']);
+                }
             }
 
 
