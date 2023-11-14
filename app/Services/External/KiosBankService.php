@@ -134,7 +134,7 @@ class KiosBankService
             'method' => $method,
             'path' => $path,
             'payload' => $payload,
-            'respons' => $http->json(),
+            'respons' => $http->json() ?? $http,
             // 'start' => $current_date_time,
             // 'end' => $current_date_times
         ]);

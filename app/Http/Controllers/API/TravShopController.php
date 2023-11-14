@@ -1326,7 +1326,7 @@ class TravShopController extends Controller
 
                     $respon = PgJmto::inquiryDD($payment_payload);
                     // log::info($respon);
-                    log::info('Response DD inquiry => ' . $respon);
+                    // log::info('Response DD inquiry => ' . $respon);
 
                     if ($respon->successful()) {
                         $res = $respon->json();
@@ -1400,7 +1400,7 @@ class TravShopController extends Controller
 
                     ];
                     $respon = PgJmto::inquiryDD($payment_payload);
-                    log::info($respon);
+                    // log::info($respon);
                     if ($respon->successful()) {
                         $res = $respon->json();
                         if ($res['status'] == 'ERROR') {

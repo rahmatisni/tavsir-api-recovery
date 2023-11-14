@@ -212,7 +212,7 @@ class PgJmto extends Model
         $res = self::service('POST', '/va/create', $payload);
 
         Log::info($payload);
-        Log::info('Va create res', $res->json());
+        Log::info('Va create res', $res->json() ?? 'ERROR'.$payload);
         return $res->json();
     }
 
@@ -268,7 +268,7 @@ class PgJmto extends Model
         }
 
         $res = self::service('POST', '/va/cekstatus', $payload);
-        Log::info(['Payload PG =>', $payload, 'Va status => ', $res->json()]);
+        Log::info(['Payload PG =>', $payload, 'Va status => ', $res->json() ?? 'ERROR']);
         return $res->json();
     }
 
@@ -562,7 +562,7 @@ class PgJmto extends Model
     public static function cardList($payload)
     {
         $res = self::service('POST', '/sof/cardlist', $payload);
-        Log::info('Card list', $res->json());
+        Log::info('Card list', $res->json() ?? 'ERROR');
         return $res;
     }
 
@@ -625,7 +625,7 @@ class PgJmto extends Model
         }
 
         $res = self::service('POST', '/sof/list', []);
-        Log::info('SOF list', $res->json());
+        Log::info('SOF list', $res->json() ?? 'ERROR');
         return $res;
     }
 
