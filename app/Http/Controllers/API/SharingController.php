@@ -72,7 +72,7 @@ class SharingController extends Controller
 
         });
 
-        $data = (auth()->user()->role == 'TENANT')? $data->where('tenant_id', auth()->user()->tenant_id)->sortBy('created_at')->orderBy('created_at', 'desc')->get():$data->orderBy('created_at', 'desc')->get();
+        $data = (auth()->user()->role == 'TENANT')? $data->where('tenant_id', auth()->user()->tenant_id)->sortBy('created_at')->orderBy('waktu_mulai', 'desc')->get():$data->orderBy('waktu_mulai', 'desc')->get();
         $collectionWithNewKey = $data->map(function ($item) {
         $item['status'] = $item['status'] === 'sudah_berakhir' ? 'sudah_berakhir': $this->cek_status($item['waktu_mulai'], $item['waktu_selesai'], $item['tenant_id']);
         $item['status_code'] = $item['status'] === 'sudah_berakhir' ? 3 : ($this->cek_status($item['waktu_mulai'], $item['waktu_selesai'], $item['tenant_id']) === 'sedang_berjalan' ? 1 : ($this->cek_status($item['waktu_mulai'], $item['waktu_selesai'], $item['tenant_id']) === 'sudah_berakhir' ? 3:2));
