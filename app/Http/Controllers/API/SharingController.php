@@ -70,8 +70,9 @@ class SharingController extends Controller
                     break;
             }
 
-        })->get();
+        });
 
+        $data = (auth()->user()->role == 'TENANT')? $data->where('tenant_id', auth()->user()->tenant_id)->get():$data->get();
         $collectionWithNewKey = $data->map(function ($item) {
         $item['status'] = $this->cek_status($item['waktu_mulai'], $item['waktu_selesai'], $item['tenant_id']);
         $item['status_code'] = $this->cek_status($item['waktu_mulai'], $item['waktu_selesai'], $item['tenant_id']) === 'sedang_berjalan' ? 1 : ($this->cek_status($item['waktu_mulai'], $item['waktu_selesai'], $item['tenant_id']) === 'sudah_berakhir' ? 3:2);
