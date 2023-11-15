@@ -28,6 +28,7 @@ class RekapTransOrderResource extends JsonResource
             'order_type_label' => $this->labelOrderType(),
             // 'sharing' => $this->asd(json_decode($this->sharing_code),json_decode($this->sharing_amount)),
             'sharing_code' => json_decode($this->sharing_code),
+            'sharing_proportion' => json_decode($this->sharing_proportion),
             'sharing_amount' => json_decode($this->sharing_amount),
         ];
     }

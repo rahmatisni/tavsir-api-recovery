@@ -291,6 +291,7 @@ class LaporanServices
                 'metode_pembayaran' => $value->payment_method->name ?? '',
                 'jenis_transaksi' => $value->labelOrderType(),
                 'sharing_code' => json_decode($value->sharing_code) ?? [],
+                'sharing_proportion' => json_decode($value->sharing_proportion) ?? [],
                 'sharing_amount' => json_decode($value->sharing_amount) ?? []
             ]);
         }
