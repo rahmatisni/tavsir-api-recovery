@@ -323,7 +323,7 @@ class SubscriptionController extends Controller
                 sendNotif($user->fcm_token, '❗Anda telah keluar dari Getpay❗', 'Lisensi anda telah dinonaktifkan!', $payload);
             }
 
-            $user->accessTokens()->delete();
+            // $user->accessTokens()->delete();
 
             $kasir->is_subscription = 0;
             $kasir->save();
