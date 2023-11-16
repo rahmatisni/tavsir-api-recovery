@@ -301,6 +301,8 @@ class LaporanServices
         $investor = $data->whereNotNull('sharing_code')->groupBy('sharing_code')->toArray();
         // dd($investor);
         $tempInvestor = [];
+        $resulttempInvestor = [];
+
         if (count($investor) > 0) {
             foreach ($investor as $k => $v) {
                 // dump($k);
@@ -317,24 +319,24 @@ class LaporanServices
                     $tempInvestor[] = [$v2 => $temp];
                 }
             }
+            foreach ($tempInvestor as $item) {
+                foreach ($item as $key => $value) {
+                    // Check if the key exists in the result array
+                    if (array_key_exists($key, $resulttempInvestor)) {
+                        // If the key exists, add the value to the existing sum
+                        $resulttempInvestor[$key] += $value;
+                    } else {
+                        // If the key does not exist, create a new entry in the result array
+                        $resulttempInvestor[$key] = $value;
+                    }
+                }
+            }
         }
         // $total_sharing = json_encode($tempInvestor);
 
 
-        $resulttempInvestor = [];
 
-        foreach ($tempInvestor as $item) {
-            foreach ($item as $key => $value) {
-                // Check if the key exists in the result array
-                if (array_key_exists($key, $resulttempInvestor)) {
-                    // If the key exists, add the value to the existing sum
-                    $resulttempInvestor[$key] += $value;
-                } else {
-                    // If the key does not exist, create a new entry in the result array
-                    $resulttempInvestor[$key] = $value;
-                }
-            }
-        }
+      
 
 
         $data = [

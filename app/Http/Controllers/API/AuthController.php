@@ -379,7 +379,30 @@ class AuthController extends Controller
             $trans_cashbox->rp_total = $data_all->sum('sub_total') + $trans_cashbox->rp_addon_total;
 
             $investor = $data_all->whereNotNull('sharing_code')->groupBy('sharing_code')->toArray();
+            // $tempInvestor = [];
+            // if (count($investor) > 0) {
+            //     foreach ($investor as $k => $v) {
+            //         // dump($k);
+            //         $arrk = json_decode($k);
+            //         foreach ($arrk as $k2 => $v2) {
+            //             // dump($v2);
+            //             $temp = 0;
+            //             foreach ($v as $k3 => $v3) {
+            //                 $value = json_decode($v3['sharing_amount']);
+            //                 // dump($value[$k2]);
+            //                 $temp += $value[$k2];
+            //             }
+            //             // dump($temp);
+            //             $tempInvestor[] = [$v2 => $temp];
+            //         }
+            //     }
+            // }
+
+
+
             $tempInvestor = [];
+            $resulttempInvestor = [];
+    
             if (count($investor) > 0) {
                 foreach ($investor as $k => $v) {
                     // dump($k);
@@ -396,8 +419,24 @@ class AuthController extends Controller
                         $tempInvestor[] = [$v2 => $temp];
                     }
                 }
+                foreach ($tempInvestor as $item) {
+                    foreach ($item as $key => $value) {
+                        // Check if the key exists in the result array
+                        if (array_key_exists($key, $resulttempInvestor)) {
+                            // If the key exists, add the value to the existing sum
+                            $resulttempInvestor[$key] += $value;
+                        } else {
+                            // If the key does not exist, create a new entry in the result array
+                            $resulttempInvestor[$key] = $value;
+                        }
+                    }
+                }
             }
-            $trans_cashbox->sharing = json_encode($tempInvestor);
+
+            
+
+
+            $trans_cashbox->sharing = json_encode($resulttempInvestor);
             $trans_cashbox->save();
 
             // cek jika sudah ada tidak ada kasir yang open selain user ini maka toko tenant di tutup

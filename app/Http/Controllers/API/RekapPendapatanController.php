@@ -78,7 +78,30 @@ class RekapPendapatanController extends Controller
         $investor = $data_all->whereNotNull('sharing_code')->groupBy('sharing_code')->toArray();
 
 
+        // $tempInvestor = [];
+
+        // if (count($investor) > 0) {
+        //     foreach ($investor as $k => $v) {
+        //         // dump($k);
+        //         $arrk = json_decode($k);
+        //         foreach ($arrk as $k2 => $v2) {
+        //             // dump($v2);
+        //             $temp = 0;
+        //             foreach ($v as $k3 => $v3) {
+        //                 $value = json_decode($v3['sharing_amount']);
+        //                 // dump($value[$k2]);
+        //                 $temp += $value[$k2];
+        //             }
+        //             // dump($temp);
+        //             $tempInvestor[] = [$v2 => $temp];
+        //         }
+        //     }
+        // }
+
+
+
         $tempInvestor = [];
+        $resulttempInvestor = [];
 
         if (count($investor) > 0) {
             foreach ($investor as $k => $v) {
@@ -96,7 +119,20 @@ class RekapPendapatanController extends Controller
                     $tempInvestor[] = [$v2 => $temp];
                 }
             }
+            foreach ($tempInvestor as $item) {
+                foreach ($item as $key => $value) {
+                    // Check if the key exists in the result array
+                    if (array_key_exists($key, $resulttempInvestor)) {
+                        // If the key exists, add the value to the existing sum
+                        $resulttempInvestor[$key] += $value;
+                    } else {
+                        // If the key does not exist, create a new entry in the result array
+                        $resulttempInvestor[$key] = $value;
+                    }
+                }
+            }
         }
+
 
         $periode_berjalan = [
             'cashier_name' => $periode_berjalan->cashier->name ?? '',
@@ -116,7 +152,7 @@ class RekapPendapatanController extends Controller
             'edc' => $edc,
             'total_addon' => $total_addon,
             'total_pendapatan' => $total_pendapatan,
-            'list_investor' => $tempInvestor,
+            'list_investor' => $resulttempInvestor,
             'detil' => RekapTransOrderResource::collection($data_all)
         ];
 
