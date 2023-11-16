@@ -265,6 +265,12 @@ class TravShopController extends Controller
                 $data->sharing_amount = $sharing_amount ?? null;
                 $data->sharing_proportion = $sharing->sharing_config ?? null;
             }
+            else {
+                $data->sharing_code = [(string) $request->tenant_id];
+                $data->sharing_amount = [100];
+                $data->sharing_proportion = [$data->sub_total + (int) ($data->addon_total)];
+            }
+            
             $data->status = TransOrder::WAITING_CONFIRMATION_TENANT;
             $data->save();
             $data->detil()->saveMany($order_detil_many);
@@ -413,6 +419,11 @@ class TravShopController extends Controller
                 $data->sharing_code = $sharing->sharing_code ?? null;
                 $data->sharing_amount = $sharing_amount ?? null;
                 $data->sharing_proportion = $sharing->sharing_config ?? null;
+            }
+            else {
+                $data->sharing_code = [(string) $request->tenant_id];
+                $data->sharing_amount = [100];
+                $data->sharing_proportion = [$data->sub_total + (int) ($data->addon_total)];
             }
             switch ($tenant->in_selforder) {
                 case 1:
