@@ -35,12 +35,12 @@ class LaporanServices
                         ]
                     );
                 })->when($tenant_id, function ($qq) use ($tenant_id) {
-                    return $qq->where('tenant_id', $tenant_id);
-                })->when($rest_area_id, function ($qq) use ($rest_area_id) {
-                    return $qq->where('rest_area_id', $rest_area_id);
-                })->when($business_id, function ($qq) use ($business_id) {
-                    return $qq->where('business_id', $business_id);
-                });
+                return $qq->where('tenant_id', $tenant_id);
+            })->when($rest_area_id, function ($qq) use ($rest_area_id) {
+                return $qq->where('rest_area_id', $rest_area_id);
+            })->when($business_id, function ($qq) use ($business_id) {
+                return $qq->where('business_id', $business_id);
+            });
         })->with('product.category')->get()
             ->groupBy('product.category.name');
 
@@ -143,12 +143,12 @@ class LaporanServices
                             ]
                         );
                     })->when($tenant_id, function ($qq) use ($tenant_id) {
-                        return $qq->where('tenant_id', $tenant_id);
-                    })->when($rest_area_id, function ($qq) use ($rest_area_id) {
-                        return $qq->where('rest_area_id', $rest_area_id);
-                    })->when($business_id, function ($qq) use ($business_id) {
-                        return $qq->where('business_id', $business_id);
-                    });
+                    return $qq->where('tenant_id', $tenant_id);
+                })->when($rest_area_id, function ($qq) use ($rest_area_id) {
+                    return $qq->where('rest_area_id', $rest_area_id);
+                })->when($business_id, function ($qq) use ($business_id) {
+                    return $qq->where('business_id', $business_id);
+                });
             }
         )->get();
         if ($data->count() == 0) {
@@ -174,7 +174,8 @@ class LaporanServices
         $rest_area_id = $request->rest_area_id;
         $business_id = $request->business_id;
 
-        $data = TransOrder::Done()->when(($tanggal_awal && $tanggal_akhir),
+        $data = TransOrder::Done()->when(
+            ($tanggal_awal && $tanggal_akhir),
             function ($q) use ($tanggal_awal, $tanggal_akhir) {
                 return $q->whereBetween(
                     'created_at',
@@ -188,10 +189,10 @@ class LaporanServices
             ->when($tenant_id, function ($q) use ($tenant_id) {
                 return $q->where('tenant_id', $tenant_id);
             })->when($rest_area_id, function ($qq) use ($rest_area_id) {
-                return $qq->where('rest_area_id', $rest_area_id);
-            })->when($business_id, function ($qq) use ($business_id) {
-                return $qq->where('business_id', $business_id);
-            })
+            return $qq->where('rest_area_id', $rest_area_id);
+        })->when($business_id, function ($qq) use ($business_id) {
+            return $qq->where('business_id', $business_id);
+        })
             ->with('payment_method')->get()
             ->groupBy('payment_method.name');
 
@@ -241,7 +242,8 @@ class LaporanServices
         $payment_method_id = $request->payment_method_id;
 
         $data = TransOrder::with('tenant')->done()
-            ->when(($tanggal_awal && $tanggal_akhir),
+            ->when(
+                ($tanggal_awal && $tanggal_akhir),
                 function ($q) use ($tanggal_awal, $tanggal_akhir) {
                     return $q->whereBetween(
                         'created_at',
@@ -255,14 +257,14 @@ class LaporanServices
             ->when($tenant_id, function ($q) use ($tenant_id) {
                 return $q->where('tenant_id', $tenant_id);
             })->when($rest_area_id, function ($qq) use ($rest_area_id) {
-                return $qq->where('rest_area_id', $rest_area_id);
-            })->when($business_id, function ($qq) use ($business_id) {
-                return $qq->where('business_id', $business_id);
-            })->when($order_type, function ($qq) use ($order_type) {
-                return $qq->where('order_type', $order_type);
-            })->when($payment_method_id, function ($qq) use ($payment_method_id) {
-                return $qq->where('payment_method_id', $payment_method_id);
-            })
+            return $qq->where('rest_area_id', $rest_area_id);
+        })->when($business_id, function ($qq) use ($business_id) {
+            return $qq->where('business_id', $business_id);
+        })->when($order_type, function ($qq) use ($order_type) {
+            return $qq->where('order_type', $order_type);
+        })->when($payment_method_id, function ($qq) use ($payment_method_id) {
+            return $qq->where('payment_method_id', $payment_method_id);
+        })
             ->orderBy('created_at')
             ->get();
         if ($data->count() == 0) {
@@ -297,25 +299,43 @@ class LaporanServices
         }
 
         $investor = $data->whereNotNull('sharing_code')->groupBy('sharing_code')->toArray();
-            $tempInvestor = [];
-            if (count($investor) > 0) {
-                foreach ($investor as $k => $v) {
-                    // dump($k);
-                    $arrk = json_decode($k);
-                    foreach ($arrk as $k2 => $v2) {
-                        // dump($v2);
-                        $temp = 0;
-                        foreach ($v as $k3 => $v3) {
-                            $value = json_decode($v3['sharing_amount']);
-                            // dump($value[$k2]);
-                            $temp += $value[$k2];
-                        }
-                        // dump($temp);
-                        $tempInvestor[] = [$v2 => $temp];
+        // dd($investor);
+        $tempInvestor = [];
+        if (count($investor) > 0) {
+            foreach ($investor as $k => $v) {
+                // dump($k);
+                $arrk = json_decode($k);
+                foreach ($arrk as $k2 => $v2) {
+                    // dump($v2);
+                    $temp = 0;
+                    foreach ($v as $k3 => $v3) {
+                        $value = json_decode($v3['sharing_amount']);
+                        // dump($value[$k2]);
+                        $temp += $value[$k2];
                     }
+                    // dump($temp);
+                    $tempInvestor[] = [$v2 => $temp];
                 }
             }
-            $total_sharing = json_encode($tempInvestor);
+        }
+        // $total_sharing = json_encode($tempInvestor);
+
+
+        $resulttempInvestor = [];
+
+        foreach ($tempInvestor as $item) {
+            foreach ($item as $key => $value) {
+                // Check if the key exists in the result array
+                if (array_key_exists($key, $resulttempInvestor)) {
+                    // If the key exists, add the value to the existing sum
+                    $resulttempInvestor[$key] += $value;
+                } else {
+                    // If the key does not exist, create a new entry in the result array
+                    $resulttempInvestor[$key] = $value;
+                }
+            }
+        }
+
 
         $data = [
             'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
@@ -327,7 +347,7 @@ class LaporanServices
             'fee' => $data->sum('fee'),
             'service_fee' => $data->sum('service_fee'),
             'total_total' => $data->sum('total'),
-            'sharing' => json_decode($total_sharing) ?? [],
+            'sharing' => $resulttempInvestor ?? [],
             'record' => $hasil
 
         ];
