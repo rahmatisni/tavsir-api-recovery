@@ -296,6 +296,27 @@ class LaporanServices
             ]);
         }
 
+        $investor = $data->whereNotNull('sharing_code')->groupBy('sharing_code')->toArray();
+            $tempInvestor = [];
+            if (count($investor) > 0) {
+                foreach ($investor as $k => $v) {
+                    // dump($k);
+                    $arrk = json_decode($k);
+                    foreach ($arrk as $k2 => $v2) {
+                        // dump($v2);
+                        $temp = 0;
+                        foreach ($v as $k3 => $v3) {
+                            $value = json_decode($v3['sharing_amount']);
+                            // dump($value[$k2]);
+                            $temp += $value[$k2];
+                        }
+                        // dump($temp);
+                        $tempInvestor[] = [$v2 => $temp];
+                    }
+                }
+            }
+            $total_sharing = json_encode($tempInvestor);
+
         $data = [
             'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
             'tanggal_awal' => $tanggal_awal ?? 'Semua Tanggal',
@@ -306,7 +327,8 @@ class LaporanServices
             'fee' => $data->sum('fee'),
             'service_fee' => $data->sum('service_fee'),
             'total_total' => $data->sum('total'),
-            'record' => $hasil,
+            'sharing' => json_decode($total_sharing) ?? [],
+            'record' => $hasil
 
         ];
 
