@@ -100,6 +100,8 @@ class TavsirController extends Controller
         return response()->json(BaseResource::collection($data));
     }
 
+
+
     public function productSupertenantList(Request $request)
     {
         $data = Product::bySupertenant()->byType(ProductType::PRODUCT)->with('tenant')->when($filter = $request->filter, function ($q) use ($filter) {
@@ -637,11 +639,11 @@ class TavsirController extends Controller
             //     $data->sharing_proportion = $tenant->sharing_config ?? null;
             // }
 
-             // ======OLD======
+            // ======OLD======
             $now = Carbon::now()->format('Y-m-d H:i:s');
-            $sharing = Sharing::where('tenant_id', auth()->user()->tenant_id)->whereIn('status', ['sedang_berjalan','belum_berjalan'])
-            ->where('waktu_mulai', '<=', $now)
-            ->where('waktu_selesai', '>=', $now)->first();
+            $sharing = Sharing::where('tenant_id', auth()->user()->tenant_id)->whereIn('status', ['sedang_berjalan', 'belum_berjalan'])
+                ->where('waktu_mulai', '<=', $now)
+                ->where('waktu_selesai', '>=', $now)->first();
             if ($sharing?->sharing_config) {
                 $nilai_sharing = json_decode($sharing->sharing_config);
                 foreach ($nilai_sharing as $value) {
@@ -689,7 +691,7 @@ class TavsirController extends Controller
             ->where('tenant_id', '=', auth()->user()->tenant_id)
             ->where('order_type', '=', TransOrder::POS)
             // ->where('status', '=', TransOrder::CART)
-            ->whereIn('status',[TransOrder::CART, TransOrder::WAITING_PAYMENT])
+            ->whereIn('status', [TransOrder::CART, TransOrder::WAITING_PAYMENT])
             ->get();
 
         $deleteDetail = TransOrderDetil::whereIn('trans_order_id', $request->id)->delete();
@@ -1147,7 +1149,7 @@ class TavsirController extends Controller
                         "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id,
                     ];
 
-                    $data_la = TenantLa::where('tenant_id',$data->Tenant->id)->firstOrFail();
+                    $data_la = TenantLa::where('tenant_id', $data->Tenant->id)->firstOrFail();
                     $res = LaJmto::qrCreate(
                         $payment_method->code,
                         $data->order_id,
@@ -1822,7 +1824,7 @@ class TavsirController extends Controller
                 // if (strpos($userAgent, 'PostmanRuntime/7.34.0') !== false) {
                 //     return response()->json(['status' => 'ERROR', 'payment_info' => 'Illegal Host Access!'],422);
                 // }  
-                $data_la = TenantLa::where('tenant_id',$data->tenant_id)->firstOrFail();          
+                $data_la = TenantLa::where('tenant_id', $data->tenant_id)->firstOrFail();
                 $res = LAJmto::qrStatus(
                     $data_payment['bill_id'],
                     $data_la
@@ -1843,7 +1845,7 @@ class TavsirController extends Controller
                         if ($data->order_type === TransOrder::POS) {
                             $data->status = TransOrder::DONE;
                         }
-                        if ($data->order_type === TransOrder::ORDER_SELF_ORDER || TransOrder::ORDER_TAKE_N_GO){
+                        if ($data->order_type === TransOrder::ORDER_SELF_ORDER || TransOrder::ORDER_TAKE_N_GO) {
                             $fcm_token = User::where([['id', $data->casheer_id]])->get();
                             $ids = array();
                             foreach ($fcm_token as $val) {
@@ -1856,7 +1858,7 @@ class TavsirController extends Controller
                                     'type' => 'click',
                                     'action' => 'payment_success'
                                 );
-                                $result = sendNotif($ids, '💰Pesanan Telah Dibayar', 'Yuukk segera siapkan pesanan atas transaksi'.$data->order_id, $payload);
+                                $result = sendNotif($ids, '💰Pesanan Telah Dibayar', 'Yuukk segera siapkan pesanan atas transaksi' . $data->order_id, $payload);
                             }
                         }
                         $data->save();
@@ -1961,7 +1963,7 @@ class TavsirController extends Controller
         $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer', 'trans_edc.bank')
             ->when($status = request()->status, function ($q) use ($status) {
                 if (is_array($status)) {
-                    $q->whereIn('status', $status)->orwhereIn('status', json_decode($status[0])??[]);
+                    $q->whereIn('status', $status)->orwhereIn('status', json_decode($status[0]) ?? []);
                 } else {
                     $q->where('status', $status);
                 }
@@ -1992,7 +1994,7 @@ class TavsirController extends Controller
             // ->when(auth()->user()->role == 'CASHIER', function ($q) use ($identifier) {
             //     $q->where('casheer_id', $identifier);
             // });
-             ->when(auth()->user()->role == 'CASHIER', function ($q) use ($identifier) {
+            ->when(auth()->user()->role == 'CASHIER', function ($q) use ($identifier) {
                 $q->where('casheer_id', $identifier);
                 // $q->where(function ($q) use ($identifier) {
                 //     $q->where('casheer_id', $identifier)->Orwhere('casheer_id',NULL);
@@ -2019,7 +2021,7 @@ class TavsirController extends Controller
         $queryOrder .= "ELSE 9 END";
 
         $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer', 'trans_edc.bank')
-        ->where('tenant_id',auth()->user()->tenant_id)
+            ->where('tenant_id', auth()->user()->tenant_id)
             ->when($status = request()->status, function ($q) use ($status) {
                 if (is_array($status)) {
                     // $jsonArray = str_replace(['[', ']', '"'], '', $status);
@@ -2058,9 +2060,9 @@ class TavsirController extends Controller
             ->when(auth()->user()->role == 'CASHIER', function ($q) use ($identifier) {
                 // $q->where('casheer_id', $identifier);
                 $q->where(function ($q) use ($identifier) {
-                    $q->where('casheer_id', $identifier)->Orwhere('casheer_id',NULL);
+                    $q->where('casheer_id', $identifier)->Orwhere('casheer_id', NULL);
                 });
-                
+
             });
 
         $data = $data->orderByRaw($queryOrder)->orderBy('created_at', 'DESC')->get();
@@ -2324,14 +2326,14 @@ class TavsirController extends Controller
     {
         log::info('Callback LA');
 
-        $trans = TransOrder::where('order_id', 'like', '%'.$request->msg)->first();
-        log::info([$trans,$request]);
+        $trans = TransOrder::where('order_id', 'like', '%' . $request->msg)->first();
+        log::info([$trans, $request]);
 
-        if(!$trans){
+        if (!$trans) {
             $datax = [
-                "responseCode"=>"03",
-                "transactionID"=>$request->msg,
-                "notificationMessage"=>"Dont Try Bro!"
+                "responseCode" => "03",
+                "transactionID" => $request->msg,
+                "notificationMessage" => "Dont Try Bro!"
             ];
             return response($datax, 422);
         }
@@ -2351,5 +2353,27 @@ class TavsirController extends Controller
         ];
         return response()->json($datax);
 
+    }
+
+    public function orderIdentifier(Request $request, $id)
+    {
+        try {
+
+            DB::beginTransaction();
+            $data = TransOrder::findOrfail($request->id);
+            $data->nomor_name = $request->nomor_name;
+            $data->consume_type = $request->consume_type;
+            $data->save();
+            DB::commit();
+            return response()->json([
+                'message' => 'Sukses',
+                'data' => $data
+            ]);
+
+        } catch (\Throwable $th) {
+            DB::rollback();
+            Log::error($th);
+            return response()->json(['error' => $th->getMessage()], 500);
+        }
     }
 }

@@ -167,6 +167,9 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/payment-status/{id}', [App\Http\Controllers\API\TavsirController::class, 'statusPayment']);
         // Route::post('/CallbackLinkAjaQRIS', [App\Http\Controllers\API\TavsirController::class, 'CallbackLinkAjaQRIS']);
         Route::post('/refund/{id}', [App\Http\Controllers\API\TavsirController::class, 'orderRefund']);
+        Route::post('/identify/{id}', [App\Http\Controllers\API\TavsirController::class, 'orderIdentifier']);
+
+        
 
 
 
