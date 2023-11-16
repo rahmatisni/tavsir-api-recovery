@@ -169,11 +169,6 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/refund/{id}', [App\Http\Controllers\API\TavsirController::class, 'orderRefund']);
         Route::post('/identify/{id}', [App\Http\Controllers\API\TavsirController::class, 'orderIdentifier']);
 
-        
-
-
-
-
         Route::apiResource('customize', App\Http\Controllers\API\CustomizeController::class);
         Route::post('/order-change-status/{id}', [App\Http\Controllers\API\TavsirController::class, 'changeStatusOrder']);
         Route::get('/invoice', [App\Http\Controllers\API\InvoiceController::class, 'index']);

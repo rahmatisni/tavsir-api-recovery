@@ -46,10 +46,10 @@ class SubscriptionController extends Controller
         $data = Subscription::when($business_id = request()->business_id, function ($q) use ($business_id) {
             return $q->where('business_id', $business_id);
         })
-        ->mySortOrder(request())
-        ->orderByRaw($queryOrder)
-        ->get();
-    
+            ->mySortOrder(request())
+            ->orderByRaw($queryOrder)
+            ->get();
+
         $record = [
             'total_data' => $data->count(),
             'total_active' => $data->where('status_aktivasi', Subscription::AKTIF)->count(),
@@ -137,7 +137,7 @@ class SubscriptionController extends Controller
         $tenant_aktif = $data->where('is_subscription', 1)->count();
 
         $kuota_kasir = $limit->where('status_aktivasi', Subscription::AKTIF)->sum('limit_cashier');
-        $kasir_aktif = User::where('role', User::CASHIER)->where('is_subscription',1)->whereIn('tenant_id', $data->pluck('id')->toArray())->count();
+        $kasir_aktif = User::where('role', User::CASHIER)->where('is_subscription', 1)->whereIn('tenant_id', $data->pluck('id')->toArray())->count();
         $all_limit_kasir_tneant = $data->sum('kuota_kasir');
 
         $result = [
@@ -224,16 +224,14 @@ class SubscriptionController extends Controller
             $limit = Subscription::byOwner(auth()->user()->business_id)->get();
             $data = User::where('role', User::CASHIER)->where('tenant_id', $id)->get();
             $tenant_id = $id;
-        } 
-       
-        else {
+        } else {
             $limit = Subscription::byTenant(auth()->user()->tenant_id)->get();
             // dd(auth()->user());
             $data = User::where('role', User::CASHIER)->where('tenant_id', auth()->user()->tenant_id)->get();
             $tenant_id = auth()->user()->tenant_id;
         }
         $tenant = Tenant::findOrfail($tenant_id);
-        $kuota_aktif = $data->where('is_subscription',1)->count();
+        $kuota_aktif = $data->where('is_subscription', 1)->count();
         $kuota_belum_terpakai = ($tenant->kuota_kasir ?? 0) - $kuota_aktif;
         $result = [
             'tenant_name' => $tenant->name,
@@ -266,8 +264,8 @@ class SubscriptionController extends Controller
         if ($request->status == 'false') {
             //Cek toko open
             $is_tenant_open = TransOperational::where('tenant_id', $request->id)->whereNull('end_date')->count();
-            if($is_tenant_open > 0){
-                helperThrowErrorvalidation(['id' => 'Tenant ini terdapat '.$is_tenant_open.' toko yang beroperasi']);
+            if ($is_tenant_open > 0) {
+                helperThrowErrorvalidation(['id' => 'Tenant ini terdapat ' . $is_tenant_open . ' toko yang beroperasi']);
             }
             $aktivasi_tenant->is_subscription = 0;
             $aktivasi_tenant->kuota_kasir = 0;
@@ -307,13 +305,26 @@ class SubscriptionController extends Controller
         }
         if ($request->status == 'false') {
             $is_tenant_kasir_open = TransOperational::where('tenant_id', $kasir->tenant_id)
-            ->where('casheer_id', $kasir->id)
-            ->whereNull('end_date')
-            ->count();
-            
+                ->where('casheer_id', $kasir->id)
+                ->whereNull('end_date')
+                ->count();
+
             if($is_tenant_kasir_open > 0){
                 helperThrowErrorvalidation(['id' => 'Kasir sedang beroperasi']);
             }
+            $user = User::where('id', $kasir->id)->first();
+            // dd($user);
+
+            if ($user->fcm_token) {
+                $payload = array(
+                    'type' => 'click',
+                    'action' => 'relogin',
+                );
+                sendNotif($user->fcm_token, '❗Anda telah keluar dari Getpay❗', 'Lisensi anda telah dinonaktifkan!', $payload);
+            }
+
+            $user->accessTokens()->delete();
+
             $kasir->is_subscription = 0;
             $kasir->save();
             return response()->json(['message' => 'Unsubscription success']);
