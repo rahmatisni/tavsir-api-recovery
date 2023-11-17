@@ -178,7 +178,7 @@ class UserController extends Controller
         ->count();
 
         if($is_tenant_kasir_open > 0){
-            return response()->json(['Status'=>'Error', 'Message'=>'Kasir sedang beroperasi!']);
+            return response()->json(['Status'=>'Error', 'Message'=>'Kasir sedang beroperasi!'],422);
 
         }
         
