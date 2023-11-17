@@ -41,7 +41,7 @@ class TransStock extends BaseModel
 
     public function creator()
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class, 'created_by')->withTrashed();
     }
 
     public function getLatesStockAttribute()

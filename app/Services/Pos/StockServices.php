@@ -63,7 +63,11 @@ class StockServices
                 $q->whereHas('product', function ($qq) {
                     $qq->where('is_active', 1);
                 });
-            })
+            // })->when($created_by = $filter['created_by'] ?? '', function ($q) use ($created_by) {
+            //     $q->whereHas('product', function ($qq) use ($created_by) {
+            //         $qq->where('created_by', $created_by);
+            //     });
+        })
             ->orderByDesc('id')
             ->paginate();
     }

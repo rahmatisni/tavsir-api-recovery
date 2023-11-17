@@ -6,6 +6,7 @@ use App\Exports\UserExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserActivationRequest;
 use App\Models\User;
+use App\Models\TransOperational;
 use App\Http\Requests\UserRequest;
 use App\Models\Subscription;
 use Carbon\Carbon;
@@ -170,6 +171,17 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+
+        $is_tenant_kasir_open = TransOperational::
+        where('casheer_id', $user->id)
+        ->whereNull('end_date')
+        ->count();
+
+        if($is_tenant_kasir_open > 0){
+            return response()->json(['Status'=>'Error', 'Message'=>'Kasir sedang beroperasi!']);
+
+        }
+        
         $user->delete();
         return response()->json($user);
     }
