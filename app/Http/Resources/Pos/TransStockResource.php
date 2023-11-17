@@ -34,7 +34,7 @@ class TransStockResource extends JsonResource
             'lates_stock' => $this->lates_stock,
             'keterangan' => $this->keterangan,
             'created_at' => (string) $this->created_at,
-            'petugas' => $this->creator->name,
+            'petugas' => $this->creator->name ?? '-',
         ];
     }
 }

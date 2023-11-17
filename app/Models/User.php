@@ -5,9 +5,11 @@ namespace App\Models;
 use App\Models\Traits\SortOrder;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
+
 
 class User extends Authenticatable
 {
@@ -15,6 +17,7 @@ class User extends Authenticatable
     use HasFactory;
     use Notifiable;
     use SortOrder;
+    use SoftDeletes;
 
     public const SUPERADMIN = 'SUPERADMIN';
     public const ADMIN = 'ADMIN';
@@ -55,6 +58,7 @@ class User extends Authenticatable
         'status',
         'fcm_token'
     ];
+    protected $dates = ['deleted_at'];
 
     /**
      * The attributes that should be hidden for serialization.
