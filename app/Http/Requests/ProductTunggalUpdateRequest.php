@@ -32,6 +32,7 @@ class ProductTunggalUpdateRequest extends FormRequest
             'name' => 'required|string|max:50',
             'photo' => 'nullable|max:5000',
             'price' => 'required|numeric|min:0|max:999999999',
+            'price_capital' => 'numeric|min:0|max:999999999',
             'is_active' => 'required|boolean',
             'is_notification' => 'required|boolean',
             'stock_min' => 'required_if:is_composit,0||min:1|max:999999999',
@@ -47,7 +48,7 @@ class ProductTunggalUpdateRequest extends FormRequest
 
         if($product->is_composit == 1){
             $rule['raw'] = 'required|array';
-            $rule['raw.*.child_id'] = 'integer|exists:ref_product,id,type,'.ProductType::BAHAN_BAKU.',tenant_id,'.auth()->user()->tenant_id;
+            $rule['raw.*.child_id'] = 'integer|exists:ref_product,id,type,'.ProductType::BAHAN_BAKU.',tenant_id,'.auth()->user()->tenant_id.',deleted_at,NULL';
             $rule['raw.*.qty'] = 'integer|min:1|max:999';
         }
 

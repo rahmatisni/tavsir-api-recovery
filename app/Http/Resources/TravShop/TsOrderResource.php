@@ -58,8 +58,7 @@ class TsOrderResource extends JsonResource
                 $product_kios['handphone'] = $product[1];
                 if($product_kios_bank->integrator == 'JATELINDO'){
                     unset($product_kios['handphone']);
-                    $product_kios = array_merge($product_kios, JatelindoService::infoPelanggan($this->log_kiosbank->data['bit48'] ?? '', $this->status));
-                    $this->status == TransOrder::DONE ? $product_kios['token'] = ( $this->log_kiosbank->data['bit62'] ?? '') : '';
+                    $product_kios = array_merge($product_kios, JatelindoService::infoPelanggan($this->log_kiosbank, $this->status));
                 }
             }
             $temp = $this->log_kiosbank?->data['data'] ?? null;
@@ -175,6 +174,7 @@ class TsOrderResource extends JsonResource
             'tenant_is_open' => $this->tenant ? ($this->tenant->is_open == 1 ? true : false) : false,
             'order_id' => $this->order_id,
             'order_type' => $this->order_type,
+            'consume_type' => $this->consume_type,
             'customer_id' => $this->customer_id,
             'customer_name' => $this->customer_name,
             'customer_phone' => $this->customer_phone,

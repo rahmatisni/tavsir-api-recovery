@@ -66,6 +66,14 @@ class CategoryBahanBakuController extends Controller
      */
     public function destroy($id)
     {
-        return $this->response($this->service->delete($id));
+        // return $this->response($this->service->delete($id));
+        $data = $this->service->delete($id);
+        if($data == false){
+            return response()->json(['message' => 'Kategori tidak dapat dihapus karna sudah digunakan pada produk'], 422);
+        }
+        // return response()->json(['message' => 'Kategori bahan baku berhasil dihapus!'], 200);
+        return $this->response($data);
+
+
     }
 }

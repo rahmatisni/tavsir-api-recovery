@@ -24,7 +24,7 @@ class ProductBahanBakuController extends Controller
      */
     public function index(Request $request)
     {
-        return $this->responsePaginate(ProductRawResource::class, $this->service->list($request->search));
+        return $this->responsePaginate(ProductRawResource::class, $this->service->list($request->search, $request->filter));
     }
 
     /**

@@ -16,10 +16,12 @@ class LaporanOperationalResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'tenant_id' => $this->tenant_id,
+            'tenant_name' => $this->tenant->name ?? '',
             'periode' => $this->periode,
-            'waktu_buka' => $this->start_date,
-            'waktu_tutup' => $this->end_date,
-            'waktu_rekap' => $this->end_date,
+            'waktu_buka' => $this->start_date->format('Y-m-d H:i'),
+            'waktu_tutup' => $this->end_date->format('Y-m-d H:i'),
+            'waktu_rekap' => $this->end_date->format('Y-m-d H:i'),
             'kasir' => $this->cashier->name ?? '',
             'uang_kembalian' => $this->trans_cashbox->inital_cashbox ?? 0,
             'qr' => $this->trans_cashbox->rp_tav_qr ?? 0,

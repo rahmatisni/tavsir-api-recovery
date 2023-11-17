@@ -3,7 +3,9 @@
 namespace App\Services\Pos;
 
 use App\Models\Category;
+use App\Models\Product;
 use App\Models\Constanta\ProductType;
+
 
 class CategoryBahanBakuServices
 {
@@ -41,6 +43,10 @@ class CategoryBahanBakuServices
 
     public function delete($id)
     {
+        $data = Product::byType(ProductType::BAHAN_BAKU)->where('category_id', $id)->count();
+        if ($data > 0) {
+            return false;
+        }
         $data = $this->show($id);
         $data->delete();
         return true;

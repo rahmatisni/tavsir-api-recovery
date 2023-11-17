@@ -1,10 +1,10 @@
 <?php
 
 namespace App\Models;
-
 use App\Models\BaseModel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class Tenant extends BaseModel
 {
@@ -34,6 +34,7 @@ class Tenant extends BaseModel
         'is_open',
         'is_verified',
         'in_takengo',
+        'in_selforder',
         'created_by',
         'created_at',
         'updated_at',
@@ -41,7 +42,9 @@ class Tenant extends BaseModel
         'is_print',
         'is_scan',
         'is_composite',
-        'list_payment'
+        'list_payment',
+        'list_payment_bucket',
+        'url_self_order'
     ];
 
     public function setPhotoUrlAttribute($value)
@@ -140,4 +143,10 @@ class Tenant extends BaseModel
     {
         return $query->where('business_id', auth()->user()->business_id);
     }
+
+    public function scopeByTenant($query)
+    {
+        return $query->where('tenant_id', auth()->user()->tenant_id);
+    }
+
 }

@@ -68,7 +68,17 @@ class ProductTunggalController extends Controller
      */
     public function destroy($id)
     {
-        return $this->response($this->service->delete($id));
+        // return $this->response($this->service->delete($id));
+        $data = $this->service->delete($id);
+        if ($data === true){
+            return $this->response($data);
+        }
+        else {
+            return response()->json([
+                    'status' => 'error',
+                    'message' => $data
+                ], 422);
+        }
     }
 
     public function changeStatus($id)

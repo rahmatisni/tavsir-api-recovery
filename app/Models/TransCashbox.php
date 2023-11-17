@@ -29,6 +29,8 @@ class TransCashbox extends BaseModel
         'rp_cash',
         'rp_total',
         'rp_edc',
+        'sharing',
+
     ];
 
     public function trans_operational()

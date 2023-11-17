@@ -17,6 +17,7 @@ class RawDetilResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'is_active' => $this->is_active,
             'satuan_id' => $this->satuan?->id,
             'satuan_name' => $this->satuan?->name,
             'stock' => $this->stock,

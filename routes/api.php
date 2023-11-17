@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:api')->group(function () {
     Route::get('/profile', [App\Http\Controllers\API\AuthController::class, 'profile']);
+    Route::post('/profile', [App\Http\Controllers\API\AuthController::class, 'updateProfile']);
     Route::post('/pin', [App\Http\Controllers\API\AuthController::class, 'pinStore']);
     Route::post('/reset-pin', [App\Http\Controllers\API\AuthController::class, 'resetPin']);
     Route::post('/open-cashier', [App\Http\Controllers\API\AuthController::class, 'openCashier']);
@@ -38,6 +39,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/rest-area/update-status', [App\Http\Controllers\API\RestAreaController::class, 'updateStatus']);
     Route::apiResource('rest-area', App\Http\Controllers\API\RestAreaController::class);
     Route::apiResource('business', App\Http\Controllers\API\BusinessController::class);
+    Route::post('tenant/export', [App\Http\Controllers\API\TenantController::class, 'export']);
     Route::apiResource('tenant', App\Http\Controllers\API\TenantController::class);
     Route::apiResource('supertenant', App\Http\Controllers\API\SupertenantController::class);
 
@@ -50,6 +52,11 @@ Route::middleware('auth:api')->group(function () {
     });
 
     Route::post('/tenant/buka-tutup-toko', [App\Http\Controllers\API\TenantController::class, 'bukaTutupToko']);
+    Route::get('/set-payment', [App\Http\Controllers\API\TenantController::class, 'setPayment']);
+    Route::get('/set-feature', [App\Http\Controllers\API\TenantController::class, 'setFeature']);
+    Route::get('/saw-feature', [App\Http\Controllers\API\TenantController::class, 'sawFeature']);
+
+
     Route::post('/product/update-status', [App\Http\Controllers\API\ProductController::class, 'updateStatus']);
     Route::apiResource('product', App\Http\Controllers\API\ProductController::class);
     Route::apiResource('payment-method', App\Http\Controllers\API\PaymentMethodController::class);
@@ -59,6 +66,8 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/user/approve-reset-pin/{id}', [App\Http\Controllers\API\UserController::class, 'approveResetPin']);
     Route::post('/user/reject-reset-pin/{id}', [App\Http\Controllers\API\UserController::class, 'rejectResetPin']);
     Route::post('/user/activation/{id}', [App\Http\Controllers\API\UserController::class, 'activationUserCashier']);
+    Route::post('/user/export', [App\Http\Controllers\API\UserController::class, 'export']);
+    Route::post('/user/export-pin', [App\Http\Controllers\API\UserController::class, 'exportReqPin']);
     Route::apiResource('user', App\Http\Controllers\API\UserController::class);
     Route::apiResource('ruas', App\Http\Controllers\API\RuasController::class);
     Route::get('/rekap-pendapatan', [App\Http\Controllers\API\RekapPendapatanController::class, 'index']);
@@ -91,7 +100,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/laporan/customer-travoy', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanCustomerTravoy']);
     Route::post('/laporan/customer-tavqr', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanCustomerTavqr']);
 
-    Route::get('sharing', [App\Http\Controllers\API\SharingController::class, 'index']);
+    Route::post('sharing/list', [App\Http\Controllers\API\SharingController::class, 'index']);
     Route::post('sharing', [App\Http\Controllers\API\SharingController::class, 'store']);
     Route::get('/sharing/{id}', [App\Http\Controllers\API\SharingController::class, 'show']);
     Route::post('/sharing/{id}', [App\Http\Controllers\API\SharingController::class, 'update']);
@@ -148,6 +157,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/count-cart-saved', [App\Http\Controllers\API\TavsirController::class, 'countCarSaved']);
         Route::get('/order/{id}', [App\Http\Controllers\API\TavsirController::class, 'orderById']);
         Route::get('/order-list', [App\Http\Controllers\API\TavsirController::class, 'orderList']);
+        Route::get('/order-history', [App\Http\Controllers\API\TavsirController::class, 'orderHistory']);
         Route::post('/order', [App\Http\Controllers\API\TavsirController::class, 'order']);
         Route::post('/order-confirmation/{id}', [App\Http\Controllers\API\TavsirController::class, 'orderConfirm']);
         Route::get('/payment-method', [App\Http\Controllers\API\TavsirController::class, 'paymentMethod']);
@@ -155,10 +165,9 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/payment-order', [App\Http\Controllers\API\TavsirController::class, 'paymentOrder']);
         Route::post('/create-payment/{id}', [App\Http\Controllers\API\TavsirController::class, 'createPayment']);
         Route::get('/payment-status/{id}', [App\Http\Controllers\API\TavsirController::class, 'statusPayment']);
+        // Route::post('/CallbackLinkAjaQRIS', [App\Http\Controllers\API\TavsirController::class, 'CallbackLinkAjaQRIS']);
         Route::post('/refund/{id}', [App\Http\Controllers\API\TavsirController::class, 'orderRefund']);
-
-
-
+        Route::post('/identify/{id}', [App\Http\Controllers\API\TavsirController::class, 'orderIdentifier']);
 
         Route::apiResource('customize', App\Http\Controllers\API\CustomizeController::class);
         Route::post('/order-change-status/{id}', [App\Http\Controllers\API\TavsirController::class, 'changeStatusOrder']);
@@ -171,7 +180,9 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/subscription/reject/{id}', [App\Http\Controllers\API\SubscriptionController::class, 'reject']);
         Route::post('/subscription/kuota-kasir', [App\Http\Controllers\API\SubscriptionController::class, 'kuotaKasirTenant']);
         Route::get('/subscription/tenant-owner', [App\Http\Controllers\API\SubscriptionController::class, 'showMemberTenantOwner']);
-        Route::get('/subscription/tenant-cashier', [App\Http\Controllers\API\SubscriptionController::class, 'showKasirTenant']);
+        Route::get('/subscription/tenant-cashier/{id?}', [App\Http\Controllers\API\SubscriptionController::class, 'showKasirTenant']);
+        // Route::get('/subscription/tenant-cashier/{id?}',[App\Http\Controllers\API\SubscriptionController::class, 'showKasirTenant']);
+        
         Route::post('/subscription/mapping-tenant', [App\Http\Controllers\API\SubscriptionController::class, 'maapingSubscriptionTenant']);
         Route::post('/subscription/mapping-kasir', [App\Http\Controllers\API\SubscriptionController::class, 'maapingSubscriptionKasir']);
         Route::get('/subscription', [App\Http\Controllers\API\SubscriptionController::class, 'index']);
@@ -273,6 +284,8 @@ Route::post('payment-gateway/va/cekstatus', [App\Http\Controllers\API\PaymentGat
 Route::post('payment-gateway/va/delete', [App\Http\Controllers\API\PaymentGatewayController::class, 'vaDelete']);
 Route::post('payment-gateway/dd/inquiry', [App\Http\Controllers\API\PaymentGatewayController::class, 'ddInquiry']);
 Route::post('payment-gateway/dd/payment', [App\Http\Controllers\API\PaymentGatewayController::class, 'ddPayment']);
+
+Route::post('/CallbackLinkAjaQRIS', [App\Http\Controllers\API\TavsirController::class, 'CallbackLinkAjaQRIS']);
 
 
 

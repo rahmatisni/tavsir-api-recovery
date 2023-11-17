@@ -20,6 +20,9 @@ class TransStockResource extends JsonResource
             'type' => $this->product?->type,
             'photo' => $this->product?->photo ? asset($this->product->photo) : null,
             'name' => $this->product->name ?? '',
+            'sku' => $this->product->sku ?? '',
+            'is_active' => $this->product->is_active ?? '',
+            'category_id' => $this->product?->category?->id ?? '',
             'category_name' => $this->product?->category?->name ?? '',
             'satuan_id' => $this->product?->satuan?->id ?? '',
             'satuan_type' => $this->product?->satuan?->type ?? '',
@@ -31,7 +34,8 @@ class TransStockResource extends JsonResource
             'lates_stock' => $this->lates_stock,
             'keterangan' => $this->keterangan,
             'created_at' => (string) $this->created_at,
-            'petugas' => $this->creator->name,
+            'petugas' => $this->creator->name ?? '-',
+            'created_by' => $this->created_by
         ];
     }
 }

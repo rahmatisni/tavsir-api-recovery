@@ -3,6 +3,8 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class SharingShowResource extends JsonResource
 {
@@ -14,24 +16,27 @@ class SharingShowResource extends JsonResource
      */
     public function toArray($request)
     {
+        $now = Carbon::now();
+
         return [
             'id' => $this->id,
             'nama_pks' => $this->nama_pks,
             'nomor_pks' => $this->nomor_pks,
-            'pengelola_id' => $this->pengelola_id,
-            'pengelola_name' => $this->pengelola?->name,
-            'supertenant_id' => $this->supertenant_id,
-            'supertenant_name' => $this->supertenant?->name,
+            'business_id' => $this->business_id,
             'tenant_id' => $this->tenant_id,
+            'business_name' => $this->business?->name,
             'tenant_name' => $this->tenant?->name,
-            'member_tenant' => $this->tenant->member_tenant->pluck('name'),
-            'persentase_pengelola' => $this->persentase_pengelola,
-            'persentase_supertenant' => $this->persentase_supertenant,
-            'persentase_tenant' => $this->persentase_tenant,
+            'sharing_code' => is_array($this->sharing_code) ? ($this->sharing_code) : json_decode($this->sharing_code),
+            'sharing_config' => json_decode($this->sharing_config),
             'waktu_mulai' => $this->waktu_mulai,
             'waktu_selesai' => $this->waktu_selesai,
             'status' => $this->status,
-            'file' => $this->file ? asset($this->file) : null,
+            'status_code' => $this->status_code ?? '',
+            'deskripsi' => $this->deskripsi,
+            // 'file' => $this->file ? asset($this->file) : null,
+            'file' => $this->file ? url(Storage::url($this->file)) : null,
+            'created_at' => $this->created_at
+
         ];
     }
 }

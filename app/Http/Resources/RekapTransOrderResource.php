@@ -17,6 +17,7 @@ class RekapTransOrderResource extends JsonResource
         // return parent::toArray($request);
         return [
             'created_at' => (string) $this->created_at,
+            'trans_order_id' => $this->id,
             'order_id' => $this->order_id,
             'total_product' => $this->detil->count(),
             'total' => $this->total,
@@ -25,6 +26,19 @@ class RekapTransOrderResource extends JsonResource
             'bank_name' => $this->trans_edc->bank->name ?? '',
             'order_type' => $this->order_type,
             'order_type_label' => $this->labelOrderType(),
+            // 'sharing' => $this->asd(json_decode($this->sharing_code),json_decode($this->sharing_amount)),
+            'sharing_code' => json_decode($this->sharing_code),
+            'sharing_proportion' => json_decode($this->sharing_proportion),
+            'sharing_amount' => json_decode($this->sharing_amount),
         ];
     }
+
+    // public function asd($a,$b){
+    //     $arr = [];
+    //     foreach ($a as $key => $value) {
+    //         // $arr[]=[$value=>$b[$key]];
+
+    //     }
+    //     return $arr;
+    // }
 }

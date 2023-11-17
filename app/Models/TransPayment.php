@@ -8,7 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class TransPayment extends Model
 {
     protected $table = 'trans_payment';
+    protected $casts = [
+        'data' => 'array',
+        'inquiry' => 'array',
+        'payment' => 'array'
 
+    ];
     public function getDataAttribute($value)
     {
         return json_decode($value, true);

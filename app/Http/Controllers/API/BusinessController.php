@@ -21,7 +21,9 @@ class BusinessController extends Controller
     {
         $business = Business::when($name = request()->name, function ($q) use ($name) {
             return $q->where('name', 'like', "%$name%");
-        })->get();
+        })
+        ->mySortOrder(request())
+        ->get();
 
         return response()->json($business);
     }

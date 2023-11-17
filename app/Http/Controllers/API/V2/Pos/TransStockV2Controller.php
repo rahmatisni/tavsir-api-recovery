@@ -7,6 +7,8 @@ use App\Http\Requests\TransStockStoreRequest;
 use App\Http\Resources\Pos\TransStockDetilResource;
 use App\Http\Resources\Pos\TransStockKartuResource;
 use App\Http\Resources\Pos\TransStockResource;
+use App\Http\Resources\Pos\DropDownResource;
+
 use App\Models\User;
 use App\Services\Pos\StockServices;
 use Illuminate\Http\Request;
@@ -72,6 +74,11 @@ class TransStockV2Controller extends Controller
     public function storeKeluar(TransStockStoreRequest $request)
     {
         $data = $this->service->storeKeluar($request->validated());
+        if($data === 0) {
+            return response()->json(['message'=>'Jumlah stok keluar tidak boleh melebihi stok!'], 422);
+        }
+        // return response()->json(['message'=>'Stok keluar berhasil dikelola!'], 200);
+
         return $this->response($data);
     }
 
@@ -79,5 +86,18 @@ class TransStockV2Controller extends Controller
     {
         $data = $this->service->changeStatus($id);
         return $this->response($data);
+    }
+    public function listproduk()
+    {
+        $data = $this->service->listProduk();
+        // return $data;
+        return DropDownResource::collection($data);
+    }
+    public function listprodukRAW()
+    {
+        $data = $this->service->listProdukRAW();
+        // return $data;
+        return DropDownResource::collection($data);
+
     }
 }

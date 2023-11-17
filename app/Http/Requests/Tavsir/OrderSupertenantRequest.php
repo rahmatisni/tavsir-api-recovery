@@ -28,7 +28,7 @@ class OrderSupertenantRequest extends FormRequest
             'id' => 'nullable',
             'payment_method_id' => 'nullable',
             'product' => 'required|array',
-            'product.*.product_id' => 'required|integer|exists:ref_product,id',
+            'product.*.product_id' => 'required|integer|exists:ref_product,id,deleted_at,NULL',
             'product.*.customize' => 'nullable|array',
             'product.*.pilihan' => 'nullable|array',
             'product.*.qty' => 'required|integer|min:1|max:99',

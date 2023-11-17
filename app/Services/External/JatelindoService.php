@@ -4,6 +4,7 @@ namespace App\Services\External;
 
 use App\Models\Constanta\PLNAREA;
 use App\Models\KiosBank\ProductKiosBank;
+use App\Models\LogKiosbank;
 use App\Models\Product;
 use App\Models\TransOrder;
 use Carbon\Carbon;
@@ -17,11 +18,15 @@ class JatelindoService
     public const advice = "172000";
     public const repeat = "173000";
 
-    public static function inquiry(string $id_pelanggan, ProductKiosBank $product)
+    public static function inquiry(int $flag = 0, string $id_pelanggan, ProductKiosBank $product)
     {
         $date = Carbon::now();
         $md = $date->format('md');
         $his = $date->format('his');
+        $id = str_pad($id_pelanggan, 11, '0', STR_PAD_LEFT).'000000000000'.'0';
+        if($flag != 0){
+            $id = '00000000000'.str_pad($id_pelanggan, 12, '0', STR_PAD_LEFT).'1';
+        }
         $payload = [
             "mti" => "0200",
             "bit2" => '053502',
@@ -38,7 +43,7 @@ class JatelindoService
             "bit41" => config('jatelindo.bit_41'),
             "bit42" => config('jatelindo.bit_42'),
             //Format SwitcherID + MeterID (11 digit) + PelangganID (12 digit) + Flag MeterID (0) atau PelangganID (1)  
-            "bit48" => 'JTL53L3'.str_pad($id_pelanggan, 11, '0', STR_PAD_LEFT).'000000000000'.'0',
+            "bit48" => 'JTL53L3'.$id,
             "bit49" => "360", // COUNTRY CURRENCY CODE NUMBER IDR 
         ];
 
@@ -94,6 +99,44 @@ class JatelindoService
         Log::info([
             'status' => self::responseTranslation($result->json())?->keterangan,
             'action' => 'Purchase',
+            'payload' => $payload,
+            'respons' => $result->json(),
+        ]);
+
+        return $result;
+    }
+
+    public static function advice(array $payload)
+    {
+        $payload ["mti"] = "0220";
+        $payload ["bit3"] = self::advice;
+
+        $result =  Http::withOptions([
+            'proxy' => '172.16.4.58:8090'
+        ])->post(config('jatelindo.url'), $payload);
+
+        Log::info([
+            'status' => self::responseTranslation($result->json())?->keterangan,
+            'action' => 'Advice',
+            'payload' => $payload,
+            'respons' => $result->json(),
+        ]);
+
+        return $result;
+    }
+
+    public static function repeat(array $payload)
+    {
+        $payload ["mti"] = "0221";
+        $payload ["bit3"] = self::repeat;
+
+        $result =  Http::withOptions([
+            'proxy' => '172.16.4.58:8090'
+        ])->post(config('jatelindo.url'), $payload);
+
+        Log::info([
+            'status' => self::responseTranslation($result->json())?->keterangan,
+            'action' => 'Repeate',
             'payload' => $payload,
             'respons' => $result->json(),
         ]);
@@ -216,46 +259,88 @@ class JatelindoService
     }
 
 
-    public static function infoPelanggan(string $bit_48, string $trans_order_status)
+    public static function infoPelanggan(LogKiosbank $log, string $trans_order_status)
     {
-        //example bit48 respon inquiry
-        // $bit_48='JTL53L314234567895514444444444072A0D669D717D6E63AD027984D0147380007210ZD3233B973EE3BF82C6E7247BINDAH PUTRI              I3  000054321';
+        $bit_48 = $log->data['bit48'] ?? '';
+        $bit_61 = $log->data['bit61'] ?? ($log->data['bit62'] ?? '');
+        $bit_62 = $log->data['bit62'] ?? '';
+
+        $kode_distirbusi =  substr($bit_61, 0, 2);
+        $unit_service =  substr($bit_61, 2, 5);
+        $phone_unit_service =  substr($bit_61, 7, 15);
+        $max_kwh =  ltrim(substr($bit_61, 22, 5),'0');
+        $total_token_unsold =  substr($bit_61, 27, 1);
+        $harga_token_unsold_1 =  substr($bit_61, 28, 11);
+        $harga_token_unsold_2 =  substr($bit_61, 39, 11);
+
+        $switcher_id = substr($bit_48 , 0, 7);
+        $meter_id = substr($bit_48, 7, 11);
+        $pelanggan_id = substr($bit_48, 18, 12);
+        $flag = substr($bit_48, 30, 1);
+        $transaksi_id = substr($bit_48, 31, 32);
+        $ref_id = substr($bit_48, 63, 32);
+        $vending_number = substr($bit_48, 95, 8);
+        $nama_pelanggan = substr($bit_48, 103, 25);
+        $tarif = substr($bit_48, 128, 4);
+        $daya = substr($bit_48, 132, 9);
+        $pilihan_pembelian =  substr($bit_48, 141, 1); //Generat token baru atau token unsold
+        $digit_admin =  empty(substr($bit_48, 142, 1)) ? 0 : substr($bit_48, 142, 1); //Digit belakang koma
+        $biaya_admin =  substr($bit_48, 143, 10); //Biaya Admin
+        $digit_materai =  empty(substr($bit_48, 153, 1)) ? 0 : substr($bit_48, 153, 1); //Digit belakang koma
+        $biaya_materai =  substr($bit_48, 154, 10); //Biaya Materai
+        $digit_ppn =  empty(substr($bit_48, 164, 1)) ? 0 : substr($bit_48, 164, 1); //Digit belakang koma
+        $biaya_ppn =  substr($bit_48, 165, 10); //Biaya PPN
+        $digit_ppju =  empty(substr($bit_48, 175, 1)) ? 0 : substr($bit_48, 175, 1); //Digit belakang koma
+        $biaya_ppju =  substr($bit_48, 176, 10); //Biaya PPJU
+        $digit_angsuran =  empty(substr($bit_48, 186, 1)) ? 0 : substr($bit_48, 186, 1); //Digit belakang koma
+        $biaya_angsuran =  substr($bit_48, 187, 10); //Biaya Angsuran
+        $digit_pembelian =  empty(substr($bit_48, 197, 1)) ? 0 : substr($bit_48, 197, 1); //Digit belakang koma
+        $biaya_pembelian =  substr($bit_48, 198, 12); //Biaya Pembelian listrik
+        $digit_kwh =  empty(substr($bit_48, 210, 1)) ? 0 : substr($bit_48, 210, 1); //Digit belakang koma
+        $biaya_kwh = (int) substr($bit_48, 211, 10); //Biaya Kwh
+        $token =  substr($bit_48, 221, 20); //Token
+        $tanggal_lunas =  substr($bit_48, 241, 14); //Tanggal lunas 
+
         if($trans_order_status == TransOrder::WAITING_PAYMENT){
             return [
-                // 'bit_48' => $bit_48,
-                // 'switcher_id' => substr($bit_48 , 0, 7),
-                // 'pelanggan_id' => $flag == 1 ? substr($bit_48, 7, 12) : '000000000000',
                 'meter_id' => substr($bit_48, 7, 11),
-                // 'flag' => $flag,
-                // 'id_transaksi' => substr($bit_48, 20, 32),
-                // 'ref_number' => substr($bit_48, 52, 32),
-                // 'vending_number' => substr($bit_48, 84, 8),
+                'pelanggan_id' => substr($bit_48, 18, 12),
+                'flag' => substr($bit_48, 30, 1),
+                'transaksi_id' => substr($bit_48, 31, 32),
+                'ref_id' => substr($bit_48, 63, 32),
                 'nama_pelanggan' => substr($bit_48, 95, 25),
                 'tarif' => substr($bit_48, 120, 4),
-                'daya' => substr($bit_48, 124, 9),
-                // 'token_unsold_1' => '',
-                // 'token_unsold_2' => '',
-                // $flag = substr($bit_48, 19, 1);
+                'daya' => ltrim(substr($bit_48, 124, 9),'0'),
+                'pilihan_token' => substr($bit_48, 133, 1),
+                'total_token_unsold' => $total_token_unsold,
+                'token_unsold_1' => number_format((int) $harga_token_unsold_1,0,',','.'),
+                'token_unsold_2' => number_format((int) $harga_token_unsold_2,0,',','.'),
             ];
         }
 
-        //example bit48 respon payment
-        // $bit_48 = 'JTL53L314234567895514444444444072A0D669D717D6E63AD027984D0147380007210ZD3233B973EE3BF82C6E7247B00112233INDAH PUTRI              I3  000054321120000000000200000000002000002040820000019996200000197942000001939802200000016212349404851423456789520230920140953';
         return [
-            // 'bit_48' => $bit_48,
-            // 'switcher_id' => substr($bit_48 , 0, 7),
-            // 'pelanggan_id' => $flag == 1 ? substr($bit_48, 7, 12) : '000000000000',
-            'meter_id' => substr($bit_48, 7, 11),
-            // 'flag' => $flag,
-            // 'id_transaksi' => substr($bit_48, 20, 32),
-            // 'ref_number' => substr($bit_48, 52, 32),
-            // 'vending_number' => substr($bit_48, 84, 8),
-            'nama_pelanggan' => substr($bit_48, 103, 25),
-            'tarif' => substr($bit_48, 128, 4),
-            'daya' => substr($bit_48, 132, 9),
-            // 'token_unsold_1' => '',
-            // 'token_unsold_2' => '',
-            // $flag = substr($bit_48, 19, 1);
+            'meter_id' => $meter_id,
+            'pelanggan_id' => $pelanggan_id,
+            'flag' => $flag,
+            'transaksi_id' => $transaksi_id,
+            'ref_id' => $ref_id,
+            'vending_number' => $vending_number,
+            'nama_pelanggan' => $nama_pelanggan,
+            'tarif' => $tarif,
+            'daya' => $daya,
+            'pilihan_pembelian' => $pilihan_pembelian,
+            'biaya_admin' => 'Rp. '.number_format( (int) substr($biaya_admin,0,-$digit_admin),0,',','.'),
+            'biaya_materai' => 'Rp. '.number_format((int) substr($biaya_materai,0,-$digit_materai),0,',','.'),
+            'biaya_ppn' => 'Rp. '.number_format((int) substr($biaya_ppn,0,-$digit_ppn),0,',','.'),
+            'biaya_ppju' => 'Rp. '.number_format((int) substr($biaya_ppju,0,-$digit_ppju),0,',','.'),
+            'biaya_angsuran' => 'Rp. '.number_format((int) substr($biaya_angsuran,0,-$digit_angsuran),0,',','.'),
+            'biaya_pembelian' => 'Rp. '.number_format((int) substr($biaya_pembelian,0,-$digit_pembelian),0,',','.'),
+            'jumlah_kwh' => number_format($biaya_kwh,0,',','.'),
+            'token' => wordwrap($token,4,' ', true),
+            'tanggal_lunas' => Carbon::parse($tanggal_lunas)->format('Y-m-d H:i:s'),
+            'max_kwh' => $max_kwh,
+            'informasi' => $bit_62,
         ];
     }
+
 }

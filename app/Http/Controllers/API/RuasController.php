@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RuasRequest;
 use App\Models\Ruas;
+use App\Models\RestArea;
 use Illuminate\Http\Request;
 
 class RuasController extends Controller
@@ -70,6 +71,13 @@ class RuasController extends Controller
     public function destroy($id)
     {
         $ruas = Ruas::findOrFail($id);
+        $rest_area = RestArea::where('ruas_id',$id)->count();
+        if($rest_area > 0) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terdapat Area yang masih aktif untuk wilayah '.$ruas->name
+            ], 422);
+        }
         $ruas->delete();
         return response()->json($ruas);
     }

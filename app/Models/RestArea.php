@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use App\Models\BaseModel;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class RestArea extends BaseModel
 {
+    use SoftDeletes;
     protected $table = 'ref_rest_area';
 
     protected $fillable = [
@@ -22,7 +25,7 @@ class RestArea extends BaseModel
 
     public function ruas()
     {
-        return $this->belongsTo(Ruas::class, 'ruas_id');
+        return $this->belongsTo(Ruas::class, 'ruas_id')->withTrashed();
     }
 
     public function tenant()

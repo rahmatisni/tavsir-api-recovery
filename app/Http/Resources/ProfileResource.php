@@ -49,9 +49,12 @@ class ProfileResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
+            'photo' => $this->photo ? asset($this->photo) : null,
             'is_admin' => $this->is_admin,
             'tenant_id' => $this->tenant_id,
             'tenant_name' => $this->tenant->name ?? '',
+            'category_tenant_name' => $this->tenant->category_tenant->name ?? '',
+            'tenant_phone' => $this->tenant->phone ?? '',
             'tenant_is_open' => $this->tenant->is_open ?? '',
             'supertenant_name' => $this->supertenant?->name ?? '',
             'business_id' => $this->business_id,
@@ -71,6 +74,8 @@ class ProfileResource extends JsonResource
             'is_print' =>  $this->tenant->is_print ?? 0,
             'is_scan'  => $this->tenant->is_scan ?? 0,
             'is_composite' => $this->tenant->is_composite ?? 0,
+            'in_takengo' => $this->tenant->in_takengo ?? 0,
+            'in_selforder' => $this->tenant->in_selforder ?? 0,
             'list_payment' => $this->tenant->list_payment ?? ['2']
         ];
     }

@@ -6,7 +6,11 @@ use App\Models\BaseModel;
 
 class Sharing extends BaseModel
 {
+    
     protected $table = 'ref_sharing';
+
+    public const PKS = 'PKS';
+    public const BUKTI_BAYAR = 'BUKTI BAYAR';
 
     protected $fillable = [
         'nama_pks',
@@ -14,20 +18,31 @@ class Sharing extends BaseModel
         'pengelola_id',
         'tenant_id',
         'supertenant_id',
-        'persentase_pengelola',
-        'persentase_supertenant',
-        'persentase_tenant',
+        'sharing_code',
+        'sharing_config',
         'waktu_mulai',
         'waktu_selesai',
         'status',
         'file',
     ];
 
+    // public function setFileAttribute($value)
+    // {
+    //     $file = request()->file('file');
+    //     if (is_file($file)) {
+    //         $file = request()->file('file')->store('pks');
+    //         if (file_exists($this->file)) {
+    //             unlink($this->file);
+    //         }
+    //         $this->attributes['file'] = $file;
+    //     }
+    // }
+
     public function setFileAttribute($value)
     {
         $file = request()->file('file');
         if (is_file($file)) {
-            $file = request()->file('file')->store('images');
+            $file = request()->file('file')->store('public'.request()->document_type);
             if (file_exists($this->file)) {
                 unlink($this->file);
             }
@@ -39,6 +54,12 @@ class Sharing extends BaseModel
     {
         return $this->belongsTo(Tenant::class, 'tenant_id');
     }
+
+    public function business()
+    {
+        return $this->belongsTo(Business::class, 'business_id');
+    }
+
 
     public function supertenant()
     {

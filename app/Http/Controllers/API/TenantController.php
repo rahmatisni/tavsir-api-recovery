@@ -2,15 +2,21 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Exports\TenantExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TenantRequest;
+use Illuminate\Http\Request;
 use App\Http\Requests\BukaTutupTokoRequest;
 use App\Http\Resources\TenantResource;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Models\PaymentMethod;
 use App\Models\TransSaldo;
 use App\Models\TransOperational;
+use Carbon\Carbon;
 use DB;
+use Maatwebsite\Excel\Facades\Excel;
+
 
 class TenantController extends Controller
 {
@@ -21,7 +27,7 @@ class TenantController extends Controller
      */
     public function index()
     {
-        return response()->json(TenantResource::collection(Tenant::with('business','rest_area','ruas','order','category_tenant')->get()));
+        return response()->json(TenantResource::collection(Tenant::with('business', 'rest_area', 'ruas', 'order', 'category_tenant')->get()));
     }
 
     /**
@@ -67,6 +73,125 @@ class TenantController extends Controller
         $tenant->save();
         return response()->json($tenant);
     }
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \App\Http\Requests\UpdateTenantRequest  $request
+     * @param  \App\Models\Tenant  $tenant
+     * @return \Illuminate\Http\Response
+     */
+
+    public function setPayment(Request $request, Tenant $tenant)
+    {
+
+        $paymentMethods = PaymentMethod::all();
+        $ids = [];
+
+        foreach ($paymentMethods as $value) {
+            $ids[] = $value->id;
+        }
+        if (!in_array($request->list_payment, $ids)) {
+            return response()->json(["status" => 'Failed', 'role' => auth()->user()->role, 'message' => 'ID Pembayaran Tidak Dikenali'], 422);
+        }
+        if (in_array(auth()->user()->role, [User::TENANT, User::OWNER])) {
+            $tenant = auth()->user()->role === User::TENANT ? Tenant::find(auth()->user()->tenant_id) : Tenant::where('business_id', auth()->user()->business_id)->where('id', $request->tenant_id)->firstOrFail();
+            $bucket_payment = json_decode($tenant->list_payment_bucket);
+            $tenant_payment = json_decode($tenant->list_payment);
+            if (!in_array($request->list_payment, $bucket_payment)) {
+                return response()->json(["status" => 'Failed', 'role' => auth()->user()->role, 'message' => 'ID Pembayaran Tidak Dalam Daftar'], 422);
+            }
+            if (!$tenant_payment) {
+                $tenant->update(['list_payment' => [(int) $request->list_payment]]);
+                return response()->json(["status" => 'success', 'role' => auth()->user()->role, 'message' => 'Setting Payment Berhasil Diaktifkan'], 200);
+            }
+            if (($key = array_search($request->list_payment, $tenant_payment)) !== false) {
+                array_splice($tenant_payment, array_search($request->list_payment, $tenant_payment), 1);
+                $tenant->update(['list_payment' => $tenant_payment]);
+                return response()->json(["status" => 'success', 'role' => auth()->user()->role, 'message' => 'Setting Payment Berhasil Dinonaktifkan'], 200);
+            } else {
+                array_push($tenant_payment, (int) $request->list_payment);
+                $tenant->update(['list_payment' => $tenant_payment]);
+                return response()->json(["status" => 'success', 'role' => auth()->user()->role, 'message' => 'Setting Payment Berhasil Diaktifkan'], 200);
+            }
+
+        }
+        if (in_array(auth()->user()->role, [User::SUPERADMIN, User::ADMIN])) {
+            if (!$request->tenant_id) {
+                return response()->json(["status" => 'Failed', 'role' => 'UNKNOWN', 'message' => 'No Tenant Requested'], 422);
+            }
+            $tenant = Tenant::find($request->tenant_id);
+            $bucket_payment = json_decode($tenant->list_payment_bucket);
+            $tenant_payment = json_decode($tenant->list_payment);
+            if (!$bucket_payment) {
+                $tenant->update(['list_payment_bucket' => [(int) $request->list_payment]]);
+                return response()->json(["status" => 'success', 'role' => auth()->user()->role, 'message' => 'Setting Payment Berhasil Didaftarkan'], 200);
+            }
+            if (($key = array_search($request->list_payment, $bucket_payment)) !== false) {
+                array_splice($bucket_payment, array_search($request->list_payment, $bucket_payment), 1);
+                if ($tenant_payment) {
+                    if (($key = array_search($request->list_payment, $tenant_payment)) !== false) {
+                        array_splice($tenant_payment, array_search($request->list_payment, $tenant_payment), 1);
+                        $tenant->update(['list_payment' => $tenant_payment]);
+                    }
+                }
+                $tenant->update(['list_payment_bucket' => $bucket_payment]);
+                return response()->json(["status" => 'success', 'role' => auth()->user()->role, 'message' => 'Setting Payment Berhasil Dinonaktifkan'], 200);
+            } else {
+                array_push($bucket_payment, (int) $request->list_payment);
+                $tenant->update(['list_payment_bucket' => $bucket_payment]);
+                return response()->json(["status" => 'success', 'role' => auth()->user()->role, 'message' => 'Setting Payment Berhasil Didaftarkan'], 200);
+            }
+
+        }
+        return response()->json(["status" => 'Failed', 'role' => 'UNKNOWN', 'message' => 'DONT TRY'], 422);
+    }
+
+    public function setFeature(Request $request, Tenant $tenant)
+    {
+        $tenant = Tenant::where('id',$request->tenant_id)->firstOrFail();
+        try {
+            if (in_array(auth()->user()->role, [User::SUPERADMIN, User::ADMIN])) {
+                $tenant->update(array_map('intval', $request->all()));
+                return response()->json([
+                    "status" => 'Success',
+                    'role' => '-',
+                    'data' =>
+                        [
+                            'tenant_id' => $tenant->id,
+                            'tenant_name' => $tenant->name,
+                            'in_takengo' => $tenant->in_takengo,
+                            'in_selforder' => $tenant->in_selforder,
+                            'is_scan' => $tenant->is_scan,
+                            'is_print' => $tenant->is_print,
+                            'is_composite' => $tenant->is_composite,
+                        ]
+                ], 200);            }
+            return response()->json(["status" => 'Failed', 'role' => 'UNKNOWN', 'message' => 'DONT TRY'], 422);
+
+        } catch (\Throwable $th) {
+            return response()->json($th->getMessage(), 500);
+        }
+    }
+
+    public function sawFeature(Request $request, Tenant $tenant)
+    {
+        $tenant = Tenant::where('id', $request->tenant_id)->firstOrFail();
+        return response()->json([
+            "status" => 'Success',
+            'role' => '-',
+            'data' =>
+                [
+                    'tenant_id' => $tenant->id,
+                    'tenant_name' => $tenant->name,
+                    'in_takengo' => $tenant->in_takengo ?? 0,
+                    'in_selforder' => $tenant->in_selforder ?? 0,
+                    'is_scan' => $tenant->is_scan ?? 0,
+                    'is_print' => $tenant->is_print ?? 0,
+                    'is_composite' => $tenant->is_composite ?? 0,
+                ]
+        ], 200);
+    }
+
     public function bukaTutupToko(BukaTutupTokoRequest $request)
     {
 
@@ -89,25 +214,25 @@ class TenantController extends Controller
                 ], 422);
             }
         } else
-        if ($request->is_open == '0') {
-            $data = User::where([['id', '!=', $user->id], ['tenant_id', $user->tenant_id]])->get();
-            $ids = array();
-            foreach ($data as $val) {
-                if ($val['fcm_token'] != null && $val['fcm_token'] != '')
-                    array_push($ids, $val['fcm_token']);
-            }
+            if ($request->is_open == '0') {
+                $data = User::where([['id', '!=', $user->id], ['tenant_id', $user->tenant_id]])->get();
+                $ids = array();
+                foreach ($data as $val) {
+                    if ($val['fcm_token'] != null && $val['fcm_token'] != '')
+                        array_push($ids, $val['fcm_token']);
+                }
 
-            if ($ids != '') {
-                $payload = array(
-                    'id' => random_int(1000, 9999),
-                    'type' => 'action',
-                    'action' => 'refresh_buka_toko'
-                );
-                $result = sendNotif($ids, 'Pemberitahun Toko di Tutup', 'Pemberitahuan Toko anda di tutup sementara oleh ' . $user->name, $payload);
-                $tenant->update(['is_open' => $request->is_open]);
-                return response()->json($tenant);
+                if ($ids != '') {
+                    $payload = array(
+                        'id' => random_int(1000, 9999),
+                        'type' => 'action',
+                        'action' => 'refresh_buka_toko'
+                    );
+                    $result = sendNotif($ids, 'Pemberitahun Toko di Tutup', 'Pemberitahuan Toko anda di tutup sementara oleh ' . $user->name, $payload);
+                    $tenant->update(['is_open' => $request->is_open]);
+                    return response()->json($tenant);
+                }
             }
-        }
         $tenant->update(['is_open' => $request->is_open]);
         return response()->json($tenant);
     }
@@ -121,5 +246,11 @@ class TenantController extends Controller
     {
         $tenant->delete();
         return response()->json($tenant);
+    }
+
+    public function export()
+    {
+        $record = Tenant::with('business', 'rest_area', 'ruas', 'order', 'category_tenant')->get();
+        return Excel::download(new TenantExport(), 'Tenant ' . Carbon::now()->format('d-m-Y') . '.xlsx');
     }
 }

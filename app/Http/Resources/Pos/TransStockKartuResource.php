@@ -16,7 +16,7 @@ class TransStockKartuResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'type' => $this->type,
+            'type' => $this->is_composit ? 'product-composite': $this->type,
             'photo' => $this->photo ? asset($this->photo) : null,
             'name' => $this->name,
             'price_capital' => $this->price_capital,
@@ -31,6 +31,8 @@ class TransStockKartuResource extends JsonResource
             'last_action' => $this->last_stock->last()?->stockTypeLabel() ?? '',
             'category_name' => $this->category->name ?? '',
             'is_active' => $this->is_active,
+            'is_composit' => $this->is_composit,
+
             'description' => $this->description,
         ];
     }

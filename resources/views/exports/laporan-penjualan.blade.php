@@ -18,6 +18,7 @@
     <table>
         <thead>
             <tr>
+                <th>Tenant</th>
                 <th>SKU</th>
                 <th>Nama Product</th>
                 <th>Kategori</th>
@@ -29,6 +30,7 @@
         <tbody>
             @foreach($record as $value)
             <tr>
+                <td>{{ $value->tenant_name }}</td>
                 <td>{{ $value->sku }}</td>
                 <td>{{ $value->nama_product }}</td>
                 <td>{{ $value->kategori}}</td>

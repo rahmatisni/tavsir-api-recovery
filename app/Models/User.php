@@ -2,17 +2,22 @@
 
 namespace App\Models;
 
+use App\Models\Traits\SortOrder;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
+
 
 class User extends Authenticatable
 {
     use HasApiTokens;
     use HasFactory;
     use Notifiable;
+    use SortOrder;
+    use SoftDeletes;
 
     public const SUPERADMIN = 'SUPERADMIN';
     public const ADMIN = 'ADMIN';
@@ -53,6 +58,7 @@ class User extends Authenticatable
         'status',
         'fcm_token'
     ];
+    protected $dates = ['deleted_at'];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -78,6 +84,7 @@ class User extends Authenticatable
         return $this->role === self::ADMIN;
     }
 
+
     public function tenant()
     {
         return $this->belongsTo(Tenant::class, 'tenant_id');
@@ -101,5 +108,17 @@ class User extends Authenticatable
     public function accessTokens()
     {
         return $this->hasMany('App\OauthAccessToken');
+    }
+
+    public function setPhotoAttribute($value)
+    {
+        $file = request()->file('photo');
+        if (is_file($file)) {
+            $file = request()->file('photo')->store('images');
+            if (file_exists($this->photo)) {
+                unlink($this->photo);
+            }
+            $this->attributes['photo'] = $file;
+        }
     }
 }

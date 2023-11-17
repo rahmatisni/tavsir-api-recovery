@@ -152,9 +152,9 @@ class PgJmto extends Model
 
     public static function vaCreate($sof_code, $bill_id, $bill_name, $amount, $desc, $phone, $email, $customer_name, $sub_merchant_id)
     {
-        if ($amount > 1000000) {
-            throw new Exception("The amount must be less than 1000000", 422);
-        }
+        // if ($amount > 1000000) {
+        //     throw new Exception("The amount must be less than 1000000", 422);
+        // }
 
         $payload = [
             "sof_code" => $sof_code,
@@ -210,8 +210,9 @@ class PgJmto extends Model
         }
 
         $res = self::service('POST', '/va/create', $payload);
+
         Log::info($payload);
-        Log::info('Va create res', $res->json());
+        Log::info('Va create res', $res->json() ?? 'ERROR'.$payload);
         return $res->json();
     }
 
@@ -267,8 +268,7 @@ class PgJmto extends Model
         }
 
         $res = self::service('POST', '/va/cekstatus', $payload);
-        // dd ($res->json());
-        Log::info(['Payload PG =>', $payload, 'Va status => ', $res->json()]);
+        Log::info(['Payload PG =>', $payload, 'Va status => ', $res->json() ?? 'ERROR']);
         return $res->json();
     }
 
@@ -562,7 +562,7 @@ class PgJmto extends Model
     public static function cardList($payload)
     {
         $res = self::service('POST', '/sof/cardlist', $payload);
-        Log::info('Card list', $res->json());
+        Log::info('Card list', $res->json() ?? 'ERROR');
         return $res;
     }
 
@@ -625,7 +625,7 @@ class PgJmto extends Model
         }
 
         $res = self::service('POST', '/sof/list', []);
-        Log::info('SOF list', $res->json());
+        Log::info('SOF list', $res->json() ?? 'ERROR');
         return $res;
     }
 
