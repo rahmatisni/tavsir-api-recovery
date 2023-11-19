@@ -18,6 +18,7 @@
     <table>
         <thead>
             <tr>
+                <th>Nomor</th>
                 <th>Tenant</th>
                 <th>Waktu Transaksi</th>
                 <th>ID Transaksi</th>
@@ -34,6 +35,7 @@
         <tbody>
             @foreach($record as $value)
             <tr>
+                <td>{{$loop->iteration}}</td>
                 <td>{{$value['tenant']}}</td>
                 <td>{{$value['waktu_transaksi']}}</td>
                 <td>{{$value['id_transaksi']}}</td>
@@ -50,6 +52,7 @@
         </tbody>
         <tfoot>
             <tr>
+                <td></td>
                 <td colspan="3">Total</td>
                 <td>{{$total_product}} item</td>
                 <td>{{$fee}}</td>
