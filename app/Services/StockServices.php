@@ -43,10 +43,10 @@ class StockServices
                     if ($value->fcm_token) {
                         if ($update_stock == 0) {
 
-                            $result = sendNotif($value->fcm_token, '❗Oops.. Stok Paket ' . $product_name . ' Habis!', 'Segera tambahkan stok ya!', $payload);
+                            $result = sendNotif($value->fcm_token, '❗Oops.. Stok Produk ' . $product_name . ' Habis!', 'Segera tambahkan stok ya!', $payload);
                         }
                         else {
-                            $result = sendNotif($value->fcm_token, '❗Oops.. Stok Paket '.$product_name.' Menipis!', 'Stock product ' . $product_name . ' sisa ' . $update_stock . '. Segera tambahkan stok ya!',$payload);
+                            $result = sendNotif($value->fcm_token, '❗Oops.. Stok Produk '.$product_name.' Menipis!', 'Stock product ' . $product_name . ' sisa ' . $update_stock . '. Segera tambahkan stok ya!',$payload);
                         }
                     }
                 }

@@ -658,8 +658,8 @@ class TavsirController extends Controller
             }
             else {
                 $data->sharing_code = [(string) $data->tenant_id];
-                $data->sharing_amount = [100];
-                $data->sharing_proportion = [$data->sub_total + (int) ($data->addon_total)];
+                $data->sharing_proportion = [100];
+                $data->sharing_amount = [$data->sub_total + (int) ($data->addon_total)];
             }
             $data->save();
             $data->detil()->saveMany($order_detil_many);
