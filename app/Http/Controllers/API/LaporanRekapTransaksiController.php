@@ -43,6 +43,7 @@ class LaporanRekapTransaksiController extends Controller
             });
 
         $data = $data->orderBy('created_at', 'desc')->get();
+        
         return response()->json(LaporanRekapTransaksiResource::collection($data));
     }
 

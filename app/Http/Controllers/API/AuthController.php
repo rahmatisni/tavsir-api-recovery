@@ -330,9 +330,7 @@ class AuthController extends Controller
             $total_order = $total_order->sum('sub_total') + $total_order->sum('addon_total');
 
             $trans_cashbox->rp_cash = $total_order;
-            // dump($request->pengeluaran_cashbox);
             $trans_cashbox->different_cashbox = $request->cashbox - ($total_order - $request->pengeluaran_cashbox);
-            // dd($trans_cashbox->different_cashbox);
             $trans_cashbox->input_cashbox_date = Carbon::now();
 
             $rp_va_bri = $data_all;
@@ -433,10 +431,17 @@ class AuthController extends Controller
                 }
             }
 
-            
-
 
             $trans_cashbox->sharing = json_encode($resulttempInvestor);
+
+            $data_refund = TransOrder::with('payment_method')->where('status', TransOrder::REFUND)
+            ->where('tenant_id', $user->tenant_id)
+            ->where('casheer_id', $user->id)
+            ->whereBetween('created_at', [$data->start_date, $data->end_date])
+            ->get();
+
+            $trans_cashbox->rp_refund = ($data_refund?->sum('sub_total') + $data_refund?->rp_addon_total) ?? null;
+
             $trans_cashbox->save();
 
             // cek jika sudah ada tidak ada kasir yang open selain user ini maka toko tenant di tutup

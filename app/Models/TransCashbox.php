@@ -29,6 +29,7 @@ class TransCashbox extends BaseModel
         'rp_cash',
         'rp_total',
         'rp_edc',
+        'rp_refund',
         'sharing',
 
     ];
