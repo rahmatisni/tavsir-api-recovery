@@ -113,8 +113,8 @@ class SharingController extends Controller
             if ($request->waktu_mulai < date((Carbon::now()->format('Y-m-d H:i:s')))) {
                 return response()->json(['status' => "error", 'message' => "Waktu Mulai PKS tidak boleh kurang dari waktu saat ini!"], 422);
             }
-            if ($request->waktu_mulai == $request->waktu_selesai) {
-                return response()->json(['status' => "error", 'message' => "Waktu Mulai PKS tidak boleh sama dari waktu berakhir!"], 422);
+            if ($request->waktu_mulai >= $request->waktu_selesai) {
+                return response()->json(['status' => "error", 'message' => "Waktu Mulai PKS tidak boleh kurang atau sama dari waktu berakhir!"], 422);
             }
            
             $validator = Sharing::where('tenant_id', $request->tenant_id)->get();
