@@ -42,7 +42,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="3">Total</td>
+                <td colspan="4">Total</td>
                 <td>{{ $total_jumlah }}</td>
                 <td></td>
                 <td>{{ $total_pendapatan }}</td>
