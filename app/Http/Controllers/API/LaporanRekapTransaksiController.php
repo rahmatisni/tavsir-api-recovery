@@ -73,10 +73,11 @@ class LaporanRekapTransaksiController extends Controller
                 'message' => 'Data Not Found'
             ], 404);
         }
-
+        // dd($periode_berjalan);
         $data_all = TransOrder::done()
             ->byRole()
             ->whereBetween('created_at', [$periode_berjalan->start_date, $periode_berjalan->end_date])
+            ->where('casheer_id', $periode_berjalan->casheer_id)
             ->when($payment_method_id = request('payment_method_id'), function ($q) use ($payment_method_id) {
                 $q->where('payment_method_id', $payment_method_id);
             })
