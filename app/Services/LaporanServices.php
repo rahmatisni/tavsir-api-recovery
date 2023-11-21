@@ -232,6 +232,33 @@ class LaporanServices
         return $record;
     }
 
+
+    public function decode_manual($sharing_amount){
+        $pairStrings = explode(',', substr($sharing_amount, 1, -1));
+
+        $resultArray = [];
+
+
+        foreach ($pairStrings as $pairString) {
+            $dotPosition = strpos($pairString, '.');
+
+            // Define the number of characters to keep after the dot
+            $charactersToKeep = 2;
+
+            // Check if the dot was found and if there are enough characters after it
+            if ($dotPosition !== false && $dotPosition + $charactersToKeep < strlen($pairString)) {
+                // Trim characters after the dot + 2
+                $trimmedString = substr($pairString, 0, $dotPosition + $charactersToKeep + 1);
+            } else {
+                // No trimming needed
+                $trimmedString = $pairString;
+            }
+
+
+            $resultArray[] = $trimmedString;
+        }
+        return $resultArray;
+    }
     public function transaksi(DownloadLaporanRequest $request)
     {
         $tanggal_awal = $request->tanggal_awal;
@@ -295,7 +322,7 @@ class LaporanServices
                 'jenis_transaksi' => $value->labelOrderType(),
                 'sharing_code' => json_decode($value->sharing_code) ?? [],
                 'sharing_proportion' => json_decode($value->sharing_proportion) ?? [],
-                'sharing_amount' => json_decode($value->sharing_amount) ?? []
+                'sharing_amount' => $this->decode_manual(($value->sharing_amount)) ?? []
             ]);
         }
 

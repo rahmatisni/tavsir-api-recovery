@@ -37,7 +37,6 @@ class RekapTransOrderResource extends JsonResource
 
 
             $resultArray[] = $trimmedString;
-            // $pairString;
         }
 
 
