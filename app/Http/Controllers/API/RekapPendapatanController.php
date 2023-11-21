@@ -132,7 +132,7 @@ class RekapPendapatanController extends Controller
                 }
             }
         }
-        $data_refund = $data->where('status','DONE');
+        $data_refund = $data->where('status','REFUND');
 
         $rp_refund = $data_refund->sum('sub_total') + $data_refund->sum('addon_total');
 
