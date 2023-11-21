@@ -418,8 +418,31 @@ class TavsirController extends Controller
         } else if ($request->is_active == '1') {
             $data->where('is_active', '1');
         }
-        $data = $data->orderByRaw('stock = 0')->orderByRaw('is_active = 0')->orderBy('name', 'asc')->get();
-        return response()->json(TrProductResource::collection($data));
+        $data = $data->get();
+
+        // $data_active = $data->where('is_active', 1)->where('stock' > 0)->sortBy('name');
+        // $data_inactive = $data->orWhere(function ($query) {
+        //     $query->where('stock', '=', 0)
+        //         ->orWhere('is_active', 0);
+        // })->sortBy('name');        
+        // $data = $data_active->concat($data_inactive);
+
+        $dataactive = $data->filter(function ($item) {
+            // Filter items where stock is greater than 0 and is_active is 1
+            return $item->stock > 0 && $item->is_active == 1;
+        })
+        ->sortBy('name');
+        
+        $datainactive = $data->filter(function ($item) {
+            // Filter items where stock is 0 or is_active is 0
+            return $item->stock == 0 || $item->is_active == 0;
+        })
+        ->sortBy('name');
+        
+        // Union the two sets of data
+        $result = $dataactive->concat($datainactive);
+        
+        return response()->json(TrProductResource::collection($result));
     }
 
     public function productStore(TavsirProductRequest $request)
@@ -655,8 +678,7 @@ class TavsirController extends Controller
                 $data->sharing_code = $sharing->sharing_code ?? null;
                 $data->sharing_amount = $sharing_amount ?? null;
                 $data->sharing_proportion = $sharing->sharing_config ?? null;
-            }
-            else {
+            } else {
                 $data->sharing_code = [(string) $data->tenant_id];
                 $data->sharing_proportion = [100];
                 $data->sharing_amount = [$data->sub_total + (int) ($data->addon_total)];
@@ -1696,8 +1718,8 @@ class TavsirController extends Controller
                         return response()->json([
                             "message" => "ERROR!",
                             "errors" => [
-                                $res
-                            ]
+                                    $res
+                                ]
                         ], 422);
                     }
                     $is_dd_pg_success = $res['responseData']['pay_refnum'] ?? null;
@@ -1705,8 +1727,8 @@ class TavsirController extends Controller
                         return response()->json([
                             "message" => "ERROR!",
                             "errors" => [
-                                $res
-                            ]
+                                    $res
+                                ]
                         ], 422);
                     }
 
@@ -1758,10 +1780,10 @@ class TavsirController extends Controller
                     return response()->json([
                         "message" => "The given data was invalid.",
                         "errors" => [
-                            "otp" => [
-                                "The otp field is required."
+                                "otp" => [
+                                    "The otp field is required."
+                                ]
                             ]
-                        ]
                     ], 422);
                 }
                 $payload = $data_payment;
@@ -1775,8 +1797,8 @@ class TavsirController extends Controller
                         return response()->json([
                             "message" => "ERROR!",
                             "errors" => [
-                                $res
-                            ]
+                                    $res
+                                ]
                         ], 422);
                     }
                     $res['responseData']['card_id'] = $payload['card_id'] ?? '';
