@@ -22,7 +22,7 @@ class LaporanRekapTransaksiResource extends JsonResource
             'rp_total' => $this->trans_cashbox->rp_total ?? 0,
             'rp_addon_total' => $this->trans_cashbox->rp_addon_total ?? 0,
             'rp_refund' => $this->trans_cashbox->rp_refund ?? 0,
-            'sharing' => json_decode($this->trans_cashbox->sharing) ?? []
+            'sharing' => [json_decode($this->trans_cashbox->sharing)] ?? []
         ];
     }
 }

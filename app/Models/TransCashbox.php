@@ -10,7 +10,6 @@ class TransCashbox extends BaseModel
     protected $casts = [
         'input_cashbox_date' => 'datetime:Y-m-d H:i:s',
         'update_cashbox_date' => 'datetime:Y-m-d H:i:s',
-        'sharing' => []
     ];
     protected $fillable = [
         'trans_operational_id',
