@@ -18,11 +18,30 @@ class RekapTransOrderResource extends JsonResource
         $pairStrings = explode(',', substr($this->sharing_amount, 1, -1));
 
         $resultArray = [];
-        
+
+
         foreach ($pairStrings as $pairString) {
-            $resultArray[] = $pairString;
+            $dotPosition = strpos($pairString, '.');
+
+            // Define the number of characters to keep after the dot
+            $charactersToKeep = 2;
+
+            // Check if the dot was found and if there are enough characters after it
+            if ($dotPosition !== false && $dotPosition + $charactersToKeep < strlen($pairString)) {
+                // Trim characters after the dot + 2
+                $trimmedString = substr($pairString, 0, $dotPosition + $charactersToKeep + 1);
+            } else {
+                // No trimming needed
+                $trimmedString = $pairString;
+            }
+
+
+            $resultArray[] = $trimmedString;
+            // $pairString;
         }
-        
+
+
+
         return [
             'created_at' => (string) $this->created_at,
             'trans_order_id' => $this->id,
