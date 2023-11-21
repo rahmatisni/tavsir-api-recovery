@@ -320,6 +320,7 @@ class LaporanServices
                 'fee' => $value->fee ?? 0,
                 'service_fee' => $value->service_fee ?? 0,
                 'total' => $value->total,
+                'status' => $value->status,
                 'metode_pembayaran' => $value->payment_method->name ?? '',
                 'jenis_transaksi' => $value->labelOrderType(),
                 'sharing_code' => json_decode($value->sharing_code) ?? [],
