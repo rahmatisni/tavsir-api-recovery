@@ -414,7 +414,7 @@ class AuthController extends Controller
             }
 
 
-            $trans_cashbox->sharing = $resulttempInvestor ?? [];
+            $trans_cashbox->sharing = json_decode($resulttempInvestor);
 
             // $data_refund = TransOrder::with('payment_method')->where('status', TransOrder::REFUND)
             // ->where('tenant_id', $user->tenant_id)
