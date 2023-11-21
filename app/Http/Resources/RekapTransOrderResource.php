@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Brick\Math\BigDecimal;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class RekapTransOrderResource extends JsonResource
@@ -14,7 +15,14 @@ class RekapTransOrderResource extends JsonResource
      */
     public function toArray($request)
     {
-        // return parent::toArray($request);
+        $pairStrings = explode(',', substr($this->sharing_amount, 1, -1));
+
+        $resultArray = [];
+        
+        foreach ($pairStrings as $pairString) {
+            $resultArray[] = $pairString;
+        }
+        
         return [
             'created_at' => (string) $this->created_at,
             'trans_order_id' => $this->id,
@@ -29,7 +37,9 @@ class RekapTransOrderResource extends JsonResource
             'order_type_label' => $this->labelOrderType(),
             'sharing_code' => $this->status == 'DONE' ? json_decode($this->sharing_code) : [],
             'sharing_proportion' => $this->status == 'DONE' ? json_decode($this->sharing_proportion) : [],
-            'sharing_amount' => $this->status == 'DONE' ? json_decode($this->sharing_amount) : [],
+            'sharing_amount' => $this->status == 'DONE' ? $resultArray : [],
+            // 'sharing_amount' => $this->status == 'DONE' ? json_decode($this->sharing_amount) : [],
+
         ];
     }
 }
