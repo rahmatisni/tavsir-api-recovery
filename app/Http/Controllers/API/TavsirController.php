@@ -439,6 +439,14 @@ class TavsirController extends Controller
         })
         ->sortBy('name');
         
+        $dataactive = $dataactive->sortBy(function ($item) {
+            return strtolower($item->name);
+        });
+        
+        $datainactive = $datainactive->sortBy(function ($item) {
+            return strtolower($item->name);
+        });
+        
         // Union the two sets of data
         $result = $dataactive->concat($datainactive);
         
