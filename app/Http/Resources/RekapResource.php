@@ -14,6 +14,21 @@ class RekapResource extends JsonResource
      */
     public function toArray($request)
     {
+
+        $asd = json_decode($this->trans_cashbox->sharing);
+        $values = []; // Initialize an empty array
+
+        foreach ($asd as $key => $value) {
+            // Do some processing if needed
+        
+            // Push the value to the array
+        
+            // Dump the array after each iteration if needed
+            // dump($key, $value);
+            $values[$key] = number_format($value, 2, '.', '');
+        }
+        // dump($values);
+        // dd($asd);
         return [
             'periode' => $this->periode,
             'cashier_name' => $this->cashier->name ?? '',
@@ -40,7 +55,7 @@ class RekapResource extends JsonResource
                 'rp_va_mandiri' => $this->trans_cashbox->rp_va_mandiri ?? 0,
                 'rp_va_bni' => $this->trans_cashbox->rp_va_bni ?? 0,
             ],
-            'sharing' => [json_decode($this->trans_cashbox->sharing)] ?? []
+            'sharing' => [$values] ?? []
         ];
     }
 }
