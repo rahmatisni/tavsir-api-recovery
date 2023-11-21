@@ -269,32 +269,34 @@ class LaporanServices
         $order_type = $request->order_type;
         $payment_method_id = $request->payment_method_id;
 
-        $data = TransOrder::with('tenant')->done()
-            ->when(
-                ($tanggal_awal && $tanggal_akhir),
-                function ($q) use ($tanggal_awal, $tanggal_akhir) {
-                    return $q->whereBetween(
-                        'created_at',
-                        [
-                            $tanggal_awal,
-                            $tanggal_akhir . ' 23:59:59'
-                        ]
-                    );
-                }
-            )
-            ->when($tenant_id, function ($q) use ($tenant_id) {
-                return $q->where('tenant_id', $tenant_id);
-            })->when($rest_area_id, function ($qq) use ($rest_area_id) {
-            return $qq->where('rest_area_id', $rest_area_id);
-        })->when($business_id, function ($qq) use ($business_id) {
-            return $qq->where('business_id', $business_id);
-        })->when($order_type, function ($qq) use ($order_type) {
-            return $qq->where('order_type', $order_type);
-        })->when($payment_method_id, function ($qq) use ($payment_method_id) {
-            return $qq->where('payment_method_id', $payment_method_id);
-        })
-            ->orderBy('created_at')
-            ->get();
+        $raw_data =  $data = TransOrder::with('tenant')
+        ->when(
+            ($tanggal_awal && $tanggal_akhir),
+            function ($q) use ($tanggal_awal, $tanggal_akhir) {
+                return $q->whereBetween(
+                    'created_at',
+                    [
+                        $tanggal_awal,
+                        $tanggal_akhir . ' 23:59:59'
+                    ]
+                );
+            }
+        )
+        ->when($tenant_id, function ($q) use ($tenant_id) {
+            return $q->where('tenant_id', $tenant_id);
+        })->when($rest_area_id, function ($qq) use ($rest_area_id) {
+        return $qq->where('rest_area_id', $rest_area_id);
+    })->when($business_id, function ($qq) use ($business_id) {
+        return $qq->where('business_id', $business_id);
+    })->when($order_type, function ($qq) use ($order_type) {
+        return $qq->where('order_type', $order_type);
+    })->when($payment_method_id, function ($qq) use ($payment_method_id) {
+        return $qq->where('payment_method_id', $payment_method_id);
+    })
+        ->orderBy('created_at')
+        ->get();
+        $data = $raw_data->where('status','DONE');
+        $data_w_refund = $raw_data->whereIn('status',['DONE','REFUND']);
         if ($data->count() == 0) {
             abort(404);
         }
@@ -302,7 +304,7 @@ class LaporanServices
         $item_count = 0;
         $hasil = [];
 
-        foreach ($data as $value) {
+        foreach ($data_w_refund as $value) {
             $count = $value->detil->count();
             $item_count += $count;
 
