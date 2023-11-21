@@ -18,6 +18,7 @@ class RekapResource extends JsonResource
             'periode' => $this->periode,
             'cashier_name' => $this->cashier->name ?? '',
             'rp_total' => $this->trans_cashbox->rp_total ?? 0,
+            'rp_refund' => $this->trans_cashbox->rp_refund ?? 0,
             'biaya_tambahan' => $this->trans_cashbox->rp_addon_total ?? 0,
             'start_date' => (string) $this->start_date,
             'end_date' => (string) $this->end_date ?? '-',

@@ -22,6 +22,7 @@ class RekapTransOrderResource extends JsonResource
             'total_product' => $this->detil->count(),
             'total' => $this->status == 'DONE' ? $this->total : -$this->total,
             'sub_total' => $this->status == 'DONE' ? $this->sub_total : -$this->sub_total,
+            'status' => $this->status,
             'payment_method' => $this->payment_method->name ?? '',
             'bank_name' => $this->trans_edc->bank->name ?? '',
             'order_type' => $this->order_type,

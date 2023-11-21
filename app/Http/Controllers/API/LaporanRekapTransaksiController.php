@@ -75,8 +75,7 @@ class LaporanRekapTransaksiController extends Controller
             ], 404);
         }
         // dd($periode_berjalan);
-        $data_all = TransOrder::done()
-            ->byRole()
+        $data = TransOrder::byRole()
             ->whereBetween('created_at', [$periode_berjalan->start_date, $periode_berjalan->end_date])
             ->where('casheer_id', $periode_berjalan->casheer_id)
             ->when($payment_method_id = request('payment_method_id'), function ($q) use ($payment_method_id) {
@@ -89,15 +88,17 @@ class LaporanRekapTransaksiController extends Controller
                 $q->where('order_id', 'like', '%'.$order_id.'%');
             })
             ->orderBy('created_at', 'desc')->get();
+            // ::done()
 
-
+        $data_all = $data->where('status', 'DONE');
+        $data_allin = $data->whereIn('status',['DONE','REFUND']);
         $data = [
             'start_date' => (string) $periode_berjalan->start_date,
             'end_date' => (string) $periode_berjalan->end_date,
             'periode' => $periode_berjalan->periode,
             'total' => $data_all->sum('total'),
             'sub_total' => $data_all->sum('sub_total'),
-            'detil' => RekapTransOrderResource::collection($data_all)
+            'detil' => RekapTransOrderResource::collection($data_allin)
         ];
 
         return response()->json($data);

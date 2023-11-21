@@ -320,11 +320,13 @@ class AuthController extends Controller
             $trans_cashbox->pengeluaran_cashbox = $request->pengeluaran_cashbox;
             $trans_cashbox->description = $request->description;
 
-            $data_all = TransOrder::with('payment_method')->where('status', TransOrder::DONE)
-                ->where('tenant_id', $user->tenant_id)
-                ->where('casheer_id', $user->id)
-                ->whereBetween('created_at', [$data->start_date, $data->end_date])
-                ->get();
+            $data = TransOrder::with('payment_method')
+            ->where('tenant_id', $user->tenant_id)
+            ->where('casheer_id', $user->id)
+            ->whereBetween('created_at', [$data->start_date, $data->end_date])
+            ->get();
+
+            $data_all = $data->where('status', TransOrder::DONE);
             $total_order = $data_all;
             $total_order = $total_order->where('payment_method.code_name', 'cash');
             $total_order = $total_order->sum('sub_total') + $total_order->sum('addon_total');
@@ -377,27 +379,7 @@ class AuthController extends Controller
             $trans_cashbox->rp_total = $data_all->sum('sub_total') + $trans_cashbox->rp_addon_total;
 
             $investor = $data_all->whereNotNull('sharing_code')->groupBy('sharing_code')->toArray();
-            // $tempInvestor = [];
-            // if (count($investor) > 0) {
-            //     foreach ($investor as $k => $v) {
-            //         // dump($k);
-            //         $arrk = json_decode($k);
-            //         foreach ($arrk as $k2 => $v2) {
-            //             // dump($v2);
-            //             $temp = 0;
-            //             foreach ($v as $k3 => $v3) {
-            //                 $value = json_decode($v3['sharing_amount']);
-            //                 // dump($value[$k2]);
-            //                 $temp += $value[$k2];
-            //             }
-            //             // dump($temp);
-            //             $tempInvestor[] = [$v2 => $temp];
-            //         }
-            //     }
-            // }
-
-
-
+            
             $tempInvestor = [];
             $resulttempInvestor = [];
     
@@ -434,14 +416,17 @@ class AuthController extends Controller
 
             $trans_cashbox->sharing = json_encode($resulttempInvestor);
 
-            $data_refund = TransOrder::with('payment_method')->where('status', TransOrder::REFUND)
-            ->where('tenant_id', $user->tenant_id)
-            ->where('casheer_id', $user->id)
-            ->whereBetween('created_at', [$data->start_date, $data->end_date])
-            ->get();
+            // $data_refund = TransOrder::with('payment_method')->where('status', TransOrder::REFUND)
+            // ->where('tenant_id', $user->tenant_id)
+            // ->where('casheer_id', $user->id)
+            // ->whereBetween('created_at', [$data->start_date, $data->end_date])
+            // ->get();
 
-            $trans_cashbox->rp_refund = ($data_refund?->sum('sub_total') + $data_refund?->rp_addon_total) ?? null;
-
+            $data_refund = $data->where('status', TransOrder::REFUND);
+            $trans_cashbox->rp_refund = ($data_refund?->sum('sub_total') + $data_refund?->sum('addon_total')) ?? null;
+            // dump(($data_refund?->sum('sub_total') + $data_refund?->sum('addon_total')) ?? null);
+            // dd($data_refund);
+            // dd('x');
             $trans_cashbox->save();
 
             // cek jika sudah ada tidak ada kasir yang open selain user ini maka toko tenant di tutup
