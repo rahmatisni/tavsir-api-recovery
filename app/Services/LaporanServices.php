@@ -116,6 +116,7 @@ class LaporanServices
             'total_nominal_tunai' => $data->sum('trans_cashbox.cashbox'),
             'total_koreksi' => $data->sum('trans_cashbox.pengeluaran_cashbox'),
             'total_addon' => $data->sum('trans_cashbox.rp_addon_total'),
+            'total_refund' => $data->sum('trans_cashbox.rp_refund'),
             'total' => $data->sum('trans_cashbox.rp_total'),
             'record' => json_decode(LaporanOperationalResource::collection($data)->toJson()),
         ];
