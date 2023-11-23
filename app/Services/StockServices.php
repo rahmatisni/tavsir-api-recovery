@@ -20,34 +20,22 @@ class StockServices
                 foreach ($product->trans_product_raw as $value) {
                     $exe = Product::find($value->id);
                     $stock = max($exe->stock - ($value->pivot->qty * $qty), 0);
-
-                    // dump($value->stock);
-                    // dump($stock);
                     // $value->update([
                     //     'stock' => $stock
                     // ]);
-                    // dd($exe);
                     $exe->stock = $stock;
                     $exe->save();
-                    // dump($exe);
-                    // $order_detil->product->update(['stock' => $stock]);
-
                 }
             } else {
-                // dd($product->id);
                 $exe = Product::find($product->id);
-                // dump($exe);
                 $stock = max($exe->stock - ($qty), 0);
 
-                // dump($value->stock);
-                // dump($stock);
+              
                 // $value->update([
                 //     'stock' => $stock
                 // ]);
-                // dd($exe);
                 $exe->stock = $stock;
                 $exe->save();
-                // dump($exe);
                 }
                 // $update_stock = max(($stock - $qty), 0);
                 // $order_detil->product->update(['stock' => $update_stock]);

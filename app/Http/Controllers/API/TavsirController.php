@@ -2178,7 +2178,6 @@ class TavsirController extends Controller
                     foreach ($data->detil as $key => $value) {
                         $this->stock_service->updateStockProduct($value);
                     }
-                    // dd('x');
                     $this->trans_sharing_service->calculateSharing($data);
                     break;
 
