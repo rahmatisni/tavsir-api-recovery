@@ -21,7 +21,7 @@ class ProductTunggalController extends Controller
 {
     public function __construct(protected ProductTunggalServices $service)
     {
-        $this->middleware('role:'.User::TENANT.','.User::CASHIER);
+        $this->middleware('role:' . User::TENANT . ',' . User::CASHIER);
     }
     /**
      * Display a listing of the resource.
@@ -41,6 +41,15 @@ class ProductTunggalController extends Controller
      */
     public function store(ProductTunggalRequest $request)
     {
+        $tenant_id = auth()->user()->tenant_id;
+        $product = Product::where('sku', $request->sku)->where('tenant_id', $tenant_id)
+            ->findOrFail();
+        if ($product) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'SKU sudah digunakan pada product ' . $product->name
+            ], 422);
+        }
         return $this->response($this->service->create($request->validated()));
     }
 
@@ -54,7 +63,7 @@ class ProductTunggalController extends Controller
     {
         return $this->response(new ProductV2ShowResource($this->service->show($id)));
     }
-   
+
 
     public function update($id, ProductTunggalUpdateRequest $request)
     {
@@ -70,14 +79,13 @@ class ProductTunggalController extends Controller
     {
         // return $this->response($this->service->delete($id));
         $data = $this->service->delete($id);
-        if ($data === true){
+        if ($data === true) {
             return $this->response($data);
-        }
-        else {
+        } else {
             return response()->json([
-                    'status' => 'error',
-                    'message' => $data
-                ], 422);
+                'status' => 'error',
+                'message' => $data
+            ], 422);
         }
     }
 
