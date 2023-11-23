@@ -43,7 +43,7 @@ class ProductTunggalController extends Controller
     {
         $tenant_id = auth()->user()->tenant_id;
         $product = Product::where('sku', $request->sku)->where('tenant_id', $tenant_id)
-            ->findOrFail();
+            ->firstOrFail();
         if ($product) {
             return response()->json([
                 'status' => 'error',
