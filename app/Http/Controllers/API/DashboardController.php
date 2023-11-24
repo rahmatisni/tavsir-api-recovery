@@ -151,7 +151,7 @@ class DashboardController extends Controller
             $tenant = Tenant::find($key);
             $top_tenant[] = [
                 'name' => $tenant?->name,
-                'photo' => $tenant?->photo ? asset($tenant->photo) : null,
+                'photo' => $tenant?->photo_url ? asset($tenant->photo_url) : null,
                 'total_transaksi' => $value,
             ];
         }
