@@ -148,7 +148,7 @@ class DashboardController extends Controller
         })->sortDesc();
         $top_tenant = [];
         foreach ($topTenant as $key => $value) {
-            $tenant = Tenant::find($key);
+            $tenant = Tenant::withTrashed()->find($key);
             $top_tenant[] = [
                 'name' => $tenant?->name,
                 'photo' => $tenant?->photo_url ? asset($tenant->photo_url) : null,
