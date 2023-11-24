@@ -51,6 +51,18 @@ class AppServiceProvider extends ServiceProvider
             return $this;
         });
 
+        Builder::macro('myWhereLikeStart', function($columns, $search) {
+            if($search){
+                $this->where(function($query) use ($columns, $search) {
+                  foreach(\Arr::wrap($columns) as $column) {
+                    $query->orWhere($column, 'LIKE', "{$search}%");
+                  }
+                });
+            }
+           
+            return $this;
+        });
+
         Builder::macro('myWheres', function($filter, $colum_filter = []) {
             $colum_model = empty($colum_filter) ? $this->model->getFillable() : $colum_filter;
             if($filter){
