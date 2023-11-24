@@ -1893,7 +1893,7 @@ class TavsirController extends Controller
                                     'type' => 'click',
                                     'action' => 'payment_success'
                                 );
-                                $result = sendNotif($ids, '💰Pesanan Telah Dibayar', 'Yuukk segera siapkan pesanan atas transaksi' . $data->order_id, $payload);
+                                $result = sendNotif($ids, '💰Pesanan Telah Dibayar', 'Yuk segera siapkan pesanan atas transaksi ' . $data->order_id, $payload);
                             }
                         }
                         $data->save();
