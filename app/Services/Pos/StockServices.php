@@ -17,7 +17,7 @@ class StockServices
     {
         return Product::with('category','customize','tenant')
                 ->byTenant()
-                ->myWhereLike(['name','sku'], $search)
+                ->myWhereLikeStart(['name','sku'], $search)
                 ->myWheres($filter)
                 ->orderByDesc('id')
                 ->paginate();
@@ -33,6 +33,7 @@ class StockServices
         return TransStock::with('product')
             ->byTenant()
             ->masuk()
+            ->myWhereLikeStart(['name','sku'], $search)
             ->when($name = $filter['name'] ?? '', function ($q) use ($name) {
                 $q->whereHas('product', function ($qq) use ($name) {
                     $qq->where('name', 'like', '%' . $name . '%');
@@ -78,6 +79,7 @@ class StockServices
         return TransStock::with('product')
                 ->byTenant()
                 ->keluar()
+                ->myWhereLikeStart(['name','sku'], $search)
                 ->when($name = $filter['name'] ?? '', function ($q) use ($name) {
                     $q->whereHas('product', function ($qq) use ($name) {
                         $qq->where('name', 'like', '%' . $name . '%');
