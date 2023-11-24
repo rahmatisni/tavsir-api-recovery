@@ -70,7 +70,7 @@ class AppServiceProvider extends ServiceProvider
                     foreach($filter as $column => $search) {
                         if($search!= null){
                             if(in_array($column,$colum_model)){
-                                $query->orWhere($column, 'LIKE', "{$colum_model}%");
+                                $query->orWhere($column, 'LIKE', "{$search}%");
                             }
                         }
                     }
