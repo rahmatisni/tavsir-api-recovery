@@ -15,33 +15,18 @@ class StockServices
 {
     public function kartuStock($search = null, $filter = [])
     {
-        return Product::with('category','customize','tenant')
-                ->byTenant()
-                ->myWhereLikeStart(['name','sku'], $search)
-                ->myWheres($filter)
-                ->orderByDesc('id')
-                ->paginate();
-    }
-
-    public function showKartu($id)
-    {
-        return Product::byTenant()->findOrFail($id);
-    }
-    
-    public function stockMasuk($search = null, $filter = [])
-    {
-        return TransStock::with('product')
+        return Product::with('category', 'customize', 'tenant')
             ->byTenant()
-            ->masuk()
-            ->myWhereLikeStart(['name','sku'], $search)
+            ->myWhereLike(['name', 'sku'], $search)
+            // ->myWheres($filter)
             ->when($name = $filter['name'] ?? '', function ($q) use ($name) {
                 $q->whereHas('product', function ($qq) use ($name) {
-                    $qq->where('name', 'like', '%' . $name . '%');
+                    $qq->where('name', 'like', $name . '%');
                 });
             })
             ->when($sku = $filter['sku'] ?? '', function ($q) use ($sku) {
                 $q->whereHas('product', function ($qq) use ($sku) {
-                    $qq->where('sku', 'like', '%' . $sku . '%');
+                    $qq->where('sku', 'like', $sku . '%');
                 });
             })
             ->when($status = $filter['status'] ?? '', function ($q) use ($status) {
@@ -49,21 +34,70 @@ class StockServices
                     $qq->where('status', $status);
                 });
             })->when($category_id = $filter['category_id'] ?? '', function ($q) use ($category_id) {
-                $q->whereHas('product', function ($qq) use ($category_id) {
-                    $qq->where('category_id', $category_id);
+            $q->whereHas('product', function ($qq) use ($category_id) {
+                $qq->where('category_id', $category_id);
+            });
+        })->when($product_id = $filter['product_id'] ?? '', function ($q) use ($product_id) {
+            $q->whereHas('product', function ($qq) use ($product_id) {
+                $qq->where('product_id', $product_id);
+            });
+        })->when(($filter['status'] ?? '') == '0', function ($q) {
+            $q->whereHas('product', function ($qq) {
+                $qq->where('is_active', 0);
+            });
+        })->when(($filter['status'] ?? '') == '1', function ($q) {
+            $q->whereHas('product', function ($qq) {
+                $qq->where('is_active', 1);
+            });
+            // })->when($created_by = $filter['created_by'] ?? '', function ($q) use ($created_by) {
+            //     $q->whereHas('product', function ($qq) use ($created_by) {
+            //         $qq->where('created_by', $created_by);
+            //     });
+        })
+            ->orderByDesc('id')
+            ->paginate();
+    }
+
+    public function showKartu($id)
+    {
+        return Product::byTenant()->findOrFail($id);
+    }
+
+    public function stockMasuk($search = null, $filter = [])
+    {
+        return TransStock::with('product')
+            ->byTenant()
+            ->masuk()
+            ->when($name = $filter['name'] ?? '', function ($q) use ($name) {
+                $q->whereHas('product', function ($qq) use ($name) {
+                    $qq->where('name', 'like', $name . '%');
                 });
-            })->when($product_id = $filter['product_id'] ?? '', function ($q) use ($product_id) {
-                $q->whereHas('product', function ($qq) use ($product_id) {
-                    $qq->where('product_id', $product_id);
+            })
+            ->when($sku = $filter['sku'] ?? '', function ($q) use ($sku) {
+                $q->whereHas('product', function ($qq) use ($sku) {
+                    $qq->where('sku', 'like', $sku . '%');
                 });
-            })->when(($filter['status'] ?? '') == '0', function ($q) {
-                $q->whereHas('product', function ($qq) {
-                    $qq->where('is_active', 0);
+            })
+            ->when($status = $filter['status'] ?? '', function ($q) use ($status) {
+                $q->whereHas('product', function ($qq) use ($status) {
+                    $qq->where('status', $status);
                 });
-            })->when(($filter['status'] ?? '') == '1', function ($q) {
-                $q->whereHas('product', function ($qq) {
-                    $qq->where('is_active', 1);
-                });
+            })->when($category_id = $filter['category_id'] ?? '', function ($q) use ($category_id) {
+            $q->whereHas('product', function ($qq) use ($category_id) {
+                $qq->where('category_id', $category_id);
+            });
+        })->when($product_id = $filter['product_id'] ?? '', function ($q) use ($product_id) {
+            $q->whereHas('product', function ($qq) use ($product_id) {
+                $qq->where('product_id', $product_id);
+            });
+        })->when(($filter['status'] ?? '') == '0', function ($q) {
+            $q->whereHas('product', function ($qq) {
+                $qq->where('is_active', 0);
+            });
+        })->when(($filter['status'] ?? '') == '1', function ($q) {
+            $q->whereHas('product', function ($qq) {
+                $qq->where('is_active', 1);
+            });
             // })->when($created_by = $filter['created_by'] ?? '', function ($q) use ($created_by) {
             //     $q->whereHas('product', function ($qq) use ($created_by) {
             //         $qq->where('created_by', $created_by);
@@ -77,39 +111,38 @@ class StockServices
     public function stockKeluar($search = null, $filter = [])
     {
         return TransStock::with('product')
-                ->byTenant()
-                ->keluar()
-                ->myWhereLikeStart(['name','sku'], $search)
-                ->when($name = $filter['name'] ?? '', function ($q) use ($name) {
-                    $q->whereHas('product', function ($qq) use ($name) {
-                        $qq->where('name', 'like', '%' . $name . '%');
-                    });
-                })
-                ->when($sku = $filter['sku'] ?? '', function ($q) use ($sku) {
-                    $q->whereHas('product', function ($qq) use ($sku) {
-                        $qq->where('sku', 'like', '%' . $sku . '%');
-                    });
-                })
-                ->when($category_id = $filter['category_id'] ?? '', function ($q) use ($category_id) {
-                    $q->whereHas('product', function ($qq) use ($category_id) {
-                        $qq->where('category_id', $category_id);
-                    });
-                })
-                ->when($product_id = $filter['product_id'] ?? '', function ($q) use ($product_id) {
-                    $q->whereHas('product', function ($qq) use ($product_id) {
-                        $qq->where('product_id', $product_id);
-                    });
-                })->when(($filter['is_active'] ?? '') == '0', function ($q) {
-                    $q->whereHas('product', function ($qq) {
-                        $qq->where('is_active', 0);
-                    });
-                })->when(($filter['is_active'] ?? '') == '1', function ($q) {
-                    $q->whereHas('product', function ($qq) {
-                        $qq->where('is_active', 1);
-                    });
-                })
-                ->orderByDesc('id')
-                ->paginate();
+            ->byTenant()
+            ->keluar()
+            ->when($name = $filter['name'] ?? '', function ($q) use ($name) {
+                $q->whereHas('product', function ($qq) use ($name) {
+                    $qq->where('name', 'like', $name . '%');
+                });
+            })
+            ->when($sku = $filter['sku'] ?? '', function ($q) use ($sku) {
+                $q->whereHas('product', function ($qq) use ($sku) {
+                    $qq->where('sku', 'like', $sku . '%');
+                });
+            })
+            ->when($category_id = $filter['category_id'] ?? '', function ($q) use ($category_id) {
+                $q->whereHas('product', function ($qq) use ($category_id) {
+                    $qq->where('category_id', $category_id);
+                });
+            })
+            ->when($product_id = $filter['product_id'] ?? '', function ($q) use ($product_id) {
+                $q->whereHas('product', function ($qq) use ($product_id) {
+                    $qq->where('product_id', $product_id);
+                });
+            })->when(($filter['is_active'] ?? '') == '0', function ($q) {
+            $q->whereHas('product', function ($qq) {
+                $qq->where('is_active', 0);
+            });
+        })->when(($filter['is_active'] ?? '') == '1', function ($q) {
+            $q->whereHas('product', function ($qq) {
+                $qq->where('is_active', 1);
+            });
+        })
+            ->orderByDesc('id')
+            ->paginate();
     }
 
     public function showMasukKeluar($id)
@@ -152,7 +185,7 @@ class StockServices
             $data->product_id = $payload['product_id'];
             $data->stock_type = $data::OUT;
             $data->recent_stock = $data->product->stock;
-            if ($data->recent_stock < $payload['stock']){
+            if ($data->recent_stock < $payload['stock']) {
                 DB::rollBack();
                 return $data = 0;
             }
@@ -191,14 +224,16 @@ class StockServices
         return $stock->gethasil();
     }
 
-    public function listProduk(){
+    public function listProduk()
+    {
         return Product::
-        // with('category','customize','tenant','satuan')->
-        byTenant()->byType(ProductType::PRODUCT)->where('is_composit', 0)->orderby('name','asc')->get();
+            // with('category','customize','tenant','satuan')->
+            byTenant()->byType(ProductType::PRODUCT)->where('is_composit', 0)->orderby('name', 'asc')->get();
     }
-    public function listProdukRAW(){
+    public function listProdukRAW()
+    {
         return Product::
-        // with('category','customize','tenant','satuan')->
-        byTenant()->byType(ProductType::BAHAN_BAKU)->orderby('name','asc')->get();
+            // with('category','customize','tenant','satuan')->
+            byTenant()->byType(ProductType::BAHAN_BAKU)->orderby('name', 'asc')->get();
     }
 }
