@@ -424,7 +424,8 @@ class TavsirController extends Controller
         foreach ($data as $value) {
             $cek_product_have_not_active = $value->trans_product_raw->where('is_active', 0)->count();
             $stock = $value->stock;
-            $value->stock_sort = 0;
+            $value->stock_sort = $stock > 0 ? 0:1;
+            $value->stock_sort = $value->is_active === 1 ? 0:1;
             if ($value->is_composit == 1) {
                 if ($cek_product_have_not_active > 0) {
                     $value->stock_sort = 1;
