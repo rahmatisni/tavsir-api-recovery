@@ -435,16 +435,16 @@ class TavsirController extends Controller
                         $liststock[] = floor($item->stock / $item->pivot->qty);
                     }
                     $temp_stock = count($liststock) == 0 ? 0 : min($liststock);
-                    $value->stock_sort = $temp_stock === 0 ? 1:0;
+                    $value->stock_sort = $temp_stock > 0 ? 1:0;
                     // $value->stoklook = $temp_stock;
                 }
 
             }
             $product[] = $value;
         }
-        // return ($product);
+        return ($product);
 
-        $sortedArray = collect($product)->sortByDesc('is_active')->sortBy('stock_sort')->all();
+        // $sortedArray = collect($product)->sortByDesc('is_active')->sortBy('stock_sort')->all();
 
         return response()->json(TrProductResource::collection($sortedArray));
     }
