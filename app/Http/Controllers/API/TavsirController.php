@@ -403,7 +403,7 @@ class TavsirController extends Controller
 
     public function productList(Request $request)
     {
-        $data = Product::byTenant()->byType(ProductType::PRODUCT)->with('tenant', 'trans_product_raw')->when($filter = $request->filter, function ($q) use ($filter) {
+        $data = Product::byTenant()->byType(ProductType::PRODUCT)->with('tenant')->with('trans_product_raw')->when($filter = $request->filter, function ($q) use ($filter) {
             $q->where(function ($qq) use ($filter) {
                 return $qq->where('name', 'like', "%$filter%")
                     ->orwhere('sku', 'like', "%$filter%");
@@ -429,19 +429,20 @@ class TavsirController extends Controller
             if ($value->is_composit == 1) {
                 if ($cek_product_have_not_active > 0) {
                     $value->stock_sort = 1;
-                // } else {
-                //     $liststock = [];
-                //     foreach ($value->trans_product_raw as $item) {
-                //         $liststock[] = floor($item->stock / $item->pivot->qty);
-                //     }
-                //     $temp_stock = count($liststock) == 0 ? 0 : min($liststock);
-                //     $value->stock_sort = $temp_stock === 0 ? 0:1;
-                //     $value->stoklook = $temp_stock;
+                } else {
+                    $liststock = [];
+                    foreach ($value->trans_product_raw as $item) {
+                        $liststock[] = floor($item->stock / $item->pivot->qty);
+                    }
+                    $temp_stock = count($liststock) == 0 ? 0 : min($liststock);
+                    $value->stock_sort = $temp_stock === 0 ? 1:0;
+                    // $value->stoklook = $temp_stock;
                 }
 
             }
             $product[] = $value;
         }
+        // return ($product);
 
         $sortedArray = collect($product)->sortByDesc('is_active')->sortBy('stock_sort')->all();
 
