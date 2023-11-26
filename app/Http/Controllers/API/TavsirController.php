@@ -445,7 +445,6 @@ class TavsirController extends Controller
 
         $sortedArray = collect($product)->sortByDesc('is_active')->sortBy('stock_sort')->all();
 
-        return ($sortedArray);
         return response()->json(TrProductResource::collection($sortedArray));
     }
 
