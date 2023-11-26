@@ -403,7 +403,7 @@ class TavsirController extends Controller
 
     public function productList(Request $request)
     {
-        $data = Product::byTenant()->byType(ProductType::PRODUCT)->with('tenant')->when($filter = $request->filter, function ($q) use ($filter) {
+        $data = Product::byTenant()->byType(ProductType::PRODUCT)->with('tenant', 'trans_product_raw')->when($filter = $request->filter, function ($q) use ($filter) {
             $q->where(function ($qq) use ($filter) {
                 return $qq->where('name', 'like', "%$filter%")
                     ->orwhere('sku', 'like', "%$filter%");
@@ -418,39 +418,24 @@ class TavsirController extends Controller
         } else if ($request->is_active == '1') {
             $data->where('is_active', '1');
         }
-        $data = $data->get();
+        $data = $data->orderBy('name', 'asc')->get();
 
-        // $data_active = $data->where('is_active', 1)->where('stock' > 0)->sortBy('name');
-        // $data_inactive = $data->orWhere(function ($query) {
-        //     $query->where('stock', '=', 0)
-        //         ->orWhere('is_active', 0);
-        // })->sortBy('name');        
-        // $data = $data_active->concat($data_inactive);
+        $product = [];
+        foreach ($data as $value) {
+            $cek_product_have_not_active = $value->trans_product_raw->where('is_active', 0)->count();
+            $stock = $value->stock;
+            $value->stock_sort = 0;
+            if ($value->is_composit == 1) {
+                if ($cek_product_have_not_active > 0) {
+                    $value->stock_sort = 1;
+                }
+            }
+            $product[]=$value;
+        }
 
-        $dataactive = $data->filter(function ($item) {
-            // Filter items where stock is greater than 0 and is_active is 1
-            return $item->stock > 0 && $item->is_active == 1;
-        })
-        ->sortBy('name');
-        
-        $datainactive = $data->filter(function ($item) {
-            // Filter items where stock is 0 or is_active is 0
-            return $item->stock == 0 || $item->is_active == 0;
-        })
-        ->sortBy('name');
-        
-        $dataactive = $dataactive->sortBy(function ($item) {
-            return strtolower($item->name);
-        });
-        
-        $datainactive = $datainactive->sortBy(function ($item) {
-            return strtolower($item->name);
-        });
-        
-        // Union the two sets of data
-        $result = $dataactive->concat($datainactive);
-        
-        return response()->json(TrProductResource::collection($result));
+        $sortedArray = collect($product)->sortByDesc('is_active')->sortBy('stock_sort')->all();
+
+        return response()->json(TrProductResource::collection($sortedArray));
     }
 
     public function productStore(TavsirProductRequest $request)
@@ -461,7 +446,7 @@ class TavsirController extends Controller
             $data->tenant_id = auth()->user()->tenant_id;
             $data->fill($request->all());
             $data->type = ProductType::PRODUCT;
-            $data->save();
+            $data->sav();
             $data->trans_stock()->create([
                 'stock_type' => TransStock::INIT,
                 'recent_stock' => 0,
@@ -1726,8 +1711,8 @@ class TavsirController extends Controller
                         return response()->json([
                             "message" => "ERROR!",
                             "errors" => [
-                                    $res
-                                ]
+                                $res
+                            ]
                         ], 422);
                     }
                     $is_dd_pg_success = $res['responseData']['pay_refnum'] ?? null;
@@ -1735,8 +1720,8 @@ class TavsirController extends Controller
                         return response()->json([
                             "message" => "ERROR!",
                             "errors" => [
-                                    $res
-                                ]
+                                $res
+                            ]
                         ], 422);
                     }
 
@@ -1788,10 +1773,10 @@ class TavsirController extends Controller
                     return response()->json([
                         "message" => "The given data was invalid.",
                         "errors" => [
-                                "otp" => [
-                                    "The otp field is required."
-                                ]
+                            "otp" => [
+                                "The otp field is required."
                             ]
+                        ]
                     ], 422);
                 }
                 $payload = $data_payment;
@@ -1805,8 +1790,8 @@ class TavsirController extends Controller
                         return response()->json([
                             "message" => "ERROR!",
                             "errors" => [
-                                    $res
-                                ]
+                                $res
+                            ]
                         ], 422);
                     }
                     $res['responseData']['card_id'] = $payload['card_id'] ?? '';
