@@ -39,9 +39,9 @@ class ProductV2Resource extends JsonResource
             'price_capital' => $this->price_capital,
             'stock' => $stock,
             'stock_min' => $this->stock_min,
-            'satuan_id' => $this->satuan_id,
-            'satuan_name' => $this->satuan?->name,
-            'satuan_type' => $this->satuan?->type,
+            'satuan_id' => $this->satuan_id ?? 7,
+            'satuan_name' => $this->satuan?->name ?? 'unit',
+            'satuan_type' => $this->satuan?->type ?? 'pcs',
             'is_active' => $this->is_active,
             'is_notification' => $this->is_notification,
         ];
