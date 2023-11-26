@@ -420,7 +420,8 @@ class TavsirController extends Controller
         }
         $data = $data->orderBy('name', 'asc')->get();
 
-        $product = [];
+        $active = [];
+        $inactive = [];
         foreach ($data as $value) {
             $cek_product_have_not_active = $value->trans_product_raw->where('is_active', 0)->count();
             $stock = $value->stock;
@@ -441,11 +442,16 @@ class TavsirController extends Controller
                 }
 
             }
-            $product[] = $value;
+            if($value->stock_sort == 0){
+                $active[] = $value;
+
+            }
+            else {
+                $inactive[] = $value;
+            }
         }
 
-        $sortedArray = collect($product)->sortByDesc('is_active')->sortBy('stock_sort')->all();
-        // return ($sortedArray);
+        $sortedArray = array_merge($active, $inactive);
 
         return response()->json(TrProductResource::collection($sortedArray));
     }
