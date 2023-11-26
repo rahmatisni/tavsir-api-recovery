@@ -16,7 +16,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::byType(ProductType::PRODUCT)->all();
+        $categories = Category::byType(ProductType::PRODUCT)->get();
         return response()->json($categories);
     }
 
