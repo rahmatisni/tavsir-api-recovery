@@ -425,17 +425,27 @@ class TavsirController extends Controller
             $cek_product_have_not_active = $value->trans_product_raw->where('is_active', 0)->count();
             $stock = $value->stock;
             // $value->stock_sort = $stock > 0 ? 0:1;
-            $value->stock_sort = $value->stock === 0 ? 1:($value->is_active === 0 ? 1:0);
+            $value->stock_sort = $value->stock === 0 ? 1 : ($value->is_active === 0 ? 1 : 0);
             if ($value->is_composit == 1) {
                 if ($cek_product_have_not_active > 0) {
                     $value->stock_sort = 1;
+                // } else {
+                //     $liststock = [];
+                //     foreach ($value->trans_product_raw as $item) {
+                //         $liststock[] = floor($item->stock / $item->pivot->qty);
+                //     }
+                //     $temp_stock = count($liststock) == 0 ? 0 : min($liststock);
+                //     $value->stock_sort = $temp_stock === 0 ? 0:1;
+                //     $value->stoklook = $temp_stock;
                 }
+
             }
-            $product[]=$value;
+            $product[] = $value;
         }
 
         $sortedArray = collect($product)->sortByDesc('is_active')->sortBy('stock_sort')->all();
 
+        return ($sortedArray);
         return response()->json(TrProductResource::collection($sortedArray));
     }
 
