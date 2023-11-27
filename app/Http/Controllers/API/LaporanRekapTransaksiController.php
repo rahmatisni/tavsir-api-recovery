@@ -126,6 +126,7 @@ class LaporanRekapTransaksiController extends Controller
                 $q->where('order_type', $order_type);
             })
             ->get();
+            $sharing = $data->trans_cashbox?->sharing ?? null;
             $datas = [
                 'periode' => $data->periode,
                 'nama_kasir' => $data->cashier?->name,
@@ -149,6 +150,7 @@ class LaporanRekapTransaksiController extends Controller
                 'total_pendapatan' => $data->trans_cashbox?->rp_total ?? 0,
                 'total_penjualan' => ($data->trans_cashbox?->rp_total ?? 0) - ($data->trans_cashbox?->rp_addon_total ?? 0),
                 'total_biaya_tambahan' => $data->trans_cashbox?->rp_addon_total ?? 0,
+                'sharing' => json_decode($sharing) ?? [],
                 // 'record' => $data,
                 'order' => $order->map(function($value){
                     return [

@@ -87,18 +87,12 @@
             </tr>
         </thead>
         <tbody>
+            @foreach($sharing as $k => $v)
             <tr>
-                <td>Tenant Dummy</td>
-                <td>Rp 1.000.000</td>
+                <td>{{$k}}</td>
+                <td>Rp. @rp($v)</td>
             </tr>
-            <tr>
-                <td>Investor Dummy 1</td>
-                <td>Rp 500.000</td>
-            </tr>
-            <tr>
-                <td>Investor Dummy 2</td>
-                <td>Rp 300.000</td>
-            </tr>
+            @endforeach
         </tbody>
     </table>
     <br>
