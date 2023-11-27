@@ -2,11 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
 <style>
+    body{
+        font-family: Arial, Helvetica, sans-serif;
+    }
     .page_break { page-break-before: always; }
     .table table, .table td, .table th {
         border: 1px solid;
@@ -28,120 +31,144 @@
     .text-right{
         text-align: right;
     }
+
+    .blue-sky{
+        background-color: #87CEEB;
+    }
 </style>
+
 <body>
-    <table>
-        <tbody style="font-weight: bold;">
+<h2 class="text-center">Laporan Rekap Pendapatan</h2>
+    <table class="table">
+        <tbody>
             <tr>
-                <td>
-                    <img style="width: 200px;" src="{{ url('/img/getpay-logo.png') }}" alt="logo">
-                </td>
-            </tr>
-            <br>
-            <tr>
-                <td>Rekap Pendapatan</td>
-                <td>Periode : {{$periode}}</td>
+                <td>Kasir</td>
+                <td>: {{$nama_kasir}}</td>
+                <td>Periode</td>
+                <td>: {{$periode}}</td>
             </tr>
             <tr>
-                <td>
-                    Kasir: {{$nama_kasir}}
-                </td>
-                <td>
-                    Tenant: {{$nama_tenant}}
-                </td>
+                <td>Waktu Buka</td>
+                <td>: {{$waktu_buka}}</td>
+                <td>Tenant</td>
+                <td>: {{$nama_tenant}}</td>
             </tr>
             <tr>
-                <td>
-                    Waktu Buka: {{$waktu_buka}}
-                </td>
-                <td>
-                    Waktu Tutup: {{$waktu_tutup}}
-                </td>
+                <td>Waktu Rekap</td>
+                <td>: {{$waktu_tutup}}</td>
+                <td>Rest Area</td>
+                <td>: {{$rest_area_name}}</td>
+            </tr>
+        </tbody>
+    </table>
+    <br>
+    <table class="table  text-center">
+        <thead class="blue-sky">
+            <tr>
+                <th>Total Pendapatan</th>
+                <th>Total Penjualan</th>
+                <th>Total Biaya Tambahan</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ $total_pendapatan }}</td>
+                <td>{{ $total_penjualan }}</td>
+                <td>{{ $total_biaya_tambahan }}</td>
+            </tr>
+        </tbody>
+    </table>
+    <br>
+    <table class="table  text-center">
+        <thead class="blue-sky">
+            <tr>
+                <th>Bagi Hasil</th>
+                <th>Nominal Bagi Hasil</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Tenant Dummy</td>
+                <td>Rp 1.000.000</td>
             </tr>
             <tr>
-                <td>
-                    Rest Area: {{$rest_area_name}}
-                </td>
-                <td>
-                    <!-- No. Invoice -->
-                </td>
+                <td>Investor Dummy 1</td>
+                <td>Rp 500.000</td>
+            </tr>
+            <tr>
+                <td>Investor Dummy 2</td>
+                <td>Rp 300.000</td>
             </tr>
         </tbody>
     </table>
     <br>
     <table class="table">
-        <thead>
+        <thead class="blue-sky">
             <tr>
                 <th>Metode Pembayaran</th>
-                <th>Nominal</th>
                 <th colspan="2">Detail</th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td rowspan="6">Pembayaran Tunai</td>
-                <td rowspan="6">@rp($pembayaran_tunai)</td>
+                <td>Total Pendapatan</td>
+                <td>Rp. @rp($pembayaran_tunai)</td>
             </tr>
             <tr>
                 <td>Modal Uang Kembalian</td>
-                <td>@rp($uang_kembalian)</td>
+                <td>Rp. @rp($uang_kembalian)</td>
             </tr>
             <tr>
                 <td>Nominal Uang Tunai</td>
-                <td>@rp($uang_tunai)</td>
+                <td>Rp. @rp($pembayaran_tunai)</td>
             </tr>
             <tr>
                 <td>Selisih Tunai</td>
-                <td>@rp($selisih_tunai)</td>
+                <td>Rp. @rp($selisih_tunai)</td>
             </tr>
             <tr>
                 <td>Nominal Koreksi</td>
-                <td>@rp($nominal_koreski)</td>
+                <td>Rp. @rp($nominal_koreski)</td>
             </tr>
             <tr>
                 <td>Keterangan</td>
                 <td>{{$keterangan}}</td>
             </tr>
             <tr>
-                <td rowspan="2">Pembayaran QR</td>
-                <td rowspan="2">@rp($pembayaran_qr)</td>
+                <td>Pembayaran GetpayQR</td>
+                <td>Total Pendapatan</td>
+                <td>Rp. @rp($pembayaran_qr)</td>
             </tr>
             <tr>
-                <td>Saldo tersimpan</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td rowspan="3">Pembayaran Digital</td>
-                <td rowspan="3">@rp($pembayaran_digital)</td>
+                <td rowspan="5">Pembayaran Digital</td>
+                <td>Total Pendapatan</td>
+                <td>Rp. @rp($pembayaran_digital)</td>
             </tr>
             <tr>
                 <td>BRI Virtual Account</td>
-                <td>@rp($bri_va)</td>
+                <td>Rp. @rp($bri_va)</td>
+            </tr>
+            <tr>
+                <td>BNI Virtual Account</td>
+                <td>Rp. @rp($bni_va)</td>
             </tr>
             <tr>
                 <td>Mandiri Virtual Account</td>
-                <td>@rp($mandiri_va)</td>
+                <td>Rp. @rp($mandiri_va)</td>
+            </tr>
+            <tr>
+                <td>LinkAja</td>
+                <td>Rp. @rp($link_aja)</td>
             </tr>
         </tbody>
     </table>
-
+    <br>
     <div class="page_break"></div>
 
-    <table>
-        <tbody>
-            <tr>
-                <td>
-                    <img style="width: 200px;" src="{{ public_path().'/img/tavsir-logo.png' }}" alt="logo">
-                </td>
-            </tr>
-            <tr>
-                <td style="font-weight: bold;">Detail Transaksi</td>
-            </tr>
-        </tbody>
-    </table>
-
+    <h2 class="text-center">Detail Transaksi</h2>
     <table class="table">
-        <thead>
+        <thead class="blue-sky">
             <tr>
                 <th>No.</th>
                 <th>Waktu Transaksi</th>
@@ -153,6 +180,17 @@
             </tr>
         </thead>
         <tbody>
+            @if(count($order) == 0)
+            <tr class="nowrap">
+                <td>&nbsp;</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            @endif
             @foreach($order as $value)
             <tr class="nowrap">
                 <td>{{$loop->iteration}}</td>

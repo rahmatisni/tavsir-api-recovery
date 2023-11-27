@@ -11,6 +11,7 @@ use App\Models\TransOperational;
 use App\Models\TransOrder;
 use Barryvdh\DomPDF\Facade\Pdf;
 use DB;
+use Illuminate\View\View;
 
 class LaporanRekapTransaksiController extends Controller
 {
@@ -141,8 +142,13 @@ class LaporanRekapTransaksiController extends Controller
                 'pembayaran_qr' => $data->trans_cashbox?->rp_tav_qr,
                 'pembayaran_digital' => $data->trans_cashbox?->total_digital,
                 'bri_va' => $data->trans_cashbox?->rp_va_bri,
+                'bni_va' => $data->trans_cashbox?->rp_va_bni,
+                'link_aja' => $data->trans_cashbox?->rp_link_aja,
                 'mandiri_va' => $data->trans_cashbox?->rp_va_mandiri,
                 'edc' => $data->trans_cashbox?->rp_edc,
+                'total_pendapatan' => $data->trans_cashbox?->rp_total ?? 0,
+                'total_penjualan' => ($data->trans_cashbox?->rp_total ?? 0) - ($data->trans_cashbox?->rp_addon_total ?? 0),
+                'total_biaya_tambahan' => $data->trans_cashbox?->rp_addon_total ?? 0,
                 // 'record' => $data,
                 'order' => $order->map(function($value){
                     return [
@@ -157,7 +163,7 @@ class LaporanRekapTransaksiController extends Controller
             ];
 
         $pdf = Pdf::loadView('pdf.rekap', $datas);
-
-        return $pdf->download('invoice.pdf');
+        
+        return $pdf->download('Rekap.pdf');
     }
 }
