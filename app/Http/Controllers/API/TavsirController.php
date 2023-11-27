@@ -717,7 +717,7 @@ class TavsirController extends Controller
     {
         $data = TransOrder::byRole()
             ->where('order_type', '=', TransOrder::POS)
-            ->where('status', '=', TransOrder::CART)
+            ->whereIn('status', [TransOrder::CART,TransOrder::WAITING_PAYMENT])
             ->count();
 
         return response()->json(['count' => $data]);
