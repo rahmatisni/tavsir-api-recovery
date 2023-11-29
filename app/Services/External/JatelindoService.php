@@ -77,7 +77,8 @@ class JatelindoService
     {
         $payload ["mti"] = "0200";
         $payload ["bit3"] = self::purchase;
-
+        //bit
+        unset($payload['bit39']);
         //fake respone
         if(false){
             $fake_payload = $payload;
