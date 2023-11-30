@@ -25,9 +25,12 @@ class TenantController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(TenantResource::collection(Tenant::with('business', 'rest_area', 'ruas', 'order', 'category_tenant')->get()));
+
+        $filter [] = $request->filter;
+        $data = Tenant::with('business', 'rest_area', 'ruas', 'order', 'category_tenant')->myWheres($filter)->get();
+        return response()->json(TenantResource::collection($data));
     }
 
     /**

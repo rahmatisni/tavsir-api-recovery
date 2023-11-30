@@ -1998,7 +1998,7 @@ class TavsirController extends Controller
         $queryOrder .= "ELSE 9 END";
         $identifier = auth()->user()->id;
 
-        $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer', 'trans_edc.bank')
+        $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer', 'trans_edc.bank')->whereIn('order_type', [TransOrder::ORDER_SELF_ORDER,TransOrder::ORDER_TAKE_N_GO,TransOrder::POS])
             ->when($status = request()->status, function ($q) use ($status) {
                 if (is_array($status)) {
                     $q->whereIn('status', $status)->orwhereIn('status', json_decode($status[0]) ?? []);
