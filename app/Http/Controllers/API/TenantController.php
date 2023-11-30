@@ -29,7 +29,9 @@ class TenantController extends Controller
     {
 
         $filter = $request->filter;
-        $data = Tenant::with('business', 'rest_area', 'ruas', 'order', 'category_tenant')->myWheres($filter)->get();
+        $filterLike = $request->filterlike;
+
+        $data = Tenant::with('business', 'rest_area', 'ruas', 'order', 'category_tenant')->myWheres($filter)->myWhereLikeStart($filterLike)->get();
         return response()->json(TenantResource::collection($data));
     }
 
