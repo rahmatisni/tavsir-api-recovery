@@ -28,7 +28,7 @@ class TenantController extends Controller
     public function index(Request $request)
     {
 
-        $filter [] = $request->filter;
+        $filter = $request->filter;
         $data = Tenant::with('business', 'rest_area', 'ruas', 'order', 'category_tenant')->myWheres($filter)->get();
         return response()->json(TenantResource::collection($data));
     }
