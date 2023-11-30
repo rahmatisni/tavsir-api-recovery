@@ -28,10 +28,10 @@ class TenantController extends Controller
     public function index(Request $request)
     {
 
-        $filter = $request->filter;
-        // $filterLike = $request->filterLike;
+        $filter = $request?->filter;
+        $filterLike = $request?->filterlike;
 
-        $data = Tenant::with('business', 'rest_area', 'ruas', 'order', 'category_tenant')->myWheres($filter)->get();
+        $data = Tenant::with('business', 'rest_area', 'ruas', 'order', 'category_tenant')->myWheres($filter)->myWhereLikeStartCol($filterLike)->get();
         return response()->json(TenantResource::collection($data));
     }
 
