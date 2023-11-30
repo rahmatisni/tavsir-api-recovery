@@ -1998,7 +1998,7 @@ class TavsirController extends Controller
         $queryOrder .= "ELSE 9 END";
         $identifier = auth()->user()->id;
 
-        $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer', 'trans_edc.bank')->whereIn('order_type', [TransOrder::ORDER_SELF_ORDER,TransOrder::ORDER_TAKE_N_GO,TransOrder::POS])
+        $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer', 'trans_edc.bank')
             ->when($status = request()->status, function ($q) use ($status) {
                 if (is_array($status)) {
                     $q->whereIn('status', $status)->orwhereIn('status', json_decode($status[0]) ?? []);
@@ -2038,7 +2038,7 @@ class TavsirController extends Controller
                 //     $q->where('casheer_id', $identifier)->Orwhere('casheer_id',NULL);
                 // });                
             });
-        $data = $data->orderBy('created_at', 'DESC')->get();
+        $data = $data->whereIn('order_type',['POS','SELF_ORDER','TAKE_N_GO'])->orderBy('created_at', 'DESC')->get();
         // $data = $data->orderByRaw($queryOrder)->orderBy('created_at', 'DESC')->get();
 
         return response()->json(TrOrderResource::collection($data));

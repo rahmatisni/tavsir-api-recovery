@@ -169,6 +169,7 @@ class TenantController extends Controller
                             'is_scan' => $tenant->is_scan,
                             'is_print' => $tenant->is_print,
                             'is_composite' => $tenant->is_composite,
+                            'url_self_order' => $tenant->url_self_order
                         ]
                 ], 200);            }
             return response()->json(["status" => 'Failed', 'role' => 'UNKNOWN', 'message' => 'DONT TRY'], 422);
@@ -193,6 +194,8 @@ class TenantController extends Controller
                     'is_scan' => $tenant->is_scan ?? 0,
                     'is_print' => $tenant->is_print ?? 0,
                     'is_composite' => $tenant->is_composite ?? 0,
+                    'url_self_order' => $tenant->url_self_order
+
                 ]
         ], 200);
     }
