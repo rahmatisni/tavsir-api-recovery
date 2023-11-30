@@ -152,35 +152,37 @@ class TenantController extends Controller
     }
 
     public function setFeature(Request $request, Tenant $tenant)
-    {
-        $tenant = Tenant::where('id',$request->tenant_id)->firstOrFail();
-        try {
-            if (in_array(auth()->user()->role, [User::SUPERADMIN, User::ADMIN])) {
-                $tenant->update(array_map('intval', $request->all()));
-                if($request->url_self_order){
-                    $tenant->update(['url_self_order' ,$request->url_self_order]);
-                }
-                return response()->json([
-                    "status" => 'Success',
-                    'role' => '-',
-                    'data' =>
-                        [
-                            'tenant_id' => $tenant->id,
-                            'tenant_name' => $tenant->name,
-                            'in_takengo' => $tenant->in_takengo,
-                            'in_selforder' => $tenant->in_selforder,
-                            'is_scan' => $tenant->is_scan,
-                            'is_print' => $tenant->is_print,
-                            'is_composite' => $tenant->is_composite,
-                            'url_self_order' => $tenant->url_self_order
-                        ]
-                ], 200);            }
-            return response()->json(["status" => 'Failed', 'role' => 'UNKNOWN', 'message' => 'DONT TRY'], 422);
-
-        } catch (\Throwable $th) {
-            return response()->json($th->getMessage(), 500);
+{
+    $tenant = Tenant::where('id', $request->tenant_id)->firstOrFail();
+    try {
+        if ($request->url_self_order) {
+            $tenant->update(['url_self_order' => $request->url_self_order]);
         }
+        if (in_array(auth()->user()->role, [User::SUPERADMIN, User::ADMIN])) {
+            $tenant->update(array_map('intval', $request->except(['url_self_order'])));
+
+            return response()->json([
+                "status" => 'Success',
+                'role' => '-',
+                'data' =>
+                    [
+                        'tenant_id' => $tenant->id,
+                        'tenant_name' => $tenant->name,
+                        'in_takengo' => $tenant->in_takengo,
+                        'in_selforder' => $tenant->in_selforder,
+                        'is_scan' => $tenant->is_scan,
+                        'is_print' => $tenant->is_print,
+                        'is_composite' => $tenant->is_composite,
+                        'url_self_order' => $tenant->url_self_order
+                    ]
+            ], 200);
+        }
+        return response()->json(["status" => 'Failed', 'role' => 'UNKNOWN', 'message' => 'DONT TRY'], 422);
+
+    } catch (\Throwable $th) {
+        return response()->json($th->getMessage(), 500);
     }
+}
 
     public function sawFeature(Request $request, Tenant $tenant)
     {
