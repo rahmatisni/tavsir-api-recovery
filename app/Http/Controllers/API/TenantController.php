@@ -6,6 +6,8 @@ use App\Exports\TenantExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TenantRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
 use App\Http\Requests\BukaTutupTokoRequest;
 use App\Http\Resources\TenantResource;
 use App\Models\Tenant;
@@ -157,6 +159,14 @@ class TenantController extends Controller
     try {
         if ($request->url_self_order) {
             $tenant->update(['url_self_order' => $request->url_self_order]);
+            $validator = Validator::make($request->all(), [
+                'url_self_order' => 'nullable|url',
+            ]);
+        
+            if ($validator->fails()) {
+                return response()->json(['status' => 'error', 'message' =>  "The url self order must be a valid URL"], 422);
+            }
+        
         }
         if (in_array(auth()->user()->role, [User::SUPERADMIN, User::ADMIN])) {
             $tenant->update(array_map('intval', $request->except(['url_self_order'])));
