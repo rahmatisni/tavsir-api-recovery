@@ -157,6 +157,9 @@ class TenantController extends Controller
         try {
             if (in_array(auth()->user()->role, [User::SUPERADMIN, User::ADMIN])) {
                 $tenant->update(array_map('intval', $request->all()));
+                if($request->url_self_order){
+                    $tenant->update('url_self_order',$request->url_self_order);
+                }
                 return response()->json([
                     "status" => 'Success',
                     'role' => '-',
