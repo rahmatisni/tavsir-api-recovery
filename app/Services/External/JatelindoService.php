@@ -75,9 +75,12 @@ class JatelindoService
 
     public static function purchase(array $payload)
     {
+        //bit
+        if(isset($payload['bit39'])){
+            unset($payload['bit39']);
+        }
         $payload ["mti"] = "0200";
         $payload ["bit3"] = self::purchase;
-
         //fake respone
         if(false){
             $fake_payload = $payload;
@@ -108,6 +111,10 @@ class JatelindoService
 
     public static function advice(array $payload)
     {
+        //bit
+        if(isset($payload['bit39'])){
+            unset($payload['bit39']);
+        }
         $payload ["mti"] = "0220";
         $payload ["bit3"] = self::advice;
 
@@ -127,6 +134,10 @@ class JatelindoService
 
     public static function repeat(array $payload)
     {
+        //bit
+        if(isset($payload['bit39'])){
+            unset($payload['bit39']);
+        }
         $payload ["mti"] = "0221";
         $payload ["bit3"] = self::repeat;
 
