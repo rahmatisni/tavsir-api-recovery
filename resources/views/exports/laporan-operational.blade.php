@@ -26,6 +26,7 @@
                 <th>Waktu Tutup</th>
                 <th>Waktu Rekap</th>
                 <th>Kasir</th>
+                <th>Bagi Hasil</th>
                 <th>Nominal Uang Kembalian</th>
                 <th>Total Pendapatan QR</th>
                 <th>Total Pendapatan Pembayaran Digital</th>
@@ -47,6 +48,7 @@
                 <td>{{ $value->waktu_tutup }}</td>
                 <td>{{ $value->waktu_rekap }}</td>
                 <td>{{ $value->kasir }}</td>
+                <td>Bagi hasil Data</td>
                 <td>{{ $value->uang_kembalian }}</td>
                 <td>{{ $value->qr }}</td>
                 <td>{{ $value->digital }}</td>
