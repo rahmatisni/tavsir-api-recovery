@@ -134,7 +134,7 @@ class TransOrder extends BaseModel
 
     public function scopeDone($query)
     {
-        return $query->where('status', self::DONE);
+        return $query->whereIn('status', [self::DONE, self::REFUND]);
     }
 
     public function casheer()
@@ -178,7 +178,7 @@ class TransOrder extends BaseModel
 
     public function statusLabel()
     {
-        if ($this->status == 'READY') {
+                if ($this->status == 'READY') {
             return str_replace("_", " ", self::PAYMENT_SUCCESS);
 
         }

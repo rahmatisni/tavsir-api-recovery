@@ -7,6 +7,7 @@ use App\Http\Requests\DateRangeRequest;
 use App\Http\Resources\LaporanRekapTransaksiResource;
 use App\Http\Resources\RekapResource;
 use App\Http\Resources\RekapTransOrderResource;
+use App\Models\Tenant;
 use App\Models\TransOperational;
 use App\Models\TransOrder;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -126,7 +127,21 @@ class LaporanRekapTransaksiController extends Controller
                 $q->where('order_type', $order_type);
             })
             ->get();
-            $sharing = $data->trans_cashbox?->sharing ?? null;
+            $sharing = [];
+            $sharing_cashboax = json_decode($data->trans_cashbox?->sharing ?? []);
+            $count = 0;
+            foreach ($sharing_cashboax as $key => $value) {
+                $label = 'Investor '.$count;
+                if($count == 0) {
+                    $label = Tenant::where('id', $key)->first()->name ?? 'Tenant tidak ada';
+                }
+
+                array_push($sharing, [
+                    'label' => $label,
+                    'value' => $value,
+                ]);
+                $count ++;
+            }
             $datas = [
                 'periode' => $data->periode,
                 'nama_kasir' => $data->cashier?->name,
@@ -150,7 +165,8 @@ class LaporanRekapTransaksiController extends Controller
                 'total_pendapatan' => $data->trans_cashbox?->rp_total ?? 0,
                 'total_penjualan' => ($data->trans_cashbox?->rp_total ?? 0) - ($data->trans_cashbox?->rp_addon_total ?? 0),
                 'total_biaya_tambahan' => $data->trans_cashbox?->rp_addon_total ?? 0,
-                'sharing' => json_decode($sharing) ?? [],
+                'total_refund' => $data->trans_cashbox?->rp_refund ?? 0,
+                'sharing' => $sharing,
                 // 'record' => $data,
                 'order' => $order->map(function($value){
                     return [
@@ -160,6 +176,7 @@ class LaporanRekapTransaksiController extends Controller
                         'total' => $value->sub_total,
                         'metode_pembayaran' => $value->payment_method?->name,
                         'jenis_transaksi' => $value->labelOrderType(),
+                        'satus' => $value->status,
                     ];
                 })
             ];

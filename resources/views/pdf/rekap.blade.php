@@ -68,6 +68,7 @@
                 <th>Total Pendapatan</th>
                 <th>Total Penjualan</th>
                 <th>Total Biaya Tambahan</th>
+                <th>Total Refund</th>
             </tr>
         </thead>
         <tbody>
@@ -75,6 +76,7 @@
                 <td>{{ $total_pendapatan }}</td>
                 <td>{{ $total_penjualan }}</td>
                 <td>{{ $total_biaya_tambahan }}</td>
+                <td>{{ $total_refund }}</td>
             </tr>
         </tbody>
     </table>
@@ -89,8 +91,8 @@
         <tbody>
             @foreach($sharing as $k => $v)
             <tr>
-                <td>{{$k}}</td>
-                <td>Rp. @rp($v)</td>
+                <td>{{$v['label']}}</td>
+                <td>Rp. @rp($v['value'])</td>
             </tr>
             @endforeach
         </tbody>
@@ -171,12 +173,14 @@
                 <th>Total</th>
                 <th>Metode Pembayaran</th>
                 <th>Jenis Transkasi</th>
+                <th>Status</th>
             </tr>
         </thead>
         <tbody>
             @if(count($order) == 0)
             <tr class="nowrap">
                 <td>&nbsp;</td>
+                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -194,6 +198,7 @@
                 <td class="text-right">@rp($value['total'])</td>
                 <td>{{$value['metode_pembayaran']}}</td>
                 <td>{{$value['jenis_transaksi']}}</td>
+                <td>{{$value['status']}}</td>
             </tr>
             @endforeach
         </tbody>
