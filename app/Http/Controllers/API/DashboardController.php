@@ -88,11 +88,14 @@ class DashboardController extends Controller
         $ct = $order;
         $ct_group = $ct->sortBy('tenant.category_tenant_id')
             ->groupBy('tenant.category_tenant_id')->map(function ($item) {
-                return $item->count();
+                return [
+                    'label' => $item->first()->tenant->category_tenant->name ?? 'Tanpa Category',
+                    'value' => $item->count()
+                ];
             });
         $category_tenant = [
-            'labels' => array_keys($ct_group->toArray()),
-            'data' => array_values($ct_group->toArray())
+            'labels' => $ct_group->pluck('label'),
+            'data' => $ct_group->pluck('value')
         ];
 
         // $category_tenant = [
