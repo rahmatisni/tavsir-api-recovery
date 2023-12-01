@@ -32,8 +32,17 @@ class TenantController extends Controller
 
         $filter = $request?->filter;
         $filterLike = $request?->filterlike;
+        $businessStatus = $filter['status_perusahaan'] ?? false;
+        // dd($businessStatus);
 
-        $data = Tenant::with('business', 'rest_area', 'ruas', 'order', 'category_tenant')->myWheres($filter)->myWhereLikeStartCol($filterLike)->get();
+        $data = Tenant::with('business', 'rest_area', 'ruas', 'order', 'category_tenant')->myWheres($filter)->myWhereLikeStartCol($filterLike)
+        ->when($businessStatus, function ($query) use ($businessStatus) {
+            // Adding the filter for business.status_perusahaan
+            $query->whereHas('business', function ($businessQuery) use ($businessStatus) {
+                $businessQuery->where('status_perusahaan', $businessStatus);
+            });
+        })
+        ->get();
         return response()->json(TenantResource::collection($data));
     }
 
@@ -204,8 +213,8 @@ class TenantController extends Controller
                 [
                     'tenant_id' => $tenant->id,
                     'tenant_name' => $tenant->name,
-                    'in_takengo' => $tenant->in_takengo ?? 0,
-                    'in_selforder' => $tenant->in_selforder ?? 0,
+                    'in_takengo' => $tenant?->in_takengo ?? 0,
+                    'in_selforder' => $tenant?->in_selforder ?? 0,
                     'is_scan' => $tenant->is_scan ?? 0,
                     'is_print' => $tenant->is_print ?? 0,
                     'is_composite' => $tenant->is_composite ?? 0,

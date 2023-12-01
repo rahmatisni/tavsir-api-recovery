@@ -42,7 +42,7 @@ class TenantResource extends JsonResource
             'is_open' => $this->is_open,
             'is_verified' => $this->is_verified,
             'in_takengo' => $this->in_takengo,
-            'in_selforder' => $this->in_takengo,
+            'in_selforder' => $this->in_selforder,
             'is_print' => $this->is_print,
             'is_scan'  => $this->is_scan,
             'is_composite' => $this->is_composite,
