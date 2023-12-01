@@ -79,7 +79,7 @@ class DashboardController extends Controller
         //         $q->where('rest_area_id', $rest_area_id);
         //     })->count();
         // }
-        $customer_count = $order->whereNotNull('customer_id')->unique('customer_id')->count();
+        $customer_count = $order->whereIn('order_type',[TransOrder::ORDER_SELF_ORDER, TransOrder::ORDER_TAKE_N_GO])->whereNotNull('customer_id')->unique('customer_id')->count();
 
         $total_pemasukan = $all1->sum('sub_total');
         $total_transaksi_takengo = $takengo_count;
