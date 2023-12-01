@@ -21,15 +21,27 @@ class DashboardController extends Controller
     {
         $tanggal_awal = $request->tanggal_awal;
         $tanggal_akhir = $request->tanggal_akhir;
+        $tenant_id = $request->tenant_id;
+        $business_id = $request->business_id;
+
+        $user_role = auth()->user()->role;
+
+        if($user_role == User::TENANT){
+            $tenant_id = auth()->user()->tenant_id;
+        }
+
+        if($user_role == User::OWNER){
+            $tenant_id = auth()->user()->business_id;
+        }
 
         $order = TransOrder::Done()
             ->when($rest_area_id = $request->rest_area_id, function ($q) use ($rest_area_id) {
                 $q->whereHas('tenant', function ($qq) use ($rest_area_id) {
                     $qq->where('rest_area_id', $rest_area_id);
                 });
-            })->when($tenant_id = $request->tenant_id, function ($q) use ($tenant_id) {
+            })->when($tenant_id, function ($q) use ($tenant_id) {
             $q->where('tenant_id', $tenant_id);
-        })->when($business_id = $request->business_id, function ($q) use ($business_id) {
+        })->when($business_id, function ($q) use ($business_id) {
             $q->where('business_id', $business_id);
         })->when(($tanggal_awal && $tanggal_akhir), function ($q) use ($tanggal_awal, $tanggal_akhir) {
 
@@ -62,16 +74,12 @@ class DashboardController extends Controller
         })->get();
 
         $customer_count = 0;
-        if (auth()->user()->role == User::JMRBAREA) {
-            $customer_count = Voucher::when($rest_area_id = $request->rest_area_id, function ($q) use ($rest_area_id) {
-                $q->where('rest_area_id', $rest_area_id);
-            })->count();
-        }
-
-        if (auth()->user()->role == User::TENANT) {
-            $customer_count = $order->whereNotNull('customer_id')->unique('customer_id')->count();
-        }
-
+        // if ($user_role == User::JMRBAREA) {
+        //     $customer_count = Voucher::when($rest_area_id = $request->rest_area_id, function ($q) use ($rest_area_id) {
+        //         $q->where('rest_area_id', $rest_area_id);
+        //     })->count();
+        // }
+        $customer_count = $order->whereIn('order_type',[TransOrder::ORDER_SELF_ORDER, TransOrder::ORDER_TAKE_N_GO])->whereNotNull('customer_id')->unique('customer_id')->count();
 
         $total_pemasukan = $all1->sum('sub_total');
         $total_transaksi_takengo = $takengo_count;

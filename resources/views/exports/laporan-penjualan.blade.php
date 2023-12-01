@@ -23,7 +23,6 @@
                 <th>Nama Product</th>
                 <th>Kategori</th>
                 <th>Jumlah Terjual</th>
-                <th>Harga Product</th>
                 <th>Pendapatan Product</th>
             </tr>
         </thead>
@@ -35,7 +34,6 @@
                 <td>{{ $value->nama_product }}</td>
                 <td>{{ $value->kategori}}</td>
                 <td>{{ $value->jumlah }}</td>
-                <td>{{ $value->harga }}</td>
                 <td>{{ $value->pendapatan }}</td>
             </tr>
             @endforeach
@@ -44,7 +42,6 @@
             <tr>
                 <td colspan="4">Total</td>
                 <td>{{ $total_jumlah }}</td>
-                <td></td>
                 <td>{{ $total_pendapatan }}</td>
             </tr>
         </tfoot>
