@@ -166,14 +166,14 @@ class TenantController extends Controller
     $tenant = Tenant::where('id', $request->tenant_id)->firstOrFail();
     try {
         if ($request->url_self_order) {
-            $tenant->update(['url_self_order' => $request->url_self_order]);
             $validator = Validator::make($request->all(), [
                 'url_self_order' => 'nullable|url',
             ]);
-        
             if ($validator->fails()) {
                 return response()->json(['status' => 'error', 'message' =>  "The url self order must be a valid URL"], 422);
             }
+            $tenant->update(['url_self_order' => $request->url_self_order]);
+
         
         }
         if (in_array(auth()->user()->role, [User::SUPERADMIN, User::ADMIN])) {
