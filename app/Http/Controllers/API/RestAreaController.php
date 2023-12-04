@@ -88,7 +88,11 @@ class RestAreaController extends Controller
             ], 422);
         }
         $restArea->delete();
-        return response()->noContent();
+        // return response()->noContent();
+        return response()->json([
+            'status' => 'Sukses',
+            'message' => 'Rest area '.$restArea->name. ' berhasil dihapus!'
+        ], 200);
     }
 
     public function updateStatus()
