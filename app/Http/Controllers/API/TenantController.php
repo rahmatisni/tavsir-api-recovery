@@ -33,12 +33,7 @@ class TenantController extends Controller
         $filter = $request?->filter;
         $filterLike = $request?->filterlike;
         $businessStatus = $filter['status_perusahaan'] ?? false;
-        if($filter)
-        {
-            $filter = array_map('intval', $filter);
-        }
-
-
+       
         $data = Tenant::with('business', 'rest_area', 'ruas', 'order', 'category_tenant')->myWheres($filter)->myWhereLikeStartCol($filterLike)
         ->when($businessStatus, function ($query) use ($businessStatus) {
             // Adding the filter for business.status_perusahaan
