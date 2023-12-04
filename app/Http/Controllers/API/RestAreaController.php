@@ -21,7 +21,7 @@ class RestAreaController extends Controller
         $data = RestArea::when($name = request()->name, function ($q) use ($name) {
             return $q->where('name', 'like', "%$name%");
         });
-        $data = $data->withTrashed()->get();
+        $data = $data->get();
 
         if (request()->lat && request()->lon) {
             $data = $data->filter(function ($item) {
