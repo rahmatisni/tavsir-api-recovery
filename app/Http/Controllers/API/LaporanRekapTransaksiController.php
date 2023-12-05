@@ -7,10 +7,12 @@ use App\Http\Requests\DateRangeRequest;
 use App\Http\Resources\LaporanRekapTransaksiResource;
 use App\Http\Resources\RekapResource;
 use App\Http\Resources\RekapTransOrderResource;
+use App\Models\Tenant;
 use App\Models\TransOperational;
 use App\Models\TransOrder;
 use Barryvdh\DomPDF\Facade\Pdf;
 use DB;
+use Illuminate\View\View;
 
 class LaporanRekapTransaksiController extends Controller
 {
@@ -43,6 +45,7 @@ class LaporanRekapTransaksiController extends Controller
             });
 
         $data = $data->orderBy('created_at', 'desc')->get();
+        
         return response()->json(LaporanRekapTransaksiResource::collection($data));
     }
 
@@ -74,8 +77,7 @@ class LaporanRekapTransaksiController extends Controller
             ], 404);
         }
         // dd($periode_berjalan);
-        $data_all = TransOrder::done()
-            ->byRole()
+        $data = TransOrder::byRole()
             ->whereBetween('created_at', [$periode_berjalan->start_date, $periode_berjalan->end_date])
             ->where('casheer_id', $periode_berjalan->casheer_id)
             ->when($payment_method_id = request('payment_method_id'), function ($q) use ($payment_method_id) {
@@ -88,15 +90,17 @@ class LaporanRekapTransaksiController extends Controller
                 $q->where('order_id', 'like', '%'.$order_id.'%');
             })
             ->orderBy('created_at', 'desc')->get();
+            // ::done()
 
-
+        $data_all = $data->where('status', 'DONE');
+        $data_allin = $data->whereIn('status',['DONE','REFUND']);
         $data = [
             'start_date' => (string) $periode_berjalan->start_date,
             'end_date' => (string) $periode_berjalan->end_date,
             'periode' => $periode_berjalan->periode,
             'total' => $data_all->sum('total'),
             'sub_total' => $data_all->sum('sub_total'),
-            'detil' => RekapTransOrderResource::collection($data_all)
+            'detil' => RekapTransOrderResource::collection($data_allin)
         ];
 
         return response()->json($data);
@@ -123,6 +127,21 @@ class LaporanRekapTransaksiController extends Controller
                 $q->where('order_type', $order_type);
             })
             ->get();
+            $sharing = [];
+            $sharing_cashboax = json_decode($data->trans_cashbox?->sharing ?? []);
+            $count = 0;
+            foreach ($sharing_cashboax as $key => $value) {
+                $label = 'Investor '.$count;
+                if($count == 0) {
+                    $label = Tenant::where('id', $key)->first()->name ?? 'Tenant tidak ada';
+                }
+
+                array_push($sharing, [
+                    'label' => $label,
+                    'value' => $value,
+                ]);
+                $count ++;
+            }
             $datas = [
                 'periode' => $data->periode,
                 'nama_kasir' => $data->cashier?->name,
@@ -139,8 +158,15 @@ class LaporanRekapTransaksiController extends Controller
                 'pembayaran_qr' => $data->trans_cashbox?->rp_tav_qr,
                 'pembayaran_digital' => $data->trans_cashbox?->total_digital,
                 'bri_va' => $data->trans_cashbox?->rp_va_bri,
+                'bni_va' => $data->trans_cashbox?->rp_va_bni,
+                'link_aja' => $data->trans_cashbox?->rp_link_aja,
                 'mandiri_va' => $data->trans_cashbox?->rp_va_mandiri,
                 'edc' => $data->trans_cashbox?->rp_edc,
+                'total_pendapatan' => $data->trans_cashbox?->rp_total ?? 0,
+                'total_penjualan' => ($data->trans_cashbox?->rp_total ?? 0) - ($data->trans_cashbox?->rp_addon_total ?? 0),
+                'total_biaya_tambahan' => $data->trans_cashbox?->rp_addon_total ?? 0,
+                'total_refund' => $data->trans_cashbox?->rp_refund ?? 0,
+                'sharing' => $sharing,
                 // 'record' => $data,
                 'order' => $order->map(function($value){
                     return [
@@ -150,12 +176,13 @@ class LaporanRekapTransaksiController extends Controller
                         'total' => $value->sub_total,
                         'metode_pembayaran' => $value->payment_method?->name,
                         'jenis_transaksi' => $value->labelOrderType(),
+                        'satus' => $value->status,
                     ];
                 })
             ];
 
         $pdf = Pdf::loadView('pdf.rekap', $datas);
-
-        return $pdf->download('invoice.pdf');
+        
+        return $pdf->download('Rekap.pdf');
     }
 }

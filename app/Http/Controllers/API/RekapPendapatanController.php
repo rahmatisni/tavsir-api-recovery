@@ -23,9 +23,7 @@ class RekapPendapatanController extends Controller
                 'message' => 'Tidak ada periode berjalan'
             ], 404);
         }
-
-        $data_all = TransOrder::done()
-            ->with('payment_method')
+        $data = TransOrder::with('payment_method')
             ->where('tenant_id', auth()->user()->tenant_id)
             ->where('casheer_id', auth()->user()->id)
             ->whereBetween('created_at', [$periode_berjalan->start_date, Carbon::now()])
@@ -36,7 +34,7 @@ class RekapPendapatanController extends Controller
                 $q->where('order_type', $order_type);
             })
             ->when($order_id = request('order_id'), function ($q) use ($order_id) {
-                $q->where('order_id','like', '%'.$order_id.'%');
+                $q->where('order_id', 'like', '%' . $order_id . '%');
             })
             ->when($sort = request('sort'), function ($q) use ($sort) {
                 if (request('sort')) {
@@ -45,8 +43,10 @@ class RekapPendapatanController extends Controller
                 } else {
                     $q->orderBy('created_at', 'desc');
                 }
-            })
-            ->get();
+            })->get();
+
+        $data_all = $data->where('status','DONE');
+
         $cash = $data_all;
         $qr = $data_all;
         $digital = $data_all;
@@ -132,7 +132,9 @@ class RekapPendapatanController extends Controller
                 }
             }
         }
+        $data_refund = $data->where('status','REFUND');
 
+        $rp_refund = $data_refund->sum('sub_total') + $data_refund->sum('addon_total');
 
         $periode_berjalan = [
             'cashier_name' => $periode_berjalan->cashier->name ?? '',
@@ -152,8 +154,9 @@ class RekapPendapatanController extends Controller
             'edc' => $edc,
             'total_addon' => $total_addon,
             'total_pendapatan' => $total_pendapatan,
+            'total_refund' => $rp_refund ?? 0,
             'list_investor' => $resulttempInvestor,
-            'detil' => RekapTransOrderResource::collection($data_all)
+            'detil' => RekapTransOrderResource::collection($data->whereIn('status',['DONE','REFUND']))
         ];
 
         return response()->json($periode_berjalan);

@@ -18,7 +18,8 @@ class StockServices
         return Product::with('category','customize','tenant')
                 ->byTenant()
                 ->myWhereLike(['name','sku'], $search)
-                ->myWheres($filter)
+                // ->myWhereLike($filter)
+                ->myWhereLikeStartCol($filter)
                 ->orderByDesc('id')
                 ->paginate();
     }
@@ -35,12 +36,12 @@ class StockServices
             ->masuk()
             ->when($name = $filter['name'] ?? '', function ($q) use ($name) {
                 $q->whereHas('product', function ($qq) use ($name) {
-                    $qq->where('name', 'like', '%' . $name . '%');
+                    $qq->where('name', 'like', $name . '%');
                 });
             })
             ->when($sku = $filter['sku'] ?? '', function ($q) use ($sku) {
                 $q->whereHas('product', function ($qq) use ($sku) {
-                    $qq->where('sku', 'like', '%' . $sku . '%');
+                    $qq->where('sku', 'like', $sku . '%');
                 });
             })
             ->when($status = $filter['status'] ?? '', function ($q) use ($status) {
@@ -80,12 +81,12 @@ class StockServices
                 ->keluar()
                 ->when($name = $filter['name'] ?? '', function ($q) use ($name) {
                     $q->whereHas('product', function ($qq) use ($name) {
-                        $qq->where('name', 'like', '%' . $name . '%');
+                        $qq->where('name', 'like', $name . '%');
                     });
                 })
                 ->when($sku = $filter['sku'] ?? '', function ($q) use ($sku) {
                     $q->whereHas('product', function ($qq) use ($sku) {
-                        $qq->where('sku', 'like', '%' . $sku . '%');
+                        $qq->where('sku', 'like', $sku . '%');
                     });
                 })
                 ->when($category_id = $filter['category_id'] ?? '', function ($q) use ($category_id) {

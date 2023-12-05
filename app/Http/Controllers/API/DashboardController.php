@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DashboardRequest;
+use App\Models\Business;
 use App\Models\Constanta\ProductType;
 use App\Models\Product;
 use App\Models\RestArea;
@@ -21,15 +22,29 @@ class DashboardController extends Controller
     {
         $tanggal_awal = $request->tanggal_awal;
         $tanggal_akhir = $request->tanggal_akhir;
+        $tenant_id = $request->tenant_id;
+        $business_id = $request->business_id;
+
+        $user_role = auth()->user()->role;
+        $business_count = Business::count();
+        if($user_role == User::TENANT){
+            $tenant_id = auth()->user()->tenant_id;
+            $business_count = 1;
+        }
+
+        if($user_role == User::OWNER){
+            $business_id = auth()->user()->business_id;
+            $business_count = 1;
+        }
 
         $order = TransOrder::Done()
             ->when($rest_area_id = $request->rest_area_id, function ($q) use ($rest_area_id) {
                 $q->whereHas('tenant', function ($qq) use ($rest_area_id) {
                     $qq->where('rest_area_id', $rest_area_id);
                 });
-            })->when($tenant_id = $request->tenant_id, function ($q) use ($tenant_id) {
+            })->when($tenant_id, function ($q) use ($tenant_id) {
             $q->where('tenant_id', $tenant_id);
-        })->when($business_id = $request->business_id, function ($q) use ($business_id) {
+        })->when($business_id, function ($q) use ($business_id) {
             $q->where('business_id', $business_id);
         })->when(($tanggal_awal && $tanggal_akhir), function ($q) use ($tanggal_awal, $tanggal_akhir) {
 
@@ -62,16 +77,12 @@ class DashboardController extends Controller
         })->get();
 
         $customer_count = 0;
-        if (auth()->user()->role == User::JMRBAREA) {
-            $customer_count = Voucher::when($rest_area_id = $request->rest_area_id, function ($q) use ($rest_area_id) {
-                $q->where('rest_area_id', $rest_area_id);
-            })->count();
-        }
-
-        if (auth()->user()->role == User::TENANT) {
-            $customer_count = $order->whereNotNull('customer_id')->unique('customer_id')->count();
-        }
-
+        // if ($user_role == User::JMRBAREA) {
+        //     $customer_count = Voucher::when($rest_area_id = $request->rest_area_id, function ($q) use ($rest_area_id) {
+        //         $q->where('rest_area_id', $rest_area_id);
+        //     })->count();
+        // }
+        $customer_count = $order->whereIn('order_type',[TransOrder::ORDER_SELF_ORDER, TransOrder::ORDER_TAKE_N_GO])->whereNotNull('customer_id')->unique('customer_id')->count();
 
         $total_pemasukan = $all1->sum('sub_total');
         $total_transaksi_takengo = $takengo_count;
@@ -88,11 +99,14 @@ class DashboardController extends Controller
         $ct = $order;
         $ct_group = $ct->sortBy('tenant.category_tenant_id')
             ->groupBy('tenant.category_tenant_id')->map(function ($item) {
-                return $item->count();
+                return [
+                    'label' => $item->first()->tenant->category_tenant->name ?? 'Tanpa Category',
+                    'value' => $item->count()
+                ];
             });
         $category_tenant = [
-            'labels' => array_keys($ct_group->toArray()),
-            'data' => array_values($ct_group->toArray())
+            'labels' => $ct_group->pluck('label'),
+            'data' => $ct_group->pluck('value')
         ];
 
         // $category_tenant = [
@@ -148,10 +162,10 @@ class DashboardController extends Controller
         })->sortDesc();
         $top_tenant = [];
         foreach ($topTenant as $key => $value) {
-            $tenant = Tenant::find($key);
+            $tenant = Tenant::withTrashed()->find($key);
             $top_tenant[] = [
                 'name' => $tenant?->name,
-                'photo' => $tenant?->photo ? asset($tenant->photo) : null,
+                'photo' => $tenant?->photo_url ? asset($tenant->photo_url) : null,
                 'total_transaksi' => $value,
             ];
         }
@@ -199,6 +213,7 @@ class DashboardController extends Controller
             'total_transaksi_tng' => number_format($total_transaksi_takengo, 0, ',', '.'),
             'total_transaksi_so' => number_format($total_transaksi_so, 0, ',', '.'),
             'total_transaksi' => number_format($total_transaksi, 0, ',', '.'),
+            'total_business_owner' => $business_count,
             'total_rest_area' => $total_rest_area,
             'total_tenant' => $total_tenant,
             'total_customer' => $total_customer,

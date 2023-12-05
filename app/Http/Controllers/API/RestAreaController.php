@@ -21,7 +21,7 @@ class RestAreaController extends Controller
         $data = RestArea::when($name = request()->name, function ($q) use ($name) {
             return $q->where('name', 'like', "%$name%");
         });
-        $data = $data->withTrashed()->get();
+        $data = $data->get();
 
         if (request()->lat && request()->lon) {
             $data = $data->filter(function ($item) {
@@ -88,7 +88,11 @@ class RestAreaController extends Controller
             ], 422);
         }
         $restArea->delete();
-        return response()->noContent();
+        // return response()->noContent();
+        return response()->json([
+            'status' => 'Sukses',
+            'message' => 'Rest area '.$restArea->name. ' berhasil dihapus!'
+        ], 200);
     }
 
     public function updateStatus()

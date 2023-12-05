@@ -6,6 +6,8 @@ use App\Exports\TenantExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TenantRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
 use App\Http\Requests\BukaTutupTokoRequest;
 use App\Http\Resources\TenantResource;
 use App\Models\Tenant;
@@ -25,9 +27,22 @@ class TenantController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(TenantResource::collection(Tenant::with('business', 'rest_area', 'ruas', 'order', 'category_tenant')->get()));
+
+        $filter = $request?->filter;
+        $filterLike = $request?->filterlike;
+        $businessStatus = $filter['status_perusahaan'] ?? false;
+       
+        $data = Tenant::with('business', 'rest_area', 'ruas', 'order', 'category_tenant')->myWheres($filter)->myWhereLikeStartCol($filterLike)
+        ->when($businessStatus, function ($query) use ($businessStatus) {
+            // Adding the filter for business.status_perusahaan
+            $query->whereHas('business', function ($businessQuery) use ($businessStatus) {
+                $businessQuery->where('status_perusahaan', $businessStatus);
+            });
+        })
+        ->get();
+        return response()->json(TenantResource::collection($data));
     }
 
     /**
@@ -147,31 +162,45 @@ class TenantController extends Controller
     }
 
     public function setFeature(Request $request, Tenant $tenant)
-    {
-        $tenant = Tenant::where('id',$request->tenant_id)->firstOrFail();
-        try {
-            if (in_array(auth()->user()->role, [User::SUPERADMIN, User::ADMIN])) {
-                $tenant->update(array_map('intval', $request->all()));
-                return response()->json([
-                    "status" => 'Success',
-                    'role' => '-',
-                    'data' =>
-                        [
-                            'tenant_id' => $tenant->id,
-                            'tenant_name' => $tenant->name,
-                            'in_takengo' => $tenant->in_takengo,
-                            'in_selforder' => $tenant->in_selforder,
-                            'is_scan' => $tenant->is_scan,
-                            'is_print' => $tenant->is_print,
-                            'is_composite' => $tenant->is_composite,
-                        ]
-                ], 200);            }
-            return response()->json(["status" => 'Failed', 'role' => 'UNKNOWN', 'message' => 'DONT TRY'], 422);
+{
+    $tenant = Tenant::where('id', $request->tenant_id)->firstOrFail();
+    try {
+        if ($request->url_self_order) {
+            $validator = Validator::make($request->all(), [
+                'url_self_order' => 'nullable|url',
+            ]);
+            if ($validator->fails()) {
+                return response()->json(['status' => 'error', 'message' =>  "The url self order must be a valid URL"], 422);
+            }
+            $tenant->update(['url_self_order' => $request->url_self_order]);
 
-        } catch (\Throwable $th) {
-            return response()->json($th->getMessage(), 500);
+        
         }
+        if (in_array(auth()->user()->role, [User::SUPERADMIN, User::ADMIN])) {
+            $tenant->update(array_map('intval', $request->except(['url_self_order'])));
+
+            return response()->json([
+                "status" => 'Success',
+                'role' => '-',
+                'data' =>
+                    [
+                        'tenant_id' => $tenant->id,
+                        'tenant_name' => $tenant->name,
+                        'in_takengo' => $tenant->in_takengo,
+                        'in_selforder' => $tenant->in_selforder,
+                        'is_scan' => $tenant->is_scan,
+                        'is_print' => $tenant->is_print,
+                        'is_composite' => $tenant->is_composite,
+                        'url_self_order' => $tenant->url_self_order
+                    ]
+            ], 200);
+        }
+        return response()->json(["status" => 'Failed', 'role' => 'UNKNOWN', 'message' => 'DONT TRY'], 422);
+
+    } catch (\Throwable $th) {
+        return response()->json($th->getMessage(), 500);
     }
+}
 
     public function sawFeature(Request $request, Tenant $tenant)
     {
@@ -183,11 +212,13 @@ class TenantController extends Controller
                 [
                     'tenant_id' => $tenant->id,
                     'tenant_name' => $tenant->name,
-                    'in_takengo' => $tenant->in_takengo ?? 0,
-                    'in_selforder' => $tenant->in_selforder ?? 0,
+                    'in_takengo' => $tenant?->in_takengo ?? 0,
+                    'in_selforder' => $tenant?->in_selforder ?? 0,
                     'is_scan' => $tenant->is_scan ?? 0,
                     'is_print' => $tenant->is_print ?? 0,
                     'is_composite' => $tenant->is_composite ?? 0,
+                    'url_self_order' => $tenant->url_self_order
+
                 ]
         ], 200);
     }

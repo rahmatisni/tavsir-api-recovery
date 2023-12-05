@@ -14,7 +14,7 @@ class ProductTunggalServices
         return Product::with('category','customize','tenant')
                 ->byType(ProductType::PRODUCT)
                 ->byTenant()
-                ->myWhereLike(['name','sku'], $search)
+                ->myWhereLikeStart(['name','sku'], $search)
                 ->myWheres($filter)
                 ->orderByRaw('stock = 0')->orderByRaw('is_active = 0')->orderBy('name', 'asc')
                 ->paginate();

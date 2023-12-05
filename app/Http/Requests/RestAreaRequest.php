@@ -24,7 +24,7 @@ class RestAreaRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|max:20|',
+            'name' => 'required|string|max:50|',
             'address' => 'required',
             'latitude' => 'required|numeric|between:-90,90',
             'longitude' => 'required|numeric|between:-180,180',

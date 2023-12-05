@@ -14,11 +14,9 @@ class LogInformLa extends Migration
     public function up()
     {
         //
-        Schema::create('trans_cashbox', function (Blueprint $table) {
-            $table->id();
+        Schema::table('trans_cashbox', function (Blueprint $table) {
             $table->string('trans_order_id');
             $table->string('data');
-            $table->timestamps();
             $table->text('inquiry');
             $table->text('payment');
             $table->text('status');
@@ -32,8 +30,8 @@ class LogInformLa extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('log_inform_la');
-
-        //
+        Schema::table('trans_cashbox', function (Blueprint $table) {
+            $table->dropColumn(['trans_order_id','data','inquiry','payment','status']);
+        });
     }
 }

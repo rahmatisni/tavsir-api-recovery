@@ -403,7 +403,7 @@ class TavsirController extends Controller
 
     public function productList(Request $request)
     {
-        $data = Product::byTenant()->byType(ProductType::PRODUCT)->with('tenant')->when($filter = $request->filter, function ($q) use ($filter) {
+        $data = Product::byTenant()->byType(ProductType::PRODUCT)->with('tenant')->with('trans_product_raw')->when($filter = $request->filter, function ($q) use ($filter) {
             $q->where(function ($qq) use ($filter) {
                 return $qq->where('name', 'like', "%$filter%")
                     ->orwhere('sku', 'like', "%$filter%");
@@ -418,8 +418,42 @@ class TavsirController extends Controller
         } else if ($request->is_active == '1') {
             $data->where('is_active', '1');
         }
-        $data = $data->orderByRaw('stock = 0')->orderByRaw('is_active = 0')->orderBy('name', 'asc')->get();
-        return response()->json(TrProductResource::collection($data));
+        $data = $data->orderBy('name', 'asc')->get();
+
+        $active = [];
+        $inactive = [];
+        foreach ($data as $value) {
+            $cek_product_have_not_active = $value->trans_product_raw->where('is_active', 0)->count();
+            $stock = $value->stock;
+            // $value->stock_sort = $stock > 0 ? 0:1;
+            $value->stock_sort = $value->stock === 0 ? 1 : ($value->is_active === 0 ? 1 : 0);
+            if ($value->is_composit == 1) {
+                if ($cek_product_have_not_active > 0) {
+                    $value->stock_sort = 1;
+                } else {
+                    $liststock = [];
+                    foreach ($value->trans_product_raw as $item) {
+                        $liststock[] = floor($item->stock / $item->pivot->qty);
+                    }
+                    $temp_stock = count($liststock) == 0 ? 0 : min($liststock);
+                    $value->gaga = $temp_stock;
+
+                    $value->stock_sort = $temp_stock > 0 ? 0:1;
+                }
+
+            }
+            if($value->stock_sort == 0){
+                $active[] = $value;
+
+            }
+            else {
+                $inactive[] = $value;
+            }
+        }
+
+        $sortedArray = array_merge($active, $inactive);
+
+        return response()->json(TrProductResource::collection($sortedArray));
     }
 
     public function productStore(TavsirProductRequest $request)
@@ -430,7 +464,7 @@ class TavsirController extends Controller
             $data->tenant_id = auth()->user()->tenant_id;
             $data->fill($request->all());
             $data->type = ProductType::PRODUCT;
-            $data->save();
+            $data->sav();
             $data->trans_stock()->create([
                 'stock_type' => TransStock::INIT,
                 'recent_stock' => 0,
@@ -655,8 +689,7 @@ class TavsirController extends Controller
                 $data->sharing_code = $sharing->sharing_code ?? null;
                 $data->sharing_amount = $sharing_amount ?? null;
                 $data->sharing_proportion = $sharing->sharing_config ?? null;
-            }
-            else {
+            } else {
                 $data->sharing_code = [(string) $data->tenant_id];
                 $data->sharing_proportion = [100];
                 $data->sharing_amount = [$data->sub_total + (int) ($data->addon_total)];
@@ -684,7 +717,7 @@ class TavsirController extends Controller
     {
         $data = TransOrder::byRole()
             ->where('order_type', '=', TransOrder::POS)
-            ->where('status', '=', TransOrder::CART)
+            ->whereIn('status', [TransOrder::CART,TransOrder::WAITING_PAYMENT])
             ->count();
 
         return response()->json(['count' => $data]);
@@ -1863,7 +1896,7 @@ class TavsirController extends Controller
                                     'type' => 'click',
                                     'action' => 'payment_success'
                                 );
-                                $result = sendNotif($ids, '💰Pesanan Telah Dibayar', 'Yuukk segera siapkan pesanan atas transaksi' . $data->order_id, $payload);
+                                $result = sendNotif($ids, '💰Pesanan Telah Dibayar', 'Yuk segera siapkan pesanan atas transaksi ' . $data->order_id, $payload);
                             }
                         }
                         $data->save();
@@ -2005,7 +2038,7 @@ class TavsirController extends Controller
                 //     $q->where('casheer_id', $identifier)->Orwhere('casheer_id',NULL);
                 // });                
             });
-        $data = $data->orderBy('created_at', 'DESC')->get();
+        $data = $data->whereIn('order_type',['POS','SELF_ORDER','TAKE_N_GO'])->orderBy('created_at', 'DESC')->get();
         // $data = $data->orderByRaw($queryOrder)->orderBy('created_at', 'DESC')->get();
 
         return response()->json(TrOrderResource::collection($data));

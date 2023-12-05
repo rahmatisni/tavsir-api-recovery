@@ -14,10 +14,12 @@ class RekapResource extends JsonResource
      */
     public function toArray($request)
     {
+
         return [
             'periode' => $this->periode,
             'cashier_name' => $this->cashier->name ?? '',
             'rp_total' => $this->trans_cashbox->rp_total ?? 0,
+            'rp_refund' => $this->trans_cashbox->rp_refund ?? 0,
             'biaya_tambahan' => $this->trans_cashbox->rp_addon_total ?? 0,
             'start_date' => (string) $this->start_date,
             'end_date' => (string) $this->end_date ?? '-',
@@ -39,7 +41,7 @@ class RekapResource extends JsonResource
                 'rp_va_mandiri' => $this->trans_cashbox->rp_va_mandiri ?? 0,
                 'rp_va_bni' => $this->trans_cashbox->rp_va_bni ?? 0,
             ],
-            'sharing' => json_decode($this->trans_cashbox->sharing) ?? []
+            'sharing' => [json_decode($this->trans_cashbox->sharing)] ?? []
         ];
     }
 }

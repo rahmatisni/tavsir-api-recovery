@@ -116,6 +116,7 @@ class LaporanServices
             'total_nominal_tunai' => $data->sum('trans_cashbox.cashbox'),
             'total_koreksi' => $data->sum('trans_cashbox.pengeluaran_cashbox'),
             'total_addon' => $data->sum('trans_cashbox.rp_addon_total'),
+            'total_refund' => $data->sum('trans_cashbox.rp_refund'),
             'total' => $data->sum('trans_cashbox.rp_total'),
             'record' => json_decode(LaporanOperationalResource::collection($data)->toJson()),
         ];
@@ -231,6 +232,33 @@ class LaporanServices
         return $record;
     }
 
+
+    public function decode_manual($sharing_amount){
+        $pairStrings = explode(',', substr($sharing_amount, 1, -1));
+
+        $resultArray = [];
+
+
+        foreach ($pairStrings as $pairString) {
+            $dotPosition = strpos($pairString, '.');
+
+            // Define the number of characters to keep after the dot
+            $charactersToKeep = 2;
+
+            // Check if the dot was found and if there are enough characters after it
+            if ($dotPosition !== false && $dotPosition + $charactersToKeep < strlen($pairString)) {
+                // Trim characters after the dot + 2
+                $trimmedString = substr($pairString, 0, $dotPosition + $charactersToKeep + 1);
+            } else {
+                // No trimming needed
+                $trimmedString = $pairString;
+            }
+
+
+            $resultArray[] = $trimmedString;
+        }
+        return $resultArray;
+    }
     public function transaksi(DownloadLaporanRequest $request)
     {
         $tanggal_awal = $request->tanggal_awal;
@@ -241,32 +269,34 @@ class LaporanServices
         $order_type = $request->order_type;
         $payment_method_id = $request->payment_method_id;
 
-        $data = TransOrder::with('tenant')->done()
-            ->when(
-                ($tanggal_awal && $tanggal_akhir),
-                function ($q) use ($tanggal_awal, $tanggal_akhir) {
-                    return $q->whereBetween(
-                        'created_at',
-                        [
-                            $tanggal_awal,
-                            $tanggal_akhir . ' 23:59:59'
-                        ]
-                    );
-                }
-            )
-            ->when($tenant_id, function ($q) use ($tenant_id) {
-                return $q->where('tenant_id', $tenant_id);
-            })->when($rest_area_id, function ($qq) use ($rest_area_id) {
-            return $qq->where('rest_area_id', $rest_area_id);
-        })->when($business_id, function ($qq) use ($business_id) {
-            return $qq->where('business_id', $business_id);
-        })->when($order_type, function ($qq) use ($order_type) {
-            return $qq->where('order_type', $order_type);
-        })->when($payment_method_id, function ($qq) use ($payment_method_id) {
-            return $qq->where('payment_method_id', $payment_method_id);
-        })
-            ->orderBy('created_at')
-            ->get();
+        $raw_data =  $data = TransOrder::with('tenant')
+        ->when(
+            ($tanggal_awal && $tanggal_akhir),
+            function ($q) use ($tanggal_awal, $tanggal_akhir) {
+                return $q->whereBetween(
+                    'created_at',
+                    [
+                        $tanggal_awal,
+                        $tanggal_akhir . ' 23:59:59'
+                    ]
+                );
+            }
+        )
+        ->when($tenant_id, function ($q) use ($tenant_id) {
+            return $q->where('tenant_id', $tenant_id);
+        })->when($rest_area_id, function ($qq) use ($rest_area_id) {
+        return $qq->where('rest_area_id', $rest_area_id);
+    })->when($business_id, function ($qq) use ($business_id) {
+        return $qq->where('business_id', $business_id);
+    })->when($order_type, function ($qq) use ($order_type) {
+        return $qq->where('order_type', $order_type);
+    })->when($payment_method_id, function ($qq) use ($payment_method_id) {
+        return $qq->where('payment_method_id', $payment_method_id);
+    })
+        ->orderBy('created_at')
+        ->get();
+        $data = $raw_data->where('status','DONE');
+        $data_w_refund = $raw_data->whereIn('status',['DONE','REFUND']);
         if ($data->count() == 0) {
             abort(404);
         }
@@ -274,7 +304,7 @@ class LaporanServices
         $item_count = 0;
         $hasil = [];
 
-        foreach ($data as $value) {
+        foreach ($data_w_refund as $value) {
             $count = $value->detil->count();
             $item_count += $count;
 
@@ -290,11 +320,12 @@ class LaporanServices
                 'fee' => $value->fee ?? 0,
                 'service_fee' => $value->service_fee ?? 0,
                 'total' => $value->total,
+                'status' => $value->status,
                 'metode_pembayaran' => $value->payment_method->name ?? '',
                 'jenis_transaksi' => $value->labelOrderType(),
                 'sharing_code' => json_decode($value->sharing_code) ?? [],
                 'sharing_proportion' => json_decode($value->sharing_proportion) ?? [],
-                'sharing_amount' => json_decode($value->sharing_amount) ?? []
+                'sharing_amount' => $this->decode_manual(($value->sharing_amount)) ?? []
             ]);
         }
 

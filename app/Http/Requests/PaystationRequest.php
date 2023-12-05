@@ -24,7 +24,7 @@ class PaystationRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:50',
             'rest_area_id' => 'required|exists:ref_rest_area,id',
         ];
     }

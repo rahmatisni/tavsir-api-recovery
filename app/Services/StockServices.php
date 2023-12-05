@@ -18,15 +18,31 @@ class StockServices
             $update_stock = 0;
             if ($product->is_composit == 1) {
                 foreach ($product->trans_product_raw as $value) {
-                    $stock = max($value->stock - ($value->pivot->qty * $qty), 0);
-                    $value->update([
-                        'stock' => $stock
-                    ]);
+                    $exe = Product::find($value->id);
+                    $stock = max($exe->stock - ($value->pivot->qty * $qty), 0);
+                    // $value->update([
+                    //     'stock' => $stock
+                    // ]);
+                    $exe->stock = $stock;
+                    $exe->save();
                 }
             } else {
-                $update_stock = max(($stock - $qty), 0);
-                $order_detil->product->update(['stock' => $update_stock]);
-            }
+                $exe = Product::find($product->id);
+                $stock = max($exe->stock - ($qty), 0);
+
+              
+                // $value->update([
+                //     'stock' => $stock
+                // ]);
+                $exe->stock = $stock;
+                $exe->save();
+                }
+                // $update_stock = max(($stock - $qty), 0);
+                // $order_detil->product->update(['stock' => $update_stock]);
+                // dd($order_detil->product);
+
+                // $order_detil->save();
+            
 
             if($order_detil->product->stock <= $order_detil->product->stock_min && $order_detil->product->is_notification == 1) {
             // if ($update_stock < 10) {}
