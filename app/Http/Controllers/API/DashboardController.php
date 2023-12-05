@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DashboardRequest;
+use App\Models\Business;
 use App\Models\Constanta\ProductType;
 use App\Models\Product;
 use App\Models\RestArea;
@@ -25,13 +26,15 @@ class DashboardController extends Controller
         $business_id = $request->business_id;
 
         $user_role = auth()->user()->role;
-
+        $business_count = Business::count();
         if($user_role == User::TENANT){
             $tenant_id = auth()->user()->tenant_id;
+            $business_count = 1;
         }
 
         if($user_role == User::OWNER){
-            $tenant_id = auth()->user()->business_id;
+            $business_id = auth()->user()->business_id;
+            $business_count = 1;
         }
 
         $order = TransOrder::Done()
@@ -210,6 +213,7 @@ class DashboardController extends Controller
             'total_transaksi_tng' => number_format($total_transaksi_takengo, 0, ',', '.'),
             'total_transaksi_so' => number_format($total_transaksi_so, 0, ',', '.'),
             'total_transaksi' => number_format($total_transaksi, 0, ',', '.'),
+            'total_business_owner' => $business_count,
             'total_rest_area' => $total_rest_area,
             'total_tenant' => $total_tenant,
             'total_customer' => $total_customer,
