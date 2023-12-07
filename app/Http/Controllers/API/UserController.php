@@ -140,7 +140,7 @@ class UserController extends Controller
                 $response = Http::timeout(10)
                     ->retry(1, 100)
                     ->withoutVerifying()
-                    ->post('172.16.4.47:3007/api/mail-register', $payload);
+                    ->post(ENV('MAIL_URL'), $payload);
                 clock()->event("Register{$request->email}")->end();
                 $result = $response->json();
 
@@ -162,7 +162,8 @@ class UserController extends Controller
                 'register_uuid' => $data_uuid
             ]);
         } catch (\Throwable $th) {
-            return response()->json(['status'=>'Error','message' => 'Permintaan Gagal'],402);
+            return $th;
+            // return response()->json(['status'=>'Error','message' => 'Permintaan Gagal'],402);
         }
         return response()->json($user);
     }
@@ -200,7 +201,7 @@ class UserController extends Controller
                 $response = Http::timeout(10)
                     ->retry(1, 100)
                     ->withoutVerifying()
-                    ->post('172.16.4.47:3007/api/mail-register', $payload);
+                    ->post(ENV('MAIL_URL'), $payload);
                 clock()->event("Register{$request->email}")->end();
                 $result = $response->json();
 
@@ -216,7 +217,7 @@ class UserController extends Controller
             $data->save();
             DB::commit();
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'email duplikat']);
+            // return response()->json(['message' => 'email duplikat']);
         }
         return response()->json($data);
 
