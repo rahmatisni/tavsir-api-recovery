@@ -2318,6 +2318,10 @@ class TavsirController extends Controller
             $data->reason_cancel = $request->reason_cancel;
         }
 
+        if ($request->status == TransOrder::READY && $data->order_type === 'SELF_ORDER' && $data->consume_type === 'dine_in') {
+            $data->status = TransOrder::DONE;
+        }
+
         $data->save();
 
         return response()->json($data);
