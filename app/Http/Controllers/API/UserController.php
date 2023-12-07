@@ -9,11 +9,14 @@ use App\Models\User;
 use App\Models\TransOperational;
 use App\Http\Requests\UserRequest;
 use App\Models\Subscription;
+use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
+
 
 
 
@@ -121,26 +124,33 @@ class UserController extends Controller
 
         $payload =
             [
+                'messageHeader' => 'Link Reset Password',
                 'email' => $request->email,
-                'link' => env('WEB_URL')."/ubah_password",
+                'link' => env('WEB_URL') . "/ubah_password",
                 'uuid' => $data_uuid
             ];
 
-        $response = Http::timeout(10)
-            ->retry(1, 100)
-            ->withoutVerifying()
-            ->post('172.16.4.47:3007/api/mail-register', $payload);
-        clock()->event("Register{$request->email}")->end();
-        $result = $response->json();
-        
+
         try {
-            if ($result['status'] == 0) {
-                return $result;
+            if ($request->role === 'CASHIER') {
+                clock()->event("Register{$request->email}")->end();
+
+            } else {
+                $response = Http::timeout(10)
+                    ->retry(1, 100)
+                    ->withoutVerifying()
+                    ->post('172.16.4.47:3007/api/mail-register', $payload);
+                clock()->event("Register{$request->email}")->end();
+                $result = $response->json();
+
+                if ($result['status'] == 0) {
+                    return $result;
+                }
             }
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => bcrypt($request->password ??$uuid->toString()),
+                'password' => bcrypt($request->password ?? $uuid->toString()),
                 'role' => $request->role,
                 'business_id' => $request->business_id,
                 'merchant_id' => $request->merchant_id,
@@ -151,7 +161,7 @@ class UserController extends Controller
                 'register_uuid' => $data_uuid
             ]);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'email duplikat']);
+            return response()->json(['status'=>'Error','message' => 'Permintaan Gagal'],402);
         }
         return response()->json($user);
     }
@@ -165,6 +175,65 @@ class UserController extends Controller
     public function show(User $user)
     {
         return response()->json($user);
+    }
+
+    public function forgetPass(Request $request)
+    {
+        $uuid = Str::uuid();
+        $data_uuid = $uuid->toString();
+        $payload =
+        [
+            'messageHeader' => 'Link Reset Password',
+            'email' => $request->email,
+            'link' => env('WEB_URL') . "/reset_password",
+            'uuid' => $data_uuid
+        ];
+
+
+        try {
+            if ($request->role === 'CASHIER') {
+                clock()->event("Forget {$request->email}")->end();
+
+            } else {
+                $response = Http::timeout(10)
+                    ->retry(1, 100)
+                    ->withoutVerifying()
+                    ->post('172.16.4.47:3007/api/mail-register', $payload);
+                clock()->event("Register{$request->email}")->end();
+                $result = $response->json();
+
+                if ($result['status'] == 0) {
+                    return $result;
+                }
+            }
+
+            DB::beginTransaction();
+
+            $data = User::where('email', $request->email)->first();
+            $data->register_uuid = $data_uuid;
+            $data->save();
+            DB::commit();
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'email duplikat']);
+        }
+        return response()->json($data);
+
+    }
+
+    public function resetPass(Request $request)
+    {      
+        try {
+            DB::beginTransaction();
+
+            $data = User::where('register_uuid', $request->uuid)->first();
+            $data->password = bcrypt($request->password);
+            $data->register_uuid = NULL;
+            $data->save();
+            DB::commit();
+        } catch (\Throwable $th) {
+            return response()->json(['status'=>'Error','message' => 'Update Password Gagal'],402);
+        }
+        return response()->json($data);
     }
 
     /**
