@@ -105,6 +105,23 @@ class LaporanServices
         if ($data->count() == 0) {
             abort(404);
         }
+        $sharing = [];
+        $sharing_cashboax = $data->first()->trans_cashbox?->sharing ?? [];
+        dd($data->first)->trans_cashbox;
+        $sharing_cashboax = [];
+        $count = 0;
+        foreach ($sharing_cashboax as $key => $value) {
+            $label = 'Investor '.$count;
+            if($count == 0) {
+                $label = Tenant::where('id', $key)->first()->name ?? 'Tenant tidak ada';
+            }
+
+            array_push($sharing, [
+                'label' => $label,
+                'value' => $value,
+            ]);
+            $count ++;
+        }
 
         $record = [
             'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
@@ -118,6 +135,8 @@ class LaporanServices
             'total_addon' => $data->sum('trans_cashbox.rp_addon_total'),
             'total_refund' => $data->sum('trans_cashbox.rp_refund'),
             'total' => $data->sum('trans_cashbox.rp_total'),
+            'sharing' => $sharing,
+            'sharing_count' => count($sharing),
             'record' => json_decode(LaporanOperationalResource::collection($data)->toJson()),
         ];
         return $record;
