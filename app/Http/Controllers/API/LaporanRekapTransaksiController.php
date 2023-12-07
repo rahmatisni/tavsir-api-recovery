@@ -176,7 +176,7 @@ class LaporanRekapTransaksiController extends Controller
                         'total' => $value->sub_total,
                         'metode_pembayaran' => $value->payment_method?->name,
                         'jenis_transaksi' => $value->labelOrderType(),
-                        'satus' => $value->status,
+                        'status' => $value->status,
                     ];
                 })
             ];

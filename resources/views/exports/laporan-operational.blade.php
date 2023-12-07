@@ -20,23 +20,28 @@
     <table>
         <thead>
             <tr>
-                <th>No</th>
-                <th>Periode</th>
-                <th>Waktu Buka</th>
-                <th>Waktu Tutup</th>
-                <th>Waktu Rekap</th>
-                <th>Kasir</th>
-                <th>Bagi Hasil</th>
-                <th>Nominal Uang Kembalian</th>
-                <th>Total Pendapatan QR</th>
-                <th>Total Pendapatan Pembayaran Digital</th>
-                <th>Total Pendapatan Tunai</th>
-                <th>Nominal Uang Tunai</th>
-                <th>Total Biaya Tambahan</th>
-                <th>Nominal Koreksi</th>
-                <th>Selisih</th>
-                <th>Keterangan Koreksi</th>
-                <th>Total Nominal Rekap</th>
+                <th rowspan="2">No</th>
+                <th rowspan="2">Periode</th>
+                <th rowspan="2">Waktu Buka</th>
+                <th rowspan="2">Waktu Tutup</th>
+                <th rowspan="2">Waktu Rekap</th>
+                <th rowspan="2">Kasir</th>
+                <th colspan="{{ $sharing_count }}">Bagi Hasil</th>
+                <th rowspan="2">Nominal Uang Kembalian</th>
+                <th rowspan="2">Total Pendapatan QR</th>
+                <th rowspan="2">Total Pendapatan Pembayaran Digital</th>
+                <th rowspan="2">Total Pendapatan Tunai</th>
+                <th rowspan="2">Nominal Uang Tunai</th>
+                <th rowspan="2">Total Biaya Tambahan</th>
+                <th rowspan="2">Nominal Koreksi</th>
+                <th rowspan="2">Selisih</th>
+                <th rowspan="2">Keterangan Koreksi</th>
+                <th rowspan="2">Total Nominal Rekap</th>
+            </tr>
+            <tr>
+            @foreach($sharing as $v)
+                <th>{{$v['label']}}</th>
+            @endforeach
             </tr>
         </thead>
         <tbody>
@@ -48,7 +53,9 @@
                 <td>{{ $value->waktu_tutup }}</td>
                 <td>{{ $value->waktu_rekap }}</td>
                 <td>{{ $value->kasir }}</td>
-                <td>Bagi hasil Data</td>
+                @foreach($sharing as $v)
+                    <td>{{$v['value']}}</td>
+                @endforeach
                 <td>{{ $value->uang_kembalian }}</td>
                 <td>{{ $value->qr }}</td>
                 <td>{{ $value->digital }}</td>
@@ -64,7 +71,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="7">Total</td>
+                <td colspan="10">Total</td>
                 <td>{{ $total_qr }}</td>
                 <td>{{ $total_digital }}</td>
                 <td>{{ $total_tunai }}</td>
