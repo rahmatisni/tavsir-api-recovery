@@ -198,7 +198,7 @@
                 <td class="text-right">@rp($value['total'])</td>
                 <td>{{$value['metode_pembayaran']}}</td>
                 <td>{{$value['jenis_transaksi']}}</td>
-                <td>{{$value['status'] ?? ''}}</td>
+                <td>{{$value['status']}}</td>
             </tr>
             @endforeach
         </tbody>
