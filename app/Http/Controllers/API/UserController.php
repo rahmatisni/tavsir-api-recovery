@@ -126,8 +126,8 @@ class UserController extends Controller
             [
                 'messageHeader' => 'Link Reset Password',
                 'email' => $request->email,
-                'link' => env('WEB_URL') . "/ubah_password",
-                'uuid' => $data_uuid
+                'link' => env('WEB_URL') . "/auth/ubah_password",
+                'uuid' => '?uuid='.$data_uuid.'&email='.$request->email
             ];
 
 
@@ -185,8 +185,8 @@ class UserController extends Controller
         [
             'messageHeader' => 'Link Reset Password',
             'email' => $request->email,
-            'link' => env('WEB_URL') . "/reset_password",
-            'uuid' => $data_uuid
+            'link' => env('WEB_URL') . "/auth/reset_password",
+            'uuid' => '?uuid='.$data_uuid.'&email='.$request->email
         ];
 
 
