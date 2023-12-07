@@ -124,7 +124,8 @@ class UserController extends Controller
 
         $payload =
             [
-                'messageHeader' => 'Link Reset Password',
+                'messageHeader' => 'Link Aktivasi',
+                'messageBody' => 'active',
                 'email' => $request->email,
                 'link' => env('WEB_URL') . "/auth/ubah_password",
                 'uuid' => '?uuid='.$data_uuid.'&email='.$request->email
@@ -184,6 +185,7 @@ class UserController extends Controller
         $payload =
         [
             'messageHeader' => 'Link Reset Password',
+            'messageBody' => 'reset',
             'email' => $request->email,
             'link' => env('WEB_URL') . "/auth/reset_password",
             'uuid' => '?uuid='.$data_uuid.'&email='.$request->email
