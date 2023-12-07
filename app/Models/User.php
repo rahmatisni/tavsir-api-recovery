@@ -56,7 +56,8 @@ class User extends Authenticatable
         'rest_area_id',
         'paystation_id',
         'status',
-        'fcm_token'
+        'fcm_token',
+        'register_uuid'
     ];
     protected $dates = ['deleted_at'];
 
