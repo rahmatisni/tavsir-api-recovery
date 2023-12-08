@@ -17,7 +17,7 @@
     <h4>Tanggal Awal : {{ $tanggal_awal }}</h4>
     <h4>Tanggal Akhir : {{ $tanggal_akhir }}</h4>
     <br>
-    <table>
+    <table style="text-align: center;">
         <thead>
             <tr>
                 <th rowspan="2">No</th>
@@ -39,13 +39,27 @@
                 <th rowspan="2">Total Nominal Rekap</th>
             </tr>
             <tr>
-            @foreach($sharing as $v)
-                <th>{{$v['label']}}</th>
-            @endforeach
+            @for ($i = 0; $i < $sharing_count; $i++)
+                @if($i == 0)
+                <th>Tenant</th>
+                @else
+                <th>Investor {{$i}}</th>
+                @endif
+            @endfor
             </tr>
         </thead>
         <tbody>
             @foreach($record as $value)
+            @php
+                $array = [];
+                for($i = 1; $i <= $sharing_count; $i++){
+                    $array[] = null;
+                }
+                $cek = $value?->trans_cashbox?->sharing ?? null;
+                if($cek){
+                    $array = json_decode($cek, true);
+                }
+            @endphp
             <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $value->periode  }}</td>
@@ -53,8 +67,8 @@
                 <td>{{ $value->waktu_tutup }}</td>
                 <td>{{ $value->waktu_rekap }}</td>
                 <td>{{ $value->kasir }}</td>
-                @foreach($sharing as $v)
-                    <td>{{$v['value']}}</td>
+                @foreach($array as $l)
+                    <td>{{$l}}</td>
                 @endforeach
                 <td>{{ $value->uang_kembalian }}</td>
                 <td>{{ $value->qr }}</td>
@@ -71,7 +85,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="10">Total</td>
+                <td colspan="{{$sharing_count + 7}}">Total</td>
                 <td>{{ $total_qr }}</td>
                 <td>{{ $total_digital }}</td>
                 <td>{{ $total_tunai }}</td>
