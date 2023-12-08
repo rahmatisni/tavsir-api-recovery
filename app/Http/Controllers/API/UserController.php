@@ -9,9 +9,16 @@ use App\Models\User;
 use App\Models\TransOperational;
 use App\Http\Requests\UserRequest;
 use App\Models\Subscription;
+use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
+
+
+
 
 class UserController extends Controller
 {
@@ -39,12 +46,12 @@ class UserController extends Controller
         })->when($sort = request()->sort, function ($q) use ($sort) {
             return $q->where('rest_area_id', $sort);
         })
-        ->mySortOrder(request())
-        ->get();
+            ->mySortOrder(request())
+            ->get();
         return response()->json($data);
     }
 
-     /**
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -68,12 +75,12 @@ class UserController extends Controller
         })->when($sort = request()->sort, function ($q) use ($sort) {
             return $q->where('rest_area_id', $sort);
         })
-        ->mySortOrder(request())
-        ->get();
+            ->mySortOrder(request())
+            ->get();
         return Excel::download(new UserExport($data), 'User ' . Carbon::now()->format('d-m-Y') . '.xlsx');
     }
 
-        /**
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -97,9 +104,9 @@ class UserController extends Controller
         })->when($sort = request()->sort, function ($q) use ($sort) {
             return $q->where('rest_area_id', $sort);
         })
-        ->mySortOrder(request())
-        ->whereNotNull('reset_pin')
-        ->get();
+            ->mySortOrder(request())
+            ->whereNotNull('reset_pin')
+            ->get();
         return Excel::download(new UserExport($data), 'User Reset PIN ' . Carbon::now()->format('d-m-Y') . '.xlsx');
     }
 
@@ -112,18 +119,52 @@ class UserController extends Controller
      */
     public function store(UserRequest $request)
     {
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-            'role' => $request->role,
-            'business_id' => $request->business_id,
-            'merchant_id' => $request->merchant_id,
-            'sub_merchant_id' => $request->sub_merchant_id,
-            'tenant_id' => $request->tenant_id,
-            'rest_area_id' => $request->rest_area_id,
-            'paystation_id' => $request->paystation_id,
-        ]);
+        $uuid = Str::uuid();
+        $data_uuid = $uuid->toString();
+
+        $payload =
+            [
+                'messageHeader' => 'Link Aktivasi',
+                'messageBody' => 'active',
+                'email' => $request->email,
+                'link' => env('WEB_URL') . "/auth/ubah_password",
+                'uuid' => '?uuid='.$data_uuid.'&email='.$request->email
+            ];
+
+
+        try {
+            if ($request->role === 'CASHIER') {
+                clock()->event("Register{$request->email}")->end();
+
+            } else {
+                $response = Http::timeout(10)
+                    ->retry(1, 100)
+                    ->withoutVerifying()
+                    ->post(ENV('MAIL_URL'), $payload);
+                clock()->event("Register{$request->email}")->end();
+                $result = $response->json();
+
+                if ($result['status'] == 0) {
+                    return $result;
+                }
+            }
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => bcrypt($request->password ?? $uuid->toString()),
+                'role' => $request->role,
+                'business_id' => $request->business_id,
+                'merchant_id' => $request->merchant_id,
+                'sub_merchant_id' => $request->sub_merchant_id,
+                'tenant_id' => $request->tenant_id,
+                'rest_area_id' => $request->rest_area_id,
+                'paystation_id' => $request->paystation_id,
+                'register_uuid' => $data_uuid
+            ]);
+        } catch (\Throwable $th) {
+            return $th;
+            // return response()->json(['status'=>'Error','message' => 'Permintaan Gagal'],402);
+        }
         return response()->json($user);
     }
 
@@ -136,6 +177,66 @@ class UserController extends Controller
     public function show(User $user)
     {
         return response()->json($user);
+    }
+
+    public function forgetPass(Request $request)
+    {
+        $uuid = Str::uuid();
+        $data_uuid = $uuid->toString();
+        $payload =
+        [
+            'messageHeader' => 'Link Reset Password',
+            'messageBody' => 'reset',
+            'email' => $request->email,
+            'link' => env('WEB_URL') . "/auth/reset_password",
+            'uuid' => '?uuid='.$data_uuid.'&email='.$request->email
+        ];
+
+
+        try {
+            if ($request->role === 'CASHIER') {
+                clock()->event("Forget {$request->email}")->end();
+
+            } else {
+                $response = Http::timeout(10)
+                    ->retry(1, 100)
+                    ->withoutVerifying()
+                    ->post(ENV('MAIL_URL'), $payload);
+                clock()->event("Register{$request->email}")->end();
+                $result = $response->json();
+
+                if ($result['status'] == 0) {
+                    return $result;
+                }
+            }
+
+            DB::beginTransaction();
+
+            $data = User::where('email', $request->email)->first();
+            $data->register_uuid = $data_uuid;
+            $data->save();
+            DB::commit();
+        } catch (\Throwable $th) {
+            // return response()->json(['message' => 'email duplikat']);
+        }
+        return response()->json($data);
+
+    }
+
+    public function resetPass(Request $request)
+    {      
+        try {
+            DB::beginTransaction();
+
+            $data = User::where('register_uuid', $request->uuid)->first();
+            $data->password = bcrypt($request->password);
+            $data->register_uuid = NULL;
+            $data->save();
+            DB::commit();
+        } catch (\Throwable $th) {
+            return response()->json(['status'=>'Error','message' => 'Update Password Gagal'],402);
+        }
+        return response()->json($data);
     }
 
     /**
@@ -173,17 +274,17 @@ class UserController extends Controller
     {
 
         $is_tenant_kasir_open = TransOperational::
-        where('casheer_id', $user->id)
-        ->whereNull('end_date')
-        ->count();
+            where('casheer_id', $user->id)
+            ->whereNull('end_date')
+            ->count();
 
-        if($is_tenant_kasir_open > 0){
+        if ($is_tenant_kasir_open > 0) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Silahkan tutup kasir terlebih dahulu'
             ], 422);
         }
-        
+
         $user->delete();
         return response()->json($user);
     }

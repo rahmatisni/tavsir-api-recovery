@@ -221,6 +221,9 @@ Route::post('/tavsir/log-order/{id}', [App\Http\Controllers\API\TavsirController
 
 
 Route::post('/login', [App\Http\Controllers\API\AuthController::class, 'login']);
+Route::post('/lupa-password', [App\Http\Controllers\API\UserController::class, 'forgetPass']);
+Route::post('/reset-password', [App\Http\Controllers\API\UserController::class, 'resetPass']);
+
 
 Route::prefix('travshop')->group(function () {
     Route::get('/number-table', [App\Http\Controllers\API\TravShopController::class,'tableList']);

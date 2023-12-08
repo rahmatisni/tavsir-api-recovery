@@ -139,8 +139,8 @@ class LaJmto extends Model
         $payload = [
             "fee"  =>str_pad(env('PLATFORM_FEE'), 10, '0', STR_PAD_LEFT).'00',
             "amount" =>str_pad($amount, 10, '0', STR_PAD_LEFT).'00',
-            "city" => "Jakarta",
-            "postalCode" => "12190",
+            "city" => $data_la['city'],
+            "postalCode" => $data_la['postal_code'],
             "merchantName" => $data_la['merchant_name'] ?? env('LA_MERCHANT_NAME'),
             "merchantID" =>  $data_la['merchant_id'] ?? env('LA_MERCHANT_ID'),
             "merchantPan" =>  $data_la['merchant_pan'] ?? env('LA_MERCHANT_PAN'),
