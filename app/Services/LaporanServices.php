@@ -122,6 +122,17 @@ class LaporanServices
         //     ]);
         //     $count ++;
         // }
+        $sharing_count = 0;
+        foreach ($data as $key => $item) {
+            $cek = $item?->trans_cashbox?->sharing ?? null;
+            if($cek){
+                $array = json_decode($cek, true);
+                $counter =  count($array);
+                if($counter > $sharing_count){
+                    $sharing_count = $counter;
+                }
+            }
+        }
 
         $record = [
             'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
@@ -136,7 +147,7 @@ class LaporanServices
             'total_refund' => $data->sum('trans_cashbox.rp_refund'),
             'total' => $data->sum('trans_cashbox.rp_total'),
             'sharing' => '', //$sharing,
-            'sharing_count' => '', //count($sharing),
+            'sharing_count' => $sharing_count, //count($sharing),
             'record' => json_decode(LaporanOperationalResource::collection($data)->toJson()),
         ];
         return $record;
