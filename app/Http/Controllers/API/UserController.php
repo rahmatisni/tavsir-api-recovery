@@ -212,12 +212,12 @@ class UserController extends Controller
 
             DB::beginTransaction();
 
-            $data = User::where('email', $request->email)->first();
+            $data = User::where('email', $request->email)->findOrfail();
             $data->register_uuid = $data_uuid;
             $data->save();
             DB::commit();
         } catch (\Throwable $th) {
-            // return response()->json(['message' => 'email duplikat']);
+            return response()->json(['message' => 'Email tidak ditemukan'],422);
         }
         return response()->json($data);
 
