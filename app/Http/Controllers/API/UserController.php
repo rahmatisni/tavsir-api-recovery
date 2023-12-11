@@ -243,10 +243,10 @@ class UserController extends Controller
         $validator = Validator::make(['password' => $request->password], [
             'password' => [
                 'required',
-                'string',
                 'min:6',
-                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/',
-            ],
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*(_|[^\w])).+$/'        
+            ]
+            
         ]);
         
         if ($validator->fails()) {
