@@ -131,7 +131,7 @@ class LaporanRekapTransaksiController extends Controller
             $sharing_cashboax = json_decode($data->trans_cashbox?->sharing ?? []);
             $count = 0;
             foreach ($sharing_cashboax as $key => $value) {
-                $label = 'Investor '.$count;
+                $label = $key;
                 if($count == 0) {
                     $label = Tenant::where('id', $key)->first()->name ?? 'Tenant tidak ada';
                 }

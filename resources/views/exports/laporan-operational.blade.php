@@ -67,8 +67,8 @@
                 <td>{{ $value->waktu_tutup }}</td>
                 <td>{{ $value->waktu_rekap }}</td>
                 <td>{{ $value->kasir }}</td>
-                @foreach($array as $l)
-                    <td>{{$l}}</td>
+                @foreach($array as $k => $l)
+                    <td>{{$k}} : {{$l}}</td>
                 @endforeach
                 <td>{{ $value->uang_kembalian }}</td>
                 <td>{{ $value->qr }}</td>
