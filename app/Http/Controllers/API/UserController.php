@@ -45,9 +45,14 @@ class UserController extends Controller
             return $q->where('rest_area_id', $rest_area_id);
         })->when($sort = request()->sort, function ($q) use ($sort) {
             return $q->where('rest_area_id', $sort);
-        })
+        })->when($business = auth()->user()?->business_id, function($q) use ($business){
+            return $q->where('business_id', $business);
+
+        }
+        )
             ->mySortOrder(request())
             ->get();
+       
         return response()->json($data);
     }
 
