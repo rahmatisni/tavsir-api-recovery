@@ -236,7 +236,7 @@ class UserController extends Controller
 
     public function resetPass(Request $request)
     {
-        try {
+        // try {
         DB::beginTransaction();
 
         $data = User::where('register_uuid', $request->uuid)->first();
@@ -250,7 +250,8 @@ class UserController extends Controller
         ]);
         
         if ($validator->fails()) {
-            return response()->json(['status' => 'Error', 'message' => $validator->errors()], 422);
+            $value =$validator->errors();
+            return response()->json(['status' => 'Error', 'message' => $value->messages()['password']], 422);
         }
         $data->password = bcrypt($request->password);
         $data->register_uuid = NULL;
@@ -258,9 +259,9 @@ class UserController extends Controller
         DB::commit();
         return response()->json($data);
 
-        } catch (\Throwable $th) {
-            return response()->json(['status'=>'Error','message' => 'Update Password Gagal'],422);
-        }
+        // } catch (\Throwable $th) {
+        //     return response()->json(['status'=>'Error','message' => 'Update Password Gagal'],422);
+        // }
     }
 
     /**
