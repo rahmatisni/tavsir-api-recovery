@@ -75,7 +75,7 @@ class ProfileResource extends JsonResource
             'is_scan'  => $this->tenant->is_scan ?? 0,
             'is_composite' => $this->tenant->is_composite ?? 0,
             'in_takengo' => $this->tenant->in_takengo ?? 0,
-            'in_selforder' => 1,
+            'in_selforder' => 3,
             // 'in_selforder' => $this->tenant->in_selforder ?? 0,
             'list_payment' => $this->tenant->list_payment ?? ['2']
         ];
