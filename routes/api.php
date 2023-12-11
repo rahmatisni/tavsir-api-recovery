@@ -221,8 +221,8 @@ Route::post('/tavsir/log-order/{id}', [App\Http\Controllers\API\TavsirController
 
 
 Route::post('/login', [App\Http\Controllers\API\AuthController::class, 'login']);
-Route::post('/lupa-password', [App\Http\Controllers\API\UserController::class, 'forgetPass']);
-Route::post('/reset-password', [App\Http\Controllers\API\UserController::class, 'resetPass']);
+// Route::post('/lupa-password', [App\Http\Controllers\API\UserController::class, 'forgetPass']);
+// Route::post('/reset-password', [App\Http\Controllers\API\UserController::class, 'resetPass']);
 
 
 Route::prefix('travshop')->group(function () {
@@ -266,6 +266,12 @@ Route::prefix('travshop')->group(function () {
 
 Route::middleware('customRateLimit:key,1,10')->group(function () {
     Route::get('/travshop/payment-status/{id}', [App\Http\Controllers\API\TravShopController::class, 'statusPayment']);
+});
+
+Route::middleware('customRateLimit:key,1,3')->group(function () {
+    Route::post('/reset-password', [App\Http\Controllers\API\UserController::class, 'resetPass']);
+    Route::post('/lupa-password', [App\Http\Controllers\API\UserController::class, 'forgetPass']);
+
 });
 
 Route::get('/card', [App\Http\Controllers\API\CardController::class, 'index']);
