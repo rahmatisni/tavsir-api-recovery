@@ -33,6 +33,7 @@ class LaporanOperationalResource extends JsonResource
             'keterangan_koreksi' => $this->trans_cashbox->description ?? '',
             'total_addon' => $this->trans_cashbox->rp_addon_total ?? '',
             'total_rekap' => $this->trans_cashbox->rp_total ?? '',
+            'trans_cashbox' => $this->trans_cashbox,
         ];
     }
 }

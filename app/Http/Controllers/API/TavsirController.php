@@ -1056,8 +1056,8 @@ class TavsirController extends Controller
 
 
         try {
-            $data->nomor_name = $request->nomor_name;
-            $data->consume_type = $request->consume_type;
+            // $data->nomor_name = $request->nomor_name;
+            // $data->consume_type = $request->consume_type;
             // $data->save();
 
             DB::beginTransaction();
@@ -2318,8 +2318,30 @@ class TavsirController extends Controller
             $data->reason_cancel = $request->reason_cancel;
         }
 
-        if ($request->status == TransOrder::READY && $data->order_type === 'SELF_ORDER' && $data->consume_type === 'dine_in') {
-            $data->status = TransOrder::DONE;
+        if ($request->status == TransOrder::READY && $data->order_type === 'SELF_ORDER') {
+            $tenant = Tenant::where('id', $data->tenant_id)->firstOrFail();
+            switch ($tenant?->in_selforder) {
+                case 1:
+                    // $data->status = TransOrder::WAITING_CONFIRMATION_TENANT;
+                    break;
+
+                case 2:
+                    $data->status = TransOrder::DONE;
+                    break;
+
+                case 3:
+                    // $data->status = TransOrder::WAITING_CONFIRMATION_TENANT;
+                    break;
+
+                case 4:
+                    $data->status = TransOrder::DONE;
+                    break;
+
+                default:
+                    return response()->json(['error' => 'Hubungi Admin Untuk Aktivasi Fitur Self ORder'], 422);
+                    break;
+            }
+            // $data->status = TransOrder::DONE;
         }
 
         $data->save();

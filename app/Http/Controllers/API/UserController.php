@@ -45,9 +45,14 @@ class UserController extends Controller
             return $q->where('rest_area_id', $rest_area_id);
         })->when($sort = request()->sort, function ($q) use ($sort) {
             return $q->where('rest_area_id', $sort);
-        })
+        })->when($business = auth()->user()?->business_id, function($q) use ($business){
+            return $q->where('business_id', $business);
+
+        }
+        )
             ->mySortOrder(request())
             ->get();
+       
         return response()->json($data);
     }
 
@@ -206,20 +211,24 @@ class UserController extends Controller
                 $result = $response->json();
 
                 if ($result['status'] == 0) {
-                    return $result;
+                    return response()->json(['message' => 'email gagal dikirim'],422);
                 }
             }
 
             DB::beginTransaction();
 
             $data = User::where('email', $request->email)->first();
+            if(!$data){
+                return response()->json(['message' => 'email tidak ditemukan'],422);
+
+            }
             $data->register_uuid = $data_uuid;
             $data->save();
             DB::commit();
         } catch (\Throwable $th) {
-            // return response()->json(['message' => 'email duplikat']);
+            return response()->json(['message' => 'email tidak ditemukan'],422);
         }
-        return response()->json($data);
+        return response()->json(['message' => 'email berhasil dikirim','data'=> $data->register_uuid]);
 
     }
 
@@ -234,7 +243,7 @@ class UserController extends Controller
             $data->save();
             DB::commit();
         } catch (\Throwable $th) {
-            return response()->json(['status'=>'Error','message' => 'Update Password Gagal'],402);
+            return response()->json(['status'=>'Error','message' => 'Update Password Gagal'],422);
         }
         return response()->json($data);
     }

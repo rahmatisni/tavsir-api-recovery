@@ -250,9 +250,9 @@ class TravShopController extends Controller
             $data->sub_total = $sub_total;
             $data->total = $data->sub_total + $data->fee + $data->service_fee + $data->addon_total;
             $now = Carbon::now()->format('Y-m-d H:i:s');
-            $sharing = Sharing::where('tenant_id', $request->tenant_id)->whereIn('status', ['sedang_berjalan','belum_berjalan'])
-            ->where('waktu_mulai', '<=', $now)
-            ->where('waktu_selesai', '>=', $now)->first();
+            $sharing = Sharing::where('tenant_id', $request->tenant_id)->whereIn('status', ['sedang_berjalan', 'belum_berjalan'])
+                ->where('waktu_mulai', '<=', $now)
+                ->where('waktu_selesai', '>=', $now)->first();
             if ($sharing?->sharing_config) {
                 $nilai_sharing = json_decode($sharing->sharing_config);
                 foreach ($nilai_sharing as $value) {
@@ -264,13 +264,12 @@ class TravShopController extends Controller
                 $data->sharing_code = $sharing->sharing_code ?? null;
                 $data->sharing_amount = $sharing_amount ?? null;
                 $data->sharing_proportion = $sharing->sharing_config ?? null;
-            }
-            else {
+            } else {
                 $data->sharing_code = [(string) $data->tenant_id];
                 $data->sharing_proportion = [100];
                 $data->sharing_amount = [$data->sub_total + (int) ($data->addon_total)];
             }
-            
+
             $data->status = TransOrder::WAITING_CONFIRMATION_TENANT;
             $data->save();
             $data->detil()->saveMany($order_detil_many);
@@ -405,9 +404,9 @@ class TravShopController extends Controller
             //     $data->sharing_proportion = $tenant->sharing_config ?? null;
             // }
             $now = Carbon::now()->format('Y-m-d H:i:s');
-            $sharing = Sharing::where('tenant_id', $request->tenant_id)->whereIn('status', ['sedang_berjalan','belum_berjalan'])
-            ->where('waktu_mulai', '<=', $now)
-            ->where('waktu_selesai', '>=', $now)->first();
+            $sharing = Sharing::where('tenant_id', $request->tenant_id)->whereIn('status', ['sedang_berjalan', 'belum_berjalan'])
+                ->where('waktu_mulai', '<=', $now)
+                ->where('waktu_selesai', '>=', $now)->first();
             if ($sharing?->sharing_config) {
                 $nilai_sharing = json_decode($sharing->sharing_config);
                 foreach ($nilai_sharing as $value) {
@@ -419,8 +418,7 @@ class TravShopController extends Controller
                 $data->sharing_code = $sharing->sharing_code ?? null;
                 $data->sharing_amount = $sharing_amount ?? null;
                 $data->sharing_proportion = $sharing->sharing_config ?? null;
-            }
-            else {
+            } else {
                 $data->sharing_code = [(string) $data->tenant_id];
                 $data->sharing_proportion = [100];
                 $data->sharing_amount = [$data->sub_total + (int) ($data->addon_total)];
@@ -431,6 +429,14 @@ class TravShopController extends Controller
                     break;
 
                 case 2:
+                    $data->status = TransOrder::WAITING_PAYMENT;
+                    break;
+
+                case 3:
+                    $data->status = TransOrder::WAITING_CONFIRMATION_TENANT;
+                    break;
+
+                case 4:
                     $data->status = TransOrder::WAITING_PAYMENT;
                     break;
 
@@ -586,7 +592,7 @@ class TravShopController extends Controller
                 'type' => 'click',
                 'action' => 'payment_casheer'
             );
-            $result = sendNotif($ids, '💵 Terdapat Request Pembayaran dengan ID '.$data->order_id, 'Customer dengan nomor meja ' . $data->nomor_name.' mengajukan pembayaran di kasir', $payload);
+            $result = sendNotif($ids, '💵 Terdapat Request Pembayaran dengan ID ' . $data->order_id, 'Customer dengan nomor meja ' . $data->nomor_name . ' mengajukan pembayaran di kasir', $payload);
         }
         return response()->json($data);
     }
@@ -615,32 +621,32 @@ class TravShopController extends Controller
             ->when($status = request()->status, function ($q) use ($status) {
                 return $q->where('status', $status);
             })->when($order_id = request()->order_id, function ($q) use ($order_id) {
-            return $q->where('order_id', 'like', "%$order_id%");
-        })->when($order_type = request()->order_type, function ($q) use ($order_type) {
-            if (request()->order_type == 'ORDER_TRAVOY') {
-                return $q->where('order_type', $order_type)->whereNotNull('payment_method_id');
-            } else {
-                return $q->where('order_type', $order_type);
-            }
-        })->when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
-            return $q->where('tenant_id', $tenant_id);
-        })->when(($tanggal_awal && $tanggal_akhir), function ($q) use ($tanggal_awal, $tanggal_akhir) {
-            return $q->whereBetween(
-                'created_at',
-                [
-                    $tanggal_awal,
-                    $tanggal_akhir . ' 23:59:59'
-                ]
-            );
-        })->when($request->hari, function ($q) use ($tanggal_sub, $tanggal_end) {
-            return $q->whereBetween(
-                'created_at',
-                [
-                    $tanggal_sub,
-                    $tanggal_end,
-                ]
-            );
-        })
+                return $q->where('order_id', 'like', "%$order_id%");
+            })->when($order_type = request()->order_type, function ($q) use ($order_type) {
+                if (request()->order_type == 'ORDER_TRAVOY') {
+                    return $q->where('order_type', $order_type)->whereNotNull('payment_method_id');
+                } else {
+                    return $q->where('order_type', $order_type);
+                }
+            })->when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
+                return $q->where('tenant_id', $tenant_id);
+            })->when(($tanggal_awal && $tanggal_akhir), function ($q) use ($tanggal_awal, $tanggal_akhir) {
+                return $q->whereBetween(
+                    'created_at',
+                    [
+                        $tanggal_awal,
+                        $tanggal_akhir . ' 23:59:59'
+                    ]
+                );
+            })->when($request->hari, function ($q) use ($tanggal_sub, $tanggal_end) {
+                return $q->whereBetween(
+                    'created_at',
+                    [
+                        $tanggal_sub,
+                        $tanggal_end,
+                    ]
+                );
+            })
             ->orderByDesc('created_at')->get();
 
         if (count($kategori) > 0) {
@@ -1455,7 +1461,7 @@ class TravShopController extends Controller
                         "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id,
                     ];
 
-                    $data_la = TenantLa::where('tenant_id',$data->Tenant->id)->firstOrFail();
+                    $data_la = TenantLa::where('tenant_id', $data->Tenant->id)->firstOrFail();
 
                     $res = LaJmto::qrCreate(
                         $payment_method->code,
@@ -1533,9 +1539,9 @@ class TravShopController extends Controller
                 CURLOPT_CUSTOMREQUEST => 'POST',
                 CURLOPT_POSTFIELDS => $query,
                 CURLOPT_HTTPHEADER => array(
-                    $header,
-                    'content-type:application/json'
-                ),
+                        $header,
+                        'content-type:application/json'
+                    ),
                 CURLOPT_SSL_VERIFYHOST => 0,
                 CURLOPT_SSL_VERIFYPEER => 0
             )
@@ -2001,7 +2007,7 @@ class TravShopController extends Controller
             }
 
             if ($data->payment_method->code_name == 'pg_link_aja') {
-                $data_la = TenantLa::where('tenant_id',$data->Tenant->id)->firstOrFail();
+                $data_la = TenantLa::where('tenant_id', $data->Tenant->id)->firstOrFail();
 
                 $res = LAJmto::qrStatus(
                     $data_payment['bill_id'],
@@ -3078,10 +3084,10 @@ class TravShopController extends Controller
             ->when($username = request()->username, function ($q) use ($username) {
                 return $q->where('username', $username);
             })->when($customer_id = request()->customer_id, function ($q) use ($customer_id) {
-            return $q->where('customer_id', $customer_id);
-        })->when($phone = $this->convernum(request()->phone), function ($q) use ($phone) {
-            return $q->where('phone', $phone);
-        })->get();
+                return $q->where('customer_id', $customer_id);
+            })->when($phone = $this->convernum(request()->phone), function ($q) use ($phone) {
+                return $q->where('phone', $phone);
+            })->get();
         return response()->json(SaldoResource::collection($data));
     }
 
