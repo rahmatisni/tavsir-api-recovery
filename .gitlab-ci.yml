@@ -1,6 +1,6 @@
 before_script:
   - echo "Before script"
-  - cd /var/www/html/tavsir-api/ #your project path
+  - cd /var/www/tavsir-api/ #your project path
 
 building:
   stage: build
