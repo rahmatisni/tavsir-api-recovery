@@ -2326,11 +2326,12 @@ class TavsirController extends Controller
                     break;
 
                 case 2:
-                    $data->status = TransOrder::DONE;
+                    // $data->status = TransOrder::DONE;
                     break;
 
                 case 3:
                     // $data->status = TransOrder::WAITING_CONFIRMATION_TENANT;
+                    $data->status = TransOrder::DONE;
                     break;
 
                 case 4:
@@ -2401,8 +2402,6 @@ class TavsirController extends Controller
             ];
             return response($datax, 422);
         }
-        // log::info('Callback LA');
-        // log::info([$trans,$request]);
         $data = new CallbackLA();
         DB::beginTransaction();
         $data->trans_order_id = $trans->id;

@@ -16,6 +16,8 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+
 
 
 
@@ -45,14 +47,14 @@ class UserController extends Controller
             return $q->where('rest_area_id', $rest_area_id);
         })->when($sort = request()->sort, function ($q) use ($sort) {
             return $q->where('rest_area_id', $sort);
-        })->when($business = auth()->user()?->business_id, function($q) use ($business){
+        })->when($business = auth()->user()?->business_id, function ($q) use ($business) {
             return $q->where('business_id', $business);
 
         }
-        )
+            )
             ->mySortOrder(request())
             ->get();
-       
+
         return response()->json($data);
     }
 
@@ -133,7 +135,7 @@ class UserController extends Controller
                 'messageBody' => 'active',
                 'email' => $request->email,
                 'link' => env('WEB_URL') . "/auth/ubah_password",
-                'uuid' => '?uuid='.$data_uuid.'&email='.$request->email
+                'uuid' => '?uuid=' . $data_uuid . '&email=' . $request->email
             ];
 
 
@@ -189,13 +191,13 @@ class UserController extends Controller
         $uuid = Str::uuid();
         $data_uuid = $uuid->toString();
         $payload =
-        [
-            'messageHeader' => 'Link Reset Password',
-            'messageBody' => 'reset',
-            'email' => $request->email,
-            'link' => env('WEB_URL') . "/auth/reset_password",
-            'uuid' => '?uuid='.$data_uuid.'&email='.$request->email
-        ];
+            [
+                'messageHeader' => 'Link Reset Password',
+                'messageBody' => 'reset',
+                'email' => $request->email,
+                'link' => env('WEB_URL') . "/auth/reset_password",
+                'uuid' => '?uuid=' . $data_uuid . '&email=' . $request->email
+            ];
 
 
         try {
@@ -211,41 +213,56 @@ class UserController extends Controller
                 $result = $response->json();
 
                 if ($result['status'] == 0) {
-                    return response()->json(['message' => 'email gagal dikirim'],422);
+                    return response()->json(['message' => 'email gagal dikirim'], 422);
                 }
             }
 
             DB::beginTransaction();
 
             $data = User::where('email', $request->email)->first();
-            if(!$data){
-                return response()->json(['message' => 'email tidak ditemukan'],422);
+            if (!$data) {
+                return response()->json(['message' => 'email tidak ditemukan'], 422);
 
             }
             $data->register_uuid = $data_uuid;
             $data->save();
             DB::commit();
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'email tidak ditemukan'],422);
+            return response()->json(['message' => 'email tidak ditemukan'], 422);
         }
-        return response()->json(['message' => 'email berhasil dikirim','data'=> $data->register_uuid]);
+        return response()->json(['message' => 'email berhasil dikirim', 'data' => $data->register_uuid]);
 
     }
 
     public function resetPass(Request $request)
-    {      
-        try {
-            DB::beginTransaction();
+    {
+        // try {
+        DB::beginTransaction();
 
-            $data = User::where('register_uuid', $request->uuid)->first();
-            $data->password = bcrypt($request->password);
-            $data->register_uuid = NULL;
-            $data->save();
-            DB::commit();
-        } catch (\Throwable $th) {
-            return response()->json(['status'=>'Error','message' => 'Update Password Gagal'],422);
+        $data = User::where('register_uuid', $request->uuid)->first();
+        $validator = Validator::make(['password' => $request->password], [
+            'password' => [
+                'required',
+                'min:6',
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*(_|[^\w])).+$/'        
+            ]
+            
+        ]);
+        
+        if ($validator->fails()) {
+            $value =$validator->errors()->messages()['password'];
+            $resultString = implode("\n", $value);
+            return response()->json(['status' => 'Error', 'message' => $resultString], 422);
         }
+        $data->password = bcrypt($request->password);
+        $data->register_uuid = NULL;
+        $data->save();
+        DB::commit();
         return response()->json($data);
+
+        // } catch (\Throwable $th) {
+        //     return response()->json(['status'=>'Error','message' => 'Update Password Gagal'],422);
+        // }
     }
 
     /**
