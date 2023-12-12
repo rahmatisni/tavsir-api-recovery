@@ -2391,23 +2391,23 @@ class TavsirController extends Controller
     {
         log::info('Callback LA');
 
-        // $trans = TransOrder::where('order_id', 'like', '%' . $request->msg)->first();
-        // log::info([$trans, $request]);
+        $trans = TransOrder::where('order_id', 'like', '%' . $request->msg)->first();
+        log::info([$trans, $request]);
 
-        // if (!$trans) {
-        //     $datax = [
-        //         "responseCode" => "03",
-        //         "transactionID" => $request->msg,
-        //         "notificationMessage" => "Dont Try Bro!"
-        //     ];
-        //     return response($datax, 422);
-        // }
-        // $data = new CallbackLA();
-        // DB::beginTransaction();
-        // $data->trans_order_id = $trans->id;
-        // $data->data = json_encode($request->all());
-        // $data->save();
-        // DB::commit();
+        if (!$trans) {
+            $datax = [
+                "responseCode" => "03",
+                "transactionID" => $request->msg,
+                "notificationMessage" => "Dont Try Bro!"
+            ];
+            return response($datax, 422);
+        }
+        $data = new CallbackLA();
+        DB::beginTransaction();
+        $data->trans_order_id = $trans->id;
+        $data->data = json_encode($request->all());
+        $data->save();
+        DB::commit();
 
         $datax = [
             "responseCode" => "00",
