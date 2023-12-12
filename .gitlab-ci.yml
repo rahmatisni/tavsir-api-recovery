@@ -1,11 +1,13 @@
 before_script:
   - echo "Before script"
-  - echo "Before script"
   - cd /var/www/tavsir-api/ #your project path
 
 building:
   stage: build
   script:
+    - eval $(ssh-agent -s)
+    - ssh-add /home/jmto/.ssh/deploy-id_rsa
+    # - ssh-add /path/to/your/private-key
     - git pull
     - composer install
     - php artisan migrate --force
