@@ -7,13 +7,12 @@ building:
   script:
     - eval $(ssh-agent -s)
     - ssh-agent bash -c 'ssh-add /home/jmto/.ssh/deploy-id_rsa && git pull'
-    - git pull
-    - composer install
-    - php artisan migrate --force
-    - php artisan cache:clear
-    - php artisan config:clear
-    - find /var/www/tavsir-api -type f -exec chmod 664 {} \;
-    - find /var/www/tavsir-api -type d -exec chmod 775 {} \;
+    # - git pull
+    # - composer install
+    # - php artisan cache:clear
+    # - php artisan config:clear
+    # - find /var/www/tavsir-api -type f -exec chmod 664 {} \;
+    # - find /var/www/tavsir-api -type d -exec chmod 775 {} \;
 
 deploying:
   stage: deploy
