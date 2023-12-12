@@ -1056,8 +1056,8 @@ class TavsirController extends Controller
 
 
         try {
-            // $data->nomor_name = $request->nomor_name;
-            // $data->consume_type = $request->consume_type;
+            $data->nomor_name = $request->nomor_name;
+            $data->consume_type = $request->consume_type;
             // $data->save();
 
             DB::beginTransaction();
