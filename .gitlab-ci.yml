@@ -10,8 +10,8 @@ building:
     - php artisan migrate --force
     - php artisan cache:clear
     - php artisan config:clear
-    - find /var/www/html/tavsir-api -type f -exec chmod 664 {} \;
-    - find /var/www/html/tavsir-api -type d -exec chmod 775 {} \;
+    - find /var/www/tavsir-api -type f -exec chmod 664 {} \;
+    - find /var/www/tavsir-api -type d -exec chmod 775 {} \;
 
 deploying:
   stage: deploy
