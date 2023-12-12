@@ -17,6 +17,8 @@ deploying:
   stage: deploy
   script:
     - echo "Deployed"
+    - echo "jmt02022!#" | sudo -S su
+
   only:
     - main
  
