@@ -1,5 +1,7 @@
 before_script:
   - echo "Before script"
+  - echo "Before script"
+
   - cd /var/www/tavsir-api/ #your project path
 
 building:
