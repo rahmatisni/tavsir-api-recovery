@@ -92,8 +92,8 @@ class NumberTableController extends Controller
         $self_order_url = env('URL_SELF_ORDER','https://getpay-selforder.jmto.co.id');
         $url = $self_order_url.'?'.http_build_query(['tenant_id' => auth()->user()->tenant_id, 'nomor' => $data->name]);
         return QrCode::size(200)
-        // ->backgroundColor(254, 200, 26)
-        // ->color(1, 55, 182)
+        ->backgroundColor(254, 200, 26)
+        ->color(1, 55, 182)
         ->margin(1)
         ->generate($url);
     }
