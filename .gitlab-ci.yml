@@ -6,7 +6,7 @@ building:
   stage: build
   script:
     - eval $(ssh-agent -s)
-    - ssh-add /home/jmto/.ssh/deploy-id_rsa
+    - ssh-agent bash -c 'ssh-add /home/jmto/.ssh/deploy-id_rsa && git pull'
     - git pull
     - composer install
     - php artisan migrate --force
