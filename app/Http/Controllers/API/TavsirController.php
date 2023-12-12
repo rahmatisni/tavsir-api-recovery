@@ -2326,11 +2326,12 @@ class TavsirController extends Controller
                     break;
 
                 case 2:
-                    $data->status = TransOrder::DONE;
+                    // $data->status = TransOrder::DONE;
                     break;
 
                 case 3:
                     // $data->status = TransOrder::WAITING_CONFIRMATION_TENANT;
+                    $data->status = TransOrder::DONE;
                     break;
 
                 case 4:
