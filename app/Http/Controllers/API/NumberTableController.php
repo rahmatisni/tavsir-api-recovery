@@ -94,7 +94,6 @@ class NumberTableController extends Controller
         return QrCode::size(200)
         // ->backgroundColor(254, 200, 26)
         // ->color(1, 55, 182)
-        
         ->margin(1)
         ->generate($url);
     }
