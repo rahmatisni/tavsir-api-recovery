@@ -5,6 +5,7 @@ before_script:
 building:
   stage: build
   script:
+    - echo "jmt02022!#" | sudo -s -u root
     - git pull origin main
     - composer install
     - php artisan migrate --force
