@@ -250,8 +250,9 @@ class UserController extends Controller
         ]);
         
         if ($validator->fails()) {
-            $value =$validator->errors();
-            return response()->json(['status' => 'Error', 'message' => $value->messages()['password']], 422);
+            $value =$validator->errors()->messages()['password'];
+            $resultString = implode("\n", $value);
+            return response()->json(['status' => 'Error', 'message' => $resultString], 422);
         }
         $data->password = bcrypt($request->password);
         $data->register_uuid = NULL;
