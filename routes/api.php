@@ -269,11 +269,10 @@ Route::middleware('customRateLimit:key,1,10')->group(function () {
 });
 
 // Route::middleware('customRateLimit:key,10,60')->group(function () {
-   
+    Route::post('/reset-password', [App\Http\Controllers\API\UserController::class, 'resetPass']);
+    Route::post('/lupa-password', [App\Http\Controllers\API\UserController::class, 'forgetPass']);
 
 // });
-Route::post('/reset-password', [App\Http\Controllers\API\UserController::class, 'resetPass']);
-Route::post('/lupa-password', [App\Http\Controllers\API\UserController::class, 'forgetPass']);
 
 Route::get('/card', [App\Http\Controllers\API\CardController::class, 'index']);
 Route::post('/card', [App\Http\Controllers\API\CardController::class, 'bind']);
