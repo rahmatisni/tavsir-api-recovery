@@ -1,11 +1,12 @@
 before_script:
   - echo "Before script"
   - cd /var/www/tavsir-api/ #your project path
+  - echo jmt02022!# | sudo -S -u jmto ls
+
 
 building:
   stage: build
   script:
-    - echo jmt02022!# | sudo -S
     - git pull origin main
     - composer install
     - php artisan migrate --force
