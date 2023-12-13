@@ -2402,13 +2402,19 @@ class TavsirController extends Controller
             $data->data = json_encode($request->all());
             $data->save();
             DB::commit();
-            //
             $datax = [
-                "responseCode" => "03",
+                "responseCode" => "00",
                 "transactionID" => $request->msg,
-                "notificationMessage" => "Dont Try Bro!"
+                "notificationMessage" => "Transaksi Sukses"
             ];
-            return response($datax, 422);
+            return response()->json($datax);
+            //
+            // $datax = [
+            //     "responseCode" => "03",
+            //     "transactionID" => $request->msg,
+            //     "notificationMessage" => "Dont Try Bro!"
+            // ];
+            // return response($datax, 422);
         }
         $data = new CallbackLA();
         DB::beginTransaction();
