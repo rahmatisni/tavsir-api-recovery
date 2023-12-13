@@ -2395,6 +2395,14 @@ class TavsirController extends Controller
         log::info([$trans, $request]);
 
         if (!$trans) {
+            // temp
+            $data = new CallbackLA();
+            DB::beginTransaction();
+            $data->trans_order_id = 'dump';
+            $data->data = json_encode($request->all());
+            $data->save();
+            DB::commit();
+            //
             $datax = [
                 "responseCode" => "03",
                 "transactionID" => $request->msg,
