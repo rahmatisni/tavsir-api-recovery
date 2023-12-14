@@ -38,8 +38,8 @@ class TenantController extends Controller
         $filterLikeas = $request?->filteras;
 
         $businessStatus = $filter['status_perusahaan'] ?? false;
-        $SOStatus = ($request?->filter['in_selforder'] ?? NULL) === 0 ? 0:1;
-        $TNGStatus = ($request?->filter['in_takengo'] ?? NULL) === 0 ? 0:1;
+        $SOStatus = ($request?->filter['in_selforder'] ?? false) === false ? false:($request?->filter['in_selforder']> 0? 1:0);
+        $TNGStatus =($request?->filter['in_takengo'] ?? false) === false ? false:($request?->filter['in_takengo']> 0? 1:0);
 
         $data = Tenant::with('business', 'rest_area', 'ruas', 'order', 'category_tenant')->myWheres($filter)->myWhereLikeStartCol($filterLike)
         ->myWhereLikeCol($filterLikeas)
@@ -49,10 +49,10 @@ class TenantController extends Controller
                 $businessQuery->where('status_perusahaan', $businessStatus);
             });
         })
-        ->when($SOStatus >= 0 , function ($query) use ($SOStatus) {
+        ->when($SOStatus != false , function ($query) use ($SOStatus) {
             $query->where('in_selforder', '>=' , $SOStatus);
         })
-        ->when($TNGStatus >= 0 , function ($query) use ($TNGStatus) {
+        ->when($TNGStatus != false , function ($query) use ($TNGStatus) {
             $query->where('in_takengo', $TNGStatus);
         })
         ->get();
