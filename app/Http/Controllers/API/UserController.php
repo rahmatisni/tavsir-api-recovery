@@ -31,6 +31,8 @@ class UserController extends Controller
      */
     public function index()
     {
+        $role = ['ADMIN', 'SUPERADMIN'];
+        $business =in_array(auth()->user()->role, $role) ?false :auth()->user()?->business_id;
         $data = User::when($name = request()->name, function ($q) use ($name) {
             $q->where('name', 'like', '%' . $name . '%');
         })->when($email = request()->email, function ($q) use ($email) {
@@ -47,9 +49,8 @@ class UserController extends Controller
             return $q->where('rest_area_id', $rest_area_id);
         })->when($sort = request()->sort, function ($q) use ($sort) {
             return $q->where('rest_area_id', $sort);
-        })->when($business = auth()->user()?->business_id, function ($q) use ($business) {
+        })->when($business != false, function ($q) use ($business) {
             return $q->where('business_id', $business);
-
         }
             )
             ->mySortOrder(request())
