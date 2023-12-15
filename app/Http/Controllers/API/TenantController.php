@@ -57,6 +57,9 @@ class TenantController extends Controller
         ->when(auth()->user()->role === 'OWNER', function ($query) use ($TNGStatus) {
             $query->where('business_id',auth()->user()->business_id);
         })
+        ->when(auth()->user()->role === 'AREA', function ($query) use ($TNGStatus) {
+            $query->where('rest_area_id',auth()->user()->rest_area_id);
+        })
         ->get();
         return response()->json(TenantResource::collection($data));
     }
