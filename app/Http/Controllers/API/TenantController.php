@@ -54,6 +54,9 @@ class TenantController extends Controller
         ->when($TNGStatus != false , function ($query) use ($TNGStatus) {
             $query->where('in_takengo', $TNGStatus);
         })
+        ->when(auth()->user()->role === 'OWNER', function ($query) use ($TNGStatus) {
+            $query->where('business_id',auth()->user()->business_id);
+        })
         ->get();
         return response()->json(TenantResource::collection($data));
     }
