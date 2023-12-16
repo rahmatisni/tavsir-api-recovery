@@ -2391,7 +2391,7 @@ class TavsirController extends Controller
     {
         log::info('Callback LA');
 
-        $trans = TransOrder::where('order_id', 'like', '%' . $request->msg)->first();
+        $trans = TransOrder::with('payment')->where('order_id', 'like', '%' . $request->msg)->first();
         log::info([$trans, $request]);
 
         if (!$trans) {
@@ -2417,9 +2417,15 @@ class TavsirController extends Controller
             // return response($datax, 422);
         }
         $data = new CallbackLA();
+        $pay = new TransPayment();
+
+        // $pay = new TransPayment();
         DB::beginTransaction();
         $data->trans_order_id = $trans->id;
         $data->data = json_encode($request->all());
+        $pay->refnum = $request->additional_data[0]['value'];
+        $pay->orderid_sof = $request->trx_id;
+        $pay->save();
         $data->save();
         DB::commit();
 

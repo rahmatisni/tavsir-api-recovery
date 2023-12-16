@@ -11,7 +11,12 @@ class TransPayment extends Model
     protected $casts = [
         'data' => 'array',
         'inquiry' => 'array',
-        'payment' => 'array'
+        'payment' => 'array',
+
+
+    ];
+    protected $fillable = [
+        'refnum', 'orderid_sof', 'tenant_kriteria'
 
     ];
     public function getDataAttribute($value)
