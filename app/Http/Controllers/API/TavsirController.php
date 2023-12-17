@@ -1207,7 +1207,7 @@ class TavsirController extends Controller
                             $pay = new TransPayment();
                             $pay->data = $res['responseData'];
                             $pay->inquiry = $res;
-
+                            $pay->tenant_kriteria = $data_la['merchant_criteria'];
                             $data->payment()->save($pay);
                         } else {
                             $pay = $data->payment;
@@ -2423,8 +2423,8 @@ class TavsirController extends Controller
         DB::beginTransaction();
         $data->trans_order_id = $trans->id;
         $data->data = json_encode($request->all());
-        $pay->refnum = $request->additional_data[0]['value'];
-        $pay->orderid_sof = $request->trx_id;
+        $pay->refnum = $request->additional_data[0]['value'] ?? NULL;
+        $pay->orderid_sof = $request?->trx_id ?? NULL;
         $pay->save();
         $data->save();
         DB::commit();
