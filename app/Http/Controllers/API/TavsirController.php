@@ -2417,9 +2417,7 @@ class TavsirController extends Controller
             // return response($datax, 422);
         }
         $data = new CallbackLA();
-        $pay = new TransPayment();
-
-        // $pay = new TransPayment();
+        $pay = TransPayment::where('trans_order_id', $trans->id)->first();
         DB::beginTransaction();
         $data->trans_order_id = $trans->id;
         $data->data = json_encode($request->all());
