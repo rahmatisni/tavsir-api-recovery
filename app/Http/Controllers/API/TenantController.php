@@ -30,19 +30,35 @@ class TenantController extends Controller
     public function index(Request $request)
     {
 
-        $filter = $request?->filter;
+        // $filter = $request?->filter;
+        $filter = $request?->except('filter.in_selforder');
+        $filter = $request?->except('filter.in_takengo');
+
         $filterLike = $request?->filterlike;
         $filterLikeas = $request?->filteras;
+        $businessStatus = $request?->filter['status_perusahaan'] ?? false;
+        $SOStatus = ($request?->filter['in_selforder'] ?? false) === false ? false: (int)$request?->filter['in_selforder'];
+        $TNGStatus =($request?->filter['in_takengo'] ?? false) === false ? false:(int)$request?->filter['in_takengo'];
 
-        $businessStatus = $filter['status_perusahaan'] ?? false;
-       
         $data = Tenant::with('business', 'rest_area', 'ruas', 'order', 'category_tenant')->myWheres($filter)->myWhereLikeStartCol($filterLike)
         ->myWhereLikeCol($filterLikeas)
-        ->when($businessStatus, function ($query) use ($businessStatus) {
+        ->when($businessStatus != false, function ($query) use ($businessStatus) {
             // Adding the filter for business.status_perusahaan
             $query->whereHas('business', function ($businessQuery) use ($businessStatus) {
                 $businessQuery->where('status_perusahaan', $businessStatus);
             });
+        })
+        ->when($SOStatus != false , function ($query) use ($SOStatus) {
+            $query->where('in_selforder' , $SOStatus);
+        })
+        ->when($TNGStatus != false , function ($query) use ($TNGStatus) {
+            $query->where('in_takengo', $TNGStatus);
+        })
+        ->when(auth()->user()->role === 'OWNER', function ($query) use ($TNGStatus) {
+            $query->where('business_id',auth()->user()->business_id);
+        })
+        ->when(auth()->user()->role === 'AREA', function ($query) use ($TNGStatus) {
+            $query->where('rest_area_id',auth()->user()->rest_area_id);
         })
         ->get();
         return response()->json(TenantResource::collection($data));
