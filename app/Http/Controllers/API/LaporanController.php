@@ -52,7 +52,7 @@ class LaporanController extends Controller
     public function downloadLaporanOperational(DownloadLaporanRequest $request)
     {
         $record = $this->services->operational($request);
-        return Excel::download(new LaporanOperationalExport($record), 'laporan_operational ' . Carbon::now()->format('d-m-Y') . '.xlsx');
+        return Excel::download(new LaporanOperationalExport($record), 'laporan_operational ' . Carbon::now()->format('d-m-Y') . '.pdf');
     }
 
     public function laporanOperational(DownloadLaporanRequest $request)
