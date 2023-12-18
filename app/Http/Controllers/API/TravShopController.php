@@ -1482,7 +1482,7 @@ class TravShopController extends Controller
                             $pay = new TransPayment();
                             $pay->data = $res['responseData'];
                             $pay->inquiry = $res;
-
+                            $pay->tenant_kriteria = $data_la['merchant_criteria'];
                             $data->payment()->save($pay);
                         } else {
                             $pay = $data->payment;
