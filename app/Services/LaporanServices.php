@@ -123,14 +123,17 @@ class LaporanServices
         //     $count ++;
         // }
         $sharing_count = 0;
-        foreach ($data as $key => $item) {
+        $sharing_data = [];
+        foreach ($data as $item) {
             $cek = $item?->trans_cashbox?->sharing ?? null;
             if($cek){
                 $array = json_decode($cek, true);
+                $array = array_keys($array);
                 $counter =  count($array);
                 if($counter > $sharing_count){
                     $sharing_count = $counter;
                 }
+                $sharing_data = array_unique (array_merge ($sharing_data, $array));
             }
         }
 
@@ -146,7 +149,7 @@ class LaporanServices
             'total_addon' => $data->sum('trans_cashbox.rp_addon_total'),
             'total_refund' => $data->sum('trans_cashbox.rp_refund'),
             'total' => $data->sum('trans_cashbox.rp_total'),
-            'sharing' => '', //$sharing,
+            'sharing_data' => $sharing_data, //$sharing,
             'sharing_count' => $sharing_count, //count($sharing),
             'record' => json_decode(LaporanOperationalResource::collection($data)->toJson()),
         ];
