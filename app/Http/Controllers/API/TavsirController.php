@@ -2485,7 +2485,6 @@ class TavsirController extends Controller
         else {
             return response()->json(['result' => 'ihiy dont try'],422);
 
-
         }
      
     }
