@@ -2457,4 +2457,28 @@ class TavsirController extends Controller
             return response()->json(['error' => $th->getMessage()], 500);
         }
     }
+    public function UpdateSharingMode(){
+
+        $cred = request()->cred;
+        if($cred === 'rahmatnurisni'){
+
+            $data = TransOrder::whereNull('sharing_code')->whereNotIn('order_type',['ORDER_TRAVOY'])->get();
+            foreach($data as $v) {
+                // dump ($v->id);
+                $v->update([
+                    'sharing_code' => '["'.$v->tenant_id.'"]', // Set the desired value
+                    'sharing_amount' => '['.$v->total.']', // Set the desired value
+                    'sharing_proportion' => '[100]', // Set the desired value
+    
+                ]);
+    
+            }
+            return response()->json(['result' => 'oke'],200);
+        }
+        else {
+            return response()->json(['result' => 'ihiy dont try'],422);
+
+        }
+     
+    }
 }
