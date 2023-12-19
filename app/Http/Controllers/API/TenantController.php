@@ -41,7 +41,7 @@ class TenantController extends Controller
         $TNGStatus =($request?->filter['in_takengo'] ?? false) === false ? false:(int)$request?->filter['in_takengo'];
         $restAreaID = ($request?->filter['rest_area_id'] ?? false) === false ? false: (int)$request?->filter['rest_area_id'];
         $categoryID = ($request?->filter['category_tenant_id'] ?? false) === false ? false: (int)$request?->filter['category_tenant_id'];
-        $is_open = ($request?->filter['$is_open'] ?? false) === false ? false: (int)$request?->filter['$is_open'];
+        $is_open = ($request?->filter['is_open'] ?? false) === false ? false: (int)$request?->filter['is_open'];
 
         $data = Tenant::with('business', 'rest_area', 'ruas', 'order', 'category_tenant')->myWheres($filter)->myWhereLikeStartCol($filterLike)
         ->myWhereLikeCol($filterLikeas)
