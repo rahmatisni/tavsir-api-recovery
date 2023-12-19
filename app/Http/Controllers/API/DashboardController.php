@@ -86,7 +86,7 @@ class DashboardController extends Controller
         // }
         $customer_count = $order->whereIn('order_type',[TransOrder::ORDER_SELF_ORDER, TransOrder::ORDER_TAKE_N_GO])->whereNotNull('customer_id')->unique('customer_id')->count();
 
-        $total_pemasukan = $all1->sum('sub_total');
+        $total_pemasukan = $all1->sum('sub_total') + $all1->sum('addon_total');
         $total_transaksi_takengo = $takengo_count;
         $total_transaksi_tavsir = $tavsir;
         $total_transaksi_so = $so;
