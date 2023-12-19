@@ -39,6 +39,9 @@ class TenantController extends Controller
         $businessStatus = $request?->filter['status_perusahaan'] ?? false;
         $SOStatus = ($request?->filter['in_selforder'] ?? false) === false ? false: (int)$request?->filter['in_selforder'];
         $TNGStatus =($request?->filter['in_takengo'] ?? false) === false ? false:(int)$request?->filter['in_takengo'];
+        $restAreaID = ($request?->filter['rest_area_id'] ?? false) === false ? false: (int)$request?->filter['rest_area_id'];
+        $categoryID = ($request?->filter['category_tenant_id'] ?? false) === false ? false: (int)$request?->filter['category_tenant_id'];
+        $is_open = ($request?->filter['is_open'] ?? false) === false ? false: (int)$request?->filter['is_open'];
 
         $data = Tenant::with('business', 'rest_area', 'ruas', 'order', 'category_tenant')->myWheres($filter)->myWhereLikeStartCol($filterLike)
         ->myWhereLikeCol($filterLikeas)
@@ -48,18 +51,29 @@ class TenantController extends Controller
                 $businessQuery->where('status_perusahaan', $businessStatus);
             });
         })
-        ->when($SOStatus != false , function ($query) use ($SOStatus) {
+        ->when($SOStatus != false || $SOStatus === 0, function ($query) use ($SOStatus) {
             $query->where('in_selforder' , $SOStatus);
         })
-        ->when($TNGStatus != false , function ($query) use ($TNGStatus) {
+        ->when($TNGStatus != false || $TNGStatus === 0 , function ($query) use ($TNGStatus) {
             $query->where('in_takengo', $TNGStatus);
         })
+         ->when($restAreaID != false || $restAreaID === 0, function ($query) use ($restAreaID) {
+            $query->where('rest_area_id', $restAreaID);
+        }) ->when($categoryID != false , function ($query) use ($categoryID) {
+            $query->where('category_tenant_id', $categoryID);
+        }) ->when($is_open != false || $is_open === 0, function ($query) use ($is_open) {
+            $query->where('is_open', $is_open);
+        })
+
+        
         ->when(auth()->user()->role === 'OWNER', function ($query) use ($TNGStatus) {
             $query->where('business_id',auth()->user()->business_id);
         })
         ->when(auth()->user()->role === 'AREA', function ($query) use ($TNGStatus) {
             $query->where('rest_area_id',auth()->user()->rest_area_id);
         })
+        
+
         ->get();
         return response()->json(TenantResource::collection($data));
     }

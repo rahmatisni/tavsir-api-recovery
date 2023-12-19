@@ -76,7 +76,7 @@ class ProductTunggalController extends Controller
                 'message' => 'SKU sudah digunakan pada product ' . $product[0]->name
             ], 422);
         }
-        return $this->response($this->service->update($id, $request->validated()));
+        return $this->response(new ProductV2ShowResource($this->service->update($id, $request->validated())));
     }
 
     /**

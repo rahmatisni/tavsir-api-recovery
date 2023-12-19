@@ -38,7 +38,6 @@ class ProductV2ShowResource extends JsonResource
             'price_min' => $this->price_min,
             'price_max' => $this->price_max,
             'is_notification' => $this->is_notification,
-            'price_capital' => $this->price_capital,
             'stock' => $stock,
             'stock_min' => $this->stock_min,
             'is_active' => $this->is_active,

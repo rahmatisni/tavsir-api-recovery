@@ -278,7 +278,7 @@ class SubscriptionController extends Controller
         }
         $kuota = Subscription::byOwner()->get()->where('status_aktivasi', Subscription::AKTIF)->sum('limit_tenant');
         if ($kuota <= $tenant_has_subscription) {
-            return response()->json(['message' => 'Limit tenant tidak tersedia'], 422);
+            return response()->json(['message' => 'Kutoa tenant hanya '.$kuota.'. Sisa limit tenant adalah '.($kuota - $tenant_has_subscription)], 422);
         }
 
         $aktivasi_tenant->is_subscription = 1;

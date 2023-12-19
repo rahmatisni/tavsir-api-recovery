@@ -14,6 +14,8 @@ class LaporanOperationalResource extends JsonResource
      */
     public function toArray($request)
     {
+        $sharing = $this?->trans_cashbox?->sharing ?? '{}';
+        $sharing = json_decode($sharing, true);
         return [
             'id' => $this->id,
             'tenant_id' => $this->tenant_id,
@@ -34,6 +36,7 @@ class LaporanOperationalResource extends JsonResource
             'total_addon' => $this->trans_cashbox->rp_addon_total ?? '',
             'total_rekap' => $this->trans_cashbox->rp_total ?? '',
             'trans_cashbox' => $this->trans_cashbox,
+            'sharing' => $sharing,
         ];
     }
 }

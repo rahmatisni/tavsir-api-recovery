@@ -27,7 +27,7 @@ class ProductTunggalUpdateRequest extends FormRequest
     {
         $rule = [
             'category_id' => 'required|exists:ref_category,id,tenant_id,'.auth()->user()->tenant_id.',type,'.ProductType::PRODUCT,
-            // 'satuan_id' => 'required|exists:ref_satuan,id',
+            'satuan_id' => 'exists:ref_satuan,id',
             'sku' => 'required|string|max:50|unique:ref_product,sku,NULL,id,deleted_at,'.$this->id.',tenant_id,'.auth()->user()->tenant_id.',type,'.ProductType::PRODUCT,
             'name' => 'required|string|max:50',
             'photo' => 'nullable|max:5000',
