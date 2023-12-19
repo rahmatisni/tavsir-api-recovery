@@ -29,6 +29,8 @@ class DashboardController extends Controller
         $business_count = Business::count();
         if($user_role == User::TENANT){
             $tenant_id = auth()->user()->tenant_id;
+            $rest_area_id = auth()->user()->rest_area_id;
+
             $business_count = 1;
         }
 
