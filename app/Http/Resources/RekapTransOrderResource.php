@@ -53,9 +53,9 @@ class RekapTransOrderResource extends JsonResource
             'bank_name' => $this->trans_edc->bank->name ?? '',
             'order_type' => $this->order_type,
             'order_type_label' => $this->labelOrderType(),
-            'sharing_code' => $this->status == 'DONE' ? json_decode($this->sharing_code) : [],
-            'sharing_proportion' => $this->status == 'DONE' ? json_decode($this->sharing_proportion) : [],
-            'sharing_amount' => $this->status == 'DONE' ? $resultArray : [],
+            'sharing_code' => $this->status == 'DONE' ? (json_decode($this->sharing_code)?? [(string)$this->tenant_id]) : [],
+            'sharing_proportion' => $this->status == 'DONE' ? (json_decode($this->sharing_proportion)??[100]) : [],
+            'sharing_amount' => $this->status == 'DONE' ? (count($resultArray) > 1 ? $resultArray:[(string)$this->total]) : [],
             // 'sharing_amount' => $this->status == 'DONE' ? json_decode($this->sharing_amount) : [],
 
         ];
