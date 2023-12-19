@@ -62,7 +62,7 @@ class TenantController extends Controller
         }) ->when($categoryID != false , function ($query) use ($categoryID) {
             $query->where('category_tenant_id', $categoryID);
         }) ->when($is_open != false || $is_open === 0, function ($query) use ($is_open) {
-            $query->where('$is_open', $is_open);
+            $query->where('is_open', $is_open);
         })
 
         
