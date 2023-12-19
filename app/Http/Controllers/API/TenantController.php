@@ -50,13 +50,13 @@ class TenantController extends Controller
                 $businessQuery->where('status_perusahaan', $businessStatus);
             });
         })
-        ->when($SOStatus != false , function ($query) use ($SOStatus) {
+        ->when($SOStatus != false || $SOStatus === 0, function ($query) use ($SOStatus) {
             $query->where('in_selforder' , $SOStatus);
         })
-        ->when($TNGStatus != false , function ($query) use ($TNGStatus) {
+        ->when($TNGStatus != false || $TNGStatus === 0 , function ($query) use ($TNGStatus) {
             $query->where('in_takengo', $TNGStatus);
         })
-         ->when($restAreaID != false , function ($query) use ($restAreaID) {
+         ->when($restAreaID != false || $restAreaID === 0, function ($query) use ($restAreaID) {
             $query->where('rest_area_id', $restAreaID);
         }) ->when($categoryID != false , function ($query) use ($categoryID) {
             $query->where('category_tenant_id', $categoryID);
