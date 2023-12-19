@@ -2457,7 +2457,6 @@ class TavsirController extends Controller
             return response()->json(['error' => $th->getMessage()], 500);
         }
     }
-
     public function UpdateSharingMode(){
 
         $cred = request()->cred;
@@ -2471,14 +2470,8 @@ class TavsirController extends Controller
                     'sharing_amount' => '['.$v->total.']', // Set the desired value
                     'sharing_proportion' => '[100]', // Set the desired value
     
-                    // You can also update other fields here if needed
                 ]);
-        
     
-    
-                // if($k === 'sharing_code'){
-                //     echo($k);
-                // }
             }
             return response()->json(['result' => 'oke'],200);
         }
