@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use LogInformLa;
 
 class TransPayment extends Model
 {
@@ -16,7 +17,7 @@ class TransPayment extends Model
 
     ];
     protected $fillable = [
-        'refnum', 'orderid_sof', 'tenant_kriteria'
+        'refnum', 'orderid_sof', 'tenant_kriteria','issuer_name'
 
     ];
     public function getDataAttribute($value)
@@ -32,5 +33,10 @@ class TransPayment extends Model
     public function trans_order()
     {
         return $this->belongsTo(TransOrder::class, 'trans_order_id');
+    }
+
+    public function CallbackLA()
+    {
+        return $this->belongsTo(CallbackLA::class, 'trans_order_id');
     }
 }
