@@ -871,8 +871,8 @@ class TravShopController extends Controller
                 $tavsir = [];
 
                 if($trans_order->customer_id === 27511 || $trans_order->customer_id === 234623){
-                    // $travshop[]=11;
-                    array_push($travshop, 11);
+                    $travshop[]=11;
+                    // array_push($travshop, 11);
                 }
 
             } else {
