@@ -867,13 +867,13 @@ class TravShopController extends Controller
             if ($param_removes == null && $trans_order->order_type == 'ORDER_TRAVOY') {
                 $self_order = [];
                 // $travshop = [5, 6, 7, 8, 9, 11];
-                $travshop = [5, 6, 7, 8, 9];
+                $travshop = [5, 6, 7, 8, 9, 11];
                 $tavsir = [];
 
-                if($trans_order->customer_id === 27511 || $trans_order->customer_id === 234623){
-                    $travshop[]=11;
-                    // array_push($travshop, 11);
-                }
+                // if($trans_order->customer_id === 27511 || $trans_order->customer_id === 234623){
+                //     $travshop[]=11;
+                //     // array_push($travshop, 11);
+                // }
 
             } else {
                 $intersect = json_decode($param_removes->list_payment);
