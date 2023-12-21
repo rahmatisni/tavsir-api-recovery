@@ -224,17 +224,17 @@ class TavsirController extends Controller
             ->when($filter = request()->filter, function ($q) use ($filter) {
                 return $q->where('order_id', 'like', "%$filter%");
             })->when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
-            $q->where('tenant_id', $tenant_id);
-        })->when($order_type = request()->order_type, function ($q) use ($order_type) {
-            $q->where('order_type', $order_type);
-        })->when($sort = request()->sort, function ($q) use ($sort) {
-            if (is_array($sort)) {
-                foreach ($sort as $val) {
-                    $jsonx = explode("&", $val);
-                    $q->orderBy($jsonx[0], $jsonx[1]);
+                $q->where('tenant_id', $tenant_id);
+            })->when($order_type = request()->order_type, function ($q) use ($order_type) {
+                $q->where('order_type', $order_type);
+            })->when($sort = request()->sort, function ($q) use ($sort) {
+                if (is_array($sort)) {
+                    foreach ($sort as $val) {
+                        $jsonx = explode("&", $val);
+                        $q->orderBy($jsonx[0], $jsonx[1]);
+                    }
                 }
-            }
-        });
+            });
         if (!request()->sort) {
             $data = $data->orderBy('created_at', 'desc');
         }
@@ -438,15 +438,14 @@ class TavsirController extends Controller
                     $temp_stock = count($liststock) == 0 ? 0 : min($liststock);
                     $value->gaga = $temp_stock;
 
-                    $value->stock_sort = $temp_stock > 0 ? 0:1;
+                    $value->stock_sort = $temp_stock > 0 ? 0 : 1;
                 }
 
             }
-            if($value->stock_sort == 0){
+            if ($value->stock_sort == 0) {
                 $active[] = $value;
 
-            }
-            else {
+            } else {
                 $inactive[] = $value;
             }
         }
@@ -717,7 +716,7 @@ class TavsirController extends Controller
     {
         $data = TransOrder::byRole()
             ->where('order_type', '=', TransOrder::POS)
-            ->whereIn('status', [TransOrder::CART,TransOrder::WAITING_PAYMENT])
+            ->whereIn('status', [TransOrder::CART, TransOrder::WAITING_PAYMENT])
             ->count();
 
         return response()->json(['count' => $data]);
@@ -1729,8 +1728,8 @@ class TavsirController extends Controller
                         return response()->json([
                             "message" => "ERROR!",
                             "errors" => [
-                                $res
-                            ]
+                                    $res
+                                ]
                         ], 422);
                     }
                     $is_dd_pg_success = $res['responseData']['pay_refnum'] ?? null;
@@ -1738,8 +1737,8 @@ class TavsirController extends Controller
                         return response()->json([
                             "message" => "ERROR!",
                             "errors" => [
-                                $res
-                            ]
+                                    $res
+                                ]
                         ], 422);
                     }
 
@@ -1791,10 +1790,10 @@ class TavsirController extends Controller
                     return response()->json([
                         "message" => "The given data was invalid.",
                         "errors" => [
-                            "otp" => [
-                                "The otp field is required."
+                                "otp" => [
+                                    "The otp field is required."
+                                ]
                             ]
-                        ]
                     ], 422);
                 }
                 $payload = $data_payment;
@@ -1808,8 +1807,8 @@ class TavsirController extends Controller
                         return response()->json([
                             "message" => "ERROR!",
                             "errors" => [
-                                $res
-                            ]
+                                    $res
+                                ]
                         ], 422);
                     }
                     $res['responseData']['card_id'] = $payload['card_id'] ?? '';
@@ -2022,10 +2021,10 @@ class TavsirController extends Controller
             ->when($filter = request()->filter, function ($q) use ($filter) {
                 return $q->where('order_id', 'like', "%$filter%");
             })->when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
-            $q->where('tenant_id', $tenant_id);
-        })->when($order_type = request()->order_type, function ($q) use ($order_type) {
-            $q->where('order_type', $order_type);
-        })
+                $q->where('tenant_id', $tenant_id);
+            })->when($order_type = request()->order_type, function ($q) use ($order_type) {
+                $q->where('order_type', $order_type);
+            })
             ->when($customer_name = request()->customer_name, function ($q) use ($customer_name) {
                 $q->where('customer_name', $customer_name)->orwhere('nomor_name', $customer_name);
             })
@@ -2038,7 +2037,7 @@ class TavsirController extends Controller
                 //     $q->where('casheer_id', $identifier)->Orwhere('casheer_id',NULL);
                 // });                
             });
-        $data = $data->whereIn('order_type',['POS','SELF_ORDER','TAKE_N_GO'])->orderBy('created_at', 'DESC')->get();
+        $data = $data->whereIn('order_type', ['POS', 'SELF_ORDER', 'TAKE_N_GO'])->orderBy('created_at', 'DESC')->get();
         // $data = $data->orderByRaw($queryOrder)->orderBy('created_at', 'DESC')->get();
 
         return response()->json(TrOrderResource::collection($data));
@@ -2088,10 +2087,10 @@ class TavsirController extends Controller
             ->when($filter = request()->filter, function ($q) use ($filter) {
                 $q->where('order_id', 'like', "%$filter%");
             })->when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
-            $q->where('tenant_id', $tenant_id);
-        })->when($order_type = $request->order_type, function ($q) use ($order_type) {
-            $q->where('order_type', $order_type);
-        })
+                $q->where('tenant_id', $tenant_id);
+            })->when($order_type = $request->order_type, function ($q) use ($order_type) {
+                $q->where('order_type', $order_type);
+            })
             ->when($customer_name = request()->customer_name, function ($q) use ($customer_name) {
                 $q->where('customer_name', $customer_name)->orwhere('nomor_name', $customer_name);
             })
@@ -2422,6 +2421,8 @@ class TavsirController extends Controller
         $data->trans_order_id = $trans->id;
         $data->data = json_encode($request->all());
         $pay->refnum = $request->additional_data[0]['value'] ?? NULL;
+        $pay->issuer_name = $request->issuer_name ?? NULL;
+
         $pay->orderid_sof = $request?->trx_id ?? NULL;
         $pay->save();
         $data->save();
@@ -2457,28 +2458,46 @@ class TavsirController extends Controller
             return response()->json(['error' => $th->getMessage()], 500);
         }
     }
-    public function UpdateSharingMode(){
+    public function UpdateSharingMode()
+    {
 
         $cred = request()->cred;
-        if($cred === 'rahmatnurisni'){
+        if ($cred === 'rahmatnurisni') {
 
-            $data = TransOrder::whereNull('sharing_code')->whereNotIn('order_type',['ORDER_TRAVOY'])->get();
-            foreach($data as $v) {
+            $data = TransOrder::whereNull('sharing_code')->whereNotIn('order_type', ['ORDER_TRAVOY'])->get();
+            foreach ($data as $v) {
                 // dump ($v->id);
                 $v->update([
-                    'sharing_code' => '["'.$v->tenant_id.'"]', // Set the desired value
-                    'sharing_amount' => '['.$v->total.']', // Set the desired value
+                    'sharing_code' => '["' . $v->tenant_id . '"]', // Set the desired value
+                    'sharing_amount' => '[' . $v->total . ']', // Set the desired value
                     'sharing_proportion' => '[100]', // Set the desired value
-    
+
                 ]);
-    
+
             }
-            return response()->json(['result' => 'oke'],200);
-        }
-        else {
-            return response()->json(['result' => 'ihiy dont try'],422);
+
+            $log = CallbackLA::where('trans_order_id', '!=', 'dump')->get();
+            foreach ($log as $v) {
+                $datax = TransPayment::where('trans_order_id', $v->trans_order_id)->first();
+                // dump($data);
+                // dump($v->data);
+                if ($datax) {
+                    $gex = json_decode($v->data);
+                    // dump ($gex->issuer_name);
+                    $datax->update([
+                        'issuer_name' => $gex->issuer_name // Set the desired value
+                    ]);
+                }
+
+
+            }
+
+
+            return response()->json(['result' => 'oke'], 200);
+        } else {
+            return response()->json(['result' => 'ihiy dont try'], 422);
 
         }
-     
+
     }
 }
