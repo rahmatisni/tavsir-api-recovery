@@ -2388,52 +2388,60 @@ class TavsirController extends Controller
 
     public function CallbackLinkAjaQRIS(Request $request)
     {
-        log::info('Callback LA');
 
-        $trans = TransOrder::with('payment')->where('payment_method_id', 4)->where('order_id', 'like', '%' . $request->msg)->first();
-        log::info([$trans, $request]);
-
-        if (!$trans) {
-            // temp
+        try{
+            log::info('Callback LA');
+            $trans = TransOrder::with('payment')->where('payment_method_id', 4)->where('order_id', 'like', '%' . $request->msg)->first();
+            log::info([$trans, $request]);
+    
+            if (!$trans) {
+                // temp
+                $data = new CallbackLA();
+                DB::beginTransaction();
+                $data->trans_order_id = 'dump';
+                $data->data = json_encode($request->all());
+                $data->save();
+                DB::commit();
+                $datax = [
+                    "responseCode" => "00",
+                    "transactionID" => $request->msg,
+                    "notificationMessage" => "Transaksi Sukses"
+                ];
+                return response()->json($datax);
+                //
+                // $datax = [
+                //     "responseCode" => "03",
+                //     "transactionID" => $request->msg,
+                //     "notificationMessage" => "Dont Try Bro!"
+                // ];
+                // return response($datax, 422);
+            }
             $data = new CallbackLA();
+            $pay = TransPayment::where('trans_order_id', $trans->id)->first();
             DB::beginTransaction();
-            $data->trans_order_id = 'dump';
+            $data->trans_order_id = $trans->id;
             $data->data = json_encode($request->all());
+            $pay->refnum = $request->additional_data[0]['value'] ?? NULL;
+            $pay->issuer_name = $request->issuer_name ?? NULL;
+    
+            $pay->orderid_sof = $request?->trx_id ?? NULL;
+            $pay->save();
             $data->save();
             DB::commit();
+    
             $datax = [
                 "responseCode" => "00",
                 "transactionID" => $request->msg,
                 "notificationMessage" => "Transaksi Sukses"
             ];
             return response()->json($datax);
-            //
-            // $datax = [
-            //     "responseCode" => "03",
-            //     "transactionID" => $request->msg,
-            //     "notificationMessage" => "Dont Try Bro!"
-            // ];
-            // return response($datax, 422);
         }
-        $data = new CallbackLA();
-        $pay = TransPayment::where('trans_order_id', $trans->id)->first();
-        DB::beginTransaction();
-        $data->trans_order_id = $trans->id;
-        $data->data = json_encode($request->all());
-        $pay->refnum = $request->additional_data[0]['value'] ?? NULL;
-        $pay->issuer_name = $request->issuer_name ?? NULL;
 
-        $pay->orderid_sof = $request?->trx_id ?? NULL;
-        $pay->save();
-        $data->save();
-        DB::commit();
-
-        $datax = [
-            "responseCode" => "00",
-            "transactionID" => $request->msg,
-            "notificationMessage" => "Transaksi Sukses"
-        ];
-        return response()->json($datax);
+        catch (\Throwable $th) {
+            // DB::rollback();
+            Log::error($th);
+            return response()->json(['error' => $th->getMessage()], 500);
+        }       
 
     }
 
