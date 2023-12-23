@@ -19,9 +19,9 @@ class SubscriptionResource extends JsonResource
         $owner = '';
 
         if ($tipeOwner) {
-            $owner = $this->superMerchant->owner;
+            $owner = $this->superMerchant?->owner;
         } else {
-            $owner = $this->superMerchant->pic;
+            $owner = $this->superMerchant?->pic;
         }
 
 
