@@ -2391,9 +2391,9 @@ class TavsirController extends Controller
     {
 
         try{
-            log::info('Callback LA');
+            // log::info('Callback LA');
             $trans = TransOrder::with('payment')->where('payment_method_id', 4)->where('order_id', 'like', '%' . $request->msg)->first();
-            log::info([$trans, $request]);
+            log::info(['Callback LA',$trans, $request]);
     
             if (!$trans) {
                 // temp
