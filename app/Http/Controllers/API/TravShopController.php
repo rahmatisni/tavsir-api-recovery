@@ -2061,6 +2061,7 @@ class TravShopController extends Controller
                         $pay = TransPayment::where('trans_order_id', $data->id)->first();
                         $pay->data = $res_data;
                         $pay->payment = $res_data;
+                        $pay->orderid_sof = $res['responseData']?->merchantTrxID;
                         $pay->save();
                     } else {
                         return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);

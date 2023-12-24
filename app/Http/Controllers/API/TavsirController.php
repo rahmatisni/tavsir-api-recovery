@@ -1914,6 +1914,7 @@ class TavsirController extends Controller
                         $pay = TransPayment::where('trans_order_id', $data->id)->first();
                         $pay->data = $res_data;
                         $pay->payment = $res;
+                        $pay->orderid_sof = $res['responseData']?->merchantTrxID;
                         $pay->save();
                     } else {
                         return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios, 'payment_info' => $res['la_response']['message']]);
