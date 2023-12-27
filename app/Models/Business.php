@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use App\Models\BaseModel;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class Business extends BaseModel
 {
+    
+    use SoftDeletes;
     protected $table = 'ref_business';
 
     protected $date = [
