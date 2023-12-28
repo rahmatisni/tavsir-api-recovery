@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 use App\Http\Requests\BukaTutupTokoRequest;
+use App\Http\Requests\TenantSettingResiRequest;
 use App\Http\Resources\TenantResource;
 use App\Models\Tenant;
 use App\Models\User;
@@ -22,6 +23,11 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class TenantController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('role:' . User::TENANT)->only('settingResi');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -316,5 +322,15 @@ class TenantController extends Controller
     {
         $record = Tenant::with('business', 'rest_area', 'ruas', 'order', 'category_tenant')->get();
         return Excel::download(new TenantExport(), 'Tenant ' . Carbon::now()->format('d-m-Y') . '.xlsx');
+    }
+
+    public function settingResi(TenantSettingResiRequest $request)
+    {
+        $user = auth()->user();
+        $tenant = Tenant::findOrFail($user->tenant_id);
+        $tenant->fill($request->validated());
+        $tenant->save();
+        
+        return response()->json($tenant);
     }
 }

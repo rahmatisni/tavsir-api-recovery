@@ -44,7 +44,13 @@ class Tenant extends BaseModel
         'is_composite',
         'list_payment',
         'list_payment_bucket',
-        'url_self_order'
+        'url_self_order',
+        'logo',
+        'additional_information',
+        'instagram',
+        'facebook',
+        'website',
+        'note',
     ];
 
     public function setPhotoUrlAttribute($value)
@@ -52,18 +58,32 @@ class Tenant extends BaseModel
         $file = request()->file('photo_url');
         if (is_file($file)) {
             $file = request()->file('photo_url')->store('images');
-            //     $imagebefore = $this->photo;
-            //     $img = Image::make($file->getRealPath());
-            //     $imgPath = 'images/product/'.Carbon::now()->format('Ymd').time().'.'.$file->getClientOriginalExtension();
-            //     dd(\file_exists('images/product'));
-            //     $img->resize(200, null, function ($constraint) {
-            //         $constraint->aspectRatio();
-            //     })->save($imgPath);
-            //     dd(\file_exists($imagebefore));
+            $imagebefore = $this->photo_url;
             $this->attributes['photo_url'] = $file;
-            //     if(file_exists($imagebefore)) {
-            //         unlink($imagebefore);
-            //     }
+            if(file_exists($imagebefore)) {
+                unlink($imagebefore);
+            }
+        }
+    }
+
+    public function setLogoAttribute($value)
+    {
+        $file = request()->file('logo');
+        if (is_file($file)) {
+            $file = request()->file('logo')->store('images');
+            $imagebefore = $this->logo;
+            $this->attributes['logo'] = $file;
+            if(file_exists($imagebefore)) {
+                unlink($imagebefore);
+            }
+        }
+
+        if(request()->is_delete_logo){
+            $imagebefore = $this->logo;
+            $this->attributes['logo'] = null;
+            if(file_exists($imagebefore)) {
+                unlink($imagebefore);
+            }
         }
     }
 

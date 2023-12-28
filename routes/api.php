@@ -40,6 +40,7 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('rest-area', App\Http\Controllers\API\RestAreaController::class);
     Route::apiResource('business', App\Http\Controllers\API\BusinessController::class);
     Route::post('tenant/export', [App\Http\Controllers\API\TenantController::class, 'export']);
+    Route::post('tenant/setting-resi', [App\Http\Controllers\API\TenantController::class, 'settingResi']);
     Route::apiResource('tenant', App\Http\Controllers\API\TenantController::class);
     Route::apiResource('supertenant', App\Http\Controllers\API\SupertenantController::class);
 
