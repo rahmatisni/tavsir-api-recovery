@@ -27,6 +27,7 @@ class CreateRefBusiness extends Migration
             $table->integer('created_by')->nullable();
             $table->date('subscription_end')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

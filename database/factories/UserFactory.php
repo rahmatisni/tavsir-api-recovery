@@ -26,7 +26,7 @@ class UserFactory extends Factory
             'sub_merchant_id' => 1,
             'rest_area_id' => RestAreaFactory::new()->create()->id,
             'tenant_id' => TenantFactory::new()->create()->id,
-            'paystation_id' => PaystationFactory::new()->create()->id,
+            // 'paystation_id' => PaystationFactory::new()->create()->id,
         ];
     }
 
