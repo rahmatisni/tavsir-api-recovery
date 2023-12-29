@@ -329,7 +329,15 @@ class TenantController extends Controller
         $user = auth()->user();
         $tenant = Tenant::findOrFail($user->tenant_id);
         $tenant->fill($request->validated());
+        if($request->is_delete_logo){
+            $imagebefore = $tenant->logo;
+            if(file_exists($imagebefore)) {
+                unlink($imagebefore);
+            }
+            $tenant->logo = null;
+        }
         $tenant->save();
+
         
         return response()->json($tenant);
     }
