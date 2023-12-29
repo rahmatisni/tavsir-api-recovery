@@ -35,6 +35,11 @@ class AppServiceProvider extends ServiceProvider
     {
         Blade::directive('rp', function ( $expression ) { return "<?php echo number_format($expression,0,',','.'); ?>"; });
 
+
+        if($this->app->environment('production')) {
+            \URL::forceScheme('https');
+        }
+        
         Http::macro('kiosbank', function () {
             return Http::baseUrl(env('KIOSBANK_URL'))->withOptions(["verify"=>false]);
         });
