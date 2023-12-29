@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 
 use App\Http\Requests\BukaTutupTokoRequest;
 use App\Http\Requests\TenantSettingResiRequest;
+use App\Http\Resources\TenantResiSettingResource;
 use App\Http\Resources\TenantResource;
 use App\Models\Tenant;
 use App\Models\User;
@@ -337,8 +338,7 @@ class TenantController extends Controller
             $tenant->logo = null;
         }
         $tenant->save();
-
         
-        return response()->json($tenant);
+        return response()->json(new TenantResiSettingResource($tenant));
     }
 }

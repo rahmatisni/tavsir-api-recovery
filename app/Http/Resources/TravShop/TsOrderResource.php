@@ -164,10 +164,12 @@ class TsOrderResource extends JsonResource
             $tenant_name = 'Multibiller';
         }
 
+        $logo = $this->tenant->log ?? null;
 
         return [
             "id" => $this->id,
             'rest_area_name' => $rest_area_name,
+            'business_name' => $this->tenant->business->name ?? null,
             'tenant_id' => $this->tenant_id,
             'tenant_name' => $tenant_name,
             'tenant_photo' => $this->tenant ? ($this->tenant->photo_url ? asset($this->tenant->photo_url) : null) : null,
@@ -200,6 +202,12 @@ class TsOrderResource extends JsonResource
             'addon_total' => $this->addon_total,
             'addon_price' => $this->addon_price,
             'detil_kios' => $product_kios,
+            "logo" => $logo ? asset($logo) : null,
+            "additional_information" => $this->tenant->additional_information ?? null,
+            "instagram" => $this->tenant->instagram ?? null,
+            "facebook" => $this->tenant->facebook ?? null,
+            "website" => $this->tenant->website ?? null,
+            "note" => $this->tenant->note ?? null,
             'detil' => TsOrderDetilResource::collection($this->detil),
         ];
     }
