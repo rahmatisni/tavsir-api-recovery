@@ -40,6 +40,7 @@ class TrProductResource extends JsonResource
             'is_active' => $this->is_active,
             'is_composite' => $this->is_composit,
             'description' => $this->description,
+            'sort' => $this->stock_sort,
             'customize' => CustomizeResource::collection($this->customize),
         ];
     }

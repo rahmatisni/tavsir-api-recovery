@@ -436,7 +436,6 @@ class TavsirController extends Controller
                         $liststock[] = floor($item->stock / $item->pivot->qty);
                     }
                     $temp_stock = count($liststock) == 0 ? 0 : min($liststock);
-                    $value->gaga = $temp_stock;
 
                     $value->stock_sort = $temp_stock > 0 ? 0 : 1;
                 }
@@ -449,8 +448,8 @@ class TavsirController extends Controller
                 $inactive[] = $value;
             }
         }
-
         $sortedArray = array_merge($active, $inactive);
+        // return response()->json($sortedArray);
 
         return response()->json(TrProductResource::collection($sortedArray));
     }
