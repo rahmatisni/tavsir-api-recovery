@@ -37,6 +37,7 @@ class ProfileResource extends JsonResource
                         'facebook' => $user->tenant->facebook ?? null,
                         'website' => $user->tenant->website ?? null,
                         'note' => $user->tenant->note ?? null,
+                        'business_name' => $user->tenant->business->name ?? null,
                     ];
                     break;
                 case User::CASHIER:
