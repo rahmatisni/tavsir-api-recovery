@@ -427,7 +427,7 @@ class TavsirController extends Controller
             $stock = $value->stock;
             // $value->stock_sort = $stock > 0 ? 0:1;
             $value->stock_sort = $value->stock === 0 ? 1 : ($value->is_active === 0 ? 1 : 0);
-            if ($value->is_composit == 1) {
+            if ($value->is_composit === 1) {
                 if ($cek_product_have_not_active > 0) {
                     $value->stock_sort = 1;
                 } else {
@@ -441,6 +441,8 @@ class TavsirController extends Controller
                 }
 
             }
+            $value->stock_sort =$value->is_active === 0 ? 1 : 0;
+
             if ($value->stock_sort == 0) {
                 $active[] = $value;
 
