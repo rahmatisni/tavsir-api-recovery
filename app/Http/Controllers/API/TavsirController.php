@@ -437,6 +437,13 @@ class TavsirController extends Controller
 
     public function productList(Request $request)
     {
+
+        // super tenant
+        if(auth()->user()->supertenant_id != NULL) {
+           $result = $this->productSupertenantList($request);
+           return $result;
+        }
+
         $data = Product::byTenant()->byType(ProductType::PRODUCT)->with('tenant')->with('trans_product_raw')->when($filter = $request->filter, function ($q) use ($filter) {
             $q->where(function ($qq) use ($filter) {
                 return $qq->where('name', 'like', "%$filter%")
