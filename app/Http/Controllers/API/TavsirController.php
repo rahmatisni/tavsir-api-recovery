@@ -221,6 +221,29 @@ class TavsirController extends Controller
             $data->sub_total = $sub_total;
             $data->total = $data->sub_total + $data->fee + $data->service_fee;
 
+
+            $now = Carbon::now()->format('Y-m-d H:i:s');
+            $sharing = Sharing::where('tenant_id', auth()->user()->tenant_id)->whereIn('status', ['sedang_berjalan', 'belum_berjalan'])
+                ->where('waktu_mulai', '<=', $now)
+                ->where('waktu_selesai', '>=', $now)->first();
+            if ($sharing?->sharing_config) {
+                $nilai_sharing = json_decode($sharing->sharing_config);
+                foreach ($nilai_sharing as $value) {
+                    $harga = (int) ($data->sub_total) + (int) ($data->addon_total);
+                    $sharing_amount_unround = (($value / 100) * $harga);
+                    // $sharing_amount[] = ($value/100).'|'.$harga.'|'.$sharing_amount_unround;
+                    $sharing_amount[] = $sharing_amount_unround;
+                }
+                $data->sharing_code = $sharing->sharing_code ?? null;
+                $data->sharing_amount = $sharing_amount ?? null;
+                $data->sharing_proportion = $sharing->sharing_config ?? null;
+            } else {
+                $data->sharing_code = [(string) $data->tenant_id];
+                $data->sharing_proportion = [100];
+                $data->sharing_amount = [$data->sub_total + (int) ($data->addon_total)];
+            }
+
+
             $data->save();
             $data->detil()->saveMany($order_detil_many);
 
@@ -439,9 +462,9 @@ class TavsirController extends Controller
     {
 
         // super tenant
-        if(auth()->user()->supertenant_id != NULL) {
-           $result = $this->productSupertenantList($request);
-           return $result;
+        if (auth()->user()->supertenant_id != NULL) {
+            $result = $this->productSupertenantList($request);
+            return $result;
         }
 
         $data = Product::byTenant()->byType(ProductType::PRODUCT)->with('tenant')->with('trans_product_raw')->when($filter = $request->filter, function ($q) use ($filter) {
@@ -610,6 +633,13 @@ class TavsirController extends Controller
     public function order(TrOrderRequest $request)
     {
         try {
+
+            // super tenant
+            if (auth()->user()->supertenant_id != NULL) {
+                $result = $this->orderSuperTenant($request);
+                return $result;
+            }
+            /////
             $data = TransOrder::find($request->id);
 
             DB::beginTransaction();
@@ -1768,8 +1798,8 @@ class TavsirController extends Controller
                         return response()->json([
                             "message" => "ERROR!",
                             "errors" => [
-                                    $res
-                                ]
+                                $res
+                            ]
                         ], 422);
                     }
                     $is_dd_pg_success = $res['responseData']['pay_refnum'] ?? null;
@@ -1777,8 +1807,8 @@ class TavsirController extends Controller
                         return response()->json([
                             "message" => "ERROR!",
                             "errors" => [
-                                    $res
-                                ]
+                                $res
+                            ]
                         ], 422);
                     }
 
@@ -1830,10 +1860,10 @@ class TavsirController extends Controller
                     return response()->json([
                         "message" => "The given data was invalid.",
                         "errors" => [
-                                "otp" => [
-                                    "The otp field is required."
-                                ]
+                            "otp" => [
+                                "The otp field is required."
                             ]
+                        ]
                     ], 422);
                 }
                 $payload = $data_payment;
@@ -1847,8 +1877,8 @@ class TavsirController extends Controller
                         return response()->json([
                             "message" => "ERROR!",
                             "errors" => [
-                                    $res
-                                ]
+                                $res
+                            ]
                         ], 422);
                     }
                     $res['responseData']['card_id'] = $payload['card_id'] ?? '';
@@ -2430,11 +2460,11 @@ class TavsirController extends Controller
     public function CallbackLinkAjaQRIS(Request $request)
     {
 
-        try{
+        try {
             // log::info('Callback LA');
             $trans = TransOrder::with('payment')->where('payment_method_id', 4)->where('order_id', 'like', '%' . $request->msg)->first();
-            log::info(['Callback LA',$trans, $request]);
-    
+            log::info(['Callback LA', $trans, $request]);
+
             if (!$trans) {
                 // temp
                 $data = new CallbackLA();
@@ -2464,25 +2494,23 @@ class TavsirController extends Controller
             $data->data = json_encode($request->all());
             $pay->refnum = $request->additional_data[0]['value'] ?? NULL;
             $pay->issuer_name = $request->issuer_name ?? NULL;
-    
+
             $pay->orderid_sof = $request?->trx_id ?? NULL;
             $pay->save();
             $data->save();
             DB::commit();
-    
+
             $datax = [
                 "responseCode" => "00",
                 "transactionID" => $request->msg,
                 "notificationMessage" => "Transaksi Sukses"
             ];
             return response()->json($datax);
-        }
-
-        catch (\Throwable $th) {
+        } catch (\Throwable $th) {
             // DB::rollback();
             Log::error($th);
             return response()->json(['error' => $th->getMessage()], 500);
-        }       
+        }
 
     }
 
