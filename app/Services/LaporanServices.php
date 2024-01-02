@@ -322,12 +322,18 @@ class LaporanServices
             }
         )
         
-        ->when($tenant_id, function ($q) use ($tenant_id) {
-            return $q->where('tenant_id', $tenant_id);
-        })
+        // ->when($tenant_id, function ($q) use ($tenant_id) {
+        //     return $q->where('tenant_id', $tenant_id);
+        // })
         // CR
-        ->when($super_tenant_id, function ($qq) use ($super_tenant_id) {
-            return $qq->orwhere('supertenant_id', $super_tenant_id);
+        
+        ->when($tenant_id, function ($qq) use ($tenant_id, $super_tenant_id) {
+            if($super_tenant_id == null){
+                return  $qq->where('tenant_id', $tenant_id);
+            }
+            else {
+                $qq->where('tenant_id', $tenant_id)->orWhere('supertenant_id', $super_tenant_id);
+            }
         })
         // CR
         ->when($rest_area_id, function ($qq) use ($rest_area_id) {
