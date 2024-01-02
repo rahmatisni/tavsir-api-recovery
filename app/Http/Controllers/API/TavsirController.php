@@ -172,6 +172,7 @@ class TavsirController extends Controller
             }
             $data->rest_area_id = auth()->user()->supertenant?->rest_area_id ?? null;
             $data->supertenant_id = auth()->user()->supertenant_id;
+            $data->tenant_id = auth()->user()->tenant_id;
             $data->business_id = auth()->user()->business_id;
             $data->casheer_id = auth()->user()->id;
             $data->detil()->delete();
