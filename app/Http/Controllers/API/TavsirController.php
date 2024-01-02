@@ -118,7 +118,41 @@ class TavsirController extends Controller
             $data->where('is_active', '1');
         }
         $data = $data->orderBy('updated_at', 'desc')->get();
-        return response()->json(ProductSupertenantResource::collection($data));
+
+        $active = [];
+        $inactive = [];
+        foreach ($data as $value) {
+            $cek_product_have_not_active = $value->trans_product_raw->where('is_active', 0)->count();
+            $stock = $value->stock;
+            // $value->stock_sort = $stock > 0 ? 0:1;
+            $value->stock_sort = $value->stock === 0 ? 1 : ($value->is_active === 0 ? 1 : 0);
+            if ($value->is_composit === 1 && $value->is_active === 1) {
+                if ($cek_product_have_not_active > 0) {
+                    $value->stock_sort = 1;
+                } else {
+                    $liststock = [];
+                    foreach ($value->trans_product_raw as $item) {
+                        $liststock[] = floor($item->stock / $item->pivot->qty);
+                    }
+                    $temp_stock = count($liststock) == 0 ? 0 : min($liststock);
+
+                    $value->stock_sort = $temp_stock > 0 ? 0 : 1;
+                }
+
+            }
+            if ($value->stock_sort == 0) {
+                $active[] = $value;
+
+            } else {
+                $inactive[] = $value;
+            }
+        }
+        $sortedArray = array_merge($active, $inactive);
+        // return response()->json($sortedArray);
+
+        return response()->json(ProductSupertenantResource::collection($sortedArray));
+
+        // return response()->json(ProductSupertenantResource::collection($data));
     }
 
     public function orderSuperTenant(TrOrderRequest $request)
