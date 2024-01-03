@@ -156,6 +156,11 @@ class UserController extends Controller
                     return $result;
                 }
             }
+
+            $data = User::where('email', $request->email)->whereNotNull('deleted_at')->first();
+            if($data){
+            return response()->json(['status'=>'Error','message' => 'Email Duplikat'],402);
+            }
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
