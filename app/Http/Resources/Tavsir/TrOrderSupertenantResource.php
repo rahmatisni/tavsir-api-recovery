@@ -42,6 +42,8 @@ class TrOrderSupertenantResource extends JsonResource
             'sub_total' => $this->sub_total,
             'discount' => $this->discount,
             'total' => $this->total,
+            'addon_total' => $this->addon_total,
+            'addon_price' => $this->addon_price,
             'saldo_qr' => $this->saldo_qr ?? 0,
             'pay_amount' => $this->pay_amount,
             'casheer_name' => $this->casheer->name ?? '',
