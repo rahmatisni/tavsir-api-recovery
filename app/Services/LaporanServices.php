@@ -35,12 +35,12 @@ class LaporanServices
                         ]
                     );
                 })->when($tenant_id, function ($qq) use ($tenant_id) {
-                return $qq->where('tenant_id', $tenant_id);
-            })->when($rest_area_id, function ($qq) use ($rest_area_id) {
-                return $qq->where('rest_area_id', $rest_area_id);
-            })->when($business_id, function ($qq) use ($business_id) {
-                return $qq->where('business_id', $business_id);
-            });
+                    return $qq->where('tenant_id', $tenant_id);
+                })->when($rest_area_id, function ($qq) use ($rest_area_id) {
+                    return $qq->where('rest_area_id', $rest_area_id);
+                })->when($business_id, function ($qq) use ($business_id) {
+                    return $qq->where('business_id', $business_id);
+                });
         })->with('product.category')->get()
             ->groupBy('product.category.name');
 
@@ -126,14 +126,14 @@ class LaporanServices
         $sharing_data = [];
         foreach ($data as $item) {
             $cek = $item?->trans_cashbox?->sharing ?? null;
-            if($cek){
+            if ($cek) {
                 $array = json_decode($cek, true);
                 $array = array_keys($array);
-                $counter =  count($array);
-                if($counter > $sharing_count){
+                $counter = count($array);
+                if ($counter > $sharing_count) {
                     $sharing_count = $counter;
                 }
-                $sharing_data = array_unique (array_merge ($sharing_data, $array));
+                $sharing_data = array_unique(array_merge($sharing_data, $array));
             }
         }
 
@@ -178,16 +178,16 @@ class LaporanServices
                             ]
                         );
                     })->when($tenant_id, function ($qq) use ($tenant_id) {
-                    return $qq->where('tenant_id', $tenant_id);
-                    //  CR
-                // })->when($super_tenant_id, function ($qq) use ($super_tenant_id) {
-                //     return $qq->orwhere('supertenant_id', $super_tenant_id);
-                    // 
-                })->when($rest_area_id, function ($qq) use ($rest_area_id) {
-                    return $qq->where('rest_area_id', $rest_area_id);
-                })->when($business_id, function ($qq) use ($business_id) {
-                    return $qq->where('business_id', $business_id);
-                });
+                        return $qq->where('tenant_id', $tenant_id);
+                        //  CR
+                        // })->when($super_tenant_id, function ($qq) use ($super_tenant_id) {
+                        //     return $qq->orwhere('supertenant_id', $super_tenant_id);
+                        // 
+                    })->when($rest_area_id, function ($qq) use ($rest_area_id) {
+                        return $qq->where('rest_area_id', $rest_area_id);
+                    })->when($business_id, function ($qq) use ($business_id) {
+                        return $qq->where('business_id', $business_id);
+                    });
             }
         )->get();
         if ($data->count() == 0) {
@@ -228,10 +228,10 @@ class LaporanServices
             ->when($tenant_id, function ($q) use ($tenant_id) {
                 return $q->where('tenant_id', $tenant_id);
             })->when($rest_area_id, function ($qq) use ($rest_area_id) {
-            return $qq->where('rest_area_id', $rest_area_id);
-        })->when($business_id, function ($qq) use ($business_id) {
-            return $qq->where('business_id', $business_id);
-        })
+                return $qq->where('rest_area_id', $rest_area_id);
+            })->when($business_id, function ($qq) use ($business_id) {
+                return $qq->where('business_id', $business_id);
+            })
             ->with('payment_method')->get()
             ->groupBy('payment_method.name');
 
@@ -271,7 +271,8 @@ class LaporanServices
     }
 
 
-    public function decode_manual($sharing_amount){
+    public function decode_manual($sharing_amount)
+    {
         $pairStrings = explode(',', substr($sharing_amount, 1, -1));
 
         $resultArray = [];
@@ -306,49 +307,89 @@ class LaporanServices
         $business_id = $request->business_id;
         $order_type = $request->order_type;
         $payment_method_id = $request->payment_method_id;
-        // $super_tenant_id = auth()->user()->supertenant_id;
+        $super_tenant_id = auth()->user()->supertenant_id;
 
-        $raw_data =  $data = TransOrder::with('tenant')
-        ->when(
-            ($tanggal_awal && $tanggal_akhir),
-            function ($q) use ($tanggal_awal, $tanggal_akhir) {
-                return $q->whereBetween(
-                    'created_at',
-                    [
-                        $tanggal_awal,
-                        $tanggal_akhir . ' 23:59:59'
-                    ]
-                );
-            }
-        )
-        
-        ->when($tenant_id, function ($q) use ($tenant_id) {
-            return $q->where('tenant_id', $tenant_id);
-        })
-        // CR
-        
-        // ->when($tenant_id, function ($qq) use ($tenant_id, $super_tenant_id) {
-        //     if($super_tenant_id == null){
-        //         return  $qq->where('tenant_id', $tenant_id);
-        //     }
-        //     else {
-        //         $qq->where('tenant_id', $tenant_id)->orWhere('supertenant_id', $super_tenant_id);
-        //     }
-        // })
-        // CR
-        ->when($rest_area_id, function ($qq) use ($rest_area_id) {
-        return $qq->where('rest_area_id', $rest_area_id);
-    })->when($business_id, function ($qq) use ($business_id) {
-        return $qq->where('business_id', $business_id);
-    })->when($order_type, function ($qq) use ($order_type) {
-        return $qq->where('order_type', $order_type);
-    })->when($payment_method_id, function ($qq) use ($payment_method_id) {
-        return $qq->where('payment_method_id', $payment_method_id);
-    })
-        ->orderBy('created_at')
-        ->get();
-        $data = $raw_data->where('status','DONE');
-        $data_w_refund = $raw_data->whereIn('status',['DONE','REFUND']);
+        if($super_tenant_id != NULL){
+            $raw_data = $data = TransOrder::with('tenant')
+            ->when(
+                ($tanggal_awal && $tanggal_akhir),
+                function ($q) use ($tanggal_awal, $tanggal_akhir) {
+                    return $q->whereBetween(
+                        'created_at',
+                        [
+                            $tanggal_awal,
+                            $tanggal_akhir . ' 23:59:59'
+                        ]
+                    );
+                }
+            )
+            ->when($super_tenant_id, function ($q) use ($super_tenant_id) {
+                return $q->where('supertenant_id', $super_tenant_id);
+            }) ->orderBy('created_at')
+            ->get();
+        }
+        else {
+            $raw_data = $data = TransOrder::with('tenant')
+            ->when(
+                ($tanggal_awal && $tanggal_akhir),
+                function ($q) use ($tanggal_awal, $tanggal_akhir) {
+                    return $q->whereBetween(
+                        'created_at',
+                        [
+                            $tanggal_awal,
+                            $tanggal_akhir . ' 23:59:59'
+                        ]
+                    );
+                }
+            )
+
+            ->when($tenant_id, function ($q) use ($tenant_id) {
+                return $q->where('tenant_id', $tenant_id);
+            })
+
+            ->when($rest_area_id, function ($qq) use ($rest_area_id) {
+                return $qq->where('rest_area_id', $rest_area_id);
+            })->when($business_id, function ($qq) use ($business_id) {
+                return $qq->where('business_id', $business_id);
+            })->when($order_type, function ($qq) use ($order_type) {
+                return $qq->where('order_type', $order_type);
+            })->when($payment_method_id, function ($qq) use ($payment_method_id) {
+                return $qq->where('payment_method_id', $payment_method_id);
+            })
+            ->orderBy('created_at')
+            ->get();
+        }
+        // $raw_data = $data = TransOrder::with('tenant')
+        //     ->when(
+        //         ($tanggal_awal && $tanggal_akhir),
+        //         function ($q) use ($tanggal_awal, $tanggal_akhir) {
+        //             return $q->whereBetween(
+        //                 'created_at',
+        //                 [
+        //                     $tanggal_awal,
+        //                     $tanggal_akhir . ' 23:59:59'
+        //                 ]
+        //             );
+        //         }
+        //     )
+
+        //     ->when($tenant_id, function ($q) use ($tenant_id) {
+        //         return $q->where('tenant_id', $tenant_id);
+        //     })
+
+        //     ->when($rest_area_id, function ($qq) use ($rest_area_id) {
+        //         return $qq->where('rest_area_id', $rest_area_id);
+        //     })->when($business_id, function ($qq) use ($business_id) {
+        //         return $qq->where('business_id', $business_id);
+        //     })->when($order_type, function ($qq) use ($order_type) {
+        //         return $qq->where('order_type', $order_type);
+        //     })->when($payment_method_id, function ($qq) use ($payment_method_id) {
+        //         return $qq->where('payment_method_id', $payment_method_id);
+        //     })
+        //     ->orderBy('created_at')
+        //     ->get();
+        $data = $raw_data->where('status', 'DONE');
+        $data_w_refund = $raw_data->whereIn('status', ['DONE', 'REFUND']);
         if ($data->count() == 0) {
             abort(404);
         }
@@ -419,7 +460,7 @@ class LaporanServices
 
 
 
-      
+
 
 
         $data = [
