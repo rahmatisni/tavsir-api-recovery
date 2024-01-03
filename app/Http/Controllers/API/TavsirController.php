@@ -636,22 +636,27 @@ class TavsirController extends Controller
 
     public function categoryList(Request $request)
     {
-        $super_tenant_id =auth()->user()->supertenant_id ?? NULL;
+        $super_tenant_id = auth()->user()->supertenant_id ?? NULL;
 
-        if($super_tenant_id){
-            $arr_tenant = Tenant::where('supertenant_id',$super_tenant_id)->pluck('id')->toArray();
+        if ($super_tenant_id) {
+            $arr_tenant = Tenant::where('supertenant_id', $super_tenant_id)->pluck('id')->toArray();
             // dd($arr_tenant);
             $data = Category::with('tenant')->byType(ProductType::PRODUCT)->when($filter = $request->filter, function ($q) use ($filter) {
                 return $q->where('name', 'like', "%$filter%");
             })->when($super_tenant_id != null, function ($q) use ($arr_tenant) {
-                return $q->whereIn('tenant_id',$arr_tenant);
-            })->orderBy('name')->get();
+                return $q->whereIn('tenant_id', $arr_tenant);
+
+            })
+            ->orderBy('name')
+            ->get()
+            ->sortBy('tenant.name',SORT_REGULAR,false);
+
             return response()->json(TrCategoryResource::collection($data));
         }
-        $data = Category::byType(ProductType::PRODUCT)    
-        ->byTenant()->when($filter = $request->filter, function ($q) use ($filter) {
-            return $q->where('name', 'like', "%$filter%");
-        })->orderBy('name')->get();
+        $data = Category::byType(ProductType::PRODUCT)
+            ->byTenant()->when($filter = $request->filter, function ($q) use ($filter) {
+                return $q->where('name', 'like', "%$filter%");
+            })->orderBy('name')->get();
         return response()->json(TrCategoryResource::collection($data));
     }
 
@@ -2124,58 +2129,57 @@ class TavsirController extends Controller
         $queryOrder .= "WHEN status = 'CANCEL' THEN 9 ";
         $queryOrder .= "ELSE 9 END";
         $identifier = auth()->user()->id;
-        $super_tenant_id =((auth()->user()->role === 'TENANT' && auth()->user()->tenant_id == request()->tenant_id) ? auth()->user()->supertenant_id : NULL);
+        $super_tenant_id = ((auth()->user()->role === 'TENANT' && auth()->user()->tenant_id == request()->tenant_id) ? auth()->user()->supertenant_id : NULL);
         if ($super_tenant_id != NULL) {
-        $data = $this->orderListMemberOfSupertenant($request);
-        return $data;
-        }
-        else {
+            $data = $this->orderListMemberOfSupertenant($request);
+            return $data;
+        } else {
             $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer', 'trans_edc.bank')
-            ->when($status = request()->status, function ($q) use ($status) {
-                if (is_array($status)) {
-                    $q->whereIn('status', $status)->orwhereIn('status', json_decode($status[0]) ?? []);
-                } else {
-                    $q->where('status', $status);
-                }
-            })
-            ->when($start_date = $request->start_date, function ($q) use ($start_date) {
-                $q->whereDate('created_at', '>=', date("Y-m-d", strtotime($start_date)));
-            })
-            ->when($end_date = $request->end_date, function ($q) use ($end_date) {
-                $q->whereDate('created_at', '<=', date("Y-m-d", strtotime($end_date)));
-            })
-            ->when($statusnot = request()->statusnot, function ($q) use ($statusnot) {
-                if (is_array($statusnot)) {
-                    $q->whereNotIn('status', $statusnot);
-                } else {
-                    $q->whereNotIn('status', $statusnot);
-                }
-            })
-            ->when($filter = request()->filter, function ($q) use ($filter) {
-                return $q->where('order_id', 'like', "%$filter%");
-            })->when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
-                $q->where('tenant_id', $tenant_id);
-            })->when($order_type = request()->order_type, function ($q) use ($order_type) {
-                $q->where('order_type', $order_type);
-            })
-            ->when($customer_name = request()->customer_name, function ($q) use ($customer_name) {
-                $q->where('customer_name', $customer_name)->orwhere('nomor_name', $customer_name);
-            })
-            // ->when(auth()->user()->role == 'CASHIER', function ($q) use ($identifier) {
-            //     $q->where('casheer_id', $identifier);
-            // });
-            ->when(auth()->user()->role == 'CASHIER', function ($q) use ($identifier) {
-                $q->where('casheer_id', $identifier);
-                // $q->where(function ($q) use ($identifier) {
-                //     $q->where('casheer_id', $identifier)->Orwhere('casheer_id',NULL);
-                // });                
-            });
-        $data = $data->whereIn('order_type', ['POS', 'SELF_ORDER', 'TAKE_N_GO'])->orderBy('created_at', 'DESC')->get();
-        // $data = $data->orderByRaw($queryOrder)->orderBy('created_at', 'DESC')->get();
+                ->when($status = request()->status, function ($q) use ($status) {
+                    if (is_array($status)) {
+                        $q->whereIn('status', $status)->orwhereIn('status', json_decode($status[0]) ?? []);
+                    } else {
+                        $q->where('status', $status);
+                    }
+                })
+                ->when($start_date = $request->start_date, function ($q) use ($start_date) {
+                    $q->whereDate('created_at', '>=', date("Y-m-d", strtotime($start_date)));
+                })
+                ->when($end_date = $request->end_date, function ($q) use ($end_date) {
+                    $q->whereDate('created_at', '<=', date("Y-m-d", strtotime($end_date)));
+                })
+                ->when($statusnot = request()->statusnot, function ($q) use ($statusnot) {
+                    if (is_array($statusnot)) {
+                        $q->whereNotIn('status', $statusnot);
+                    } else {
+                        $q->whereNotIn('status', $statusnot);
+                    }
+                })
+                ->when($filter = request()->filter, function ($q) use ($filter) {
+                    return $q->where('order_id', 'like', "%$filter%");
+                })->when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
+                    $q->where('tenant_id', $tenant_id);
+                })->when($order_type = request()->order_type, function ($q) use ($order_type) {
+                    $q->where('order_type', $order_type);
+                })
+                ->when($customer_name = request()->customer_name, function ($q) use ($customer_name) {
+                    $q->where('customer_name', $customer_name)->orwhere('nomor_name', $customer_name);
+                })
+                // ->when(auth()->user()->role == 'CASHIER', function ($q) use ($identifier) {
+                //     $q->where('casheer_id', $identifier);
+                // });
+                ->when(auth()->user()->role == 'CASHIER', function ($q) use ($identifier) {
+                    $q->where('casheer_id', $identifier);
+                    // $q->where(function ($q) use ($identifier) {
+                    //     $q->where('casheer_id', $identifier)->Orwhere('casheer_id',NULL);
+                    // });                
+                });
+            $data = $data->whereIn('order_type', ['POS', 'SELF_ORDER', 'TAKE_N_GO'])->orderBy('created_at', 'DESC')->get();
+            // $data = $data->orderByRaw($queryOrder)->orderBy('created_at', 'DESC')->get();
 
-        return response()->json(TrOrderResource::collection($data));
+            return response()->json(TrOrderResource::collection($data));
         }
-       
+
     }
     public function orderHistory(Request $request)
     {
@@ -2246,7 +2250,7 @@ class TavsirController extends Controller
 
     public function orderById($id)
     {
-        $super_tenant_id =((auth()->user()->role === 'TENANT') ? auth()->user()->supertenant_id : NULL);
+        $super_tenant_id = ((auth()->user()->role === 'TENANT') ? auth()->user()->supertenant_id : NULL);
         if ($super_tenant_id != NULL) {
             $data = $this->orderByIdMemberSupertenant($id);
             return $data;
