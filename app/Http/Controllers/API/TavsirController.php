@@ -327,7 +327,7 @@ class TavsirController extends Controller
     {
         $tenant_user = auth()->user()->tenant;
         $data = TransOrder::with('detil.product.tenant')
-            ->whereIn('status', [TransOrder::CART, TransOrder::PAYMENT_SUCCESS, TransOrder::DONE])
+            ->whereIn('status', [TransOrder::DONE, TransOrder::REFUND])
             ->where('supertenant_id', $tenant_user->supertenant_id ?? 0)
             ->whereHas('detil', function ($q) use ($tenant_user) {
                 $q->whereHas('product', function ($qq) use ($tenant_user) {
