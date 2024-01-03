@@ -16,6 +16,7 @@ class TrOrderSupertenantResource extends JsonResource
     {
         $product_member = auth()->user()->tenant?->product?->pluck('id') ?? [];
         $detil_tenant = $this->detil->whereIn('product_id', $product_member);
+
         return [
             'id' => $this->id,
             'order_id' => $this->order_id,
@@ -41,7 +42,8 @@ class TrOrderSupertenantResource extends JsonResource
             'casheer_id' => $this->casheer_id,
             'sub_total' => $this->sub_total,
             'discount' => $this->discount,
-            'total' => $this->total,
+            // 'total' => $this->total,
+            'total' => $detil_tenant->sum(['total_price']),
             'addon_total' => $this->addon_total,
             'addon_price' => $this->addon_price,
             'saldo_qr' => $this->saldo_qr ?? 0,
