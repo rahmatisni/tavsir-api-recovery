@@ -334,6 +334,22 @@ class TavsirController extends Controller
                     $qq->where('tenant_id', $tenant_user->id ?? 0);
                 });
             })
+            ->when($start_date = $request->start_date, function ($q) use ($start_date) {
+                $q->whereDate('created_at', '>=', date("Y-m-d", strtotime($start_date)));
+            })
+            ->when($end_date = $request->end_date, function ($q) use ($end_date) {
+                $q->whereDate('created_at', '<=', date("Y-m-d", strtotime($end_date)));
+            })
+            ->when($statusnot = request()->statusnot, function ($q) use ($statusnot) {
+                if (is_array($statusnot)) {
+                    $q->whereNotIn('status', $statusnot);
+                } else {
+                    $q->whereNotIn('status', $statusnot);
+                }
+            })
+            ->when($filter = request()->filter, function ($q) use ($filter) {
+                return $q->where('order_id', 'like', "%$filter%");
+            })
             ->orderBy('created_at', 'desc')
             ->get();
         return response()->json(TrOrderSupertenantResource::collection($data));
