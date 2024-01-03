@@ -322,6 +322,25 @@ class TavsirController extends Controller
         return response()->json(TrOrderSupertenantResource::collection($data));
     }
 
+
+    public function orderListMemberOfSupertenant(Request $request)
+    {
+        $tenant_user = auth()->user()->tenant;
+        $data = TransOrder::with('detil.product.tenant')
+            ->whereIn('status', [TransOrder::CART, TransOrder::PAYMENT_SUCCESS, TransOrder::DONE])
+            ->where('supertenant_id', $tenant_user->supertenant_id ?? 0)
+            ->whereHas('detil', function ($q) use ($tenant_user) {
+                $q->whereHas('product', function ($qq) use ($tenant_user) {
+                    $qq->where('tenant_id', $tenant_user->id ?? 0);
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+        return response()->json(TrOrderSupertenantResource::collection($data));
+    }
+
+
+
     public function orderByIdMemberSupertenant($id)
     {
         $tenant_user = auth()->user()->tenant;
@@ -2070,7 +2089,7 @@ class TavsirController extends Controller
         $identifier = auth()->user()->id;
         $super_tenant_id =((auth()->user()->role === 'TENANT' && auth()->user()->tenant_id == request()->tenant_id) ? auth()->user()->supertenant_id : NULL);
         if ($super_tenant_id != NULL) {
-        $data = $this->orderListMemberSupertenant($request);
+        $data = $this->orderListMemberOfSupertenant($request);
         return $data;
         }
         else {
