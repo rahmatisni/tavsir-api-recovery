@@ -334,6 +334,13 @@ class TavsirController extends Controller
                     $qq->where('tenant_id', $tenant_user->id ?? 0);
                 });
             })
+            ->when($status = request()->status, function ($q) use ($status) {
+                if (is_array($status)) {
+                    $q->whereIn('status', $status)->orwhereIn('status', json_decode($status[0]) ?? []);
+                } else {
+                    $q->where('status', $status);
+                }
+            })
             ->when($start_date = $request->start_date, function ($q) use ($start_date) {
                 $q->whereDate('created_at', '>=', date("Y-m-d", strtotime($start_date)));
             })
