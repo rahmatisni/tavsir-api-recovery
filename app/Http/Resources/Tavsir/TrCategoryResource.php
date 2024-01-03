@@ -16,7 +16,7 @@ class TrCategoryResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'name' => auth()->user()->supertenant_id ? $this?->tenant->name.' - '.$this->name : $this->name,
         ];
     }
 }

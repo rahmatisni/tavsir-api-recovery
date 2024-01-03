@@ -636,7 +636,20 @@ class TavsirController extends Controller
 
     public function categoryList(Request $request)
     {
-        $data = Category::byType(ProductType::PRODUCT)->byTenant()->when($filter = $request->filter, function ($q) use ($filter) {
+        $super_tenant_id =auth()->user()->supertenant_id ?? NULL;
+
+        if($super_tenant_id){
+            $arr_tenant = Tenant::where('supertenant_id',$super_tenant_id)->pluck('id')->toArray();
+            // dd($arr_tenant);
+            $data = Category::with('tenant')->byType(ProductType::PRODUCT)->when($filter = $request->filter, function ($q) use ($filter) {
+                return $q->where('name', 'like', "%$filter%");
+            })->when($super_tenant_id != null, function ($q) use ($arr_tenant) {
+                return $q->whereIn('tenant_id',$arr_tenant);
+            })->orderBy('name')->get();
+            return response()->json(TrCategoryResource::collection($data));
+        }
+        $data = Category::byType(ProductType::PRODUCT)    
+        ->byTenant()->when($filter = $request->filter, function ($q) use ($filter) {
             return $q->where('name', 'like', "%$filter%");
         })->orderBy('name')->get();
         return response()->json(TrCategoryResource::collection($data));
@@ -830,7 +843,8 @@ class TavsirController extends Controller
         $data = TransOrder::byRole()
             ->where('order_type', '=', TransOrder::POS)
             ->whereIn('status', [TransOrder::CART, TransOrder::WAITING_PAYMENT])
-            ->count();
+            // ->count();
+            ->get();
 
         return response()->json(['count' => $data]);
     }
