@@ -164,28 +164,9 @@ class LaporanServices
         $tenant_id = $request->tenant_id;
         $rest_area_id = $request->rest_area_id;
         $business_id = $request->business_id;
-        $super_tenant_id = auth()->user()->supertenant_id ?? null;
+        // $super_tenant_id = auth()->user()->supertenant_id ?? null;
 
-        if ($super_tenant_id != null) {
-            $data = TransOrderDetil::whereHas(
-                'trans_order',
-                function ($q) use ($tanggal_awal, $tanggal_akhir, $super_tenant_id) {
-                    return $q->where('status', TransOrder::DONE)
-                        ->when(($tanggal_awal && $tanggal_akhir), function ($qq) use ($tanggal_awal, $tanggal_akhir) {
-                            return $qq->whereBetween(
-                                'created_at',
-                                [
-                                    $tanggal_awal,
-                                    $tanggal_akhir . ' 23:59:59'
-                                ]
-                            );
-                        })->when($super_tenant_id, function ($qq) use ($super_tenant_id) {
-                            return $qq->where('supertenant_id', $super_tenant_id);
-                        });
-                }
-            )->get();
-
-        } else {
+      
             $data = TransOrderDetil::whereHas(
                 'trans_order',
                 function ($q) use ($tanggal_awal, $tanggal_akhir, $tenant_id, $rest_area_id, $business_id) {
@@ -207,7 +188,7 @@ class LaporanServices
                         });
                 }
             )->get();
-        }
+        
         if ($data->count() == 0) {
             abort(404);
         }
