@@ -717,7 +717,7 @@ class TavsirController extends Controller
             if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::DONE) {
                 return response()->json(['message' => 'Order status ' . $data->statusLabel()], 400);
             }
-            $data->sharing_code = $tenant->sharing_code ?? null;
+            // $data->sharing_code = $tenant->sharing_code ?? null;
             $data->rest_area_id = auth()->user()->tenant->rest_area_id ?? null;
             $data->tenant_id = auth()->user()->tenant_id;
             $data->business_id = auth()->user()->business_id;
