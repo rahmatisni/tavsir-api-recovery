@@ -28,7 +28,6 @@ class LaporanPenjualanResource extends JsonResource
             'tenant_id' => $this->product->tenant_id ?? '',
             'tenant_name' => $this->product->tenant->name ?? '',
             'sku' => $this->product->sku ?? '',
-            'sku' => $this->product->sku ?? '',
             'nama_product' => ($this->product->name ?? ''),
             'nama_varian' => ($product_detil ?? ''),
             'kategori' => $this->product->category->name ?? '',
