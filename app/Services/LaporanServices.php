@@ -29,7 +29,7 @@ class LaporanServices
         $tenant_user = auth()->user()->tenant;
 
         if ($super_tenant_id != NULL) {
-            $data = TransOrderDetil::whereHas(
+            $data = TransOrderDetil::with('product.tenant')->whereHas(
                 'trans_order',
                 function ($q) use ($tanggal_awal, $tanggal_akhir, $super_tenant_id) {
                     return $q->where('status', TransOrder::DONE)
@@ -80,14 +80,13 @@ class LaporanServices
         foreach ($data as $k => $i) {
             $jumlah_transaksi = $i->sum('qty');
             $total_transaksi = $i->sum('total_price');
-            $tenant = $i;
 
             $sum_jumlah_transaksi += $jumlah_transaksi;
             $sum_total_transaksi += $total_transaksi;
 
             array_push($hasil, [
                 'kategori' => $k,
-                'tenant_name' => $tenant,
+                'tenant_name' => $i[0]['product']['tenant']['name'] ?? '',
                 'jumlah_terjual' => $jumlah_transaksi,
                 'pendapatan_kategori' => $total_transaksi,
             ]);
