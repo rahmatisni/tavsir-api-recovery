@@ -40,6 +40,10 @@ class TransOrderDetil extends BaseModel
         return $this->belongsTo(Product::class, 'product_id')->withTrashed();
     }
 
+    public function tenant()
+    {
+        return $this->belongsTo(Tenant::class, 'tenant_id')->withTrashed();
+    }
     public function isRefund()
     {
         return $this->status == TransOrderDetil::STATUS_CANCEL || $this->status == '';
