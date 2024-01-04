@@ -164,11 +164,11 @@ class LaporanServices
         $tenant_id = $request->tenant_id;
         $rest_area_id = $request->rest_area_id;
         $business_id = $request->business_id;
-        // $super_tenant_id = auth()->user()->supertenant_id;
+        $super_tenant_id = auth()->user()->supertenant_id ?? NULL;
 
         $data = TransOrderDetil::whereHas(
             'trans_order',
-            function ($q) use ($tanggal_awal, $tanggal_akhir, $tenant_id, $rest_area_id, $business_id) {
+            function ($q) use ($tanggal_awal, $tanggal_akhir, $tenant_id, $rest_area_id, $business_id,$super_tenant_id) {
                 return $q->where('status', TransOrder::DONE)
                     ->when(($tanggal_awal && $tanggal_akhir), function ($qq) use ($tanggal_awal, $tanggal_akhir) {
                         return $qq->whereBetween(
@@ -178,7 +178,10 @@ class LaporanServices
                                 $tanggal_akhir . ' 23:59:59'
                             ]
                         );
-                    })->when($tenant_id, function ($qq) use ($tenant_id) {
+                    })->when($tenant_id, function ($qq) use ($tenant_id,$super_tenant_id) {
+                        if($super_tenant_id !=null) {
+                            return $qq->where('supertenant_id', $super_tenant_id);
+                        }
                         return $qq->where('tenant_id', $tenant_id);
                     })->when($rest_area_id, function ($qq) use ($rest_area_id) {
                         return $qq->where('rest_area_id', $rest_area_id);
