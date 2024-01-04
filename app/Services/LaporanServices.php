@@ -165,10 +165,12 @@ class LaporanServices
         $rest_area_id = $request->rest_area_id;
         $business_id = $request->business_id;
         $super_tenant_id = auth()->user()->supertenant_id;
+        $tenant_user = auth()->user()->tenant;
+
         if($super_tenant_id != NULL){
              $data = TransOrderDetil::whereHas(
                 'trans_order',
-                function ($q) use ($tanggal_awal, $tanggal_akhir, $super_tenant_id) {
+                function ($q) use ($tanggal_awal, $tanggal_akhir, $super_tenant_id,$tenant_user) {
                     return $q->where('status', TransOrder::DONE)
                         ->when(($tanggal_awal && $tanggal_akhir), function ($qq) use ($tanggal_awal, $tanggal_akhir) {
                             return $qq->whereBetween(
@@ -180,7 +182,10 @@ class LaporanServices
                             );
                         })->when($super_tenant_id, function ($qq) use ($super_tenant_id) {
                             return $qq->where('supertenant_id', $super_tenant_id);
+                        })->whereHas('product', function ($qq) use ($tenant_user) {
+                            $qq->where('tenant_id', $tenant_user->id ?? 0);
                         });
+                        ;
                 }
             )->get();
         }
