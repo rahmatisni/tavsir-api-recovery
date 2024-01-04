@@ -80,13 +80,14 @@ class LaporanServices
         foreach ($data as $k => $i) {
             $jumlah_transaksi = $i->sum('qty');
             $total_transaksi = $i->sum('total_price');
+            $tenant = $i;
 
             $sum_jumlah_transaksi += $jumlah_transaksi;
             $sum_total_transaksi += $total_transaksi;
 
             array_push($hasil, [
                 'kategori' => $k,
-                // 'tenant_name' => $i,
+                'tenant_name' => $tenant,
                 'jumlah_terjual' => $jumlah_transaksi,
                 'pendapatan_kategori' => $total_transaksi,
             ]);
