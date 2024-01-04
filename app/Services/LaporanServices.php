@@ -167,10 +167,10 @@ class LaporanServices
         $super_tenant_id = auth()->user()->supertenant_id;
         $tenant_user = auth()->user()->tenant;
 
-        if($super_tenant_id != NULL){
-             $data = TransOrderDetil::whereHas(
+        if ($super_tenant_id != NULL) {
+            $data = TransOrderDetil::whereHas(
                 'trans_order',
-                function ($q) use ($tanggal_awal, $tanggal_akhir, $super_tenant_id,$tenant_user) {
+                function ($q) use ($tanggal_awal, $tanggal_akhir, $super_tenant_id) {
                     return $q->where('status', TransOrder::DONE)
                         ->when(($tanggal_awal && $tanggal_akhir), function ($qq) use ($tanggal_awal, $tanggal_akhir) {
                             return $qq->whereBetween(
@@ -182,14 +182,14 @@ class LaporanServices
                             );
                         })->when($super_tenant_id, function ($qq) use ($super_tenant_id) {
                             return $qq->where('supertenant_id', $super_tenant_id);
-                        })->whereHas('product', function ($qq) use ($tenant_user) {
-                            $qq->where('tenant_id', $tenant_user->id ?? 0);
                         });
-                        ;
                 }
-            )->get();
-        }
-        else {
+            )
+                ->whereHas('product', function ($qq) use ($tenant_user) {
+                    $qq->where('tenant_id', $tenant_user->id ?? 0);
+                })
+                ->get();
+        } else {
             $data = TransOrderDetil::whereHas(
                 'trans_order',
                 function ($q) use ($tanggal_awal, $tanggal_akhir, $tenant_id, $rest_area_id, $business_id) {
@@ -212,7 +212,7 @@ class LaporanServices
                 }
             )->get();
         }
-       
+
         if ($data->count() == 0) {
             abort(404);
         }
@@ -330,7 +330,7 @@ class LaporanServices
         $business_id = $request->business_id;
         $order_type = $request->order_type;
         $payment_method_id = $request->payment_method_id;
-        $super_tenant_id =((auth()->user()->role === 'TENANT' && auth()->user()->tenant_id == $tenant_id) ? auth()->user()->supertenant_id : NULL);
+        $super_tenant_id = ((auth()->user()->role === 'TENANT' && auth()->user()->tenant_id == $tenant_id) ? auth()->user()->supertenant_id : NULL);
 
         if ($super_tenant_id != NULL) {
             $raw_data = $data = TransOrder::with('tenant')
@@ -428,11 +428,11 @@ class LaporanServices
                 $referensi_product = Product::where('tenant_id', auth()->user()->tenant_id)->pluck('id')->toArray();
                 $count = 0;
                 $total_price = 0;
-                foreach ($data_product as $values){
+                foreach ($data_product as $values) {
                     $checker = in_array($values->product_id, $referensi_product);
-                    if($checker){
+                    if ($checker) {
                         $count = $count + $values->qty;
-                        $total_price = $values->total_price+$total_price;
+                        $total_price = $values->total_price + $total_price;
                     }
                 }
                 array_push($hasil, [
