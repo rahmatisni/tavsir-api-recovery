@@ -12,6 +12,7 @@ use App\Http\Requests\ConfirmOrderMemberSupertenantRequest;
 use App\Http\Requests\PaymentOrderRequest;
 use App\Http\Requests\TavsirProductRequest;
 use App\Models\Bind;
+use App\Models\Supertenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Tavsir\TrOrderRequest;
@@ -79,8 +80,24 @@ class TavsirController extends Controller
 
     public function tenantSupertenantList(Request $request)
     {
-        $data = auth()->user()->supertenant?->tenant;
-        return response()->json(BaseResource::collection($data));
+        $identifier = auth()->user()?->tenant;
+        $data = Supertenant::where('id', $identifier?->supertenant_id)->
+            when($identifier, function ($q) use ($identifier) {
+                if ($identifier?->is_supertenant != NULL) {
+                    return $q->with('tenant');
+
+                } else {
+                    return $q->with([
+                        'tenant' => function ($query) use ($identifier) {
+
+                            $query->where('ref_tenant.id', '=', $identifier->id);
+
+                        }
+                    ]);
+                }
+            })
+            ->get();
+        return response()->json($data);
     }
 
     public function closeTenantSupertenant(CloseTenantSupertenantRequest $request)
@@ -649,9 +666,9 @@ class TavsirController extends Controller
                 return $q->whereIn('tenant_id', $arr_tenant);
 
             })
-            ->orderBy('name')
-            ->get()
-            ->sortBy('tenant.name',SORT_REGULAR,false);
+                ->orderBy('name')
+                ->get()
+                ->sortBy('tenant.name', SORT_REGULAR, false);
 
             return response()->json(TrCategoryResource::collection($data));
         }

@@ -51,6 +51,7 @@ class Tenant extends BaseModel
         'facebook',
         'website',
         'note',
+        'is_supertenant'
     ];
 
     public function setPhotoUrlAttribute($value)
