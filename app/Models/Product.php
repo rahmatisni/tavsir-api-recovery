@@ -107,6 +107,16 @@ class Product extends BaseModel
         return $query->where('type', $type);
     }
 
+    public function scopeComposit($query)
+    {
+        return $query->where('is_composit', true);
+    }
+
+    public function scopeNonComposit($query)
+    {
+        return $query->where('is_composit', false);
+    }
+
     public function getStockAttribute()
     {
         if($this->type == ProductType::BAHAN_BAKU || $this->is_composit == 0){

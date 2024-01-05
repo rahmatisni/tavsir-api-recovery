@@ -30,78 +30,78 @@ class StockImport implements ToCollection
         $invalid_data = 0;
         DB::beginTransaction();
 
-        foreach ($collection as $key => $row) {
-            if ($key == 0) {
-                $key_header = [
-                    'NO',
-                    'ID',
-                    'PRODUCT',
-                    'KATEGORI',
-                    'STOCK AWAL',
-                    'STOCK MASUK',
-                    'KETERANGAN',
-                ];
-                if($row->toArray() != $key_header){
-                    throw new Exception('Format Excel tidak sesuai');
-                }
-            } else {
-                try {
-                    $product = Product::byTenant()->byType(ProductType::PRODUCT)->find($row[1]);
-                    if (!$product) {
-                        throw new Exception('Product ID ' . $row[1] . ' invalid');
+            foreach ($collection as $key => $row) {
+                if ($key == 0) {
+                    $key_header = [
+                        'NO',
+                        'ID',
+                        'PRODUCT',
+                        'KATEGORI',
+                        'STOK AWAL',
+                        'STOK MASUK',
+                        'KETERANGAN',
+                    ];
+                    if($row->toArray() != $key_header){
+                        throw new Exception('Format Excel tidak sesuai');
                     }
-                    if (!is_numeric($row[5])) {
-                        throw new Exception('Stock row '.$key.' '. $row[5] . ' invalid numeric');
-                    } else {
-                        if ($row[4] < 0) {
-                            throw new Exception('Stock row '.$key.' '. $row[5] . ' value cannot minus');
+                } else {
+                    try {
+                        $product = Product::byTenant()->nonComposit()->byType(ProductType::PRODUCT)->find($row[1]);
+                        if (!$product) {
+                            throw new Exception('Product ID ' . $row[1] . ' invalid');
                         }
-                    }
-                    if($this->type == TransStock::INIT){
-                        $product->stock = max($row[5], 0);
-                    }
+                        if (!is_numeric($row[5])) {
+                            throw new Exception('Stok masuk row '.$key.' '. $row[5] . ' invalid numeric');
+                        } else {
+                            if ($row[5] < 0) {
+                                throw new Exception('Stok awal row '.$key.' '. $row[5] . ' value cannot minus');
+                            }
+                        }
+                        if($this->type == TransStock::INIT){
+                            $product->stock = max($row[5], 0);
+                        }
 
-                    if($this->type == TransStock::IN){
-                        $product->stock = max($product->stock + $row[5], 0);
+                        if($this->type == TransStock::IN){
+                            $product->stock = max($product->stock + $row[5], 0);
+                        }
+
+                        if($this->type == TransStock::OUT){
+                            $product->stock = max($product->stock - $row[5], 0);
+                        }
+
+                        $product->save();
+
+                        $data = new TransStock();
+                        $data->product_id = $row[1];
+                        $data->stock_type = $this->type;
+                        $data->recent_stock = $product->stock;
+                        $data->stock_amount = $row[5];
+                        $data->keterangan = $row[6];
+                        $data->save();
+                        array_push($valid, $product->toArray());
+                    } catch (\Throwable $th) {
+                        array_push($invalid, $th->getMessage());
                     }
-
-                    if($this->type == TransStock::OUT){
-                        $product->stock = max($product->stock - $row[5], 0);
-                    }
-
-                    $product->save();
-
-                    $data = new TransStock();
-                    $data->product_id = $row[1];
-                    $data->stock_type = $this->type;
-                    $data->recent_stock = $product->stock;
-                    $data->stock_amount = $row[5];
-                    $data->keterangan = $row[6];
-                    $data->save();
-                    array_push($valid, $row);
-                } catch (\Throwable $th) {
-                    array_push($invalid, $th->getMessage());
                 }
             }
-        }
 
-        $invalid_data = count($invalid);
-        $valid_data = count($valid);
-        $status = $invalid_data > 0 ? false : true;
-
-        if ($status) {
-            DB::commit();
-        } else {
-            DB::rollBack();
-        }
-
-        $hasil = [
-            'status' => $status,
-            'invalid_data' => $invalid_data,
-            'valid_data' => $valid_data,
-            'invalid' => $invalid,
-        ];
-        $this->hasil = $hasil;
+            $invalid_data = count($invalid);
+            $valid_data = count($valid);
+            $status = $invalid_data > 0 ? false : true;
+    
+            if ($status) {
+                DB::commit();
+            } else {
+                DB::rollBack();
+            }
+    
+            $hasil = [
+                'status' => $status,
+                'invalid_data' => $invalid_data,
+                'valid_data' => $valid_data,
+                'invalid' => $invalid,
+            ];
+            $this->hasil = $hasil;
     }
 
     public function getHasil()
