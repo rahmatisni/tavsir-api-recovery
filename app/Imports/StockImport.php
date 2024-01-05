@@ -31,31 +31,55 @@ class StockImport implements ToCollection
         DB::beginTransaction();
 
         foreach ($collection as $key => $row) {
-            if ($key != 0) {
+            if ($key == 0) {
+                $key_header = [
+                    'NO',
+                    'ID',
+                    'PRODUCT',
+                    'KATEGORI',
+                    'STOCK AWAL',
+                    'STOCK MASUK',
+                    'KETERANGAN',
+                ];
+                if($row->toArray() != $key_header){
+                    throw new Exception('Format Excel tidak sesuai');
+                }
+            } else {
                 try {
                     $product = Product::byTenant()->byType(ProductType::PRODUCT)->find($row[1]);
                     if (!$product) {
                         throw new Exception('Product ID ' . $row[1] . ' invalid');
                     }
-                    if (!is_numeric($row[3])) {
-                        throw new Exception('Stock ' . $row[3] . ' invalid numeric');
+                    if (!is_numeric($row[5])) {
+                        throw new Exception('Stock row '.$key.' '. $row[5] . ' invalid numeric');
                     } else {
-                        if ($row[3] < 0) {
-                            throw new Exception('Stock ' . $row[3] . ' value cannot minus');
+                        if ($row[4] < 0) {
+                            throw new Exception('Stock row '.$key.' '. $row[5] . ' value cannot minus');
                         }
                     }
+                    if($this->type == TransStock::INIT){
+                        $product->stock = max($row[5], 0);
+                    }
+
+                    if($this->type == TransStock::IN){
+                        $product->stock = max($product->stock + $row[5], 0);
+                    }
+
+                    if($this->type == TransStock::OUT){
+                        $product->stock = max($product->stock - $row[5], 0);
+                    }
+
+                    $product->save();
 
                     $data = new TransStock();
                     $data->product_id = $row[1];
                     $data->stock_type = $this->type;
-                    $data->recent_stock = $data->product->stock;
-                    $data->stock_amount = $row[3];
-                    $data->keterangan = $row[4];
+                    $data->recent_stock = $product->stock;
+                    $data->stock_amount = $row[5];
+                    $data->keterangan = $row[6];
                     $data->save();
-                    $data->product()->update(['stock' => $data->lates_stock]);
                     array_push($valid, $row);
                 } catch (\Throwable $th) {
-                    DB::rollBack();
                     array_push($invalid, $th->getMessage());
                 }
             }
@@ -66,9 +90,9 @@ class StockImport implements ToCollection
         $status = $invalid_data > 0 ? false : true;
 
         if ($status) {
-            DB::rollBack();
-        } else {
             DB::commit();
+        } else {
+            DB::rollBack();
         }
 
         $hasil = [

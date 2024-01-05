@@ -19,7 +19,9 @@ class TemplateStockExport implements FromCollection, WithHeadings
                 'no' => $key + 1,
                 'id' => $item->id,
                 'product' => $item->name,
-                'stock' => $item->stock ?? 0,
+                'kategori' => $item->category?->name,
+                'stock_awal' => $item->stock ?? 0,
+                'stock_masuk' => 0,
                 'keterangan' => $item->description
             ];
         });
@@ -27,6 +29,6 @@ class TemplateStockExport implements FromCollection, WithHeadings
 
     public function headings(): array
     {
-        return ["NO", "ID", "PRODUCT", "STOCK", "KETERANGAN"];
+        return ["NO", "ID", "PRODUCT", "KATEGORI", "STOK AWAL", "STOK MASUK", "KETERANGAN"];
     }
 }
