@@ -96,7 +96,7 @@ class TavsirController extends Controller
                     ]);
                 }
             })
-            ->get();
+            ->firstOrFail();
         return response()->json($data);
     }
 
