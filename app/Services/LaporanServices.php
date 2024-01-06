@@ -221,12 +221,14 @@ class LaporanServices
                         // });
                 }
             )
-                ->whereHas('product', function ($qq) use ($tenant_id) {
+                ->whereHas('product', function ($qq) use ($tenant_id, $super_tenant_id) {
                     if(auth()->user()->tenant->is_supertenant != null){
                  
                         if($tenant_id != null) {
                             $qq->where('tenant_id', $tenant_id);
-
+                        }
+                        if($super_tenant_id == null){
+                            $qq->where('tenant_id', auth()->user()->tenant->id);
                         }
 
                     }   
