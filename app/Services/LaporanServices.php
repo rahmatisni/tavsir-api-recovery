@@ -24,14 +24,12 @@ class LaporanServices
         $tenant_id = $request->tenant_id;
         $rest_area_id = $request->rest_area_id;
         $business_id = $request->business_id;
+        $super_tenant_id = auth()->user()->supertenant_id ?? null;
 
-        $super_tenant_id = auth()->user()->supertenant_id;
-        $tenant_user = auth()->user()->tenant;
-
-        if ($super_tenant_id != NULL) {
-            $data = TransOrderDetil::with('product.tenant')->whereHas(
+        if (auth()->user()->role === 'TENANT') {
+            $data = TransOrderDetil::whereHas(
                 'trans_order',
-                function ($q) use ($tanggal_awal, $tanggal_akhir, $super_tenant_id) {
+                function ($q) use ($tanggal_awal, $tanggal_akhir, $super_tenant_id, $business_id, $rest_area_id, $tenant_id) {
                     return $q->where('status', TransOrder::DONE)
                         ->when(($tanggal_awal && $tanggal_akhir), function ($qq) use ($tanggal_awal, $tanggal_akhir) {
                             return $qq->whereBetween(
@@ -45,12 +43,16 @@ class LaporanServices
                             return $qq->where('supertenant_id', $super_tenant_id);
                         });
                 }
-            )
-                ->whereHas('product', function ($qq) use ($tenant_user) {
-                    $qq->where('tenant_id', $tenant_user->id ?? 0);
-                })
-                ->get()
-                ->groupBy('product.category.name');
+            )->whereHas('product', function ($qq) use ($tenant_id) {
+                if (auth()->user()->tenant->is_supertenant != null) {
+                    if ($tenant_id != null) {
+                        $qq->where('tenant_id', $tenant_id);
+                    }
+                } else {
+                    $qq->where('tenant_id', auth()->user()->tenant->id);
+                };
+            })->get()->groupBy('product.category.name');
+        
 
         } else {
 
