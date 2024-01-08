@@ -14,7 +14,7 @@ class TrOrderResource extends JsonResource
      */
     public function toArray($request)
     {
-        $logo = $this->tenant->log ?? null;
+        $logo = $this->tenant->logo ?? null;
         return [
             'id' => $this->id,
             'order_id' => $this->order_id,
