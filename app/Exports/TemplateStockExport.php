@@ -15,7 +15,7 @@ class TemplateStockExport implements FromCollection, WithHeadings, WithStrictNul
      */
     public function collection()
     {
-        return Product::byTenant()->nonComposit()->byType(ProductType::PRODUCT)->get()->map(function ($item, $key) {
+        return Product::byTenant()->nonComposit()->whereIn('type', [ProductType::PRODUCT, ProductType::BAHAN_BAKU])->get()->map(function ($item, $key) {
             return [
                 'no' => $key + 1,
                 'id' => $item->id,

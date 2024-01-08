@@ -46,7 +46,7 @@ class StockImport implements ToCollection
                     }
                 } else {
                     try {
-                        $product = Product::byTenant()->nonComposit()->byType(ProductType::PRODUCT)->find($row[1]);
+                        $product = Product::byTenant()->nonComposit()->whereIn('type', [ProductType::PRODUCT, ProductType::BAHAN_BAKU])->find($row[1]);
                         if (!$product) {
                             throw new Exception('Product ID ' . $row[1] . ' invalid');
                         }
