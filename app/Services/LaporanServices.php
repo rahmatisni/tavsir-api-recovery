@@ -223,14 +223,12 @@ class LaporanServices
                 }
 
             });
-        })->when(auth()->user()->role != 'TENANT', function ($qq) use ($tenant_id, $rest_area_id, $business_id) {
-            return $qq->when($tenant_id, function ($qq) use ($tenant_id) {
-                return $qq->where('tenant_id', $tenant_id);
-            })->when($rest_area_id, function ($qq) use ($rest_area_id) {
-                return $qq->where('rest_area_id', $rest_area_id);
-            })->when($business_id, function ($qq) use ($business_id) {
-                return $qq->where('business_id', $business_id);
-            });
+        })->when(auth()->user()->role != 'TENANT', function ($qq) use ($tenant_id) {
+            return $qq->where('tenant_id', $tenant_id);
+        })->when(auth()->user()->role != 'TENANT', function ($qq) use ($rest_area_id) {
+            return $qq->where('rest_area_id', $rest_area_id);
+        })->when(auth()->user()->role != 'TENANT', function ($qq) use ($business_id) {
+            return $qq->where('business_id', $business_id);
         })
             
             ->get();
