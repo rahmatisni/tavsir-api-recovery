@@ -51,7 +51,7 @@ class LaporanServices
                 } else {
                     $qq->where('tenant_id', auth()->user()->tenant->id);
                 };
-            })->get()->groupBy('product.category.name');
+            })->get()->groupBy('product.category.id');
         
 
         } else {
@@ -74,7 +74,7 @@ class LaporanServices
                         return $qq->where('business_id', $business_id);
                     });
             })->with('product.category')->get()
-                ->groupBy('product.category.name');
+                ->groupBy('product.category.id');
         }
         $hasil = [];
         $sum_total_transaksi = 0;
