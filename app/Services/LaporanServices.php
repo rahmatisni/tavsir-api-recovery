@@ -208,7 +208,7 @@ class LaporanServices
                                 $tanggal_akhir . ' 23:59:59'
                             ]
                         );
-                    })->when($super_tenant_id, function ($qq) use ($super_tenant_id) {
+                    })->when($super_tenant_id && auth()->user()->role === 'TENANT', function ($qq) use ($super_tenant_id) {
                         return $qq->where('supertenant_id', $super_tenant_id);
                     });
             }
@@ -223,11 +223,11 @@ class LaporanServices
                 }
 
             });
-        })->when(auth()->user()->role != 'TENANT', function ($qq) use ($tenant_id) {
+        })->when(auth()->user()->role != 'TENANT' && $tenant_id, function ($qq) use ($tenant_id) {
             return $qq->where('tenant_id', $tenant_id);
-        })->when(auth()->user()->role != 'TENANT', function ($qq) use ($rest_area_id) {
+        })->when(auth()->user()->role != 'TENANT'  && $rest_area_id, function ($qq) use ($rest_area_id) {
             return $qq->where('rest_area_id', $rest_area_id);
-        })->when(auth()->user()->role != 'TENANT', function ($qq) use ($business_id) {
+        })->when(auth()->user()->role != 'TENANT' && $business_id, function ($qq) use ($business_id) {
             return $qq->where('business_id', $business_id);
         })
             
