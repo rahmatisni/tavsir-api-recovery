@@ -223,7 +223,10 @@ class LaporanServices
                 } else {
                     $qq->where('tenant_id', auth()->user()->tenant->id);
                 };
-            })->get();
+            })->with('product')->get()
+            ->groupBy('product_id');
+            // return($data);
+
         } else {
             $data = TransOrderDetil::whereHas(
                 'trans_order',
@@ -245,20 +248,52 @@ class LaporanServices
                             return $qq->where('business_id', $business_id);
                         });
                 }
-            )->get();
+            )->with('product')->get()->groupBy('product_id');
         }
 
         if ($data->count() == 0) {
             abort(404);
         }
-        $res = json_decode(LaporanPenjualanResource::collection($data)->toJson());
+        $datax = [];
+
+        foreach ($data as $k => $i) {
+
+            // dump($k);
+            // foreach($i as $value){
+            //     dump($value);
+
+            // }
+           
+            // dd($i);
+            // $jumlah_transaksi = $i->sum('qty');
+            // $total_transaksi = $i->sum('total_price');
+
+            // $sum_jumlah_transaksi += $jumlah_transaksi;
+            // $sum_total_transaksi += $total_transaksi;
+
+            array_push($datax, [
+                "tenant_id"=> $i[end($i)]->product->tenant_id,
+                "tenant_name"=> $i[end($i)]->product->tenant->name,
+                "sku"=> $i[end($i)]->product->sku,
+                "nama_product"=> $i[end($i)]->product_name,
+                "nama_varian"=> $i[end($i)]->customize,
+                "jumlah" => $i->sum('qty'),
+                "harga"=>  $i[end($i)]->price,
+                "pendapatan"=>  $i->sum('total_price'),
+                'harga_varian' =>  $i[end($i)]->pilihan_price,
+                'kategori' =>  $i[end($i)]->product->category->name ?? '',
+            ]);
+        }
+        
+        // return($datax);
+        // $res = json_decode(LaporanPenjualanResource::collection($datax)->toJson());
         $record = [
             'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
             'tanggal_awal' => $tanggal_awal ?? 'Semua Tanggal',
             'tanggal_akhir' => $tanggal_akhir ?? 'Semua Tanggal',
             'total_jumlah' => $data->sum('qty'),
             'total_pendapatan' => $data->sum('total_price'),
-            'record' => $res
+            'record' => $datax
         ];
         return $record;
     }
