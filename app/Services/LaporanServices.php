@@ -223,9 +223,8 @@ class LaporanServices
                 } else {
                     $qq->where('tenant_id', auth()->user()->tenant->id);
                 };
-            })->with('product')->get()
-            ->groupBy('product_id');
-            // return($data);
+            })->get();
+            // ->groupBy('product_id');
 
         } else {
             $data = TransOrderDetil::whereHas(
@@ -248,52 +247,55 @@ class LaporanServices
                             return $qq->where('business_id', $business_id);
                         });
                 }
-            )->with('product')->get()->groupBy('product_id');
+            )->get();
         }
 
         if ($data->count() == 0) {
             abort(404);
         }
-        $datax = [];
+        // $datax = [];
 
-        foreach ($data as $k => $i) {
+        // foreach ($data as $k => $i) {
 
-            // dump($k);
-            // foreach($i as $value){
-            //     dump($value);
+        //     // dump($k);
+        //     // foreach($i as $value){
+        //     //     dump($value);
 
-            // }
+        //     // }
            
-            // dd($i);
-            // $jumlah_transaksi = $i->sum('qty');
-            // $total_transaksi = $i->sum('total_price');
+        //     // dd($i);
+        //     // $jumlah_transaksi = $i->sum('qty');
+        //     // $total_transaksi = $i->sum('total_price');
 
-            // $sum_jumlah_transaksi += $jumlah_transaksi;
-            // $sum_total_transaksi += $total_transaksi;
+        //     // $sum_jumlah_transaksi += $jumlah_transaksi;
+        //     // $sum_total_transaksi += $total_transaksi;
 
-            array_push($datax, [
-                "tenant_id"=> $i[end($i)]->product->tenant_id,
-                "tenant_name"=> $i[end($i)]->product->tenant->name,
-                "sku"=> $i[end($i)]->product->sku,
-                "nama_product"=> $i[end($i)]->product_name,
-                "nama_varian"=> $i[end($i)]->customize,
-                "jumlah" => $i->sum('qty'),
-                "harga"=>  $i[end($i)]->price,
-                "pendapatan"=>  $i->sum('total_price'),
-                'harga_varian' =>  $i[end($i)]->pilihan_price,
-                'kategori' =>  $i[end($i)]->product->category->name ?? '',
-            ]);
-        }
+        //     array_push($datax, [
+        //         "tenant_id"=> $i[end($i)]->product->tenant_id,
+        //         "tenant_name"=> $i[end($i)]->product->tenant->name,
+        //         "sku"=> $i[end($i)]->product->sku,
+        //         "nama_product"=> $i[end($i)]->product_name,
+        //         "nama_varian"=> $i[end($i)]->customize,
+        //         "jumlah" => $i->sum('qty'),
+        //         "harga"=>  $i[end($i)]->price,
+        //         "pendapatan"=>  $i->sum('total_price'),
+        //         'harga_varian' =>  $i[end($i)]->pilihan_price,
+        //         'kategori' =>  $i[end($i)]->product->category->name ?? '',
+        //     ]);
+        // }
         
         // return($datax);
-        // $res = json_decode(LaporanPenjualanResource::collection($datax)->toJson());
+
+
+
+        $res = json_decode(LaporanPenjualanResource::collection($data)->toJson());
         $record = [
             'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
             'tanggal_awal' => $tanggal_awal ?? 'Semua Tanggal',
             'tanggal_akhir' => $tanggal_akhir ?? 'Semua Tanggal',
             'total_jumlah' => $data->sum('qty'),
             'total_pendapatan' => $data->sum('total_price'),
-            'record' => $datax
+            'record' => $res
         ];
         return $record;
     }
