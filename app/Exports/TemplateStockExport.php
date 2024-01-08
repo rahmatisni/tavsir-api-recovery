@@ -22,7 +22,7 @@ class TemplateStockExport implements FromCollection, WithHeadings, WithStrictNul
                 'product' => $item->name,
                 'kategori' => $item->category?->name,
                 'stok_awal' => $item->stock ?? 0,
-                'stok_masuk' => null,
+                'stok_masuk' => 0,
                 'keterangan' => $item->description
             ];
         });
