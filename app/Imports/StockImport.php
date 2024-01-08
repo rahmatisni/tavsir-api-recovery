@@ -57,28 +57,30 @@ class StockImport implements ToCollection
                                 throw new Exception('Stok awal row '.$key.' '. $row[5] . ' value cannot minus');
                             }
                         }
-                        if($this->type == TransStock::INIT){
-                            $product->stock = max($row[5], 0);
+                        if($row[5] > 0){
+                            if($this->type == TransStock::INIT){
+                                $product->stock = max($row[5], 0);
+                            }
+    
+                            if($this->type == TransStock::IN){
+                                $product->stock = max($product->stock + $row[5], 0);
+                            }
+    
+                            if($this->type == TransStock::OUT){
+                                $product->stock = max($product->stock - $row[5], 0);
+                            }
+    
+                            $product->save();
+    
+                            $data = new TransStock();
+                            $data->product_id = $row[1];
+                            $data->stock_type = $this->type;
+                            $data->recent_stock = $product->stock;
+                            $data->stock_amount = $row[5];
+                            $data->keterangan = $row[6];
+                            $data->save();
+                            array_push($valid, $product->toArray());
                         }
-
-                        if($this->type == TransStock::IN){
-                            $product->stock = max($product->stock + $row[5], 0);
-                        }
-
-                        if($this->type == TransStock::OUT){
-                            $product->stock = max($product->stock - $row[5], 0);
-                        }
-
-                        $product->save();
-
-                        $data = new TransStock();
-                        $data->product_id = $row[1];
-                        $data->stock_type = $this->type;
-                        $data->recent_stock = $product->stock;
-                        $data->stock_amount = $row[5];
-                        $data->keterangan = $row[6];
-                        $data->save();
-                        array_push($valid, $product->toArray());
                     } catch (\Throwable $th) {
                         array_push($invalid, $th->getMessage());
                     }
