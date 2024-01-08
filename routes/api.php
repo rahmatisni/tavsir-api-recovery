@@ -125,6 +125,12 @@ Route::middleware('auth:api')->group(function () {
     Route::post('number-table/{id}', [App\Http\Controllers\API\NumberTableController::class,'update']);
     Route::delete('number-table/{id}', [App\Http\Controllers\API\NumberTableController::class,'destroy']);
 
+    Route::get('tenant-terpadu', [App\Http\Controllers\API\TenantTerpaduController::class,'index']);
+    Route::get('tenant-terpadu/member', [App\Http\Controllers\API\TenantTerpaduController::class,'indexMember']);
+    Route::get('tenant-terpadu/{id}', [App\Http\Controllers\API\TenantTerpaduController::class,'show']);
+    Route::post('tenant-terpadu/set-supertenant/{id}', [App\Http\Controllers\API\TenantTerpaduController::class,'setSuperTenant']);
+    Route::post('tenant-terpadu/{id}', [App\Http\Controllers\API\TenantTerpaduController::class,'store']);
+
     Route::prefix('tavsir')->group(function () {
         #Supertenant
         Route::get('/tenant-supertenant', [App\Http\Controllers\API\TavsirController::class, 'tenantSupertenantList']);

@@ -15,7 +15,7 @@ class Tenant extends BaseModel
 
     protected $fillable = [
         'business_id',
-        'is_supertenant',
+        'supertenant_id',
         'ruas_id',
         'name',
         'category_tenant_id',
@@ -153,6 +153,16 @@ class Tenant extends BaseModel
         return $this->hasMany(User::class, 'tenant_id')->where('role',User::CASHIER);
     }
 
+    public function parent_supertenant()
+    {
+        return $this->belongsTo(Tenant::class, 'supertenant_id');
+    }
+
+    public function child_supertenant()
+    {
+        return $this->hasMany(Tenant::class, 'supertenant_id');
+    }
+
 
     //Product
     public function category()
@@ -168,6 +178,16 @@ class Tenant extends BaseModel
     public function scopeByTenant($query)
     {
         return $query->where('tenant_id', auth()->user()->tenant_id);
+    }
+
+    public function scopeNotMemberSupertenant($query)
+    {
+        return $query->whereNull('supertenant_id');
+    }
+
+    public function scopeMemberSupertenant($query)
+    {
+        return $query->whereNotNull('supertenant_id');
     }
 
 }
