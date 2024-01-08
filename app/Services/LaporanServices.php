@@ -196,65 +196,66 @@ class LaporanServices
         $business_id = $request->business_id;
         $super_tenant_id = auth()->user()->supertenant_id ?? null;
 
-        // if ($super_tenant_id != NULL) {
-        // $data = TransOrderDetil::whereHas(
-        //     'trans_order',
-        //     function ($q) use ($tanggal_awal, $tanggal_akhir, $super_tenant_id, $business_id, $rest_area_id, $tenant_id) {
-        //         return $q->where('status', TransOrder::DONE)
-        //             ->when(($tanggal_awal && $tanggal_akhir), function ($qq) use ($tanggal_awal, $tanggal_akhir) {
-        //                 return $qq->whereBetween(
-        //                     'created_at',
-        //                     [
-        //                         $tanggal_awal,
-        //                         $tanggal_akhir . ' 23:59:59'
-        //                     ]
-        //                 );
-        //             })->when($super_tenant_id, function ($qq) use ($super_tenant_id) {
-        //                 return $qq->where('supertenant_id', $super_tenant_id);
-        //             });
-        //     }
-        // )
-        //     ->whereHas('product', function ($qq) use ($tenant_id, $rest_area_id, $business_id) {
-        //         if (auth()->user()->tenant->is_supertenant != null) {
-        //             if ($tenant_id != null) {
-        //                 $qq->where('tenant_id', $tenant_id);
-        //             }
-        //         } elseif (auth()->user()->role != 'TENANT') {
-        //             $qq->when($tenant_id, function ($qq) use ($tenant_id) {
-        //                 return $qq->where('tenant_id', $tenant_id);
-        //             })->when($rest_area_id, function ($qq) use ($rest_area_id) {
-        //                 return $qq->where('rest_area_id', $rest_area_id);
-        //             })->when($business_id, function ($qq) use ($business_id) {
-        //                 return $qq->where('business_id', $business_id);
-        //             });
-        //         } else {
-        //             $qq->where('tenant_id', auth()->user()->tenant->id);
-        //         }
-
-        //     })
-        //     ->get();
-        // } else {
-            $data = TransOrderDetil::whereHas(
-                'trans_order',
-                function ($q) use ($tanggal_awal, $tanggal_akhir, $tenant_id, $rest_area_id, $business_id) {
-                    return $q->where('status', TransOrder::DONE)
-                        ->when(($tanggal_awal && $tanggal_akhir), function ($qq) use ($tanggal_awal, $tanggal_akhir) {
-                            return $qq->whereBetween(
-                                'created_at',
-                                [
-                                    $tanggal_awal,
-                                    $tanggal_akhir . ' 23:59:59'
-                                ]
-                            );
-                        })->when($tenant_id, function ($qq) use ($tenant_id) {
-                            return $qq->where('tenant_id', $tenant_id);
-                        })->when($rest_area_id, function ($qq) use ($rest_area_id) {
-                            return $qq->where('rest_area_id', $rest_area_id);
-                        })->when($business_id, function ($qq) use ($business_id) {
-                            return $qq->where('business_id', $business_id);
-                        });
+        $data = TransOrderDetil::whereHas(
+            'trans_order',
+            function ($q) use ($tanggal_awal, $tanggal_akhir, $super_tenant_id, $business_id, $rest_area_id, $tenant_id) {
+                return $q->where('status', TransOrder::DONE)
+                    ->when(($tanggal_awal && $tanggal_akhir), function ($qq) use ($tanggal_awal, $tanggal_akhir) {
+                        return $qq->whereBetween(
+                            'created_at',
+                            [
+                                $tanggal_awal,
+                                $tanggal_akhir . ' 23:59:59'
+                            ]
+                        );
+                    })->when($super_tenant_id, function ($qq) use ($super_tenant_id) {
+                        return $qq->where('supertenant_id', $super_tenant_id);
+                    });
+            }
+        )->when(auth()->user()->role === 'TENANT', function ($qq) use ($tenant_id) {
+            return $qq->whereHas('product', function ($qq) use ($tenant_id) {
+                if (auth()->user()->tenant->is_supertenant != null) {
+                    if ($tenant_id != null) {
+                        $qq->where('tenant_id', $tenant_id);
+                    }
+                } else {
+                    $qq->where('tenant_id', auth()->user()->tenant->id);
                 }
-            )->get();
+
+            });
+        })->when(auth()->user()->role != 'TENANT', function ($qq) use ($tenant_id, $rest_area_id, $business_id) {
+            return $qq->when($tenant_id, function ($qq) use ($tenant_id) {
+                return $qq->where('tenant_id', $tenant_id);
+            })->when($rest_area_id, function ($qq) use ($rest_area_id) {
+                return $qq->where('rest_area_id', $rest_area_id);
+            })->when($business_id, function ($qq) use ($business_id) {
+                return $qq->where('business_id', $business_id);
+            });
+        })
+            
+            ->get();
+        // } else {
+        //     $data = TransOrderDetil::whereHas(
+        //         'trans_order',
+        //         function ($q) use ($tanggal_awal, $tanggal_akhir, $tenant_id, $rest_area_id, $business_id) {
+        //             return $q->where('status', TransOrder::DONE)
+        //                 ->when(($tanggal_awal && $tanggal_akhir), function ($qq) use ($tanggal_awal, $tanggal_akhir) {
+        //                     return $qq->whereBetween(
+        //                         'created_at',
+        //                         [
+        //                             $tanggal_awal,
+        //                             $tanggal_akhir . ' 23:59:59'
+        //                         ]
+        //                     );
+        //                 })->when($tenant_id, function ($qq) use ($tenant_id) {
+        //                     return $qq->where('tenant_id', $tenant_id);
+        //                 })->when($rest_area_id, function ($qq) use ($rest_area_id) {
+        //                     return $qq->where('rest_area_id', $rest_area_id);
+        //                 })->when($business_id, function ($qq) use ($business_id) {
+        //                     return $qq->where('business_id', $business_id);
+        //                 });
+        //         }
+        //     )->get();
         // }
 
         if ($data->count() == 0) {
