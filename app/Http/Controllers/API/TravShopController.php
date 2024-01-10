@@ -78,7 +78,6 @@ class TravShopController extends Controller
         });
         $data = $data->get();
 
-
         if ($request->lat && $request->lon) {
             $data = $data->filter(function ($item) use ($request) {
                 return $this->haversine($item->latitude, $item->longitude, $request->lat, $request->lon, $request->distance ?? 1);
