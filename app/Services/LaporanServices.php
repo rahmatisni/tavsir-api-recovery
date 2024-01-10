@@ -24,7 +24,9 @@ class LaporanServices
         $tenant_id = $request->tenant_id;
         $rest_area_id = $request->rest_area_id;
         $business_id = $request->business_id;
-        $super_tenant_id = auth()->user()->supertenant_id ?? null;
+        $super_tenant_id = auth()->user()->tenant->is_supertenant ?? null;
+        $super_tenant_id = $super_tenant_id === 0 || $super_tenant_id === NULL ? NULL : auth()->user()->tenant->id;
+
 
         if (auth()->user()->role === 'TENANT') {
             $data = TransOrderDetil::whereHas(
