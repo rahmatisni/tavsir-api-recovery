@@ -658,7 +658,7 @@ class TavsirController extends Controller
         $super_tenant_id = auth()->user()->tenant->is_supertenant ?? NULL;
 
         if ($super_tenant_id) {
-            $arr_tenant = Tenant::where('supertenant_id', $super_tenant_id)->pluck('id')->toArray();
+            $arr_tenant = Tenant::where('supertenant_id', $super_tenant_id)->orWhere('tenant_id', $super_tenant_id)->pluck('id')->toArray();
             // dd($arr_tenant);
             $data = Category::with('tenant')->byType(ProductType::PRODUCT)->when($filter = $request->filter, function ($q) use ($filter) {
                 return $q->where('name', 'like', "%$filter%");
