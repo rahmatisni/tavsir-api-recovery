@@ -189,10 +189,12 @@ class Tenant extends BaseModel
         if(auth()->user()->role === 'OWNER'){
             return $query->where('business_id', auth()->user()->business_id);
         }
-        else if(auth()->user()->is_supertenant != NULL){
-            return $query->where('supertenant_id', auth()->user()->tenant_id);
+        else if(auth()->user()->tenant->is_supertenant != NULL){
+
+            return $query->where('supertenant_id', auth()->user()->tenant_id)->orWhere('id', auth()->user()->tenant_id);
         }
-        else if(auth()->user()->is_supertenant === NULL){
+        else if(auth()->user()->tenant->is_supertenant === NULL){
+
             return $query->where('tenant_id', auth()->user()->tenant_id);
         }
         else {
