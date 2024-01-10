@@ -130,6 +130,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('tenant-terpadu/{id}', [App\Http\Controllers\API\TenantTerpaduController::class,'show']);
     Route::post('tenant-terpadu/set-supertenant/{id}', [App\Http\Controllers\API\TenantTerpaduController::class,'setSuperTenant']);
     Route::post('tenant-terpadu/{id}', [App\Http\Controllers\API\TenantTerpaduController::class,'store']);
+    Route::post('tenant-terpadu-unbind/{id}', [App\Http\Controllers\API\TenantTerpaduController::class,'destroy']);
 
     Route::prefix('tavsir')->group(function () {
         #Supertenant
