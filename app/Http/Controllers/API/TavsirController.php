@@ -655,7 +655,7 @@ class TavsirController extends Controller
 
     public function categoryList(Request $request)
     {
-        $super_tenant_id = auth()->user()->tenant->supertenant_id ?? NULL;
+        $super_tenant_id = auth()->user()->tenant->is_supertenant ?? NULL;
 
         if ($super_tenant_id) {
             $arr_tenant = Tenant::where('supertenant_id', $super_tenant_id)->pluck('id')->toArray();
