@@ -187,7 +187,7 @@ class Tenant extends BaseModel
     public function scopeBusinessToBe($query)
     {
         if(auth()->user()->role === 'OWNER'){
-            return $query->where('business_id', auth()->user()->business_id);
+            return $query->where('business_id', auth()->user()->business_id)->whereNull('supertenant_id');
         }
         else if(auth()->user()->tenant->is_supertenant != NULL){
 
