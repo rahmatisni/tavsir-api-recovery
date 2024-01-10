@@ -188,7 +188,7 @@ class TavsirController extends Controller
                 return response()->json(['message' => 'Order status ' . $data->statusLabel()], 400);
             }
             $data->rest_area_id = auth()->user()->supertenant?->rest_area_id ?? null;
-            $data->supertenant_id = auth()->user()->supertenant_id;
+            $data->supertenant_id = auth()->user()->tenant->id;
             $data->tenant_id = auth()->user()->tenant_id;
             $data->business_id = auth()->user()->business_id;
             $data->casheer_id = auth()->user()->id;
@@ -714,7 +714,7 @@ class TavsirController extends Controller
         try {
 
             // super tenant
-            if (auth()->user()->supertenant_id != NULL) {
+            if (auth()->user()->supertenant_id != NULL || auth()->user()->supertenant_id != 0) {
                 $result = $this->orderSuperTenant($request);
                 return $result;
             }
