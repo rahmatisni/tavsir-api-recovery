@@ -88,7 +88,7 @@ class Product extends BaseModel
 
     public function scopeBySupertenant($query)
     {
-        $tenant = Tenant::where('supertenant_id',auth()->user()->tenant->id)->pluck('id');
+        $tenant = Tenant::where('supertenant_id',auth()->user()->tenant->id)->orWhere('id',auth()->user()->tenant->id)->pluck('id');
         return $query->whereIn('tenant_id', $tenant);
     }
 
