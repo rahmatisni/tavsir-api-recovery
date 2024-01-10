@@ -524,7 +524,7 @@ class TavsirController extends Controller
         // $super_tenant_id = ((auth()->user()->role === 'TENANT' && auth()->user()->tenant_id == request()->tenant_id) ? auth()->user()->supertenant_id : NULL);
 
         // super tenant
-        if (auth()->user()->supertenant_id != NULL && auth()->user()->role === 'CASHIER') {
+        if (auth()->user()->tenant->supertenant_id != NULL && auth()->user()->role === 'CASHIER') {
             $result = $this->productSupertenantList($request);
             return $result;
         }
