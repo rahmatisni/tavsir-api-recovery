@@ -89,13 +89,16 @@ class TenantTerpaduController extends Controller
     {
         $data = Tenant::notMemberSuperTenant()->where('is_supertenant', 1)->findOrFail($id);
         $member = Tenant::whereIn('id', $request->tenant_id)->update(['supertenant_id' => $data->id]);
-        return response()->json(['message' => $member.' Tenant di tambahkan']);
+        return response()->json(['message' => 'Tenant di tambahkan sebagai member '.$data->tenant->name]);
     }
 
     public function unbind($id)
     {
-        $member = Tenant::where('id', $id)->update(['supertenant_id' => NULL]);
-        return response()->json(['message' => $member.' Tenant di tambahkan']);
+        $member = Tenant::where('id', $id)->firstOrFail();
+        $super = Tenant::where('id', $member->supertenant_id)->firstOrFail();
+        $member->update(['supertenant_id' => NULL]);
+        
+        return response()->json(['message' => '1 Tenant di hapus sebagai member tenant '.$super->name]);
     }
 
     
