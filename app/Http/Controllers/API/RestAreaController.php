@@ -18,14 +18,16 @@ class RestAreaController extends Controller
      */
     public function index()
     {
+        // dd('x');
 
         $role = auth()->user()->role;
         $data = RestArea::when($name = request()->name, function ($q) use ($name) {
             return $q->where('name', 'like', "%$name%");
-        })->when($role === 'OWNER', function ($q) {
-            $data_tenant = Tenant::where('business_id', auth()->user()->business_id)->distinct()->pluck('rest_area_id')->toArray();
-            return $q->whereIn('id', $data_tenant);
         });
+        // ->when($role === 'OWNER', function ($q) {
+        //     $data_tenant = Tenant::where('business_id', auth()->user()->business_id)->distinct()->pluck('rest_area_id')->toArray();
+        //     return $q->whereIn('id', $data_tenant);
+        // });
         $data = $data->get();
         if (request()->lat && request()->lon) {
             $data = $data->filter(function ($item) {
