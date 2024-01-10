@@ -127,6 +127,8 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('tenant-terpadu', [App\Http\Controllers\API\TenantTerpaduController::class,'index']);
     Route::get('tenant-terpadu/member', [App\Http\Controllers\API\TenantTerpaduController::class,'indexMember']);
+    Route::get('tenant-terpadu/member-laporan', [App\Http\Controllers\API\TenantTerpaduController::class,'indexMemberLaporan']);
+
     Route::get('tenant-terpadu/{id}', [App\Http\Controllers\API\TenantTerpaduController::class,'show']);
     Route::post('tenant-terpadu/set-supertenant/{id}', [App\Http\Controllers\API\TenantTerpaduController::class,'setSuperTenant']);
     Route::post('tenant-terpadu/{id}', [App\Http\Controllers\API\TenantTerpaduController::class,'store']);
