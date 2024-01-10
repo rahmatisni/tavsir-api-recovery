@@ -92,13 +92,6 @@ class TenantTerpaduController extends Controller
         return response()->json(['message' => $member.' Tenant di tambahkan']);
     }
 
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreTenantRequest  $request
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         $data = Tenant::notMemberSuperTenant()->where('is_supertenant', 1)->findOrFail($id);
