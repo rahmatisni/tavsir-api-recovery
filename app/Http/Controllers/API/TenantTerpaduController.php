@@ -37,7 +37,7 @@ class TenantTerpaduController extends Controller
      */
     public function index(Request $request)
     {
-        $data = Tenant::notMemberSuperTenant()->myWhereLike('name', $request->search)->orderby('is_supertenant', 'desc')->get();
+        $data = Tenant::BusinessToBe()->myWhereLike('name', $request->search)->orderby('is_supertenant', 'desc')->get();
         return response()->json(TenantTerpaduResource::collection($data));
     }
 
