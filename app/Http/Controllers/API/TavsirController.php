@@ -524,7 +524,7 @@ class TavsirController extends Controller
         // $super_tenant_id = ((auth()->user()->role === 'TENANT' && auth()->user()->tenant_id == request()->tenant_id) ? auth()->user()->supertenant_id : NULL);
 
         // super tenant
-        if (auth()->user()->tenant->supertenant_id != NULL && auth()->user()->role === 'CASHIER') {
+        if (auth()->user()->tenant->supertenant != NULL && auth()->user()->role === 'CASHIER') {
             $result = $this->productSupertenantList($request);
             return $result;
         }
@@ -655,7 +655,7 @@ class TavsirController extends Controller
 
     public function categoryList(Request $request)
     {
-        $super_tenant_id = auth()->user()->tenant->supertenant_id ?? NULL;
+        $super_tenant_id = auth()->user()->supertenant_id ?? NULL;
 
         if ($super_tenant_id) {
             $arr_tenant = Tenant::where('supertenant_id', $super_tenant_id)->pluck('id')->toArray();
