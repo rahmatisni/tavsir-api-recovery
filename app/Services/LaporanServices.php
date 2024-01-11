@@ -230,8 +230,6 @@ class LaporanServices
                 };
             })->get();
             // ->groupBy('product_id');
-            return($data);
-
         } else {
             $data = TransOrderDetil::whereHas(
                 'trans_order',
