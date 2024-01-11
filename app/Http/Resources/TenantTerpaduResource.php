@@ -17,7 +17,7 @@ class TenantTerpaduResource extends JsonResource
     {
         $data =  [
             'id' => $this->id,
-            'tenant_photo' => $this->tenant->photo_url,
+            'tenant_photo' => $this->photo_url ? asset($this->photo_url) : null,
             'name' => $this->name,
             'business_id' => $this->business_id,
             'rest_area_name' => $this->rest_area->name ?? '',
