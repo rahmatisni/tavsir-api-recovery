@@ -17,7 +17,8 @@ class TenantTerpaduResource extends JsonResource
     {
         $data =  [
             'id' => $this->id,
-            'logo' => $this->logo ? asset($this->logo) : null,
+            // 'logo' => $this->logo ? asset($this->logo) : null,
+            'logo' => $this->photo ? asset($this->photo) : null,
             'name' => $this->name,
             'business_id' => $this->business_id,
             'rest_area_name' => $this->rest_area->name ?? '',
