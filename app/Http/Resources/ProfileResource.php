@@ -87,6 +87,8 @@ class ProfileResource extends JsonResource
             'in_takengo' => $this->tenant->in_takengo ?? 0,
             'in_selforder' => ($this->tenant?->in_selforder > 0 ? 1:0) ?? 0, 
             'list_payment' => $this->tenant->list_payment ?? ['2'], 
+                'is_supertenant' => $this->tenant->is_supertenant ?? null,
+
         ], $additional_data);
     }
 }
