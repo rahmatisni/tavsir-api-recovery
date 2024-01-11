@@ -524,10 +524,11 @@ class TavsirController extends Controller
         // $super_tenant_id = ((auth()->user()->role === 'TENANT' && auth()->user()->tenant_id == request()->tenant_id) ? auth()->user()->supertenant_id : NULL);
 
         // super tenant
-        if (auth()->user()->tenant->is_supertenant != NULL || auth()->user()->tenant->is_supertenant != 0 && auth()->user()->role === 'CASHIER') {
+        if ((auth()->user()->tenant->is_supertenant != NULL || auth()->user()->tenant->is_supertenant != 0) && auth()->user()->role === 'CASHIER') {
             $result = $this->productSupertenantList($request);
             return $result;
         }
+
 
         $data = Product::byTenant()->byType(ProductType::PRODUCT)->with('tenant')->with('trans_product_raw')->when($filter = $request->filter, function ($q) use ($filter) {
             $q->where(function ($qq) use ($filter) {
