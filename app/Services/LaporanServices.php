@@ -219,7 +219,7 @@ class LaporanServices
                         });
                 }
             )->whereHas('product', function ($qq) use ($tenant_id) {
-                if (auth()->user()->tenant->is_supertenant != null) {
+                if (auth()->user()->tenant->is_supertenant != null && auth()->user()->tenant->is_supertenant != 0) {
                     if ($tenant_id != null) {
                         $qq->where('tenant_id', $tenant_id);
                     }
@@ -228,6 +228,7 @@ class LaporanServices
                 };
             })->get();
             // ->groupBy('product_id');
+            return($data);
 
         } else {
             $data = TransOrderDetil::whereHas(

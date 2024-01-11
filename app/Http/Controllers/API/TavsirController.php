@@ -714,7 +714,7 @@ class TavsirController extends Controller
         try {
 
             // super tenant
-            if (auth()->user()->supertenant_id != NULL || auth()->user()->supertenant_id != 0) {
+            if (auth()->user()->tenant->supertenant_id != NULL || auth()->user()->tenant->supertenant_id != 0) {
                 $result = $this->orderSuperTenant($request);
                 return $result;
             }
