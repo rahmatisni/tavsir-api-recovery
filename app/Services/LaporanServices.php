@@ -8,6 +8,7 @@ use App\Http\Resources\LaporanMetodePembayaranResource;
 use App\Http\Resources\LaporanOperationalResource;
 use App\Http\Resources\LaporanPenjualanResource;
 use App\Http\Resources\LaporanTransaksiResource;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\Tenant;
 use App\Models\TransOperational;
@@ -89,7 +90,8 @@ class LaporanServices
             $sum_total_transaksi += $total_transaksi;
 
             array_push($hasil, [
-                'kategori' => $k,
+                'id' => $k,
+                'kategori' => $i[0]['product']['Category']['name'] ?? '',
                 'tenant_name' => $i[0]['product']['tenant']['name'] ?? '',
                 'jumlah_terjual' => $jumlah_transaksi,
                 'pendapatan_kategori' => $total_transaksi,
