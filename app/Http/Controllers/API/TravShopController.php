@@ -2163,6 +2163,15 @@ class TravShopController extends Controller
                         $this->stock_service->updateStockProduct($value);
                     }
                 } else {
+                    if ($data->order_type === TransOrder::ORDER_DEREK_ONLINE) {
+                        $data->status = TransOrder::PAYMENT_SUCCESS;
+                        $data->save();
+                        DB::commit();
+
+                        $travoy = $this->travoyService->detailDerek($id, $request->id_user, $request->token);
+                        return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
+
+                    }
                     return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                 }
                 $data->payment()->update(['data' => $res_data]);
