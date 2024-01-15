@@ -50,6 +50,7 @@ class TenantRequest extends FormRequest
             'is_open' => 'required|boolean',
             'in_takengo' => 'required|boolean',
             'url_self_order' => 'nullable|max:255',
+            'photo_url' => 'nullable'
         ];
     }
 }
