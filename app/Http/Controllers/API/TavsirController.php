@@ -2148,8 +2148,7 @@ class TavsirController extends Controller
         $queryOrder .= "WHEN status = 'CANCEL' THEN 9 ";
         $queryOrder .= "ELSE 9 END";
         $identifier = auth()->user()->id;
-        $super_tenant_id = ((auth()->user()->role === 'TENANT' && auth()->user()->tenant_id == request()->tenant_id) ? auth()->user()->supertenant_id : NULL);
-        if ($super_tenant_id != NULL) {
+        if (auth()->user()->role === 'TENANT' && auth()->user()->tenant->is_supertenant < 1 && auth()->user()->tenant->supertenant_id > 0) {
             $data = $this->orderListMemberOfSupertenant($request);
             return $data;
         } else {
