@@ -2268,8 +2268,9 @@ class TavsirController extends Controller
 
     public function orderById($id)
     {
-        $super_tenant_id = ((auth()->user()->role === 'TENANT') ? auth()->user()->supertenant_id : NULL);
-        if ($super_tenant_id != NULL) {
+        $super_tenant_checker = auth()->user()->tenant->is_supertenant;
+        $super_tenant_id = auth()->user()->tenant->supertenant_id;
+        if ($super_tenant_checker < 1 && $super_tenant_id > 0) {
             $data = $this->orderByIdMemberSupertenant($id);
             return $data;
         }
