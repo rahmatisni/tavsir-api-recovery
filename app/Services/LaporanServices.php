@@ -406,9 +406,10 @@ class LaporanServices
         $business_id = $request->business_id;
         $order_type = $request->order_type;
         $payment_method_id = $request->payment_method_id;
-        $super_tenant_id = ((auth()->user()->role === 'TENANT' && auth()->user()->tenant_id == $tenant_id) ? auth()->user()->supertenant_id : NULL);
+        $super_tenant_checker = auth()->user()->tenant->is_supertenant;
+        $super_tenant_id = auth()->user()->tenant->supertenant_id;
 
-        if ($super_tenant_id != NULL) {
+        if ($super_tenant_checker < 1) {
             $raw_data = $data = TransOrder::with('tenant')
                 ->when(
                     ($tanggal_awal && $tanggal_akhir),
