@@ -346,11 +346,7 @@ class TavsirController extends Controller
         $data = TransOrder::with('detil.product.tenant')
             ->whereIn('status', [TransOrder::DONE, TransOrder::REFUND])
             ->where('supertenant_id', $tenant_user->supertenant_id ?? 0)
-            ->whereHas('detil', function ($q) use ($tenant_user) {
-                $q->whereHas('product', function ($qq) use ($tenant_user) {
-                    $qq->where('tenant_id', $tenant_user->id ?? 0);
-                });
-            })
+            
             ->when($status = request()->status, function ($q) use ($status) {
                 if (is_array($status)) {
                     $q->whereIn('status', $status)->orwhereIn('status', json_decode($status[0]) ?? []);
@@ -373,6 +369,11 @@ class TavsirController extends Controller
             })
             ->when($filter = request()->filter, function ($q) use ($filter) {
                 return $q->where('order_id', 'like', "%$filter%");
+            })
+            ->whereHas('detil', function ($q) use ($tenant_user) {
+                $q->whereHas('product', function ($qq) use ($tenant_user) {
+                    $qq->where('tenant_id', $tenant_user->id ?? 0);
+                });
             })
             ->orderBy('created_at', 'desc')
             ->get();
