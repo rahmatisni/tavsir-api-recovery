@@ -657,9 +657,10 @@ class TavsirController extends Controller
 
     public function categoryList(Request $request)
     {
-        // $super_tenant_id = auth()->user()->tenant->is_supertenant ?? NULL;
+        $super_tenant_state = auth()->user()->tenant->is_supertenant;
+        $super_tenant_id = auth()->user()->tenant->supertenant_id;
 
-        if (auth()->user()->tenant->is_supertenant != NULL || auth()->user()->tenant->is_supertenant != 0 && auth()->user()->role === 'CASHIER') {
+        if ($super_tenant_state > 0 && auth()->user()->role === 'CASHIER') {
             $arr_tenant = Tenant::where('supertenant_id', auth()->user()->tenant->id)->orWhere('id', auth()->user()->tenant->id)->pluck('id')->toArray();
             $data = Category::with('tenant')->byType(ProductType::PRODUCT)->when($filter = $request->filter, function ($q) use ($filter) {
                 return $q->where('name', 'like', "%$filter%");
