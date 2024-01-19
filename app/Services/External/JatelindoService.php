@@ -314,18 +314,18 @@ class JatelindoService
 
         if($trans_order_status == TransOrder::WAITING_PAYMENT){
             return [
-                'meter_id' => substr($bit_48, 7, 11),
-                'pelanggan_id' => substr($bit_48, 18, 12),
-                'flag' => substr($bit_48, 30, 1),
-                'transaksi_id' => substr($bit_48, 31, 32),
-                'ref_id' => substr($bit_48, 63, 32),
-                'nama_pelanggan' => substr($bit_48, 95, 25),
-                'tarif' => substr($bit_48, 120, 4),
-                'daya' => ltrim(substr($bit_48, 124, 9),'0'),
-                'pilihan_token' => substr($bit_48, 133, 1),
-                'total_token_unsold' => $total_token_unsold,
-                'token_unsold_1' => number_format((int) $harga_token_unsold_1,0,',','.'),
-                'token_unsold_2' => number_format((int) $harga_token_unsold_2,0,',','.'),
+                'Meter_ID' => substr($bit_48, 7, 11),
+                'Pelanggan_ID' => substr($bit_48, 18, 12),
+                'Flag' => substr($bit_48, 30, 1),
+                'Transaksi_ID' => substr($bit_48, 31, 32),
+                'Ref_ID' => substr($bit_48, 63, 32),
+                'Nama_Pelanggan' => substr($bit_48, 95, 25),
+                'Tarif' => substr($bit_48, 120, 4),
+                'Daya' => ltrim(substr($bit_48, 124, 9),'0'),
+                'Pilihan_Token' => substr($bit_48, 133, 1),
+                'Total_Token_Unsold' => $total_token_unsold,
+                'Token_Unsold_1' => number_format((int) $harga_token_unsold_1,0,',','.'),
+                'Token_Unsold_2' => number_format((int) $harga_token_unsold_2,0,',','.'),
             ];
         }
 
