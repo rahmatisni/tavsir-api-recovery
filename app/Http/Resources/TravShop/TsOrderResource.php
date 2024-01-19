@@ -64,7 +64,7 @@ class TsOrderResource extends JsonResource
                         // unset($product_kios['ref_id']);
                         unset($product_kios['transaksi_id']);
                         unset($product_kios['vending_number']);
-                        unset($product_kios['informasi_token']);
+                        unset($product_kios['informasi']);
                         unset($product_kios['flag']);
                         unset($product_kios['pilihan_pembelian']);
                         unset($product_kios['transaksi_id']);
