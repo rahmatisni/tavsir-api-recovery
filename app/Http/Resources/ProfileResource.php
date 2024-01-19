@@ -23,6 +23,7 @@ class ProfileResource extends JsonResource
         $business_id = 0;
         $logo = $user->tenant->logo ?? null;
         $additional_data = [];
+        $tenant = User::where('tenant_id', $user->tenant->id)->firstOrFail();
         if(in_array($user->role,[User::OWNER, User::TENANT, User::CASHIER])){
             switch ($user->role) {
                 case User::OWNER:
@@ -88,6 +89,7 @@ class ProfileResource extends JsonResource
             'in_selforder' => ($this->tenant?->in_selforder > 0 ? 1:0) ?? 0, 
             'list_payment' => $this->tenant->list_payment ?? ['2'], 
                 'is_supertenant' => $this->tenant->is_supertenant ?? null,
+                'tenant_mail' => $tenant->email
 
         ], $additional_data);
     }
