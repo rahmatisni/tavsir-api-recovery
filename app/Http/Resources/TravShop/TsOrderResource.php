@@ -199,7 +199,7 @@ class TsOrderResource extends JsonResource
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'paid_date' => $this->payment->updated_at ?? null,
             'payment' => $this->payment->data ?? null,
-            'log_kiosbank' => $temps ?? $this->log_kiosbank,
+            'log_kiosbank' => $product_kios_bank->integrator == 'JATELINDO' ? ['data'=> $product_kios]:($temps ?? $this->log_kiosbank),
             'addon_total' => $this->addon_total,
             'addon_price' => $this->addon_price,
             'detil_kios' => $product_kios,
