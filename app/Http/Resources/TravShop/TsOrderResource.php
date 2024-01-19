@@ -56,9 +56,19 @@ class TsOrderResource extends JsonResource
                     'name'
                 ]);
                 $product_kios['handphone'] = $product[1];
-                if($product_kios_bank->integrator == 'JATELINDO'){
+                if ($product_kios_bank->integrator == 'JATELINDO') {
                     unset($product_kios['handphone']);
+                    unset($product_kios['kode']);
                     $product_kios = array_merge($product_kios, JatelindoService::infoPelanggan($this->log_kiosbank, $this->status));
+                    if ($this->payment?->updated_at == NULL) {
+                        unset($product_kios['flag']);
+                        unset($product_kios['transaksi_id']);
+                        unset($product_kios['ref_id']);
+                        unset($product_kios['total_token_unsold']);
+                        unset($product_kios['pilihan_token']);
+                        unset($product_kios['token_unsold_1']);
+                        unset($product_kios['token_unsold_2']);
+                    }
                 }
             }
             $temp = $this->log_kiosbank?->data['data'] ?? null;
@@ -142,16 +152,14 @@ class TsOrderResource extends JsonResource
                     } elseif (in_array($key, $slice)) {
                     } elseif (in_array($key, $cleansing)) {
                         $temps['data'][$key] = cleansings($val);
-                    }
-                  
-                     else {
-                   
+                    } else {
+
                         $temps['data'][$key] = $val;
                     }
                 }
             }
-            
-                
+
+
             $temps['data']['Diskon'] = '-' . rupiah((int) $this->discount);
             unset($temps['sessionID']);
             // unset($temps['customerID']);
@@ -199,7 +207,7 @@ class TsOrderResource extends JsonResource
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'paid_date' => $this->payment->updated_at ?? null,
             'payment' => $this->payment->data ?? null,
-            'log_kiosbank' => $product_kios_bank->integrator == 'JATELINDO' ? ['data'=> $product_kios]:($temps ?? $this->log_kiosbank),
+            'log_kiosbank' => $product_kios_bank->integrator == 'JATELINDO' ? ['data' => $product_kios] : ($temps ?? $this->log_kiosbank),
             'addon_total' => $this->addon_total,
             'addon_price' => $this->addon_price,
             'detil_kios' => $product_kios,
