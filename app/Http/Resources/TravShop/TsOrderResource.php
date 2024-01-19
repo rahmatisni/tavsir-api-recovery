@@ -60,7 +60,7 @@ class TsOrderResource extends JsonResource
                     unset($product_kios['handphone']);
                     unset($product_kios['kode']);
                     $product_kios = array_merge($product_kios, JatelindoService::infoPelanggan($this->log_kiosbank, $this->status));
-                    if ($this->payment?->updated_at == NULL) {
+                    if ($this->payment?->payent == NULL) {
                         unset($product_kios['flag']);
                         unset($product_kios['transaksi_id']);
                         unset($product_kios['ref_id']);
