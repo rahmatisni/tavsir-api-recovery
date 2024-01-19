@@ -60,15 +60,24 @@ class TsOrderResource extends JsonResource
                     unset($product_kios['handphone']);
                     unset($product_kios['kode']);
                     $product_kios = array_merge($product_kios, JatelindoService::infoPelanggan($this->log_kiosbank, $this->status));
-                    if ($this->payment?->payment == NULL) {
+                    if ($this->status === TransOrder::WAITING_PAYMENT) {
                         unset($product_kios['flag']);
                         unset($product_kios['transaksi_id']);
-                        unset($product_kios['ref_id']);
+                        // unset($product_kios['ref_id']);
                         unset($product_kios['total_token_unsold']);
                         unset($product_kios['pilihan_token']);
                         unset($product_kios['token_unsold_1']);
                         unset($product_kios['token_unsold_2']);
                     }
+                    // if ($this->status === TransOrder::DONE) {
+                    //     unset($product_kios['flag']);
+                    //     unset($product_kios['transaksi_id']);
+                    //     unset($product_kios['ref_id']);
+                    //     unset($product_kios['total_token_unsold']);
+                    //     unset($product_kios['pilihan_token']);
+                    //     unset($product_kios['token_unsold_1']);
+                    //     unset($product_kios['token_unsold_2']);
+                    // }
                 }
             }
             $temp = $this->log_kiosbank?->data['data'] ?? null;
