@@ -62,16 +62,16 @@ class TsOrderResource extends JsonResource
                     $product_kios = array_merge($product_kios, JatelindoService::infoPelanggan($this->log_kiosbank, $this->status));
                     // if ($this->status === TransOrder::WAITING_PAYMENT) {
                         // unset($product_kios['ref_id']);
-                        unset($product_kios['transaksi_id']);
-                        unset($product_kios['vending_number']);
-                        unset($product_kios['informasi']);
-                        unset($product_kios['flag']);
-                        unset($product_kios['pilihan_pembelian']);
-                        unset($product_kios['transaksi_id']);
-                        unset($product_kios['total_token_unsold']);
-                        unset($product_kios['pilihan_token']);
-                        unset($product_kios['token_unsold_1']);
-                        unset($product_kios['token_unsold_2']);
+                        unset($product_kios['Transaksi_ID']);
+                        unset($product_kios['Vending_Number']);
+                        unset($product_kios['Informasi']);
+                        unset($product_kios['Flag']);
+                        unset($product_kios['Pilihan_Pembelian']);
+                        unset($product_kios['Transaksi_ID']);
+                        unset($product_kios['Total_Token_Unsold']);
+                        unset($product_kios['Pilihan_Token']);
+                        unset($product_kios['Token_Unsold_1']);
+                        unset($product_kios['Token_Unsold_2']);
                     // }
                     // if ($this->status === TransOrder::DONE) {
                     //     unset($product_kios['flag']);
