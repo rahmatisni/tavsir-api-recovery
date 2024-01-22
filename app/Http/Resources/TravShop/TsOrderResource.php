@@ -46,7 +46,7 @@ class TsOrderResource extends JsonResource
         $tenant_name = $this->tenant->name ?? null;
         if ($this->order_type == TransOrder::ORDER_TRAVOY) {
             $product = explode('-', $this->order_id);
-            $product_kios_bank = $this->productKiosbank();
+            $product_kios_bank = $this->productKiosbank() ?? NULL;
 
             if ($product_kios_bank) {
                 $product_kios = $product_kios_bank->only([
