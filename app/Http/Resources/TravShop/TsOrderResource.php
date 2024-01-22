@@ -53,7 +53,7 @@ class TsOrderResource extends JsonResource
                     'kategori',
                     'sub_kategori',
                     'kode',
-                    // 'name'
+                    'name'
                 ]);
                 $product_kios['handphone'] = $product[1];
                 if ($product_kios_bank->integrator == 'JATELINDO') {
