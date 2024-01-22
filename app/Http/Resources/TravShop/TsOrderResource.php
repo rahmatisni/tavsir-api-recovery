@@ -59,9 +59,10 @@ class TsOrderResource extends JsonResource
                 if ($product_kios_bank->integrator == 'JATELINDO') {
                     unset($product_kios['handphone']);
                     unset($product_kios['kode']);
+                    
                     $product_kios = array_merge($product_kios, JatelindoService::infoPelanggan($this->log_kiosbank, $this->status));
                     // if ($this->status === TransOrder::WAITING_PAYMENT) {
-                        // unset($product_kios['ref_id']);
+                        unset($product_kios['name']);
                         unset($product_kios['Transaksi_ID']);
                         unset($product_kios['Vending_Number']);
                         unset($product_kios['Informasi']);
