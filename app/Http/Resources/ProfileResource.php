@@ -23,7 +23,6 @@ class ProfileResource extends JsonResource
         $business_id = 0;
         $logo = $user->tenant->logo ?? null;
         $additional_data = [];
-        $tenant = User::where('tenant_id', $user->tenant->id)->firstOrFail();
         if(in_array($user->role,[User::OWNER, User::TENANT, User::CASHIER])){
             switch ($user->role) {
                 case User::OWNER:
@@ -42,6 +41,7 @@ class ProfileResource extends JsonResource
                     ];
                     break;
                 case User::CASHIER:
+                    $tenant = User::where('tenant_id', $user->tenant->id)->firstOrFail();
                     $business_id = $user->tenant->business->id ?? 0;
                     break;
                 
