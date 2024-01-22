@@ -46,7 +46,7 @@ class TsOrderResource extends JsonResource
         $tenant_name = $this->tenant->name ?? null;
         if ($this->order_type == TransOrder::ORDER_TRAVOY) {
             $product = explode('-', $this->order_id);
-            $product_kios_bank = $this->productKiosbank() ?? NULL;
+            $product_kios_bank = $this->productKiosbank();
 
             if ($product_kios_bank) {
                 $product_kios = $product_kios_bank->only([
@@ -220,7 +220,7 @@ class TsOrderResource extends JsonResource
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'paid_date' => $this->payment->updated_at ?? null,
             'payment' => $this->payment->data ?? null,
-            'log_kiosbank' => $product_kios_bank->integrator == 'JATELINDO' ? ['data' => $product_kios] : ($temps ?? $this->log_kiosbank),
+            'log_kiosbank' => $this->order_type === 'ORDER_TRAVOY' ? ($product_kios_bank->integrator == 'JATELINDO' ? ['data' => $product_kios] : ($temps ?? $this->log_kiosbank)) : null,
             'addon_total' => $this->addon_total,
             'addon_price' => $this->addon_price,
             'detil_kios' => $product_kios,
