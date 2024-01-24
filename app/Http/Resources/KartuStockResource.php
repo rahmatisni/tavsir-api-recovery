@@ -24,7 +24,7 @@ class KartuStockResource extends JsonResource
             'category_name' => $this->category->name ?? '',
             'is_active' => $this->is_active,
             'is_composit' => $this->is_composit,
-            'type' => $this->product_type
+            'type' => $this->type
         ];
     }
 }
