@@ -236,6 +236,20 @@ class TavsirController extends Controller
                 $order_detil_many[] = $order_detil;
             }
 
+            $extra_price = ExtraPrice::byTenant($data->tenant_id)->aktif()->get();
+            $data->addon_total = 0;
+            $data->addon_price()->delete();
+            foreach ($extra_price as $value) {
+                $addon = new AddonPrice();
+                $addon->trans_order_id = $data->id;
+                $addon->name = $value->name;
+                $addon->price = $value->price;
+                if ($value->is_percent == 1) {
+                    $addon->price = ($sub_total * $value->price) / 100;
+                }
+                $addon->save();
+                $data->addon_total += $addon->price;
+            }
             $data->sub_total = $sub_total;
             $data->total = $data->sub_total + $data->fee + $data->service_fee;
 
