@@ -23,7 +23,8 @@ class KartuStockResource extends JsonResource
             'last_action' => $this->last_stock->last()?->stockTypeLabel() ?? '',
             'category_name' => $this->category->name ?? '',
             'is_active' => $this->is_active,
-            'is_composit' => $this->is_composit
+            'is_composit' => $this->is_composit,
+            'type' => $this->product_type
         ];
     }
 }

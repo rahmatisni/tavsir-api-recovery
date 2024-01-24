@@ -24,7 +24,7 @@ class StockController extends Controller
 {
     public function indexKartu()
     {
-        $data = Product::byTenant()->byType(ProductType::PRODUCT)->when($name = request()->name, function ($q) use ($name) {
+        $data = Product::byTenant()->when($name = request()->name, function ($q) use ($name) {
             $q->where('name', 'like', '%' . $name . '%');
         })->when($sku = request()->sku, function ($q) use ($sku) {
             $q->where('sku', 'like', '%' . $sku . '%');
