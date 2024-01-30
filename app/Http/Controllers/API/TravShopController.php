@@ -918,7 +918,7 @@ class TravShopController extends Controller
             $tenant = $trans_order->tenant;
             $tenant_is_verified = $tenant?->is_verified;
 
-            if ($tenant_is_verified === false && $trans_order->order_type != TransOrder::ORDER_TRAVOY && $trans_order->order_type != TransOrder::ORDER_DEREK_ONLINE) {
+            if ($tenant_is_verified === false && $trans_order->order_type != TransOrder::ORDER_TRAVOY) {
                 $merchant = PgJmto::listSubMerchant();
                 if ($merchant->successful()) {
                     $merchant = $merchant->json();
@@ -943,7 +943,7 @@ class TravShopController extends Controller
                 $value->fee = 0;
 
                 $value->self_order = false;
-                $value->travshop = false;
+                $value->travshop = true;
                 $value->tavsir = false;
 
                 if (in_array($value->id, $self_order)) {
