@@ -403,7 +403,7 @@ class PgJmto extends Model
                         "bill" => (string)((int) $snap['virtualAccountData']['totalAmount']['value']),
                         "bill_id" => $bill_id,
                         "bill_name" => $bill_name,
-                        "exp_date" => $snap['virtualAccountData']['expiredDate'],
+                        "exp_date" =>  Carbon::parse($snap['virtualAccountData']['expiredDate'])->isoFormat('dddd, D MMMM YYYY [pukul] H:mm:ss'),
                         "phone" => $phone,
                         "email" => $email,
                         "customer_name" => $customer_name,
@@ -415,6 +415,8 @@ class PgJmto extends Model
                     "responseSnap" => $snap
                 ];
                 return $data;
+            // $res['responseData']['exp_date'] = Carbon::parse($res['responseData']['exp_date'])->isoFormat('dddd, D MMMM YYYY [pukul] H:mm:ss');            ;
+
             }
             return ['status' => 'Error', 'message' => 'VA Gagal dibuat'];
 
