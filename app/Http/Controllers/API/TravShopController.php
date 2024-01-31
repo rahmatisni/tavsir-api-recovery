@@ -943,7 +943,7 @@ class TravShopController extends Controller
                 $value->fee = 0;
 
                 $value->self_order = false;
-                $value->travshop = true;
+                $value->travshop = false;
                 $value->tavsir = false;
 
                 if (in_array($value->id, $self_order)) {
@@ -1037,7 +1037,7 @@ class TravShopController extends Controller
                 return response()->json(['info' => $data->status], 422);
             }
             //Cek deposit
-            if ($data->order_type == TransOrder::ORDER_TRAVOY) {
+            if ($data->order_type === TransOrder::ORDER_TRAVOY) {
                 $cekProduct = ProductKiosBank::where('kode', $data->codeProductKiosbank())->first();
                 //Skip jika jatelindo
                 if ($cekProduct?->integrator != 'JATELINDO') {

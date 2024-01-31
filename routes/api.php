@@ -308,6 +308,9 @@ Route::post('payment-gateway/dd/payment', [App\Http\Controllers\API\PaymentGatew
 Route::post('/CallbackLinkAjaQRIS', [App\Http\Controllers\API\TavsirController::class, 'CallbackLinkAjaQRIS']);
 
 
+Route::get('/tokenpg', function (Request $request) {
+return PgJmto::generateToken();
+});
 
 Route::get('/pg-cek', function (Request $request) {
     if ($request->sof_id && $request->payment_method_id) {
