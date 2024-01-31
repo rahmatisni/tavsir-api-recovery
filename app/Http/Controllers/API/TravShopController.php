@@ -1535,6 +1535,7 @@ class TravShopController extends Controller
                     break;
             }
             DB::commit();
+            $res['responseData']['exp_date'] = Carbon::parse($res['responseData']['exp_date'])->isoFormat('dddd, D MMMM YYYY [pukul] H:mm:ss');            ;
             return response()->json($res);
         } catch (\Throwable $th) {
             DB::rollback();
