@@ -403,7 +403,7 @@ class PgJmto extends Model
                         "bill" => (string)((int) $snap['virtualAccountData']['totalAmount']['value']),
                         "bill_id" => $bill_id,
                         "bill_name" => $bill_name,
-                        "exp_date" =>  Carbon::parse($snap['virtualAccountData']['expiredDate'])->isoFormat('dddd, D MMMM YYYY [pukul] H:mm:ss'),
+                        "exp_date" =>  Carbon::parse($snap['virtualAccountData']['expiredDate'])->isoFormat('dddd, D MMMM YYYY, H:mm:ss'),
                         "phone" => $phone,
                         "email" => $email,
                         "customer_name" => $customer_name,
