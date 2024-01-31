@@ -394,7 +394,9 @@ class PgJmto extends Model
         if (isset($snap['responseCode'])) {
             if ($snap['responseCode'] == 2002700) {
                 $data = [
-                    'status' => 'success',
+                    "status" => "success",
+                    "rc" => "0000",
+                    "rcm" => "success",
                     "responseData" => [
                         "sof_code" => $sof_code,
                         "va_number" => $snap['virtualAccountData']['virtualAccountNo'],
