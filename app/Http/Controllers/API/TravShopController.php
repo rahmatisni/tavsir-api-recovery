@@ -943,7 +943,7 @@ class TravShopController extends Controller
                 $value->fee = 0;
 
                 $value->self_order = false;
-                $value->travshop = true;
+                $value->travshop = false;
                 $value->tavsir = false;
 
                 if (in_array($value->id, $self_order)) {
