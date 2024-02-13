@@ -53,7 +53,8 @@ class TsOrderResource extends JsonResource
                     'kategori',
                     'sub_kategori',
                     'kode',
-                    'name'
+                    'name',
+                    'logo_url'
                 ]);
                 $product_kios['handphone'] = $product[1];
                 if ($product_kios_bank->integrator == 'JATELINDO') {
@@ -202,7 +203,7 @@ class TsOrderResource extends JsonResource
             'customer_name' => $this->customer_name,
             'customer_phone' => $this->customer_phone,
             'nomor_name' => $this->nomor_name ?? '',
-            'payment_method' => $this->payment_method?->only('code_name', 'code', 'name', 'id'),
+            'payment_method' => $this->payment_method?->only('code_name', 'code', 'name', 'id', 'logo_url'),
             'sub_total' => $this->sub_total,
             'fee' => $this->fee,
             'service_fee' => $this->service_fee,

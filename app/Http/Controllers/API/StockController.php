@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Exports\TemplateStockExport;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\DownloadTemplateRequest;
 use App\Http\Requests\ImportStockRequest;
 use App\Http\Requests\TransStockRequest;
 use App\Http\Resources\KartuStockDetilResource;
@@ -146,9 +147,10 @@ class StockController extends Controller
         return response()->json(['message' => 'Change status success', 'is_active' => $data->is_active]);
     }
 
-    public function downloadTemplateImport()
+    public function downloadTemplateImport(DownloadTemplateRequest $request)
     {
-        return Excel::download(new TemplateStockExport(), 'template import stock.xlsx');
+        $type = $request->type == 'in' ? 'masuk' : 'keluar';
+        return Excel::download(new TemplateStockExport($request->type), "template import {$type}.xlsx");
     }
 
     public function importStock(ImportStockRequest $request)

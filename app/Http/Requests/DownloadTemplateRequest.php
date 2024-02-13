@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class PaymentMethodRequest extends FormRequest
+class DownloadTemplateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,9 +24,14 @@ class PaymentMethodRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|max:255',
-            'code' => 'required|string|max:255',
-            'logo' => 'nullable|max:5000|mimes:png',
+            'type' => 'required|in:in,out',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'type.in' => ':attribute must in value in, out',
         ];
     }
 }

@@ -5,14 +5,17 @@ namespace App\Http\Controllers\API\KiosBank;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\OrderPulsaRequest;
 use App\Http\Requests\UangElektronikRequest;
+use App\Models\Constanta\NumberSaveType;
 use App\Services\External\KiosBankService;
 use Illuminate\Http\Request;
 use App\Models\KiosBank\ProductKiosBank;
+use App\Services\Travshop\NumberSaveServices;
 
 class KiosBankController extends Controller
 {
     public function __construct(
         protected KiosBankService $service,
+        protected NumberSaveServices $serviceNumberSave,
     ) {
     }
 
@@ -134,6 +137,12 @@ class KiosBankController extends Controller
         $harga_final = $harga_kios + ($product_jmto->harga ?? 0);
 
         $data = $this->service->orderPulsa($reqest->validated(), $harga_kios, $harga_final);
+        //Save number
+        $this->serviceNumberSave->create([
+            'type' => $product_jmto->sub_kategori == 'PLN' ? NumberSaveType::PLN : NumberSaveType::PHONE,
+            'customer_id' => $reqest->customer_id,
+            'number' => $reqest->phone,
+        ]);
         return response()->json($data);
     }
 
@@ -170,6 +179,13 @@ class KiosBankController extends Controller
         if (isset($data['rc'])) {
             return response()->json(['message' => $data['description'], 'errors' => $data['description']], 422);
         }
+
+        //Save number
+        $this->serviceNumberSave->create([
+            'type' =>  NumberSaveType::UANG_ELEKTRONIK,
+            'customer_id' => $request->customer_id,
+            'number' => $request->phone,
+        ]);
 
         return response()->json($data['data'] ?? $data, $data['code'] ?? 200);
     }

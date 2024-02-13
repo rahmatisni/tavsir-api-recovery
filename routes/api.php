@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\CategoryTenantController;
 use App\Http\Controllers\API\KiosBank\KiosBankController;
+use App\Http\Controllers\API\NumberSaveController;
 use App\Models\PgJmto;
 use App\Services\External\KiosBankService;
 use Carbon\Carbon;
@@ -60,7 +61,16 @@ Route::middleware('auth:api')->group(function () {
 
     Route::post('/product/update-status', [App\Http\Controllers\API\ProductController::class, 'updateStatus']);
     Route::apiResource('product', App\Http\Controllers\API\ProductController::class);
-    Route::apiResource('payment-method', App\Http\Controllers\API\PaymentMethodController::class);
+
+    Route::post('/payment-method/rule/', [App\Http\Controllers\API\PaymentMethodController::class,'storeRule']);
+    Route::post('/payment-method/rule/{id}', [App\Http\Controllers\API\PaymentMethodController::class,'updateRule']);
+    Route::delete('/payment-method/rule/{id}', [App\Http\Controllers\API\PaymentMethodController::class,'deleteRule']);
+    Route::get('/payment-method', [App\Http\Controllers\API\PaymentMethodController::class,'index']);
+    Route::get('/payment-method/{id}', [App\Http\Controllers\API\PaymentMethodController::class,'show']);
+    Route::post('/payment-method', [App\Http\Controllers\API\PaymentMethodController::class,'store']);
+    Route::post('/payment-method/{id}', [App\Http\Controllers\API\PaymentMethodController::class,'update']);
+    Route::delete('/payment-method/{id}', [App\Http\Controllers\API\PaymentMethodController::class,'destroy']);
+
     Route::apiResource('paystation', App\Http\Controllers\API\PaystationController::class);
     Route::apiResource('voucher', App\Http\Controllers\API\VoucherController::class);
     Route::apiResource('category', App\Http\Controllers\API\CategoryController::class);
@@ -133,6 +143,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('tenant-terpadu/set-supertenant/{id}', [App\Http\Controllers\API\TenantTerpaduController::class,'setSuperTenant']);
     Route::post('tenant-terpadu/{id}', [App\Http\Controllers\API\TenantTerpaduController::class,'store']);
     Route::post('tenant-terpadu-unbind/{id}', [App\Http\Controllers\API\TenantTerpaduController::class,'unbind']);
+    
 
     Route::prefix('tavsir')->group(function () {
         #Supertenant
@@ -274,6 +285,13 @@ Route::prefix('travshop')->group(function () {
     Route::post('/saldo', [App\Http\Controllers\API\TravShopController::class, 'saldo']);
     Route::post('/rating/{id}', [App\Http\Controllers\API\RatingController::class, 'store']);
     Route::post('/order-verification/{id}', [App\Http\Controllers\API\TravShopController::class, 'verifikasiOrder']);
+
+    Route::controller(NumberSaveController::class)->prefix('number-save')->group(function () {
+        Route::get('/', 'index');
+        Route::get('/{id}', 'show');
+        Route::post('/{id}', 'update');
+        Route::delete('/{id}', 'destroy');
+    });
 });
 
 Route::middleware('customRateLimit:key,1,10')->group(function () {

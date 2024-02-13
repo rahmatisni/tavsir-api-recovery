@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\TravShop;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class TsPaymentresource extends JsonResource
+class NumberSaveResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,9 +16,11 @@ class TsPaymentresource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'payment_methode_name' => $this->trans_order?->payment_method?->name,
-            'payment_methode_logo_url' => $this->trans_order?->payment_method?->logo_url,
-            'data' => $this->data
+            'customer_id' => $this->customer_id,
+            'type' => $this->type,
+            'label' => $this->label,
+            'number' => $this->number,
+            'updated_at' => $this->updated_at
         ];
     }
 }
