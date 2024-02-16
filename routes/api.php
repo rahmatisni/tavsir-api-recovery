@@ -101,6 +101,8 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/metode-pembayaran', [App\Http\Controllers\API\LaporanController::class, 'laporanMetodePembayaran']);
 
     Route::post('/laporan/invoice', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanInvoice']);
+    Route::post('/rekon/list', [App\Http\Controllers\API\LaporanController::class, 'listRekon']);
+
 
     Route::post('/laporan/transaksi', [App\Http\Controllers\API\LaporanController::class, 'downloadLaporanTransaksi']);
     Route::post('/transaksi', [App\Http\Controllers\API\LaporanController::class, 'laporanTransaksi']);

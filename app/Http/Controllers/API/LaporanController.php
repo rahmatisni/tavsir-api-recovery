@@ -27,6 +27,8 @@ use App\Models\TransOrderDetil;
 use App\Models\Voucher;
 use App\Services\LaporanServices;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+
 use Excel;
 
 class LaporanController extends Controller
@@ -42,6 +44,33 @@ class LaporanController extends Controller
         $record = $this->services->penjualan($request);
         return Excel::download(new LaporanPenjualanExport($record), 'laporan_penjualan ' . Carbon::now()->format('d-m-Y') . '.xlsx');
     }
+
+    public function listRekon(Request $request)
+    {
+        $record = $this->services->listRekon($request);
+
+        $data = [
+            'Total_Transaksi' => ($record[0]->isEmpty() ? 0 : $record[0]->count('id')) + ($record[1]->isEmpty() ? 0 : $record[1]->count('id')) + ($record[2]->isEmpty() ? 0 : $record[2]->count('id')),
+            'Total_Transaksi_N_Rekon' => $record[0]->isEmpty() ? 0 : $record[0]->count('id'),
+            'Total_Transaksi_Rekon' => $record[1]->isEmpty() ? 0 : $record[1]->count('id'),
+            'Total_Transaksi_Unmatch' => $record[2]->isEmpty() ? 0 : $record[2]->count('id'),
+            'Total_Pendapatan' => ($record[0]->isEmpty() ? 0 : ($record[0]->sum('total') - $record[0]->sum('service_fee'))) + ($record[1]->isEmpty() ? 0 : ($record[1]->sum('total') - $record[1]->sum('service_fee'))) + ($record[2]->isEmpty() ? 0 : ($record[2]->sum('total') - $record[2]->sum('service_fee'))),
+            'Total_Pendapatan_N_Rekon' => $record[0]->isEmpty() ? 0 : ($record[0]->sum('total') - $record[0]->sum('service_fee')),
+            'Total_Pendapatan_Rekon' => $record[1]->isEmpty() ? 0 : ($record[1]->sum('total') - $record[1]->sum('service_fee')),
+            'Total_Pendapatan_Unmatch' => $record[2]->isEmpty() ? 0 : ($record[2]->sum('total') - $record[2]->sum('service_fee')),
+            'Data' => [
+                'n_rekon' => $record[0],
+                'rekon' => $record[1],
+                'n_match_rekon' => $record[2],
+            ]
+        ];
+        
+        return response()->json($data);
+        
+    }
+
+
+
 
     public function laporanPenjualan(DownloadLaporanRequest $request)
     {
@@ -104,17 +133,18 @@ class LaporanController extends Controller
                     return $qqq->where('business_id', $business_id);
                 });
             });
-        })->when(($tanggal_awal && $tanggal_akhir),
-            function ($q) use ($tanggal_awal, $tanggal_akhir) {
-                return $q->whereBetween(
-                    'claim_date',
-                    [
-                        $tanggal_awal,
-                        $tanggal_akhir . ' 23:59:59'
-                    ]
-                );
-            }
-        )
+        })->when(
+                ($tanggal_awal && $tanggal_akhir),
+                function ($q) use ($tanggal_awal, $tanggal_akhir) {
+                    return $q->whereBetween(
+                        'claim_date',
+                        [
+                            $tanggal_awal,
+                            $tanggal_akhir . ' 23:59:59'
+                        ]
+                    );
+                }
+            )
             ->when(
                 $status,
                 function ($q) use ($status) {
@@ -206,7 +236,8 @@ class LaporanController extends Controller
         $business_id = $request->business_id;
 
         $data = TransOrder::done()
-            ->when(($tanggal_awal && $tanggal_akhir),
+            ->when(
+                ($tanggal_awal && $tanggal_akhir),
                 function ($q) use ($tanggal_awal, $tanggal_akhir) {
                     return $q->whereBetween(
                         'created_at',
@@ -251,7 +282,8 @@ class LaporanController extends Controller
         $tanggal_awal = $request->tanggal_awal;
         $tanggal_akhir = $request->tanggal_akhir;
 
-        $data = RestArea::when(($tanggal_awal && $tanggal_akhir),
+        $data = RestArea::when(
+            ($tanggal_awal && $tanggal_akhir),
             function ($q) use ($tanggal_awal, $tanggal_akhir) {
                 return $q->whereBetween(
                     'created_at',
@@ -281,7 +313,8 @@ class LaporanController extends Controller
         $tanggal_awal = $request->tanggal_awal;
         $tanggal_akhir = $request->tanggal_akhir;
 
-        $data = Tenant::when(($tanggal_awal && $tanggal_akhir),
+        $data = Tenant::when(
+            ($tanggal_awal && $tanggal_akhir),
             function ($q) use ($tanggal_awal, $tanggal_akhir) {
                 return $q->whereBetween(
                     'created_at',
@@ -316,7 +349,8 @@ class LaporanController extends Controller
         $business_id = $request->business_id;
 
         $data = TransOrder::done()
-            ->when(($tanggal_awal && $tanggal_akhir),
+            ->when(
+                ($tanggal_awal && $tanggal_akhir),
                 function ($q) use ($tanggal_awal, $tanggal_akhir) {
                     return $q->whereBetween(
                         'created_at',
@@ -366,7 +400,8 @@ class LaporanController extends Controller
         $tanggal_akhir = $request->tanggal_akhir;
         $rest_area_id = $request->rest_area_id;
 
-        $data = Voucher::when(($tanggal_awal && $tanggal_akhir),
+        $data = Voucher::when(
+            ($tanggal_awal && $tanggal_akhir),
             function ($q) use ($tanggal_awal, $tanggal_akhir) {
                 return $q->whereBetween(
                     'created_at',

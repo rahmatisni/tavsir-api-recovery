@@ -8,108 +8,114 @@ use App\Http\Resources\LaporanMetodePembayaranResource;
 use App\Http\Resources\LaporanOperationalResource;
 use App\Http\Resources\LaporanPenjualanResource;
 use App\Http\Resources\LaporanTransaksiResource;
+use App\Http\Resources\LaporanRekonResource;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\CompareReport;
 use App\Models\Tenant;
 use App\Models\TransOperational;
 use App\Models\TransOrder;
 use App\Models\TransOrderDetil;
+use App\Models\PaymentMethod;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+
 
 class LaporanServices
 {
-    public function penjualanKategori(DownloadLaporanRequest $request)
+
+    public function penjualanKategori(Request $request)
     {
+
+    }
+    public function listRekon(Request $request)
+    {
+
         $tanggal_awal = $request->tanggal_awal;
         $tanggal_akhir = $request->tanggal_akhir;
+        $sof = $request->sof;
         $tenant_id = $request->tenant_id;
-        $rest_area_id = $request->rest_area_id;
         $business_id = $request->business_id;
-        $super_tenant_id = auth()->user()->tenant->is_supertenant ?? null;
-        $super_tenant_id = $super_tenant_id === 0 || $super_tenant_id === NULL ? NULL : auth()->user()->tenant->id;
+        $status_rekon = $request->status_rekon;
+
+        $paymentMethodsparent = PaymentMethod::where('integrator', $sof)->pluck('id');
 
 
-        if (auth()->user()->role === 'TENANT') {
-            $data = TransOrderDetil::whereHas(
-                'trans_order',
-                function ($q) use ($tanggal_awal, $tanggal_akhir, $super_tenant_id, $business_id, $rest_area_id, $tenant_id) {
-                    return $q->where('status', TransOrder::DONE)
-                        ->when(($tanggal_awal && $tanggal_akhir), function ($qq) use ($tanggal_awal, $tanggal_akhir) {
-                            return $qq->whereBetween(
-                                'created_at',
-                                [
-                                    $tanggal_awal,
-                                    $tanggal_akhir . ' 23:59:59'
-                                ]
-                            );
-                        })->when($super_tenant_id, function ($qq) use ($super_tenant_id) {
-                            return $qq->where('supertenant_id', $super_tenant_id);
-                        });
-                }
-            )->whereHas('product', function ($qq) use ($tenant_id) {
-                if (auth()->user()->tenant->is_supertenant != null) {
-                    if ($tenant_id != null) {
-                        $qq->where('tenant_id', $tenant_id);
-                    }
-                } else {
-                    $qq->where('tenant_id', auth()->user()->tenant->id);
-                };
-            })->get()->groupBy('product.category.id');
-        
+        $n_rekon = CompareReport::where('valid', 0)->when(
+            ($tanggal_awal && $tanggal_akhir),
+            function ($q) use ($tanggal_awal, $tanggal_akhir) {
+                return $q->whereBetween(
+                    'created_at',
+                    [
+                        $tanggal_awal,
+                        $tanggal_akhir . ' 23:59:59'
+                    ]
+                );
+            }
+        )->
+            when($sof, function ($qq) use ($paymentMethodsparent) {
+                return $qq->whereIn('payment_method_id', $paymentMethodsparent);
+            })->
+            when($tenant_id, function ($qq) use ($tenant_id) {
+                return $qq->where('tenant_id', $tenant_id);
+            })->
+            when($business_id, function ($qq) use ($business_id) {
+                return $qq->where('business_id', $business_id);
+            })->get();
+        $rekon = CompareReport::where('valid', 1)->when(
+            ($tanggal_awal && $tanggal_akhir),
+            function ($q) use ($tanggal_awal, $tanggal_akhir) {
+                return $q->whereBetween(
+                    'created_at',
+                    [
+                        $tanggal_awal,
+                        $tanggal_akhir . ' 23:59:59'
+                    ]
+                );
+            }
+        )->
+            when($sof, function ($qq) use ($paymentMethodsparent) {
+                return $qq->whereIn('payment_method_id', $paymentMethodsparent);
+            })->
+            when($tenant_id, function ($qq) use ($tenant_id) {
+                return $qq->where('tenant_id', $tenant_id);
+            })->
+            when($business_id, function ($qq) use ($business_id) {
+                return $qq->where('business_id', $business_id);
+            })->get();
+        $n_match_rekon = CompareReport::where('valid', 2)->when(
+            ($tanggal_awal && $tanggal_akhir),
+            function ($q) use ($tanggal_awal, $tanggal_akhir) {
+                return $q->whereBetween(
+                    'created_at',
+                    [
+                        $tanggal_awal,
+                        $tanggal_akhir . ' 23:59:59'
+                    ]
+                );
+            }
+        )->
+            when($sof, function ($qq) use ($paymentMethodsparent) {
+                return $qq->whereIn('payment_method_id', $paymentMethodsparent);
+            })->
+            when($tenant_id, function ($qq) use ($tenant_id) {
+                return $qq->where('tenant_id', $tenant_id);
+            })->
+            when($business_id, function ($qq) use ($business_id) {
+                return $qq->where('business_id', $business_id);
+            })->get();
 
-        } else {
+        switch ($status_rekon) {
+            case '0':
+                return [LaporanRekonResource::collection($n_rekon), LaporanRekonResource::collection([]), LaporanRekonResource::collection([])];
+            case '1':
+                return [LaporanRekonResource::collection([]), LaporanRekonResource::collection($rekon), LaporanRekonResource::collection([])];
+            case '2':
+                return [LaporanRekonResource::collection([]), LaporanRekonResource::collection([]), LaporanRekonResource::collection($n_match_rekon)];
+            default:
+                return [LaporanRekonResource::collection($n_rekon), LaporanRekonResource::collection($rekon), LaporanRekonResource::collection($n_match_rekon)];
 
-            $data = TransOrderDetil::whereHas('trans_order', function ($q) use ($tanggal_awal, $tanggal_akhir, $tenant_id, $rest_area_id, $business_id) {
-                return $q->where('status', TransOrder::DONE)
-                    ->when(($tanggal_awal && $tanggal_akhir), function ($qq) use ($tanggal_awal, $tanggal_akhir) {
-                        return $qq->whereBetween(
-                            'created_at',
-                            [
-                                $tanggal_awal,
-                                $tanggal_akhir . ' 23:59:59'
-                            ]
-                        );
-                    })->when($tenant_id, function ($qq) use ($tenant_id) {
-                        return $qq->where('tenant_id', $tenant_id);
-                    })->when($rest_area_id, function ($qq) use ($rest_area_id) {
-                        return $qq->where('rest_area_id', $rest_area_id);
-                    })->when($business_id, function ($qq) use ($business_id) {
-                        return $qq->where('business_id', $business_id);
-                    });
-            })->with('product.category')->get()
-                ->groupBy('product.category.id');
         }
-        $hasil = [];
-        $sum_total_transaksi = 0;
-        $sum_jumlah_transaksi = 0;
-        foreach ($data as $k => $i) {
-            $jumlah_transaksi = $i->sum('qty');
-            $total_transaksi = $i->sum('total_price');
-
-            $sum_jumlah_transaksi += $jumlah_transaksi;
-            $sum_total_transaksi += $total_transaksi;
-
-            array_push($hasil, [
-                'id' => $k,
-                'kategori' => $i[0]['product']['Category']['name'] ?? '',
-                'tenant_name' => $i[0]['product']['tenant']['name'] ?? '',
-                'jumlah_terjual' => $jumlah_transaksi,
-                'pendapatan_kategori' => $total_transaksi,
-            ]);
-        }
-
-        if ($data->count() == 0) {
-            abort(404);
-        }
-        $record = [
-            'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
-            'tanggal_awal' => $tanggal_awal ?? 'Semua Tanggal',
-            'tanggal_akhir' => $tanggal_akhir ?? 'Semua Tanggal',
-            'sum_jumlah_transaksi' => $sum_jumlah_transaksi,
-            'sum_total_transaksi' => $sum_total_transaksi,
-            'data' => $hasil,
-        ];
-        return $record;
     }
 
     public function operational(DownloadLaporanRequest $request)
@@ -266,7 +272,7 @@ class LaporanServices
         //     //     dump($value);
 
         //     // }
-           
+
         //     // dd($i);
         //     // $jumlah_transaksi = $i->sum('qty');
         //     // $total_transaksi = $i->sum('total_price');
@@ -287,7 +293,7 @@ class LaporanServices
         //         'kategori' =>  $i[end($i)]->product->category->name ?? '',
         //     ]);
         // }
-        
+
         // return($datax);
 
 
