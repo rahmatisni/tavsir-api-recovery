@@ -22,6 +22,7 @@ class CreateRefPaymentMethod extends Migration
             $table->string('description')->nullable();
             $table->unsignedInteger('payment_method_id')->nullable();
             $table->string('payment_method_code')->nullable();
+            $table->string('integrator')->nullable();
             $table->timestamps();
         });
     }

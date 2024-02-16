@@ -66,6 +66,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/payment-method/rule/{id}', [App\Http\Controllers\API\PaymentMethodController::class,'updateRule']);
     Route::delete('/payment-method/rule/{id}', [App\Http\Controllers\API\PaymentMethodController::class,'deleteRule']);
     Route::get('/payment-method', [App\Http\Controllers\API\PaymentMethodController::class,'index']);
+    Route::get('/payment-sof', [App\Http\Controllers\API\PaymentMethodController::class,'indexSof']);
     Route::get('/payment-method/{id}', [App\Http\Controllers\API\PaymentMethodController::class,'show']);
     Route::post('/payment-method', [App\Http\Controllers\API\PaymentMethodController::class,'store']);
     Route::post('/payment-method/{id}', [App\Http\Controllers\API\PaymentMethodController::class,'update']);

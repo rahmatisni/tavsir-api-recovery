@@ -48,6 +48,20 @@ class PaymentMethodController extends Controller
         return response()->json($paymentMethods);
     }
 
+
+    public function indexSof(Request $request)
+    {
+        $paymentMethodsparent = PaymentMethod::whereNotNull('integrator')->distinct()->pluck('integrator');
+
+        $data = [];
+        foreach ($paymentMethodsparent as $v){
+            $datas = [];
+            $datas['integrator'] = $v;
+            $datas['data'] = PaymentMethod::where('integrator', $v)->get();
+            $data[] =$datas; 
+        }
+        return response()->json($data);
+    }
     /**
      * Store a newly created resource in storage.
      *
