@@ -3179,4 +3179,9 @@ class TravShopController extends Controller
 
 
     }
+
+    public function infoPln(Request $request)
+    {
+        return $this->response(JatelindoService::infoPln($request->meter_id));
+    }
 }

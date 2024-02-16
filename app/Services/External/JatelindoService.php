@@ -18,7 +18,7 @@ class JatelindoService
     public const advice = "172000";
     public const repeat = "173000";
 
-    public static function inquiry(int $flag = 0, string $id_pelanggan, ProductKiosBank $product)
+    public static function inquiry(int $flag = 0, string $id_pelanggan, ProductKiosBank $product, $price = null)
     {
         $date = Carbon::now();
         $md = $date->format('md');
@@ -31,7 +31,7 @@ class JatelindoService
             "mti" => "0200",
             "bit2" => '053502',
             "bit3" => self::inquiry,
-            "bit4" => str_pad($product->kode, 12, '0', STR_PAD_LEFT),
+            "bit4" => str_pad($price == 0 ? 0 : $product->kode, 12, '0', STR_PAD_LEFT),
             "bit7" => $md.$his,
             "bit11" => $his,
             "bit12" => $his,
@@ -354,4 +354,70 @@ class JatelindoService
         ];
     }
 
+    public static function infoPln(string $meter_id, int $flag = 0)
+    {
+        $date = Carbon::now();
+        $md = $date->format('md');
+        $his = $date->format('his');
+        $id = str_pad($meter_id, 11, '0', STR_PAD_LEFT).'000000000000'.'0';
+        if($flag != 0){
+            $id = '00000000000'.str_pad($meter_id, 12, '0', STR_PAD_LEFT).'1';
+        }
+        $payload = [
+            "mti" => "0200",
+            "bit2" => '053502',
+            "bit3" => self::inquiry,
+            "bit4" => str_pad(0, 12, '0', STR_PAD_LEFT),
+            "bit7" => $md.$his,
+            "bit11" => $his,
+            "bit12" => $his,
+            "bit13" => $md,
+            "bit15" => $md,
+            "bit18" => config('jatelindo.bit_18'),
+            "bit32" => config('jatelindo.bit_32'),
+            "bit37" => "000000{$his}",
+            "bit41" => config('jatelindo.bit_41'),
+            "bit42" => config('jatelindo.bit_42'),
+            //Format SwitcherID + MeterID (11 digit) + PelangganID (12 digit) + Flag MeterID (0) atau PelangganID (1)  
+            "bit48" => 'JTL53L3'.$id,
+            "bit49" => "360", // COUNTRY CURRENCY CODE NUMBER IDR 
+        ];
+
+        $result = Http::withOptions([
+            'proxy' => '172.16.4.58:8090'
+        ])->post(config('jatelindo.url'), $payload);
+    
+        Log::info([
+            'status' => self::responseTranslation($result->json())?->keterangan,
+            'action' => 'Inquiry',
+            'payload' => $payload,
+            'respons' => $result->json(),
+        ]);
+
+        if(($result['bit39'] ?? '') != '00'){
+            return ['code' => 422, 'data' => JatelindoService::responseTranslation($result), 422];
+        }
+
+        $bit_48 = $result['bit48'];
+        $bit_61 = $result['bit61'];
+
+        $total_token_unsold =  substr($bit_61, 27, 1);
+        $harga_token_unsold_1 =  substr($bit_61, 28, 11);
+        $harga_token_unsold_2 =  substr($bit_61, 39, 11);
+
+        return [
+            'Meter_ID' => substr($bit_48, 7, 11),
+            'Pelanggan_ID' => substr($bit_48, 18, 12),
+            'Flag' => substr($bit_48, 30, 1),
+            'Transaksi_ID' => substr($bit_48, 31, 32),
+            'Ref_ID' => substr($bit_48, 63, 32),
+            'Nama_Pelanggan' => substr($bit_48, 95, 25),
+            'Tarif' => substr($bit_48, 120, 4),
+            'Daya' => ltrim(substr($bit_48, 124, 9),'0'),
+            'Pilihan_Token' => substr($bit_48, 133, 1),
+            'Total_Token_Unsold' => $total_token_unsold,
+            'Token_Unsold_1' => number_format((int) $harga_token_unsold_1,0,',','.'),
+            'Token_Unsold_2' => number_format((int) $harga_token_unsold_2,0,',','.'),
+        ];
+    }
 }

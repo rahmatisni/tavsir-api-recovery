@@ -292,6 +292,8 @@ Route::prefix('travshop')->group(function () {
         Route::post('/{id}', 'update');
         Route::delete('/{id}', 'destroy');
     });
+
+    Route::post('/info-pelanggan', [App\Http\Controllers\API\TravShopController::class, 'infoPln']);
 });
 
 Route::middleware('customRateLimit:key,1,10')->group(function () {
