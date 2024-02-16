@@ -141,7 +141,7 @@ class UserController extends Controller
 
 
         try {
-            if ($request->role === 'CASHIER') {
+            if ($request->role == USER::CASHIER || USER::PAYMENT || USER::FINANCE) {
                 clock()->event("Register{$request->email}")->end();
 
             } else {
