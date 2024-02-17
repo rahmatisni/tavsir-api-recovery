@@ -28,6 +28,8 @@ use App\Models\Voucher;
 use App\Services\LaporanServices;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Imports\ReportImport;
+
 
 use Excel;
 
@@ -43,6 +45,14 @@ class LaporanController extends Controller
     {
         $record = $this->services->penjualan($request);
         return Excel::download(new LaporanPenjualanExport($record), 'laporan_penjualan ' . Carbon::now()->format('d-m-Y') . '.xlsx');
+    }
+
+    public function UploadRekon(Request $request)
+    {
+        $rekon = new ReportImport($request->type);
+        Excel::import($rekon, $request->file('file'));
+        return response()->json($rekon->gethasil(), $rekon->gethasil()['status'] ? 200 : 400);
+        
     }
 
     public function listRekon(Request $request)
@@ -68,8 +78,6 @@ class LaporanController extends Controller
         return response()->json($data);
         
     }
-
-
 
 
     public function laporanPenjualan(DownloadLaporanRequest $request)
