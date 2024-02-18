@@ -28,7 +28,10 @@ use App\Models\Voucher;
 use App\Services\LaporanServices;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Imports\ReportImport;
+use App\Imports\ReportImportGetoll;
+use App\Imports\ReportImportLinkaja;
+
+
 
 
 use Excel;
@@ -49,10 +52,20 @@ class LaporanController extends Controller
 
     public function UploadRekon(Request $request)
     {
-        $rekon = new ReportImport($request->type);
-        Excel::import($rekon, $request->file('file'));
-        return response()->json($rekon->gethasil(), $rekon->gethasil()['status'] ? 200 : 400);
-        
+        $sof = $request->sof;
+        switch ($sof) {
+            case 'getoll':
+                $rekon = new ReportImportGetoll($request->type);
+                Excel::import($rekon, $request->file('file'));
+                return response()->json($rekon->gethasil(), $rekon->gethasil()['status'] ? 200 : 400);
+            case 'linkaja':
+                $rekon = new ReportImportLinkaja($request->type);
+                Excel::import($rekon, $request->file('file'));
+                return response()->json($rekon->gethasil(), $rekon->gethasil()['status'] ? 200 : 400);
+            default:
+                # code...
+                return response()->json(['status'=>'gagal', 402]);
+        }
     }
 
     public function listRekon(Request $request)

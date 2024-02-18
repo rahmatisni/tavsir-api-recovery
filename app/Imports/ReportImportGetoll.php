@@ -11,7 +11,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\ToCollection;
 
-class ReportImport implements ToCollection
+class ReportImportGetoll implements ToCollection
 {
     private $hasil;
     private $type;
@@ -25,9 +25,8 @@ class ReportImport implements ToCollection
      */
     public function collection(Collection $collection)
     {
-       
-        DB::beginTransaction();
 
+        DB::beginTransaction();
         foreach ($collection as $key => $row) {
             if ($key == 0) {
                 $key_header = [
@@ -53,6 +52,10 @@ class ReportImport implements ToCollection
                 ];
                 if ($row->toArray() != $key_header) {
                     throw new Exception('Format Excel tidak sesuai');
+                    // $this->hasil = [
+                    //     'Status' => 'Gagal',
+                    //     'Message' => 'Format Excel tidak sesuai'
+                    // ];
                 }
             } else {
                 $rows = $row->toArray();
@@ -84,7 +87,7 @@ class ReportImport implements ToCollection
 
         $hasil = [
             'status' => 'Berhasil',
-            'coumt' => sizeof($collection),
+            'count' => sizeof($collection),
         ];
         $this->hasil = $hasil;
     }
