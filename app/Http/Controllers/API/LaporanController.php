@@ -81,12 +81,9 @@ class LaporanController extends Controller
             'Total_Pendapatan_N_Rekon' => $record->where('valid',0)->sum('total')-$record->where('valid',0)->sum('service_fee'),
             'Total_Pendapatan_Rekon' =>$record->where('valid',1)->sum('total')-$record->where('valid',1)->sum('service_fee'),
             'Total_Pendapatan_Unmatch' => $record->where('valid',2)->sum('total')-$record->where('valid',2)->sum('service_fee'),
-            'Data' => [
-                // 'n_rekon' => $record[0],
-                // 'rekon' => $record[1],
-                // 'n_match_rekon' => $record[2],
+            
                 'all' => $record
-            ]
+          
         ];
         
         return response()->json($data);
