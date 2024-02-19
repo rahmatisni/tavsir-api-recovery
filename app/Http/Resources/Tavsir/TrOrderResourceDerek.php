@@ -139,6 +139,9 @@ class TrOrderResourceDerek extends JsonResource
             "facebook" => $this->tenant->facebook ?? null,
             "website" => $this->tenant->website ?? null,
             "note" => $this->tenant->note ?? null,
+            "invoice_id" => $this->invoice_derek->invoice_id ?? null,
+            "invoice_status" => $this->invoice_derek->status ?? 'UNCLAIM'
+
         // 'detil' => TrOrderDetilResource::collection($this->detil),  
             ];
     }

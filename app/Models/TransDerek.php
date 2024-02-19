@@ -109,7 +109,8 @@ class TransDerek extends BaseModel
         'payment_metode_derek',
         'transaction_id_derek',
         'derek_detail_id_derek',
-        'is_notif_derek'
+        'is_notif_derek',
+        'invoice_id'
     ];
 
     public function payment_method()
@@ -121,6 +122,13 @@ class TransDerek extends BaseModel
     {
         return $this->hasOne(TransPayment::class, 'trans_order_id');
     }
+
+  
+
+    public function invoice_derek()
+{
+    return $this->hasOne(TransInvoiceDerek::class, 'invoice_id', 'invoice_id');
+}
 
 }
 
