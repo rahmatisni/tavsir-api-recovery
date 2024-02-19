@@ -560,6 +560,28 @@ class TravShopController extends Controller
             $data->sub_total = $sub_total;
             $data->total = $data->sub_total + $data->fee + $data->service_fee + $data->addon_total;
             $data->status = TransOrder::WAITING_PAYMENT;
+
+            $now = Carbon::now()->format('Y-m-d H:i:s');
+            $sharing = Sharing::where('tenant_id', $request->tenant_id)->whereIn('status', ['sedang_berjalan', 'belum_berjalan'])
+                ->where('waktu_mulai', '<=', $now)
+                ->where('waktu_selesai', '>=', $now)->first();
+            if ($sharing?->sharing_config) {
+                $nilai_sharing = json_decode($sharing->sharing_config);
+                foreach ($nilai_sharing as $value) {
+                    $harga = (int) ($data->sub_total) + (int) ($data->addon_total);
+                    $sharing_amount_unround = (($value / 100) * $harga);
+                    // $sharing_amount[] = ($value/100).'|'.$harga.'|'.$sharing_amount_unround;
+                    $sharing_amount[] = $sharing_amount_unround;
+                }
+                $data->sharing_code = $sharing->sharing_code ?? null;
+                $data->sharing_amount = $sharing_amount ?? null;
+                $data->sharing_proportion = $sharing->sharing_config ?? null;
+            } else {
+                $data->sharing_code = [(string) $data->tenant_id];
+                $data->sharing_proportion = [100];
+                $data->sharing_amount = [$data->sub_total + (int) ($data->addon_total)];
+            }
+            
             $data->save();
 
             DB::commit();
