@@ -200,9 +200,13 @@ Route::middleware('auth:api')->group(function () {
         Route::apiResource('customize', App\Http\Controllers\API\CustomizeController::class);
         Route::post('/order-change-status/{id}', [App\Http\Controllers\API\TavsirController::class, 'changeStatusOrder']);
         Route::get('/invoice', [App\Http\Controllers\API\InvoiceController::class, 'index']);
+        Route::get('/invoice-derek', [App\Http\Controllers\API\InvoiceController::class, 'indexDerek']);
+
         Route::get('/invoice/{id}', [App\Http\Controllers\API\InvoiceController::class, 'show']);
         Route::post('/invoice', [App\Http\Controllers\API\InvoiceController::class, 'store']);
+        Route::post('/invoice-derek', [App\Http\Controllers\API\InvoiceController::class, 'storeDerek']);
         Route::post('/invoice-paid/{id}', [App\Http\Controllers\API\InvoiceController::class, 'paid']);
+        Route::post('/invoice-paid-derek/{id}', [App\Http\Controllers\API\InvoiceController::class, 'paidInvoiceDerek']);
 
         Route::post('/subscription/aktivasi/{id}', [App\Http\Controllers\API\SubscriptionController::class, 'aktivasi']);
         Route::post('/subscription/reject/{id}', [App\Http\Controllers\API\SubscriptionController::class, 'reject']);

@@ -64,7 +64,8 @@ class TransOrder extends BaseModel
         'description',
         'sharing_code',
         'sharing_amount',
-        'sharing_proportion'
+        'sharing_proportion',
+        'invoice_id'
     ];
 
     public function trans_order_arsip()
