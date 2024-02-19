@@ -85,6 +85,7 @@ class ReportImportGetoll implements ToCollection
             }
         }
 
+        DB::commit();
         $hasil = [
             'status' => 'Berhasil',
             'count' => sizeof($collection),
