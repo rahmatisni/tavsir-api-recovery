@@ -31,7 +31,7 @@ class ReportImportLinkaja implements ToCollection
         foreach ($collection as $key => $row) {
             if ($key == 0) {
                 $key_header = [
-                    'No',
+                    '',
                     'Top Org Name',
                     'Top Short Code',
                     'Biz Org Name',
