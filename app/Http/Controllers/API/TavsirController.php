@@ -13,6 +13,7 @@ use App\Http\Requests\PaymentOrderRequest;
 use App\Http\Requests\TavsirProductRequest;
 use App\Models\Bind;
 use App\Models\Supertenant;
+use App\Models\TransDerek;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Tavsir\TrOrderRequest;
@@ -29,6 +30,7 @@ use App\Http\Resources\Tavsir\TrProductResource;
 use App\Http\Resources\Tavsir\TrCartSavedResource;
 use App\Http\Resources\Tavsir\TrOrderResource;
 use App\Http\Resources\TravShop\TsOrderResource;
+use App\Http\Resources\tavsir\TrOrderResourceDerek;
 use App\Http\Resources\Tavsir\TrCategoryResource;
 use App\Http\Resources\Tavsir\TrOrderSupertenantResource;
 use App\Models\AddonPrice;
@@ -2153,6 +2155,12 @@ class TavsirController extends Controller
 
     public function orderList(Request $request)
     {
+
+        if(auth()->user()->tenant->is_derek > 0){
+            $data = $this->orderListDerek($request);
+            // return ($data);
+            return response()->json(TrOrderResourceDerek::collection($data));
+        }
         $queryOrder = "CASE WHEN status = 'QUEUE' THEN 1 ";
         $queryOrder .= "WHEN status = 'WAITING_OPEN' THEN 2 ";
         $queryOrder .= "WHEN status = 'WAITING_CONFIRMATION_TENANT' THEN 3 ";
@@ -2214,6 +2222,12 @@ class TavsirController extends Controller
             return response()->json(TrOrderResource::collection($data));
         }
 
+    }
+
+    public function orderListDerek(Request $request)
+    {
+        $data = TransDerek::where('is_solve_derek', 3)->get();
+        return $data;
     }
     public function orderHistory(Request $request)
     {
