@@ -71,20 +71,22 @@ class LaporanController extends Controller
     public function listRekon(Request $request)
     {
         $record = $this->services->listRekon($request);
+        dd($record->where('valid',0)->sum('service_fee'));
 
         $data = [
-            'Total_Transaksi' => ($record[0]->isEmpty() ? 0 : $record[0]->count('id')) + ($record[1]->isEmpty() ? 0 : $record[1]->count('id')) + ($record[2]->isEmpty() ? 0 : $record[2]->count('id')),
-            'Total_Transaksi_N_Rekon' => $record[0]->isEmpty() ? 0 : $record[0]->count('id'),
-            'Total_Transaksi_Rekon' => $record[1]->isEmpty() ? 0 : $record[1]->count('id'),
-            'Total_Transaksi_Unmatch' => $record[2]->isEmpty() ? 0 : $record[2]->count('id'),
-            'Total_Pendapatan' => ($record[0]->isEmpty() ? 0 : ($record[0]->sum('total') - $record[0]->sum('service_fee'))) + ($record[1]->isEmpty() ? 0 : ($record[1]->sum('total') - $record[1]->sum('service_fee'))) + ($record[2]->isEmpty() ? 0 : ($record[2]->sum('total') - $record[2]->sum('service_fee'))),
-            'Total_Pendapatan_N_Rekon' => $record[0]->isEmpty() ? 0 : ($record[0]->sum('total') - $record[0]->sum('service_fee')),
-            'Total_Pendapatan_Rekon' => $record[1]->isEmpty() ? 0 : ($record[1]->sum('total') - $record[1]->sum('service_fee')),
-            'Total_Pendapatan_Unmatch' => $record[2]->isEmpty() ? 0 : ($record[2]->sum('total') - $record[2]->sum('service_fee')),
+            'Total_Transaksi' => $record->count('id'),
+            'Total_Transaksi_N_Rekon' => $record->where('valid',0)->count('id'),
+            'Total_Transaksi_Rekon' =>$record->where('valid',1)->count('id'),
+            'Total_Transaksi_Unmatch' => $record->where('valid',2)->count('id'),
+            'Total_Pendapatan' => $record->sum('total')-$record->sum('service_fee'),
+            'Total_Pendapatan_N_Rekon' => $record->where('valid',0)->sum('total')-$record->where('valid',0)->sum('service_fee'),
+            'Total_Pendapatan_Rekon' =>$record->where('valid',1)->sum('total')-$record->where('valid',1)->sum('service_fee'),
+            'Total_Pendapatan_Unmatch' => $record->where('valid',2)->sum('total')-$record->where('valid',2)->sum('service_fee'),
             'Data' => [
-                'n_rekon' => $record[0],
-                'rekon' => $record[1],
-                'n_match_rekon' => $record[2],
+                // 'n_rekon' => $record[0],
+                // 'rekon' => $record[1],
+                // 'n_match_rekon' => $record[2],
+                'all' => $record
             ]
         ];
         

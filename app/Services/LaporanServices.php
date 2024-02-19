@@ -39,9 +39,7 @@ class LaporanServices
         $status_rekon = $request->status_rekon;
 
         $paymentMethodsparent = PaymentMethod::where('integrator', $sof)->pluck('id');
-
-
-        $n_rekon = CompareReport::where('valid', 0)->when(
+        $all_rekon = CompareReport::when(
             ($tanggal_awal && $tanggal_akhir),
             function ($q) use ($tanggal_awal, $tanggal_akhir) {
                 return $q->whereBetween(
@@ -61,61 +59,88 @@ class LaporanServices
             })->
             when($business_id, function ($qq) use ($business_id) {
                 return $qq->where('business_id', $business_id);
-            })->get();
-        $rekon = CompareReport::where('valid', 1)->when(
-            ($tanggal_awal && $tanggal_akhir),
-            function ($q) use ($tanggal_awal, $tanggal_akhir) {
-                return $q->whereBetween(
-                    'created_at',
-                    [
-                        $tanggal_awal,
-                        $tanggal_akhir . ' 23:59:59'
-                    ]
-                );
-            }
-        )->
-            when($sof, function ($qq) use ($paymentMethodsparent) {
-                return $qq->whereIn('payment_method_id', $paymentMethodsparent);
             })->
-            when($tenant_id, function ($qq) use ($tenant_id) {
-                return $qq->where('tenant_id', $tenant_id);
-            })->
-            when($business_id, function ($qq) use ($business_id) {
-                return $qq->where('business_id', $business_id);
-            })->get();
-        $n_match_rekon = CompareReport::where('valid', 2)->when(
-            ($tanggal_awal && $tanggal_akhir),
-            function ($q) use ($tanggal_awal, $tanggal_akhir) {
-                return $q->whereBetween(
-                    'created_at',
-                    [
-                        $tanggal_awal,
-                        $tanggal_akhir . ' 23:59:59'
-                    ]
-                );
-            }
-        )->
-            when($sof, function ($qq) use ($paymentMethodsparent) {
-                return $qq->whereIn('payment_method_id', $paymentMethodsparent);
-            })->
-            when($tenant_id, function ($qq) use ($tenant_id) {
-                return $qq->where('tenant_id', $tenant_id);
-            })->
-            when($business_id, function ($qq) use ($business_id) {
-                return $qq->where('business_id', $business_id);
+            when($status_rekon, function ($qq) use ($status_rekon) {
+                return $qq->where('valid', $status_rekon);
             })->get();
 
-        switch ($status_rekon) {
-            case '0':
-                return [LaporanRekonResource::collection($n_rekon), LaporanRekonResource::collection([]), LaporanRekonResource::collection([])];
-            case '1':
-                return [LaporanRekonResource::collection([]), LaporanRekonResource::collection($rekon), LaporanRekonResource::collection([])];
-            case '2':
-                return [LaporanRekonResource::collection([]), LaporanRekonResource::collection([]), LaporanRekonResource::collection($n_match_rekon)];
-            default:
-                return [LaporanRekonResource::collection($n_rekon), LaporanRekonResource::collection($rekon), LaporanRekonResource::collection($n_match_rekon)];
+        // $n_rekon = CompareReport::where('valid', 0)->when(
+        //     ($tanggal_awal && $tanggal_akhir),
+        //     function ($q) use ($tanggal_awal, $tanggal_akhir) {
+        //         return $q->whereBetween(
+        //             'created_at',
+        //             [
+        //                 $tanggal_awal,
+        //                 $tanggal_akhir . ' 23:59:59'
+        //             ]
+        //         );
+        //     }
+        // )->
+        //     when($sof, function ($qq) use ($paymentMethodsparent) {
+        //         return $qq->whereIn('payment_method_id', $paymentMethodsparent);
+        //     })->
+        //     when($tenant_id, function ($qq) use ($tenant_id) {
+        //         return $qq->where('tenant_id', $tenant_id);
+        //     })->
+        //     when($business_id, function ($qq) use ($business_id) {
+        //         return $qq->where('business_id', $business_id);
+        //     })->get();
+        // $rekon = CompareReport::where('valid', 1)->when(
+        //     ($tanggal_awal && $tanggal_akhir),
+        //     function ($q) use ($tanggal_awal, $tanggal_akhir) {
+        //         return $q->whereBetween(
+        //             'created_at',
+        //             [
+        //                 $tanggal_awal,
+        //                 $tanggal_akhir . ' 23:59:59'
+        //             ]
+        //         );
+        //     }
+        // )->
+        //     when($sof, function ($qq) use ($paymentMethodsparent) {
+        //         return $qq->whereIn('payment_method_id', $paymentMethodsparent);
+        //     })->
+        //     when($tenant_id, function ($qq) use ($tenant_id) {
+        //         return $qq->where('tenant_id', $tenant_id);
+        //     })->
+        //     when($business_id, function ($qq) use ($business_id) {
+        //         return $qq->where('business_id', $business_id);
+        //     })->get();
+        // $n_match_rekon = CompareReport::where('valid', 2)->when(
+        //     ($tanggal_awal && $tanggal_akhir),
+        //     function ($q) use ($tanggal_awal, $tanggal_akhir) {
+        //         return $q->whereBetween(
+        //             'created_at',
+        //             [
+        //                 $tanggal_awal,
+        //                 $tanggal_akhir . ' 23:59:59'
+        //             ]
+        //         );
+        //     }
+        // )->
+        //     when($sof, function ($qq) use ($paymentMethodsparent) {
+        //         return $qq->whereIn('payment_method_id', $paymentMethodsparent);
+        //     })->
+        //     when($tenant_id, function ($qq) use ($tenant_id) {
+        //         return $qq->where('tenant_id', $tenant_id);
+        //     })->
+        //     when($business_id, function ($qq) use ($business_id) {
+        //         return $qq->where('business_id', $business_id);
+        //     })->get();
 
-        }
+        // switch ($status_rekon) {
+        //     case '0':
+        //         return [LaporanRekonResource::collection($n_rekon), LaporanRekonResource::collection([]), LaporanRekonResource::collection([])];
+        //     case '1':
+        //         return [LaporanRekonResource::collection([]), LaporanRekonResource::collection($rekon), LaporanRekonResource::collection([])];
+        //     case '2':
+        //         return [LaporanRekonResource::collection([]), LaporanRekonResource::collection([]), LaporanRekonResource::collection($n_match_rekon)];
+        //     default:
+        //         return [LaporanRekonResource::collection($n_rekon), LaporanRekonResource::collection($rekon), LaporanRekonResource::collection($n_match_rekon)];
+
+        // }
+        return LaporanRekonResource::collection($all_rekon);
+
     }
 
     public function operational(DownloadLaporanRequest $request)
