@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\ListInvoiceResource;
+use App\Http\Resources\ListInvoiceResourceDerek;
 use App\Models\TransInvoice;
 use App\Models\TransInvoiceDerek;
 use App\Models\TransOrder;
@@ -61,8 +62,8 @@ class InvoiceController extends Controller
     {
         DB::enableQueryLog();
 
-        $data = TransInvoiceDerek::get();
-        return response()->json($data);
+        $data = TransInvoiceDerek::with('petugas','cashier')->get();
+        return response()->json(ListInvoiceResourceDerek::collection($data));
     }
 
 
@@ -126,8 +127,8 @@ class InvoiceController extends Controller
             if($nominal > 0){
 
                 $invoice = new TransInvoiceDerek();
-                $invoice->id = 'DRK'.'-'.$uuid;
-                $invoice->invoice_id = $uuid;
+                $invoice->id = $uuid;
+                $invoice->invoice_id ='DRK'.'-'. $uuid;
                 $invoice->cashier_id = auth()->user()->id;
                 $invoice->nominal = $nominal ;
                 $invoice->claim_date = $now;

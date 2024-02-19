@@ -10,8 +10,8 @@ class TransDerek extends BaseModel
     public $incrementing = false;
 
     protected $filable = [
-        'status',
         'id',
+        'status',
         'order_id',
         'order_type',
         'consume_type',
@@ -126,9 +126,10 @@ class TransDerek extends BaseModel
   
 
     public function invoice_derek()
-{
-    return $this->hasOne(TransInvoiceDerek::class, 'invoice_id', 'invoice_id');
-}
-
+    {
+        return $this->hasOne(TransInvoiceDerek::class, 'id', 'invoice_id');
+    }
+    
+    
 }
 

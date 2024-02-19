@@ -36,13 +36,14 @@ class TransInvoiceDerek extends BaseModel
         return $this->belongsTo(User::class, 'cashier_id');
     }
 
+    public function petugas()
+    {
+        return $this->belongsTo(User::class, 'pay_petugas_id');
+    }
+
     public function pay_station()
     {
         return $this->belongsTo(Paystation::class, 'pay_station_id');
     }
 
-    public function pay_petugas()
-    {
-        return $this->belongsTo(User::class, 'pay_petugas_id');
-    }
 }
