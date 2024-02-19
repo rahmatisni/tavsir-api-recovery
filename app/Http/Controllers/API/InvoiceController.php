@@ -116,7 +116,8 @@ class InvoiceController extends Controller
                 if($data){
                     $hasil[]= $value;
                     $data->invoice_id = $uuid;
-                    $nominal = $nominal + (float)($data?->sharing_amount[0]?? $data->sub_total);
+                    $amnt = json_decode($data->sharing_amount);
+                    $nominal = $nominal + ($amnt[0] ?? $data->sub_total);
                     $data->save();
                 }
       
