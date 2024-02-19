@@ -30,7 +30,7 @@ use App\Http\Resources\Tavsir\TrProductResource;
 use App\Http\Resources\Tavsir\TrCartSavedResource;
 use App\Http\Resources\Tavsir\TrOrderResource;
 use App\Http\Resources\TravShop\TsOrderResource;
-use App\Http\Resources\tavsir\TrOrderResourceDerek;
+use App\Http\Resources\Tavsir\TrOrderResourceDerek;
 use App\Http\Resources\Tavsir\TrCategoryResource;
 use App\Http\Resources\Tavsir\TrOrderSupertenantResource;
 use App\Models\AddonPrice;
