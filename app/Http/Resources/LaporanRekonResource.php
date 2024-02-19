@@ -39,6 +39,7 @@ class LaporanRekonResource extends JsonResource
         }
         
         return [
+            "trans_order_id"=> $this->trans_order_id,
             "order_id"=> $this->order_id,
             "business_id"=> $this->business_id,
             "tenant_id"=> $this->tenant_id,
