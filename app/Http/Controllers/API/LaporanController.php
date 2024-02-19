@@ -71,7 +71,6 @@ class LaporanController extends Controller
     public function listRekon(Request $request)
     {
         $record = $this->services->listRekon($request);
-        dd($record->where('valid',0)->sum('service_fee'));
 
         $data = [
             'Total_Transaksi' => $record->count('id'),
