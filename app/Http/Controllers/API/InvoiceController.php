@@ -103,37 +103,45 @@ class InvoiceController extends Controller
     {
         try {
             DB::beginTransaction();
+            $uuid = Str::uuid();
+            $now = Carbon::now()->format('Y-m-d H:i:s');
 
-            $data = TransOrder::byRole()
-            ->where('order_type', '=', TransOrder::ORDER_DEREK_ONLINE)
-            ->whereIn('status', [TransOrder::PAYMENT_SUCCESS, TransOrder::DONE])->whereNull('invoice_id')->get();
+            $hasil = [];
+            $nominal = 0;
+            $trans_order = ($request->trans_order_id);
+            foreach ($trans_order as $value) {
+                $data = TransOrder::byRole()
+                ->where('order_type', '=', TransOrder::ORDER_DEREK_ONLINE)
+                ->whereIn('status', [TransOrder::PAYMENT_SUCCESS, TransOrder::DONE])->whereNull('invoice_id')->find($value);
+                if($data){
+                    $hasil[]= $value;
+                    $data->invoice_id = $uuid;
+                    $nominal = $nominal + $data->sub_total;
+                    $data->save();
+                }
+      
+            }
 
-            // $data = TransSaldo::with('trans_invoice')->ByTenant()->first();
-            // if (!$data) {
-            //     return response()->json(['message' => 'Saldo tidak ditemukan'], 404);
-            // }
+            if($nominal > 0){
 
-            // if ($data->saldo < $request->nominal) {
-            //     return response()->json(['message' => 'Saldo tidak mencukupi'], 400);
-            // }
+                $invoice = new TransInvoiceDerek();
+                $invoice->id = 'DRK'.'-'.$uuid;
+                $invoice->invoice_id = $uuid;
+                $invoice->cashier_id = auth()->user()->id;
+                $invoice->nominal = $nominal ;
+                $invoice->claim_date = $now;
+                $invoice->status = TransInvoice::UNPAID;
+                $invoice->save();
+            }
 
-            // $invoice = new TransInvoice();
-            // $invoice->invoice_id = ($data->rest_area_id ?? '0').'-'.($data->tenant_id ?? '0').'-INV-' . date('YmdHis');
-            // $invoice->nominal = $request->nominal;
-            // $invoice->cashier_id = auth()->user()->id;
-            // $invoice->claim_date = Carbon::now();
+           
+            DB::commit();
 
-            // $data->trans_invoice()->save($invoice);
-            // $data->saldo = $data->saldo - $request->nominal;
-            // $data->save();
-
-            // DB::commit();
-
-            return response()->json($data);
+            return response()->json(['status' => 'Berhasil', 'trans_order_id' => $hasil]);
         } catch (\Throwable $th) {
-            // DB::rollback();
+            DB::rollback();
 
-            // return response()->json($th->getMessage(), 500);
+            return response()->json($th->getMessage(), 500);
         }
     }
 
