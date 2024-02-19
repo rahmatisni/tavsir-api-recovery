@@ -7,6 +7,7 @@ use App\Models\BaseModel;
 class TransDerek extends BaseModel
 {
     protected $table = 'trans_order_derek';
+    public $incrementing = false;
 
     protected $filable = [
         'status',
