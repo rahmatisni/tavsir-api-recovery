@@ -61,7 +61,7 @@ class InvoiceController extends Controller
     {
         DB::enableQueryLog();
 
-       $data = TransInvoiceDerek::get();
+        $data = TransInvoiceDerek::get();
         return response()->json($data);
     }
 
