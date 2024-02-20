@@ -3,6 +3,8 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
+
 
 
 class ListInvoiceResourceDerek extends JsonResource
@@ -26,7 +28,8 @@ class ListInvoiceResourceDerek extends JsonResource
             'claimed_by' => $this->cashier?->name, 
             'paid_date' => $this->paid_date,
             'paid_by' => $this->petugas?->name,
-            'status' => $this->status
+            'status' => $this->status,
+            'file' => $this->file ? url(Storage::url($this->file)) : null,
 
         ];
     }
