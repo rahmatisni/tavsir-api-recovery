@@ -21,6 +21,8 @@ class ProfileResource extends JsonResource
     {
         $user = auth()->user();
         $business_id = 0;
+        $logo = $user->tenant->logo ?? null;
+        $additional_data = [];
         if(in_array($user->role,[User::OWNER, User::TENANT, User::CASHIER])){
             switch ($user->role) {
                 case User::OWNER:
@@ -28,8 +30,18 @@ class ProfileResource extends JsonResource
                     break;
                 case User::TENANT:
                     $business_id = $user->tenant->business->id ?? 0;
+                    $additional_data = [
+                        'logo' => $logo ? asset($logo) : null,
+                        'additional_information' => $user->tenant->additional_information ?? null,
+                        'instagram' => $user->tenant->instagram ?? null,
+                        'facebook' => $user->tenant->facebook ?? null,
+                        'website' => $user->tenant->website ?? null,
+                        'note' => $user->tenant->note ?? null,
+                        'business_name' => $user->tenant->business->name ?? null,
+                    ];
                     break;
                 case User::CASHIER:
+                    $tenant = User::where('tenant_id', $user->tenant->id)->firstOrFail();
                     $business_id = $user->tenant->business->id ?? 0;
                     break;
                 
@@ -44,8 +56,7 @@ class ProfileResource extends JsonResource
             $subscription_end = Carbon::parse($subscription_end)->diffForHumans();
         }
         // $print = Tenant::find($this->tenant_id);
-
-        return [
+        return array_merge([
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
@@ -76,7 +87,11 @@ class ProfileResource extends JsonResource
             'is_composite' => $this->tenant->is_composite ?? 0,
             'in_takengo' => $this->tenant->in_takengo ?? 0,
             'in_selforder' => ($this->tenant?->in_selforder > 0 ? 1:0) ?? 0, 
-            'list_payment' => $this->tenant->list_payment ?? ['2']
-        ];
+            'list_payment' => $this->tenant->list_payment ?? ['2'], 
+            'is_supertenant' => $this->tenant->is_supertenant ?? null,
+            'tenant_mail' => $this->tenant?->email ?? null,
+            'is_derek' => $this->tenant?->is_derek ?? null
+
+        ], $additional_data);
     }
 }

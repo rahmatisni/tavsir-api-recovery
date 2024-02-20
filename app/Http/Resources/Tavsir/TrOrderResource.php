@@ -14,6 +14,7 @@ class TrOrderResource extends JsonResource
      */
     public function toArray($request)
     {
+        $logo = $this->tenant->logo ?? null;
         return [
             'id' => $this->id,
             'order_id' => $this->order_id,
@@ -23,6 +24,7 @@ class TrOrderResource extends JsonResource
             'tenant_id' => $this->tenant_id,
             'tenant_name' => $this->tenant->name ?? null,
             'business_id' => $this->business_id,
+            'business_name' => $this->tenant->business->name ?? null,
             'merchant_id' => $this->merchant_id,
             'rest_area_id' => $this->tenant->rest_area_id ?? null,
             'rest_area_name' => $this->tenant->rest_area->name ?? null,
@@ -56,6 +58,12 @@ class TrOrderResource extends JsonResource
             'rating' => $this->rating,
             'addon_total' => $this->addon_total,
             'addon_price' => $this->addon_price,
+            "logo" => $logo ? asset($logo) : null,
+            "additional_information" => $this->tenant->additional_information ?? null,
+            "instagram" => $this->tenant->instagram ?? null,
+            "facebook" => $this->tenant->facebook ?? null,
+            "website" => $this->tenant->website ?? null,
+            "note" => $this->tenant->note ?? null,
             'detil' => TrOrderDetilResource::collection($this->detil),
         ];
     }

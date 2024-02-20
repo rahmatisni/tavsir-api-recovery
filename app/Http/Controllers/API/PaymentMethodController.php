@@ -5,7 +5,9 @@ namespace App\Http\Controllers\API;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PaymentMethodRequest;
+use App\Http\Requests\PaymentMethodRuleRequest;
 use App\Models\PaymentMethod;
+use App\Models\PaymentMethodRule;
 use App\Models\Tenant;
 use App\Models\PgJmto;
 use App\Models\User;
@@ -46,6 +48,20 @@ class PaymentMethodController extends Controller
         return response()->json($paymentMethods);
     }
 
+
+    public function indexSof(Request $request)
+    {
+        $paymentMethodsparent = PaymentMethod::whereNotNull('integrator')->distinct()->pluck('integrator');
+
+        $data = [];
+        foreach ($paymentMethodsparent as $v){
+            $datas = [];
+            $datas['integrator'] = $v;
+            $datas['data'] = PaymentMethod::where('integrator', $v)->get();
+            $data[] =$datas; 
+        }
+        return response()->json($data);
+    }
     /**
      * Store a newly created resource in storage.
      *
@@ -64,8 +80,9 @@ class PaymentMethodController extends Controller
      * @param  \App\Models\PaymentMethod  $paymentMethod
      * @return \Illuminate\Http\Response
      */
-    public function show(PaymentMethod $paymentMethod)
+    public function show($id)
     {
+        $paymentMethod = PaymentMethod::with('payment_method_rule')->findOrfail($id);
         return response()->json($paymentMethod);
     }
 
@@ -76,8 +93,9 @@ class PaymentMethodController extends Controller
      * @param  \App\Models\PaymentMethod  $paymentMethod
      * @return \Illuminate\Http\Response
      */
-    public function update(PaymentMethodRequest $request, PaymentMethod $paymentMethod)
+    public function update(PaymentMethodRequest $request, $id)
     {
+        $paymentMethod = PaymentMethod::findOrfail($id);
         $paymentMethod->update($request->all());
         return response()->json($paymentMethod);
     }
@@ -88,9 +106,33 @@ class PaymentMethodController extends Controller
      * @param  \App\Models\PaymentMethod  $paymentMethod
      * @return \Illuminate\Http\Response
      */
-    public function destroy(PaymentMethod $paymentMethod)
+    public function destroy($id)
     {
+        $paymentMethod = PaymentMethod::findOrfail($id);
+        $paymentMethod->payment_method_rule()->delete();
         $paymentMethod->delete();
         return response()->json($paymentMethod);
     }
+
+    public function storeRule(PaymentMethodRuleRequest $request)
+    {
+        $data = PaymentMethodRule::create($request->validated());
+        return response()->json($data);
+    }
+
+    public function updateRule(PaymentMethodRuleRequest $request, $id)
+    {
+        $data = PaymentMethodRule::findOrFail($id);
+        $data->fill($request->validated());
+        $data->save();
+        return response()->json($data);
+    }
+
+    public function deleteRule($id)
+    {
+        $data = PaymentMethodRule::findOrFail($id);
+        $data->delete();
+        return response()->json($data);
+    }
+
 }

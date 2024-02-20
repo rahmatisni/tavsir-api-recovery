@@ -12,6 +12,8 @@ use App\Http\Requests\ConfirmOrderMemberSupertenantRequest;
 use App\Http\Requests\PaymentOrderRequest;
 use App\Http\Requests\TavsirProductRequest;
 use App\Models\Bind;
+use App\Models\Supertenant;
+use App\Models\TransDerek;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Tavsir\TrOrderRequest;
@@ -28,6 +30,7 @@ use App\Http\Resources\Tavsir\TrProductResource;
 use App\Http\Resources\Tavsir\TrCartSavedResource;
 use App\Http\Resources\Tavsir\TrOrderResource;
 use App\Http\Resources\TravShop\TsOrderResource;
+use App\Http\Resources\Tavsir\TrOrderResourceDerek;
 use App\Http\Resources\Tavsir\TrCategoryResource;
 use App\Http\Resources\Tavsir\TrOrderSupertenantResource;
 use App\Models\AddonPrice;
@@ -79,8 +82,24 @@ class TavsirController extends Controller
 
     public function tenantSupertenantList(Request $request)
     {
-        $data = auth()->user()->supertenant?->tenant;
-        return response()->json(BaseResource::collection($data));
+        $identifier = auth()->user()?->tenant;
+        $data = Supertenant::where('id', $identifier?->supertenant_id)->
+            when($identifier, function ($q) use ($identifier) {
+                if ($identifier?->is_supertenant != NULL) {
+                    return $q->with('tenant');
+
+                } else {
+                    return $q->with([
+                        'tenant' => function ($query) use ($identifier) {
+
+                            $query->where('ref_tenant.id', '=', $identifier->id);
+
+                        }
+                    ]);
+                }
+            })
+            ->firstOrFail();
+        return response()->json($data);
     }
 
     public function closeTenantSupertenant(CloseTenantSupertenantRequest $request)
@@ -118,7 +137,41 @@ class TavsirController extends Controller
             $data->where('is_active', '1');
         }
         $data = $data->orderBy('updated_at', 'desc')->get();
-        return response()->json(ProductSupertenantResource::collection($data));
+
+        $active = [];
+        $inactive = [];
+        foreach ($data as $value) {
+            $cek_product_have_not_active = $value->trans_product_raw->where('is_active', 0)->count();
+            $stock = $value->stock;
+            // $value->stock_sort = $stock > 0 ? 0:1;
+            $value->stock_sort = $value->stock === 0 ? 1 : ($value->is_active === 0 ? 1 : 0);
+            if ($value->is_composit === 1 && $value->is_active === 1) {
+                if ($cek_product_have_not_active > 0) {
+                    $value->stock_sort = 1;
+                } else {
+                    $liststock = [];
+                    foreach ($value->trans_product_raw as $item) {
+                        $liststock[] = floor($item->stock / $item->pivot->qty);
+                    }
+                    $temp_stock = count($liststock) == 0 ? 0 : min($liststock);
+
+                    $value->stock_sort = $temp_stock > 0 ? 0 : 1;
+                }
+
+            }
+            if ($value->stock_sort == 0) {
+                $active[] = $value;
+
+            } else {
+                $inactive[] = $value;
+            }
+        }
+        $sortedArray = array_merge($active, $inactive);
+        // return response()->json($sortedArray);
+
+        return response()->json(ProductSupertenantResource::collection($sortedArray));
+
+        // return response()->json(ProductSupertenantResource::collection($data));
     }
 
     public function orderSuperTenant(TrOrderRequest $request)
@@ -130,14 +183,15 @@ class TavsirController extends Controller
             if (!$data) {
                 $data = new TransOrder();
                 $data->order_type = TransOrder::POS;
-                $data->order_id = (auth()->user()->supertenant?->rest_area_id ?? '0') . '-' . (auth()->user()->supertenant_id ?? '0') . '-STAV-' . date('YmdHis');
+                $data->order_id = (auth()->user()->tenant?->rest_area_id ?? '0') . '-' . (auth()->user()->tenant->supertenant_id ?? '0') . '-STAV-' . date('YmdHis');
                 $data->status = TransOrder::CART;
             }
             if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::DONE) {
                 return response()->json(['message' => 'Order status ' . $data->statusLabel()], 400);
             }
-            $data->rest_area_id = auth()->user()->supertenant?->rest_area_id ?? null;
-            $data->supertenant_id = auth()->user()->supertenant_id;
+            $data->rest_area_id = auth()->user()->tenant?->rest_area_id ?? null;
+            $data->supertenant_id = auth()->user()->tenant->id;
+            $data->tenant_id = auth()->user()->tenant_id;
             $data->business_id = auth()->user()->business_id;
             $data->casheer_id = auth()->user()->id;
             $data->detil()->delete();
@@ -184,8 +238,45 @@ class TavsirController extends Controller
                 $order_detil_many[] = $order_detil;
             }
 
+            $extra_price = ExtraPrice::byTenant($data->tenant_id)->aktif()->get();
+            $data->addon_total = 0;
+            $data->addon_price()->delete();
+            foreach ($extra_price as $value) {
+                $addon = new AddonPrice();
+                $addon->trans_order_id = $data->id;
+                $addon->name = $value->name;
+                $addon->price = $value->price;
+                if ($value->is_percent == 1) {
+                    $addon->price = ($sub_total * $value->price) / 100;
+                }
+                $addon->save();
+                $data->addon_total += $addon->price;
+            }
             $data->sub_total = $sub_total;
             $data->total = $data->sub_total + $data->fee + $data->service_fee;
+
+
+            $now = Carbon::now()->format('Y-m-d H:i:s');
+            $sharing = Sharing::where('tenant_id', auth()->user()->tenant_id)->whereIn('status', ['sedang_berjalan', 'belum_berjalan'])
+                ->where('waktu_mulai', '<=', $now)
+                ->where('waktu_selesai', '>=', $now)->first();
+            if ($sharing?->sharing_config) {
+                $nilai_sharing = json_decode($sharing->sharing_config);
+                foreach ($nilai_sharing as $value) {
+                    $harga = (int) ($data->sub_total) + (int) ($data->addon_total);
+                    $sharing_amount_unround = (($value / 100) * $harga);
+                    // $sharing_amount[] = ($value/100).'|'.$harga.'|'.$sharing_amount_unround;
+                    $sharing_amount[] = $sharing_amount_unround;
+                }
+                $data->sharing_code = $sharing->sharing_code ?? null;
+                $data->sharing_amount = $sharing_amount ?? null;
+                $data->sharing_proportion = $sharing->sharing_config ?? null;
+            } else {
+                $data->sharing_code = [(string) $data->tenant_id];
+                $data->sharing_proportion = [100];
+                $data->sharing_amount = [$data->sub_total + (int) ($data->addon_total)];
+            }
+
 
             $data->save();
             $data->detil()->saveMany($order_detil_many);
@@ -264,11 +355,54 @@ class TavsirController extends Controller
         return response()->json(TrOrderSupertenantResource::collection($data));
     }
 
+
+    public function orderListMemberOfSupertenant(Request $request)
+    {
+        $tenant_user = auth()->user()->tenant;
+        $data = TransOrder::with('detil.product.tenant')
+            ->whereIn('status', [TransOrder::DONE, TransOrder::REFUND])
+            ->where('supertenant_id', $tenant_user->supertenant_id ?? 0)
+            
+            ->when($status = request()->status, function ($q) use ($status) {
+                if (is_array($status)) {
+                    $q->whereIn('status', $status)->orwhereIn('status', json_decode($status[0]) ?? []);
+                } else {
+                    $q->where('status', $status);
+                }
+            })
+            ->when($start_date = $request->start_date, function ($q) use ($start_date) {
+                $q->whereDate('created_at', '>=', date("Y-m-d", strtotime($start_date)));
+            })
+            ->when($end_date = $request->end_date, function ($q) use ($end_date) {
+                $q->whereDate('created_at', '<=', date("Y-m-d", strtotime($end_date)));
+            })
+            ->when($statusnot = request()->statusnot, function ($q) use ($statusnot) {
+                if (is_array($statusnot)) {
+                    $q->whereNotIn('status', $statusnot);
+                } else {
+                    $q->whereNotIn('status', $statusnot);
+                }
+            })
+            ->when($filter = request()->filter, function ($q) use ($filter) {
+                return $q->where('order_id', 'like', "%$filter%");
+            })
+            ->whereHas('detil', function ($q) use ($tenant_user) {
+                $q->whereHas('product', function ($qq) use ($tenant_user) {
+                    $qq->where('tenant_id', $tenant_user->id ?? 0);
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+        return response()->json(TrOrderSupertenantResource::collection($data));
+    }
+
+
+
     public function orderByIdMemberSupertenant($id)
     {
         $tenant_user = auth()->user()->tenant;
         $data = TransOrder::with('detil.product.tenant')
-            ->whereIn('status', [TransOrder::CART, TransOrder::PAYMENT_SUCCESS, TransOrder::DONE])
+            ->whereIn('status', [TransOrder::REFUND, TransOrder::PAYMENT_SUCCESS, TransOrder::DONE])
             ->where('supertenant_id', $tenant_user->supertenant_id ?? 0)
             ->whereHas('detil', function ($q) use ($tenant_user) {
                 $q->whereHas('product', function ($qq) use ($tenant_user) {
@@ -403,6 +537,16 @@ class TavsirController extends Controller
 
     public function productList(Request $request)
     {
+
+        // $super_tenant_id = ((auth()->user()->role === 'TENANT' && auth()->user()->tenant_id == request()->tenant_id) ? auth()->user()->supertenant_id : NULL);
+
+        // super tenant
+        if ((auth()->user()->tenant->is_supertenant != NULL || auth()->user()->tenant->is_supertenant != 0) && auth()->user()->role === 'CASHIER') {
+            $result = $this->productSupertenantList($request);
+            return $result;
+        }
+
+
         $data = Product::byTenant()->byType(ProductType::PRODUCT)->with('tenant')->with('trans_product_raw')->when($filter = $request->filter, function ($q) use ($filter) {
             $q->where(function ($qq) use ($filter) {
                 return $qq->where('name', 'like', "%$filter%")
@@ -427,7 +571,7 @@ class TavsirController extends Controller
             $stock = $value->stock;
             // $value->stock_sort = $stock > 0 ? 0:1;
             $value->stock_sort = $value->stock === 0 ? 1 : ($value->is_active === 0 ? 1 : 0);
-            if ($value->is_composit == 1) {
+            if ($value->is_composit === 1 && $value->is_active === 1) {
                 if ($cek_product_have_not_active > 0) {
                     $value->stock_sort = 1;
                 } else {
@@ -436,7 +580,6 @@ class TavsirController extends Controller
                         $liststock[] = floor($item->stock / $item->pivot->qty);
                     }
                     $temp_stock = count($liststock) == 0 ? 0 : min($liststock);
-                    $value->gaga = $temp_stock;
 
                     $value->stock_sort = $temp_stock > 0 ? 0 : 1;
                 }
@@ -449,8 +592,8 @@ class TavsirController extends Controller
                 $inactive[] = $value;
             }
         }
-
         $sortedArray = array_merge($active, $inactive);
+        // return response()->json($sortedArray);
 
         return response()->json(TrProductResource::collection($sortedArray));
     }
@@ -530,9 +673,27 @@ class TavsirController extends Controller
 
     public function categoryList(Request $request)
     {
-        $data = Category::byType(ProductType::PRODUCT)->byTenant()->when($filter = $request->filter, function ($q) use ($filter) {
-            return $q->where('name', 'like', "%$filter%");
-        })->orderBy('name')->get();
+        $super_tenant_state = auth()->user()->tenant->is_supertenant;
+        $super_tenant_id = auth()->user()->tenant->supertenant_id;
+
+        if ($super_tenant_state > 0 && auth()->user()->role === 'CASHIER') {
+            $arr_tenant = Tenant::where('supertenant_id', auth()->user()->tenant->id)->orWhere('id', auth()->user()->tenant->id)->pluck('id')->toArray();
+            $data = Category::with('tenant')->byType(ProductType::PRODUCT)->when($filter = $request->filter, function ($q) use ($filter) {
+                return $q->where('name', 'like', "%$filter%");
+            })->when(auth()->user()->tenant->is_supertenant != NULL , function ($q) use ($arr_tenant) {
+                return $q->whereIn('tenant_id', $arr_tenant);
+
+            })
+                ->orderBy('name')
+                ->get()
+                ->sortBy('tenant.name', SORT_REGULAR, false);
+
+            return response()->json(TrCategoryResource::collection($data));
+        }
+        $data = Category::byType(ProductType::PRODUCT)
+            ->byTenant()->when($filter = $request->filter, function ($q) use ($filter) {
+                return $q->where('name', 'like', "%$filter%");
+            })->orderBy('name')->get();
         return response()->json(TrCategoryResource::collection($data));
     }
 
@@ -570,6 +731,13 @@ class TavsirController extends Controller
     public function order(TrOrderRequest $request)
     {
         try {
+
+            // super tenant
+            if (auth()->user()->tenant->is_supertenant === 1) {
+                $result = $this->orderSuperTenant($request);
+                return $result;
+            }
+            /////
             $data = TransOrder::find($request->id);
 
             DB::beginTransaction();
@@ -584,7 +752,7 @@ class TavsirController extends Controller
             if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::DONE) {
                 return response()->json(['message' => 'Order status ' . $data->statusLabel()], 400);
             }
-            $data->sharing_code = $tenant->sharing_code ?? null;
+            // $data->sharing_code = $tenant->sharing_code ?? null;
             $data->rest_area_id = auth()->user()->tenant->rest_area_id ?? null;
             $data->tenant_id = auth()->user()->tenant_id;
             $data->business_id = auth()->user()->business_id;
@@ -718,6 +886,7 @@ class TavsirController extends Controller
             ->where('order_type', '=', TransOrder::POS)
             ->whereIn('status', [TransOrder::CART, TransOrder::WAITING_PAYMENT])
             ->count();
+            // ->get();
 
         return response()->json(['count' => $data]);
     }
@@ -1728,8 +1897,8 @@ class TavsirController extends Controller
                         return response()->json([
                             "message" => "ERROR!",
                             "errors" => [
-                                    $res
-                                ]
+                                $res
+                            ]
                         ], 422);
                     }
                     $is_dd_pg_success = $res['responseData']['pay_refnum'] ?? null;
@@ -1737,8 +1906,8 @@ class TavsirController extends Controller
                         return response()->json([
                             "message" => "ERROR!",
                             "errors" => [
-                                    $res
-                                ]
+                                $res
+                            ]
                         ], 422);
                     }
 
@@ -1790,10 +1959,10 @@ class TavsirController extends Controller
                     return response()->json([
                         "message" => "The given data was invalid.",
                         "errors" => [
-                                "otp" => [
-                                    "The otp field is required."
-                                ]
+                            "otp" => [
+                                "The otp field is required."
                             ]
+                        ]
                     ], 422);
                 }
                 $payload = $data_payment;
@@ -1807,8 +1976,8 @@ class TavsirController extends Controller
                         return response()->json([
                             "message" => "ERROR!",
                             "errors" => [
-                                    $res
-                                ]
+                                $res
+                            ]
                         ], 422);
                     }
                     $res['responseData']['card_id'] = $payload['card_id'] ?? '';
@@ -1986,6 +2155,12 @@ class TavsirController extends Controller
 
     public function orderList(Request $request)
     {
+
+        if(auth()->user()->tenant->is_derek > 0){
+            $data = $this->orderListDerek($request);
+            // return ($data);
+            return response()->json(TrOrderResourceDerek::collection($data));
+        }
         $queryOrder = "CASE WHEN status = 'QUEUE' THEN 1 ";
         $queryOrder .= "WHEN status = 'WAITING_OPEN' THEN 2 ";
         $queryOrder .= "WHEN status = 'WAITING_CONFIRMATION_TENANT' THEN 3 ";
@@ -1997,51 +2172,62 @@ class TavsirController extends Controller
         $queryOrder .= "WHEN status = 'CANCEL' THEN 9 ";
         $queryOrder .= "ELSE 9 END";
         $identifier = auth()->user()->id;
+        if (auth()->user()->role === 'TENANT' && auth()->user()->tenant->is_supertenant < 1 && auth()->user()->tenant->supertenant_id > 0) {
+            $data = $this->orderListMemberOfSupertenant($request);
+            return $data;
+        } else {
+            $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer', 'trans_edc.bank')
+                ->when($status = request()->status, function ($q) use ($status) {
+                    if (is_array($status)) {
+                        $q->whereIn('status', $status)->orwhereIn('status', json_decode($status[0]) ?? []);
+                    } else {
+                        $q->where('status', $status);
+                    }
+                })
+                ->when($start_date = $request->start_date, function ($q) use ($start_date) {
+                    $q->whereDate('created_at', '>=', date("Y-m-d", strtotime($start_date)));
+                })
+                ->when($end_date = $request->end_date, function ($q) use ($end_date) {
+                    $q->whereDate('created_at', '<=', date("Y-m-d", strtotime($end_date)));
+                })
+                ->when($statusnot = request()->statusnot, function ($q) use ($statusnot) {
+                    if (is_array($statusnot)) {
+                        $q->whereNotIn('status', $statusnot);
+                    } else {
+                        $q->whereNotIn('status', $statusnot);
+                    }
+                })
+                ->when($filter = request()->filter, function ($q) use ($filter) {
+                    return $q->where('order_id', 'like', "%$filter%");
+                })->when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
+                    $q->where('tenant_id', $tenant_id);
+                })->when($order_type = request()->order_type, function ($q) use ($order_type) {
+                    $q->where('order_type', $order_type);
+                })
+                ->when($customer_name = request()->customer_name, function ($q) use ($customer_name) {
+                    $q->where('customer_name', $customer_name)->orwhere('nomor_name', $customer_name);
+                })
+                // ->when(auth()->user()->role == 'CASHIER', function ($q) use ($identifier) {
+                //     $q->where('casheer_id', $identifier);
+                // });
+                ->when(auth()->user()->role == 'CASHIER', function ($q) use ($identifier) {
+                    $q->where('casheer_id', $identifier);
+                    // $q->where(function ($q) use ($identifier) {
+                    //     $q->where('casheer_id', $identifier)->Orwhere('casheer_id',NULL);
+                    // });                
+                });
+            $data = $data->whereIn('order_type', ['POS', 'SELF_ORDER', 'TAKE_N_GO'])->orderBy('created_at', 'DESC')->get();
+            // $data = $data->orderByRaw($queryOrder)->orderBy('created_at', 'DESC')->get();
 
-        $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer', 'trans_edc.bank')
-            ->when($status = request()->status, function ($q) use ($status) {
-                if (is_array($status)) {
-                    $q->whereIn('status', $status)->orwhereIn('status', json_decode($status[0]) ?? []);
-                } else {
-                    $q->where('status', $status);
-                }
-            })
-            ->when($start_date = $request->start_date, function ($q) use ($start_date) {
-                $q->whereDate('created_at', '>=', date("Y-m-d", strtotime($start_date)));
-            })
-            ->when($end_date = $request->end_date, function ($q) use ($end_date) {
-                $q->whereDate('created_at', '<=', date("Y-m-d", strtotime($end_date)));
-            })
-            ->when($statusnot = request()->statusnot, function ($q) use ($statusnot) {
-                if (is_array($statusnot)) {
-                    $q->whereNotIn('status', $statusnot);
-                } else {
-                    $q->whereNotIn('status', $statusnot);
-                }
-            })
-            ->when($filter = request()->filter, function ($q) use ($filter) {
-                return $q->where('order_id', 'like', "%$filter%");
-            })->when($tenant_id = request()->tenant_id, function ($q) use ($tenant_id) {
-                $q->where('tenant_id', $tenant_id);
-            })->when($order_type = request()->order_type, function ($q) use ($order_type) {
-                $q->where('order_type', $order_type);
-            })
-            ->when($customer_name = request()->customer_name, function ($q) use ($customer_name) {
-                $q->where('customer_name', $customer_name)->orwhere('nomor_name', $customer_name);
-            })
-            // ->when(auth()->user()->role == 'CASHIER', function ($q) use ($identifier) {
-            //     $q->where('casheer_id', $identifier);
-            // });
-            ->when(auth()->user()->role == 'CASHIER', function ($q) use ($identifier) {
-                $q->where('casheer_id', $identifier);
-                // $q->where(function ($q) use ($identifier) {
-                //     $q->where('casheer_id', $identifier)->Orwhere('casheer_id',NULL);
-                // });                
-            });
-        $data = $data->whereIn('order_type', ['POS', 'SELF_ORDER', 'TAKE_N_GO'])->orderBy('created_at', 'DESC')->get();
-        // $data = $data->orderByRaw($queryOrder)->orderBy('created_at', 'DESC')->get();
+            return response()->json(TrOrderResource::collection($data));
+        }
 
-        return response()->json(TrOrderResource::collection($data));
+    }
+
+    public function orderListDerek(Request $request)
+    {
+        $data = TransDerek::where('is_solve_derek', 3)->get();
+        return $data;
     }
     public function orderHistory(Request $request)
     {
@@ -2112,6 +2298,12 @@ class TavsirController extends Controller
 
     public function orderById($id)
     {
+        $super_tenant_checker = auth()->user()->tenant->is_supertenant;
+        $super_tenant_id = auth()->user()->tenant->supertenant_id;
+        if ($super_tenant_checker < 1 && $super_tenant_id > 0) {
+            $data = $this->orderByIdMemberSupertenant($id);
+            return $data;
+        }
         $data = TransOrder::findOrfail($id);
         return response()->json(new TrOrderResource($data));
     }
@@ -2390,11 +2582,11 @@ class TavsirController extends Controller
     public function CallbackLinkAjaQRIS(Request $request)
     {
 
-        try{
+        try {
             // log::info('Callback LA');
             $trans = TransOrder::with('payment')->where('payment_method_id', 4)->where('order_id', 'like', '%' . $request->msg)->first();
-            log::info(['Callback LA',$trans, $request]);
-    
+            log::info(['Callback LA', $trans, $request]);
+
             if (!$trans) {
                 // temp
                 $data = new CallbackLA();
@@ -2424,25 +2616,23 @@ class TavsirController extends Controller
             $data->data = json_encode($request->all());
             $pay->refnum = $request->additional_data[0]['value'] ?? NULL;
             $pay->issuer_name = $request->issuer_name ?? NULL;
-    
+
             $pay->orderid_sof = $request?->trx_id ?? NULL;
             $pay->save();
             $data->save();
             DB::commit();
-    
+
             $datax = [
                 "responseCode" => "00",
                 "transactionID" => $request->msg,
                 "notificationMessage" => "Transaksi Sukses"
             ];
             return response()->json($datax);
-        }
-
-        catch (\Throwable $th) {
+        } catch (\Throwable $th) {
             // DB::rollback();
             Log::error($th);
             return response()->json(['error' => $th->getMessage()], 500);
-        }       
+        }
 
     }
 

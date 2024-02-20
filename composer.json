@@ -21,6 +21,7 @@
         "opcodesio/log-viewer": "1.6",
         "predis/predis": "^2.0",
         "pusher/pusher-php-server": "^7.0",
+        "riskihajar/terbilang": "^2.0",
         "sentry/sentry-laravel": "^2.13",
         "simplesoftwareio/simple-qrcode": "~4"
     },

@@ -25,6 +25,7 @@ class CreateRefRestArea extends Migration
             $table->string('time_end');
             $table->boolean('is_open')->default(1);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

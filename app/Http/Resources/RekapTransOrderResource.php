@@ -56,7 +56,7 @@ class RekapTransOrderResource extends JsonResource
             'sharing_code' => $this->status == 'DONE' ? (json_decode($this->sharing_code)?? [(string)$this->tenant_id]) : [],
             'sharing_proportion' => $this->status == 'DONE' ? (json_decode($this->sharing_proportion)??[100]) : [],
             'sharing_amount' => $this->status == 'DONE' ? (count($resultArray) > 1 ? $resultArray:[(string)$this->total]) : [],
-            // 'sharing_amount' => $this->status == 'DONE' ? json_decode($this->sharing_amount) : [],
+            'invoice_id' => $this->invoice_id ?? null
 
         ];
     }

@@ -141,7 +141,7 @@ class UserController extends Controller
 
 
         try {
-            if ($request->role === 'CASHIER') {
+            if ($request->role == USER::CASHIER || $request->role == USER::PAYMENT || $request->role == USER::FINANCE) {
                 clock()->event("Register{$request->email}")->end();
 
             } else {
@@ -155,6 +155,11 @@ class UserController extends Controller
                 if ($result['status'] == 0) {
                     return $result;
                 }
+            }
+
+            $data = User::where('email', $request->email)->first();
+            if($data){
+            return response()->json(['status'=>'Error','message' => 'Email Duplikat'],420);
             }
             $user = User::create([
                 'name' => $request->name,

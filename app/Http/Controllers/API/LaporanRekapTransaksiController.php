@@ -128,7 +128,7 @@ class LaporanRekapTransaksiController extends Controller
             })
             ->get();
             $sharing = [];
-            $sharing_cashboax = json_decode($data->trans_cashbox?->sharing ?? []);
+            $sharing_cashboax = json_decode($data->trans_cashbox?->sharing ?? null) ?? [];
             $count = 0;
             foreach ($sharing_cashboax as $key => $value) {
                 $label = $key;
@@ -181,8 +181,7 @@ class LaporanRekapTransaksiController extends Controller
                 })
             ];
 
-        $pdf = Pdf::loadView('pdf.rekap', $datas);
-        
+        $pdf = Pdf::loadView('pdf.rekap', $datas)->setPaper('a4', 'landscape');
         return $pdf->download('Rekap.pdf');
     }
 }

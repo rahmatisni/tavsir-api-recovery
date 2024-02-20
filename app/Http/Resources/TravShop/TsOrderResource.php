@@ -53,12 +53,36 @@ class TsOrderResource extends JsonResource
                     'kategori',
                     'sub_kategori',
                     'kode',
-                    'name'
+                    'name',
+                    'logo_url'
                 ]);
                 $product_kios['handphone'] = $product[1];
-                if($product_kios_bank->integrator == 'JATELINDO'){
+                if ($product_kios_bank->integrator == 'JATELINDO') {
                     unset($product_kios['handphone']);
+                    unset($product_kios['kode']);
+                    
                     $product_kios = array_merge($product_kios, JatelindoService::infoPelanggan($this->log_kiosbank, $this->status));
+                    // if ($this->status === TransOrder::WAITING_PAYMENT) {
+                        unset($product_kios['Transaksi_ID']);
+                        unset($product_kios['Vending_Number']);
+                        unset($product_kios['Informasi']);
+                        unset($product_kios['Flag']);
+                        unset($product_kios['Pilihan_Pembelian']);
+                        unset($product_kios['Transaksi_ID']);
+                        unset($product_kios['Total_Token_Unsold']);
+                        unset($product_kios['Pilihan_Token']);
+                        unset($product_kios['Token_Unsold_1']);
+                        unset($product_kios['Token_Unsold_2']);
+                    // }
+                    // if ($this->status === TransOrder::DONE) {
+                    //     unset($product_kios['flag']);
+                    //     unset($product_kios['transaksi_id']);
+                    //     unset($product_kios['ref_id']);
+                    //     unset($product_kios['total_token_unsold']);
+                    //     unset($product_kios['pilihan_token']);
+                    //     unset($product_kios['token_unsold_1']);
+                    //     unset($product_kios['token_unsold_2']);
+                    // }
                 }
             }
             $temp = $this->log_kiosbank?->data['data'] ?? null;
@@ -142,16 +166,14 @@ class TsOrderResource extends JsonResource
                     } elseif (in_array($key, $slice)) {
                     } elseif (in_array($key, $cleansing)) {
                         $temps['data'][$key] = cleansings($val);
-                    }
-                  
-                     else {
-                   
+                    } else {
+
                         $temps['data'][$key] = $val;
                     }
                 }
             }
-            
-                
+
+
             $temps['data']['Diskon'] = '-' . rupiah((int) $this->discount);
             unset($temps['sessionID']);
             // unset($temps['customerID']);
@@ -164,10 +186,12 @@ class TsOrderResource extends JsonResource
             $tenant_name = 'Multibiller';
         }
 
+        $logo = $this->tenant->log ?? null;
 
         return [
             "id" => $this->id,
             'rest_area_name' => $rest_area_name,
+            'business_name' => $this->tenant->business->name ?? null,
             'tenant_id' => $this->tenant_id,
             'tenant_name' => $tenant_name,
             'tenant_photo' => $this->tenant ? ($this->tenant->photo_url ? asset($this->tenant->photo_url) : null) : null,
@@ -179,7 +203,7 @@ class TsOrderResource extends JsonResource
             'customer_name' => $this->customer_name,
             'customer_phone' => $this->customer_phone,
             'nomor_name' => $this->nomor_name ?? '',
-            'payment_method' => $this->payment_method?->only('code_name', 'code', 'name', 'id'),
+            'payment_method' => $this->payment_method?->only('code_name', 'code', 'name', 'id', 'logo_url'),
             'sub_total' => $this->sub_total,
             'fee' => $this->fee,
             'service_fee' => $this->service_fee,
@@ -195,11 +219,18 @@ class TsOrderResource extends JsonResource
             'rating' => $this->rating,
             'description' => $this->description,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
+            'paid_date' => $this->payment?->updated_at->format('Y-m-d H:i:s') ?? null,
             'payment' => $this->payment->data ?? null,
-            'log_kiosbank' => $temps ?? $this->log_kiosbank,
+            'log_kiosbank' => $this->order_type === 'ORDER_TRAVOY' ? ($product_kios_bank->integrator == 'JATELINDO' ? ['data' => $product_kios] : ($temps ?? $this->log_kiosbank)) : null,
             'addon_total' => $this->addon_total,
             'addon_price' => $this->addon_price,
             'detil_kios' => $product_kios,
+            "logo" => $logo ? asset($logo) : null,
+            "additional_information" => $this->tenant->additional_information ?? null,
+            "instagram" => $this->tenant->instagram ?? null,
+            "facebook" => $this->tenant->facebook ?? null,
+            "website" => $this->tenant->website ?? null,
+            "note" => $this->tenant->note ?? null,
             'detil' => TsOrderDetilResource::collection($this->detil),
         ];
     }

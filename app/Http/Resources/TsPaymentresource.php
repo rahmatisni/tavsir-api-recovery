@@ -17,6 +17,7 @@ class TsPaymentresource extends JsonResource
         return [
             'id' => $this->id,
             'payment_methode_name' => $this->trans_order?->payment_method?->name,
+            'payment_methode_logo_url' => $this->trans_order?->payment_method?->logo_url,
             'data' => $this->data
         ];
     }

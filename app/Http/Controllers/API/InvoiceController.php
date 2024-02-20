@@ -5,7 +5,10 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\ListInvoiceResource;
+use App\Http\Resources\ListInvoiceResourceDerek;
 use App\Models\TransInvoice;
+use App\Models\TransInvoiceDerek;
+use App\Models\TransOrder;
 use App\Models\TransSaldo;
 use App\Models\User;
 use Carbon\Carbon;
@@ -55,6 +58,15 @@ class InvoiceController extends Controller
         return response()->json(ListInvoiceResource::collection($data));
     }
 
+    public function indexDerek()
+    {
+        DB::enableQueryLog();
+
+        $data = TransInvoiceDerek::with('petugas','cashier')->get();
+        return response()->json(ListInvoiceResourceDerek::collection($data));
+    }
+
+
     public function store(Request $request)
     {
         try {
@@ -88,6 +100,52 @@ class InvoiceController extends Controller
             return response()->json($th->getMessage(), 500);
         }
     }
+    public function storeDerek(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+            $uuid = Str::uuid();
+            $now = Carbon::now()->format('Y-m-d H:i:s');
+
+            $hasil = [];
+            $nominal = 0;
+            $trans_order = ($request->trans_order_id);
+            foreach ($trans_order as $value) {
+                $data = TransOrder::byRole()
+                ->where('order_type', '=', TransOrder::ORDER_DEREK_ONLINE)
+                ->whereIn('status', [TransOrder::PAYMENT_SUCCESS, TransOrder::DONE])->whereNull('invoice_id')->find($value);
+                if($data){
+                    $hasil[]= $value;
+                    $data->invoice_id = $uuid;
+                    $amnt = json_decode($data->sharing_amount);
+                    $nominal = $nominal + ($amnt[0] ?? $data->sub_total);
+                    $data->save();
+                }
+      
+            }
+
+            if($nominal > 0){
+
+                $invoice = new TransInvoiceDerek();
+                $invoice->id = $uuid;
+                $invoice->invoice_id ='DRK'.'-'. $uuid;
+                $invoice->cashier_id = auth()->user()->id;
+                $invoice->nominal = $nominal ;
+                $invoice->claim_date = $now;
+                $invoice->status = TransInvoice::UNPAID;
+                $invoice->save();
+            }
+
+           
+            DB::commit();
+
+            return response()->json(['status' => 'Berhasil', 'trans_order_id' => $hasil]);
+        } catch (\Throwable $th) {
+            DB::rollback();
+
+            return response()->json($th->getMessage(), 500);
+        }
+    }
 
     public function paid(Request $request, $id)
     {
@@ -110,6 +168,23 @@ class InvoiceController extends Controller
         $data->pay_petugas_id = auth()->user()->id;
         $data->paid_date = Carbon::now();
         $data->kwitansi_id = ($data->trans_saldo?->rest_area_id ?? '0').'-'.($data->trans_saldo?->tenant_id ?? '0').'-'.($data->pay_petugas_id ?? '0').'-RCP-'. date('YmdHis'); ;
+        $data->save();
+
+        return response()->json($data);
+    }
+
+    public function paidInvoiceDerek(Request $request, $id)
+    {
+        $data = TransInvoiceDerek::findOrfail($id);
+        if ($data->status == TransInvoiceDerek::PAID) {
+            return response()->json(['message' => 'Invoice sudah dibayar'], 400);
+        }
+
+        $data->status = TransInvoice::PAID;
+        $data->pay_petugas_id = auth()->user()->id;
+        $data->paid_date = Carbon::now();
+        $data->kwitansi_id = ($data->pay_petugas_id ?? '0').'-RCP-'. date('YmdHis'); ;
+        $data->file = $request->file;
         $data->save();
 
         return response()->json($data);

@@ -137,7 +137,38 @@ class TravShopController extends Controller
         })->when($category_id = $request->category_id, function ($q) use ($category_id) {
             return $q->where('category_id', $category_id);
         })->orderByRaw('stock = 0')->orderByRaw('is_active = 0')->orderBy('name', 'asc')->get();
-        return response()->json(TsProductResource::collection($data));
+
+        $active = [];
+        $inactive = [];
+        foreach ($data as $value) {
+            $cek_product_have_not_active = $value->trans_product_raw->where('is_active', 0)->count();
+            $stock = $value->stock;
+            // $value->stock_sort = $stock > 0 ? 0:1;
+            $value->stock_sort = $value->stock === 0 ? 1 : ($value->is_active === 0 ? 1 : 0);
+            if ($value->is_composit === 1 && $value->is_active === 1) {
+                if ($cek_product_have_not_active > 0) {
+                    $value->stock_sort = 1;
+                } else {
+                    $liststock = [];
+                    foreach ($value->trans_product_raw as $item) {
+                        $liststock[] = floor($item->stock / $item->pivot->qty);
+                    }
+                    $temp_stock = count($liststock) == 0 ? 0 : min($liststock);
+
+                    $value->stock_sort = $temp_stock > 0 ? 0 : 1;
+                }
+
+            }
+            if ($value->stock_sort == 0) {
+                $active[] = $value;
+
+            } else {
+                $inactive[] = $value;
+            }
+        }
+        $sortedArray = array_merge($active, $inactive);
+
+        return response()->json(TsProductResource::collection($sortedArray));
     }
 
     public function productById($id)
@@ -529,6 +560,28 @@ class TravShopController extends Controller
             $data->sub_total = $sub_total;
             $data->total = $data->sub_total + $data->fee + $data->service_fee + $data->addon_total;
             $data->status = TransOrder::WAITING_PAYMENT;
+
+            $now = Carbon::now()->format('Y-m-d H:i:s');
+            $sharing = Sharing::where('tenant_id', $request->tenant_id)->whereIn('status', ['sedang_berjalan', 'belum_berjalan'])
+                ->where('waktu_mulai', '<=', $now)
+                ->where('waktu_selesai', '>=', $now)->first();
+            if ($sharing?->sharing_config) {
+                $nilai_sharing = json_decode($sharing->sharing_config);
+                foreach ($nilai_sharing as $value) {
+                    $harga = (int) ($data->sub_total) + (int) ($data->addon_total);
+                    $sharing_amount_unround = (($value / 100) * $harga);
+                    // $sharing_amount[] = ($value/100).'|'.$harga.'|'.$sharing_amount_unround;
+                    $sharing_amount[] = $sharing_amount_unround;
+                }
+                $data->sharing_code = $sharing->sharing_code ?? null;
+                $data->sharing_amount = $sharing_amount ?? null;
+                $data->sharing_proportion = $sharing->sharing_config ?? null;
+            } else {
+                $data->sharing_code = [(string) $data->tenant_id];
+                $data->sharing_proportion = [100];
+                $data->sharing_amount = [$data->sub_total + (int) ($data->addon_total)];
+            }
+            
             $data->save();
 
             DB::commit();
@@ -1006,7 +1059,7 @@ class TravShopController extends Controller
                 return response()->json(['info' => $data->status], 422);
             }
             //Cek deposit
-            if ($data->order_type == TransOrder::ORDER_TRAVOY) {
+            if ($data->order_type === TransOrder::ORDER_TRAVOY) {
                 $cekProduct = ProductKiosBank::where('kode', $data->codeProductKiosbank())->first();
                 //Skip jika jatelindo
                 if ($cekProduct?->integrator != 'JATELINDO') {
@@ -1167,6 +1220,7 @@ class TravShopController extends Controller
                         $request->customer_name,
                         $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
                     );
+
                     if ($res['status'] == 'success') {
                         $pay = null;
                         if ($data->payment === null) {
@@ -2132,6 +2186,15 @@ class TravShopController extends Controller
                         $this->stock_service->updateStockProduct($value);
                     }
                 } else {
+                    // if ($data->order_type === TransOrder::ORDER_DEREK_ONLINE) {
+                    //     $data->status = TransOrder::PAYMENT_SUCCESS;
+                    //     $data->save();
+                    //     DB::commit();
+
+                    //     $travoy = $this->travoyService->detailDerek($id, $request->id_user, $request->token);
+                    //     return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
+
+                    // }
                     return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
                 }
                 $data->payment()->update(['data' => $res_data]);
@@ -3137,5 +3200,10 @@ class TravShopController extends Controller
         }
 
 
+    }
+
+    public function infoPln(Request $request)
+    {
+        return $this->response(JatelindoService::infoPln($request->meter_id));
     }
 }

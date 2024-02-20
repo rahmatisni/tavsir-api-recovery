@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Business;
+use App\Models\CategoryTenant;
 use App\Models\RestArea;
 use App\Models\Ruas;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -28,7 +29,7 @@ class TenantFactory extends Factory
             'business_id' => $business_id,
             'ruas_id' => Ruas::all()->random()->id,
             'name' => $this->faker->name,
-            'category' => $this->faker->word,
+            'category_tenant_id' => CategoryTenantFactory::new()->create()->id,
             'address' => $this->faker->address,
             'latitude' => $this->faker->latitude,
             'longitude' => $this->faker->longitude,

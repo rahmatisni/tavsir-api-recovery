@@ -21,9 +21,9 @@ class TransSharingServices
             $sharing_rule =  Sharing::statusActive()->where('tenant_id', $tenant->id)->latest()->first();
         }
 
-        if($order->supertenant_id){
-            $sharing_rule = Sharing::statusActive()->where('supertenant_id', $supertenant->id)->latest()->first();
-        }
+        // if($order->supertenant_id){
+        //     $sharing_rule = Sharing::statusActive()->where('supertenant_id', $supertenant->id)->latest()->first();
+        // }
 
         if ($sharing_rule) {
             $trans_shairng = TransSharing::create([

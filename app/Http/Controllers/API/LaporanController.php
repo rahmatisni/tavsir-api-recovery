@@ -27,6 +27,13 @@ use App\Models\TransOrderDetil;
 use App\Models\Voucher;
 use App\Services\LaporanServices;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use App\Imports\ReportImportGetoll;
+use App\Imports\ReportImportLinkaja;
+
+
+
+
 use Excel;
 
 class LaporanController extends Controller
@@ -43,6 +50,47 @@ class LaporanController extends Controller
         return Excel::download(new LaporanPenjualanExport($record), 'laporan_penjualan ' . Carbon::now()->format('d-m-Y') . '.xlsx');
     }
 
+    public function UploadRekon(Request $request)
+    {
+        $sof = $request->sof;
+        switch ($sof) {
+            case 'getoll':
+                $rekon = new ReportImportGetoll($request->type);
+                Excel::import($rekon, $request->file('file'));
+                return response()->json($rekon->gethasil(), $rekon->gethasil()['status'] ? 200 : 400);
+            case 'linkaja':
+                $rekon = new ReportImportLinkaja($request->type);
+                Excel::import($rekon, $request->file('file'));
+                return response()->json($rekon->gethasil(), $rekon->gethasil()['status'] ? 200 : 400);
+            default:
+                # code...
+                return response()->json(['status'=>'gagal', 402]);
+        }
+    }
+
+    public function listRekon(Request $request)
+    {
+        $record = $this->services->listRekon($request);
+
+        $data = [
+            'Total_Transaksi' => $record->count('id'),
+            'Total_Transaksi_N_Rekon' => $record->where('valid',0)->count('id'),
+            'Total_Transaksi_Rekon' =>$record->where('valid',1)->count('id'),
+            'Total_Transaksi_Unmatch' => $record->where('valid',2)->count('id'),
+            'Total_Pendapatan' => $record->sum('total')-$record->sum('service_fee'),
+            'Total_Pendapatan_N_Rekon' => $record->where('valid',0)->sum('total')-$record->where('valid',0)->sum('service_fee'),
+            'Total_Pendapatan_Rekon' =>$record->where('valid',1)->sum('total')-$record->where('valid',1)->sum('service_fee'),
+            'Total_Pendapatan_Unmatch' => $record->where('valid',2)->sum('total')-$record->where('valid',2)->sum('service_fee'),
+            
+                'all' => $record
+          
+        ];
+        
+        return response()->json($data);
+        
+    }
+
+
     public function laporanPenjualan(DownloadLaporanRequest $request)
     {
         $record = $this->services->penjualan($request);
@@ -52,7 +100,7 @@ class LaporanController extends Controller
     public function downloadLaporanOperational(DownloadLaporanRequest $request)
     {
         $record = $this->services->operational($request);
-        return Excel::download(new LaporanOperationalExport($record), 'laporan_operational ' . Carbon::now()->format('d-m-Y') . '.pdf');
+        return Excel::download(new LaporanOperationalExport($record), 'laporan_operational ' . Carbon::now()->format('d-m-Y') . '.xlsx');
     }
 
     public function laporanOperational(DownloadLaporanRequest $request)
@@ -104,17 +152,18 @@ class LaporanController extends Controller
                     return $qqq->where('business_id', $business_id);
                 });
             });
-        })->when(($tanggal_awal && $tanggal_akhir),
-            function ($q) use ($tanggal_awal, $tanggal_akhir) {
-                return $q->whereBetween(
-                    'claim_date',
-                    [
-                        $tanggal_awal,
-                        $tanggal_akhir . ' 23:59:59'
-                    ]
-                );
-            }
-        )
+        })->when(
+                ($tanggal_awal && $tanggal_akhir),
+                function ($q) use ($tanggal_awal, $tanggal_akhir) {
+                    return $q->whereBetween(
+                        'claim_date',
+                        [
+                            $tanggal_awal,
+                            $tanggal_akhir . ' 23:59:59'
+                        ]
+                    );
+                }
+            )
             ->when(
                 $status,
                 function ($q) use ($status) {
@@ -206,7 +255,8 @@ class LaporanController extends Controller
         $business_id = $request->business_id;
 
         $data = TransOrder::done()
-            ->when(($tanggal_awal && $tanggal_akhir),
+            ->when(
+                ($tanggal_awal && $tanggal_akhir),
                 function ($q) use ($tanggal_awal, $tanggal_akhir) {
                     return $q->whereBetween(
                         'created_at',
@@ -251,7 +301,8 @@ class LaporanController extends Controller
         $tanggal_awal = $request->tanggal_awal;
         $tanggal_akhir = $request->tanggal_akhir;
 
-        $data = RestArea::when(($tanggal_awal && $tanggal_akhir),
+        $data = RestArea::when(
+            ($tanggal_awal && $tanggal_akhir),
             function ($q) use ($tanggal_awal, $tanggal_akhir) {
                 return $q->whereBetween(
                     'created_at',
@@ -281,7 +332,8 @@ class LaporanController extends Controller
         $tanggal_awal = $request->tanggal_awal;
         $tanggal_akhir = $request->tanggal_akhir;
 
-        $data = Tenant::when(($tanggal_awal && $tanggal_akhir),
+        $data = Tenant::when(
+            ($tanggal_awal && $tanggal_akhir),
             function ($q) use ($tanggal_awal, $tanggal_akhir) {
                 return $q->whereBetween(
                     'created_at',
@@ -316,7 +368,8 @@ class LaporanController extends Controller
         $business_id = $request->business_id;
 
         $data = TransOrder::done()
-            ->when(($tanggal_awal && $tanggal_akhir),
+            ->when(
+                ($tanggal_awal && $tanggal_akhir),
                 function ($q) use ($tanggal_awal, $tanggal_akhir) {
                     return $q->whereBetween(
                         'created_at',
@@ -366,7 +419,8 @@ class LaporanController extends Controller
         $tanggal_akhir = $request->tanggal_akhir;
         $rest_area_id = $request->rest_area_id;
 
-        $data = Voucher::when(($tanggal_awal && $tanggal_akhir),
+        $data = Voucher::when(
+            ($tanggal_awal && $tanggal_akhir),
             function ($q) use ($tanggal_awal, $tanggal_akhir) {
                 return $q->whereBetween(
                     'created_at',

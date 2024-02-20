@@ -9,6 +9,7 @@
 <style>
     body{
         font-family: Arial, Helvetica, sans-serif;
+        font-size: small;
     }
     .page_break { page-break-before: always; }
     .table table, .table td, .table th {

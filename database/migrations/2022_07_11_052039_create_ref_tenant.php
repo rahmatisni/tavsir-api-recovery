@@ -39,6 +39,8 @@ class CreateRefTenant extends Migration
             $table->boolean('is_subscription')->default(0);
             $table->integer('kuota_kasir')->unsigned()->default(0);
             $table->boolean('is_print')->default(0);
+            $table->boolean('is_derek')->nullable();
+
 
 
             $table->integer('created_by')->nullable();

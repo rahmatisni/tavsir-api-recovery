@@ -88,7 +88,7 @@ class Product extends BaseModel
 
     public function scopeBySupertenant($query)
     {
-        $tenant = Tenant::where('supertenant_id',auth()->user()->supertenant_id)->pluck('id');
+        $tenant = Tenant::where('supertenant_id',auth()->user()->tenant->id)->orWhere('id',auth()->user()->tenant->id)->pluck('id');
         return $query->whereIn('tenant_id', $tenant);
     }
 
@@ -105,6 +105,16 @@ class Product extends BaseModel
     public function scopeByType($query, $type = ProductType::PRODUCT)
     {
         return $query->where('type', $type);
+    }
+
+    public function scopeComposit($query)
+    {
+        return $query->where('is_composit', true);
+    }
+
+    public function scopeNonComposit($query)
+    {
+        return $query->where('is_composit', false);
     }
 
     public function getStockAttribute()

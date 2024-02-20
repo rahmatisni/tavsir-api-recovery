@@ -14,6 +14,10 @@ use ParagonIE\ConstantTime\Base64;
 use phpDocumentor\Reflection\DocBlock\Tags\Throws;
 use Illuminate\Support\Str;
 
+// use phpseclib\Crypt\RSA;
+// use phpseclib\Crypt\Hash;
+// use phpseclib\Math\BigInteger;
+
 class PgJmto extends Model
 {
 
@@ -21,16 +25,21 @@ class PgJmto extends Model
     {
         $token = Redis::get('token_pg');
         if (!$token) {
+            $bi = env('SNAP_BI');
+
             $now = Carbon::now();
             $hours = Carbon::now()->addMinute(59);
             $diff = $now->diffInMinutes($hours) * 60;
-            $token = self::generateToken()['access_token'] ?? '';
+            $token = ($bi === true ? self::generateToken()['accessToken'] : self::generateToken()['access_token'] ?? '');
             if ($token == '') {
                 // throw new Exception("token not found",422);
             }
             Redis::set('token_pg', $token);
             Redis::expire('token_pg', $diff);
         }
+
+        // dump($token);
+
         return $token;
     }
 
@@ -49,6 +58,29 @@ class PgJmto extends Model
                 },
             ]);
             //end fake
+        }
+
+        $bi = env('SNAP_BI');
+        if ($bi === true) {
+            $timestamp = Carbon::now()->format('c');
+            $client_id = env('PG_CLIENT_ID');
+            $payload = $client_id . '|' . $timestamp;
+            $signature = self::generateSignatureSnap($timestamp, $client_id, $payload);
+            $body = array(
+                'grantType' => 'client_credentials',
+                'additionalInfo' => array()
+            );
+            $response = Http::withHeaders([
+                'Accept' => 'application/json',
+                'Authorization' => 'Basic ' . base64_encode(env('PG_CLIENT_ID') . ':' . env('PG_CLIENT_SECRET')),
+                'Content-Type' => 'application/json',
+                'X-CLIENT-KEY' => $client_id,
+                'X-TIMESTAMP' => $timestamp,
+                'X-SIGNATURE' => $signature
+            ])
+                ->withoutVerifying()->post(env('PG_BASE_URL_SNAP') . '/snap/merchant/v1.0/access-token/b2b', $body);
+            clock()->event("oauth token")->end();
+            return $response->json();
         }
 
         clock()->event('oauth token')->color('purple')->begin();
@@ -82,6 +114,47 @@ class PgJmto extends Model
         return $sign;
     }
 
+    public static function generateSignatureSnap($timestamp, $client_id, $payload)
+    {
+        $privateKey = env('PG_PRIVATE_KEY');
+        $publicKey = env('PG_PUBLIC_KEY');
+        openssl_sign($payload, $signature, $privateKey, 'sha256WithRSAEncryption');
+        $sign = Base64::encode($signature);
+        return $sign;
+
+    }
+
+    public static function generateSSignatureSnap($method, $path, $token, $payload, $timestamp)
+    {
+
+        // $request_body = json_encode($payload);
+        // $timestamp = Carbon::now()->format('c');
+        // $request_body = [
+        //     "customerNo" => "123456777",
+        //     "partnerServiceId" => "89080",
+        //     "virtualAccountNo" => "89080123456777",
+        //     "virtualAccountName" => "John Doe ",
+        //     "virtualAccountEmail" => "test@email.com",
+        //     "virtualAccountPhone" => "6281828384858",
+        //     "totalAmount" => ["value" => "50000.00", "currency" => "IDR"],
+        //     "billDetails" => [["billName" => "Tagihan Motor"]],
+        //     "virtualAccountTrxType" => "close",
+        //     "expiredDate" => "2023-11-30T22:38:25+07:00",
+        //     "trxId" => "VE123456789000001",
+        //     "additionalInfo" => ["description" => "keterangan"],
+        // ];
+
+        if ($method == 'GET') {
+            $payload = '';
+        }
+        $has_body = hash('sha256', json_encode($payload, JSON_UNESCAPED_SLASHES));
+        $BodyHash = preg_replace('/\s+/', '', $has_body);
+        $data = $method . ':' . $path . ':' . $token . ':' . $BodyHash . ':' . $timestamp;
+        $secret_key = env('PG_CLIENT_SECRET');
+        $sign = base64_encode(hash_hmac('sha512', $data, $secret_key, true));
+        return [$sign, $timestamp, $BodyHash];
+    }
+
     public static function service($method, $path, $payload)
     {
         $token = self::getToken();
@@ -102,7 +175,7 @@ class PgJmto extends Model
                     'JMTO-IP-CLIENT' => '172.0.0.1',
                     'JMTO-REQUEST-ID' => '123456789',
                 ])
-                ->timeout(10)
+                    ->timeout(10)
                     ->retry(1, 100)
                     ->withoutVerifying()
                     ->post(env('PG_BASE_URL') . $path, $payload);
@@ -136,8 +209,8 @@ class PgJmto extends Model
                     'JMTO-IP-CLIENT' => '172.0.0.1',
                     'JMTO-REQUEST-ID' => '123456789',
                 ])
-                ->timeout(10)
-                ->retry(1, 100)
+                    ->timeout(10)
+                    ->retry(1, 100)
                     ->withoutVerifying()
                     ->get(env('PG_BASE_URL') . $path, $payload);
 
@@ -149,13 +222,80 @@ class PgJmto extends Model
         }
 
     }
+    public static function serviceSnap($method, $path, $payload)
+    {
+        $token = self::getToken();
+        $timestamp = Carbon::now()->format('c');
+        $signature = self::generateSSignatureSnap($method, $path, $token, $payload, $timestamp);
+
+        switch ($method) {
+            case 'POST':
+                clock()->event("pg{$path}")->color('purple')->begin();
+                try {
+                    $response = Http::withHeaders([
+                        'Content-Type' => 'Application/json',
+                        'Authorization' => 'Bearer ' . $token,
+                        'X-TIMESTAMP' => $signature[1],
+                        'X-SIGNATURE' => $signature[0],
+                        'ORIGIN' => env('ORIGIN'),
+                        'X-PARTNER-ID' => env('XPARTNERID'),
+                        'X-EXTERNAL-ID' => (string) rand(10000000000000000, 99999999999999999),
+                        'X-IP-ADDRESS' => env('XIPADDRESS'),
+                        'X-DEVICE-ID' => env('PG_DEVICE_ID', '123456789'),
+                        'X-LATITUDE' => env('XLATITUDE'),
+                        'X-LONGITUDE' => env('XLONGITUDE'),
+                        'CHANNEL-ID' => env('CHANNELID'),
+                    ])
+                        // ->withBody(json_encode($payload), 'Application/json')
+                        ->timeout(10)
+                        ->retry(1, 100)
+                        ->withoutVerifying()
+                        ->post(env('PG_BASE_URL_SNAP') . $path, $payload);
+                    clock()->event("pg{$path}")->end();
+
+                    return $response;
+                } catch (\Exception $e) {
+                }
+
+            case 'GET':
+                $response = Http::withHeaders([
+                    'JMTO-TIMESTAMP' => $timestamp,
+                    'JMTO-SIGNATURE' => $signature,
+                    'JMTO-DEVICE-ID' => env('PG_DEVICE_ID', '123456789'),
+                    'CHANNEL-ID' => 'PC',
+                    'JMTO-LATITUDE' => '106.8795316',
+                    'JMTO-LONGITUDE' => '-6.2927969',
+                    'Content-Type' => 'Application/json',
+                    'Authorization' => 'Bearer ' . $token,
+                    'JMTO-IP-CLIENT' => '172.0.0.1',
+                    'JMTO-REQUEST-ID' => '123456789',
+                ])
+                    ->timeout(10)
+                    ->retry(1, 100)
+                    ->withoutVerifying()
+                    ->get(env('PG_BASE_URL') . $path, $payload);
+
+                return $response;
+
+            default:
+                # code...
+                break;
+        }
+
+
+
+    }
 
     public static function vaCreate($sof_code, $bill_id, $bill_name, $amount, $desc, $phone, $email, $customer_name, $sub_merchant_id)
     {
         // if ($amount > 1000000) {
         //     throw new Exception("The amount must be less than 1000000", 422);
         // }
-
+        $bi = env('SNAP_BI');
+        if ($bi === true) {
+            $va = self::vaCreateSnap($sof_code, $bill_id, $bill_name, $amount, $desc, $phone, $email, $customer_name, $sub_merchant_id);
+            return $va;
+        }
         $payload = [
             "sof_code" => $sof_code,
             "bill_id" => $bill_id,
@@ -212,10 +352,80 @@ class PgJmto extends Model
         $res = self::service('POST', '/va/create', $payload);
 
         Log::info($payload);
-        Log::info('Va create res', $res->json() ?? 'ERROR'.$payload);
+        Log::info('Va create res', $res->json() ?? 'ERROR' . $payload);
         return $res->json();
     }
 
+    public static function vaCreateSnap($sof_code, $bill_id, $bill_name, $amount, $desc, $phone, $email, $customer_name, $sub_merchant_id)
+    {
+        // if ($amount > 1000000) {
+        //     throw new Exception("The amount must be less than 1000000", 422);
+        // }
+        if ($sof_code === 'MANDIRI') {
+            $partnerServiceId = '51105';
+            $virtualNumber = rand(100000, 99999);
+
+        }
+        if ($sof_code === 'BRI') {
+            $partnerServiceId = '77777';
+            $virtualNumber = rand(100000000, 999999999);
+
+        }
+        $payload = [
+            "customerNo" => (string) $virtualNumber,
+            "partnerServiceId" => $partnerServiceId,
+            "virtualAccountNo" => $partnerServiceId . $virtualNumber,
+            "virtualAccountName" => $customer_name,
+            "virtualAccountEmail" => $email,
+            "virtualAccountPhone" => $phone,
+            "totalAmount" => ["value" => $amount . ".00", "currency" => "IDR"],
+            "billDetails" => [["billName" => $bill_name]],
+            "virtualAccountTrxType" => "close",
+            "expiredDate" => Carbon::now()->addMinutes(5)->format('c'),
+            "trxId" => $bill_id,
+            "additionalInfo" => ["description" => ($bill_id . '-' . $desc . '-' . $amount)],
+        ];
+        $res = self::serviceSnap('POST', '/snap/merchant/v1.0/transfer-va/create-va', $payload);
+        // dd($res->json());
+        // Log::info($payload);
+        // Log::info('Va create res', $res->json() ?? 'ERROR' . $payload);
+        $snap = $res->json();
+
+        if (isset($snap['responseCode'])) {
+            if ($snap['responseCode'] == 2002700) {
+                $data = [
+                    "status" => "success",
+                    "rc" => "0000",
+                    "rcm" => "success",
+                    "responseData" => [
+                        "sof_code" => $sof_code,
+                        "va_number" => $snap['virtualAccountData']['virtualAccountNo'],
+                        "bill" => (string)((int) $snap['virtualAccountData']['totalAmount']['value']),
+                        "bill_id" => $bill_id,
+                        "bill_name" => $bill_name,
+                        "exp_date" =>  Carbon::parse($snap['virtualAccountData']['expiredDate'])->isoFormat('dddd, D MMMM YYYY, H:mm:ss'),
+                        "phone" => $phone,
+                        "email" => $email,
+                        "customer_name" => $customer_name,
+                        "fee" => (string)((int) $snap['virtualAccountData']['totalAmount']['value'] - $amount),
+                        "responseCode" => "00",
+                        "responseMessage" => "Success",
+                        "desc" => $snap['virtualAccountData']['additionalInfo']['description'],
+                    ],
+                    "responseSnap" => $snap
+                ];
+                return $data;
+            // $res['responseData']['exp_date'] = Carbon::parse($res['responseData']['exp_date'])->isoFormat('dddd, D MMMM YYYY [pukul] H:mm:ss');            ;
+
+            }
+            return ['status' => 'Error', 'message' => 'VA Gagal dibuat'];
+
+
+        } else {
+            return ['status' => 'Error', 'message' => 'VA Gagal dibuat'];
+        }
+
+    }
     public static function vaStatus($sof_code, $bill_id, $va_number, $refnum, $phone, $email, $customer_name, $submerchant_id)
     {
         $payload = [

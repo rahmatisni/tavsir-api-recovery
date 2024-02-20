@@ -62,8 +62,8 @@ class TravoyService
             'token' => $token
         ];
 
-        
-        $res_json = $this->http('GET', self::detilDerek, $payLoad);
+        $res_json = $this->http('POST', self::detilDerek, $payLoad);
+
 
         return $res_json;
 

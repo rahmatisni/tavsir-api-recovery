@@ -26,6 +26,7 @@ class PaymentMethodRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:255',
+            'logo' => 'nullable|max:5000|mimes:png',
         ];
     }
 }
