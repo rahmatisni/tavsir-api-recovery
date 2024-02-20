@@ -24,7 +24,21 @@ class TransInvoiceDerek extends BaseModel
         'paid_date',
         'kwitansi_id',
         'status',
+        'file'
+
     ];
+
+    public function setFileAttribute($value)
+    {
+        $file = request()->file('file');
+        if (is_file($file)) {
+            $file = request()->file('file')->store('public'.request()->document_type);
+            if (file_exists($this->file)) {
+                unlink($this->file);
+            }
+            $this->attributes['file'] = $file;
+        }
+    }
 
     public function trans_saldo()
     {

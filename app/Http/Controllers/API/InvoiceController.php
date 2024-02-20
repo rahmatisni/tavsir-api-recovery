@@ -184,6 +184,7 @@ class InvoiceController extends Controller
         $data->pay_petugas_id = auth()->user()->id;
         $data->paid_date = Carbon::now();
         $data->kwitansi_id = ($data->pay_petugas_id ?? '0').'-RCP-'. date('YmdHis'); ;
+        $data->file = $request->file;
         $data->save();
 
         return response()->json($data);
