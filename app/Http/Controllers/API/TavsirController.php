@@ -2156,10 +2156,13 @@ class TavsirController extends Controller
     public function orderList(Request $request)
     {
 
-        if(auth()->user()->tenant->is_derek > 0){
-            $data = $this->orderListDerek($request);
-            // return ($data);
-            return response()->json(TrOrderResourceDerek::collection($data));
+        if(auth()->user()->role === 'TENANT'){
+            if(auth()->user()->tenant->is_derek > 0){
+                $data = $this->orderListDerek($request);
+                // return ($data);
+                return response()->json(TrOrderResourceDerek::collection($data));
+            }
+          
         }
         $queryOrder = "CASE WHEN status = 'QUEUE' THEN 1 ";
         $queryOrder .= "WHEN status = 'WAITING_OPEN' THEN 2 ";
