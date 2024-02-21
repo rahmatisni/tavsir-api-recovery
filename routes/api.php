@@ -200,7 +200,7 @@ Route::middleware('auth:api')->group(function () {
         Route::apiResource('customize', App\Http\Controllers\API\CustomizeController::class);
         Route::post('/order-change-status/{id}', [App\Http\Controllers\API\TavsirController::class, 'changeStatusOrder']);
         Route::get('/invoice', [App\Http\Controllers\API\InvoiceController::class, 'index']);
-        Route::get('/invoice-derek/{id}', [App\Http\Controllers\API\InvoiceController::class, 'indexDerek']);
+        Route::post('/invoice-list-derek', [App\Http\Controllers\API\InvoiceController::class, 'indexDerek']);
 
         Route::get('/invoice/{id}', [App\Http\Controllers\API\InvoiceController::class, 'show']);
         Route::post('/invoice', [App\Http\Controllers\API\InvoiceController::class, 'store']);

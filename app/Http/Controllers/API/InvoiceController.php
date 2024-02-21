@@ -58,14 +58,26 @@ class InvoiceController extends Controller
         return response()->json(ListInvoiceResource::collection($data));
     }
 
-    public function indexDerek($id)
+    public function indexDerek(Request $request)
     {
         DB::enableQueryLog();
 
         $data = TransInvoiceDerek::with('petugas','cashier')
-        ->when($id != null, function ($query) use ($id) {
-            return $query->where('id', $id);
-        })->get();
+            ->when($tenant_id = request()->tenant_id, function ($query) use ($tenant_id) {
+                return $query->where('tenant_id', $tenant_id);
+            })->when($id = request()->id, function ($query) use ($id) {
+                return $query->where('id', $id);
+            }) ->when($start_date = $request->start_date, function ($q) use ($start_date) {
+                $q->whereDate('claim_date', '>=', date("Y-m-d", strtotime($start_date)));
+            })
+            ->when($end_date = $request->end_date, function ($q) use ($end_date) {
+                $q->whereDate('claim_date', '<=', date("Y-m-d", strtotime($end_date)));
+            })
+            ->when($status = $request->status, function ($q) use ($status) {
+                $q->whereDate('status', $status);
+            })
+          ->get();
+
         return response()->json(ListInvoiceResourceDerek::collection($data));
     }
 
@@ -133,6 +145,7 @@ class InvoiceController extends Controller
                 $invoice->id = $uuid;
                 $invoice->invoice_id ='DRK'.'-'. $uuid;
                 $invoice->cashier_id = auth()->user()->id;
+                $invoice->tenant_id -> auth()->user()->tenant->id;
                 $invoice->nominal = $nominal ;
                 $invoice->claim_date = $now;
                 $invoice->status = TransInvoice::UNPAID;
