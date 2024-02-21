@@ -58,12 +58,12 @@ class InvoiceController extends Controller
         return response()->json(ListInvoiceResource::collection($data));
     }
 
-    public function indexDerek(Request $request)
+    public function indexDerek($id)
     {
         DB::enableQueryLog();
 
         $data = TransInvoiceDerek::with('petugas','cashier')
-        ->when($id = request()->id, function ($query) use ($id) {
+        ->when($id != null, function ($query) use ($id) {
             return $query->where('id', $id);
         })->get();
         return response()->json(ListInvoiceResourceDerek::collection($data));
