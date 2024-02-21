@@ -68,13 +68,13 @@ class InvoiceController extends Controller
             })->when($id = request()->id, function ($query) use ($id) {
                 return $query->where('id', $id);
             }) ->when($start_date = $request->start_date, function ($q) use ($start_date) {
-                $q->whereDate('claim_date', '>=', date("Y-m-d", strtotime($start_date)));
+               return $q->whereDate('claim_date', '>=', date("Y-m-d", strtotime($start_date)));
             })
             ->when($end_date = $request->end_date, function ($q) use ($end_date) {
-                $q->whereDate('claim_date', '<=', date("Y-m-d", strtotime($end_date)));
+               return $q->whereDate('claim_date', '<=', date("Y-m-d", strtotime($end_date)));
             })
             ->when($status = $request->status, function ($q) use ($status) {
-                $q->whereDate('status', $status);
+                return $q->where('status', $status);
             })
           ->get();
 
