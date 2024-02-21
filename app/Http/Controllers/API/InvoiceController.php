@@ -145,7 +145,7 @@ class InvoiceController extends Controller
                 $invoice->id = $uuid;
                 $invoice->invoice_id ='DRK'.'-'. $uuid;
                 $invoice->cashier_id = auth()->user()->id;
-                $invoice->tenant_id -> auth()->user()->tenant->id;
+                $invoice->tenant_id = auth()->user()->tenant->id;
                 $invoice->nominal = $nominal ;
                 $invoice->claim_date = $now;
                 $invoice->status = TransInvoice::UNPAID;
