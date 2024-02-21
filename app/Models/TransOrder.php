@@ -68,6 +68,11 @@ class TransOrder extends BaseModel
         'invoice_id'
     ];
 
+    public function invoice_derek()
+    {
+        return $this->hasOne(TransInvoiceDerek::class, 'id', 'invoice_id');
+    }
+
     public function trans_order_arsip()
     {
         return $this->hasMany(TransOrderArsip::class, 'trans_order_id');
@@ -81,6 +86,11 @@ class TransOrder extends BaseModel
     public function detil()
     {
         return $this->hasMany(TransOrderDetil::class, 'trans_order_id');
+    }
+
+    public function detilDerek()
+    {
+        return $this->hasMany(TransDerek::class, 'transaction_id_derek')->whereNotNull('transaction_id_derek');
     }
 
     public function product()
