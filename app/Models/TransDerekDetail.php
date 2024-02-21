@@ -4,9 +4,9 @@ namespace App\Models;
 
 use App\Models\BaseModel;
 
-class TransDerek extends BaseModel
+class TransDerekDetail extends BaseModel
 {
-    protected $table = 'trans_order_derek';
+    protected $table = 'trans_order_derek_detil';
     public $incrementing = false;
 
     protected $filable = [
@@ -128,16 +128,8 @@ class TransDerek extends BaseModel
         return $this->hasMany(TransOrder::class, 'id','transaction_id_derek');
     }
   
-    public function detail()
-    {
-        return $this->hasMany(TransDerekDetail::class,'id','derek_detail_id_derek');
-    }
 
-    public function refund()
-    {
-        return $this->hasMany(TransDerekRefund::class,'id','derek_detail_id_derek');
-    }
-        public function invoice_derek()
+    public function invoice_derek()
     {
         return $this->hasOne(TransInvoiceDerek::class, 'id', 'invoice_id');
     }

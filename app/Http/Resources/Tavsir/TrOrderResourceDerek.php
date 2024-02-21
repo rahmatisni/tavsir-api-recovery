@@ -39,6 +39,7 @@ class TrOrderResourceDerek extends JsonResource
             $resultArray[] = $trimmedString;
         }   
 
+        // dd($this->detilDerek);
         return [
             'id' => $this->id,
             'order_id' => $this->order_id,
@@ -93,7 +94,8 @@ class TrOrderResourceDerek extends JsonResource
             'sharing_amount' => $this->status == 'DONE'  || $this->status == 'PAYMENT_SUCCESS' ? (count($resultArray) > 1 ? $resultArray:[(string)$this->total]) : [],
             "invoice_id" => $this->invoice_derek->invoice_id ?? null,
             "invoice_status" => $this->invoice_derek->status ?? 'UNCLAIM',
-            "derek_detail" => $this?->detilDerek ?? []
+            "derek_data" => $this?->detilDerek ?? [],
+            // "derek_detail" =>  $this?->detilDerek?->detail ?? []
             ];
     }
 }
