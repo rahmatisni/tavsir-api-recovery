@@ -362,7 +362,7 @@ class TavsirController extends Controller
         $data = TransOrder::with('detil.product.tenant')
             ->whereIn('status', [TransOrder::DONE, TransOrder::REFUND])
             ->where('supertenant_id', $tenant_user->supertenant_id ?? 0)
-            
+
             ->when($status = request()->status, function ($q) use ($status) {
                 if (is_array($status)) {
                     $q->whereIn('status', $status)->orwhereIn('status', json_decode($status[0]) ?? []);
@@ -680,7 +680,7 @@ class TavsirController extends Controller
             $arr_tenant = Tenant::where('supertenant_id', auth()->user()->tenant->id)->orWhere('id', auth()->user()->tenant->id)->pluck('id')->toArray();
             $data = Category::with('tenant')->byType(ProductType::PRODUCT)->when($filter = $request->filter, function ($q) use ($filter) {
                 return $q->where('name', 'like', "%$filter%");
-            })->when(auth()->user()->tenant->is_supertenant != NULL , function ($q) use ($arr_tenant) {
+            })->when(auth()->user()->tenant->is_supertenant != NULL, function ($q) use ($arr_tenant) {
                 return $q->whereIn('tenant_id', $arr_tenant);
 
             })
@@ -886,7 +886,7 @@ class TavsirController extends Controller
             ->where('order_type', '=', TransOrder::POS)
             ->whereIn('status', [TransOrder::CART, TransOrder::WAITING_PAYMENT])
             ->count();
-            // ->get();
+        // ->get();
 
         return response()->json(['count' => $data]);
     }
@@ -2156,14 +2156,14 @@ class TavsirController extends Controller
     public function orderList(Request $request)
     {
 
-        if(auth()->user()->role === 'TENANT'){
-            if(auth()->user()->tenant->is_derek > 0){
+        if (auth()->user()->role === 'TENANT') {
+            if (auth()->user()->tenant->is_derek > 0) {
                 $data = $this->orderListDerek($request);
                 // return response()->json($data);
 
                 return response()->json(TrOrderResourceDerek::collection($data));
             }
-          
+
         }
         $queryOrder = "CASE WHEN status = 'QUEUE' THEN 1 ";
         $queryOrder .= "WHEN status = 'WAITING_OPEN' THEN 2 ";
@@ -2231,42 +2231,45 @@ class TavsirController extends Controller
     public function orderListDerek(Request $request)
     {
         $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer', 'trans_edc.bank', 'detilDerek.detail', 'detilDerek.refund')
-        ->when($status = request()->status, function ($q) use ($status) {
-            if (is_array($status)) {
-                $q->whereIn('status', $status)->orwhereIn('status', json_decode($status[0]) ?? []);
-            } else {
-                $q->where('status', $status);
-            }
-        })
-        ->when($start_date = $request->start_date, function ($q) use ($start_date) {
-            // dd(date("Y-m-d", strtotime($start_date)));
-            $q->whereDate('created_at', '>=', date("Y-m-d", strtotime($start_date)));
-        })
-        ->when($end_date = $request->end_date, function ($q) use ($end_date) {
-            $q->whereDate('created_at', '<=', date("Y-m-d", strtotime($end_date)));
-        })
-        ->when($statusnot = $request->statusnot, function ($q) use ($statusnot) {
-            if (is_array($statusnot)) {
-                // $jsonArray = str_replace(['[', ']', '"'], '', $statusnot);
-                // $array = explode(',', $jsonArray[0]);
-                $q->whereNotIn('status', $statusnot);
-            } else {
-                $q->whereNotIn('status', $statusnot);
-            }
-        })
-        ->when($filter = $request->filter, function ($q) use ($filter) {
-            $q->where('order_id', 'like', "%$filter%");
-        })->when($tenant_id = $request->tenant_id, function ($q) use ($tenant_id) {
-            $q->where('tenant_id', $tenant_id);
-        })->when($order_type = $request->order_type, function ($q) use ($order_type) {
-            $q->where('order_type', $order_type);
-        })
-        ->when($customer_name = $request->customer_name, function ($q) use ($customer_name) {
-            $q->where('customer_name', $customer_name)->orwhere('nomor_name', $customer_name);
-        })->get();
+            ->when($status = request()->status, function ($q) use ($status) {
+                if (is_array($status)) {
+                    $q->whereIn('status', $status)->orwhereIn('status', json_decode($status[0]) ?? []);
+                } else {
+                    $q->where('status', $status);
+                }
+            })
+            ->when($start_date = $request->start_date, function ($q) use ($start_date) {
+                // dd(date("Y-m-d", strtotime($start_date)));
+                $q->whereDate('created_at', '>=', date("Y-m-d", strtotime($start_date)));
+            })
+            ->when($end_date = $request->end_date, function ($q) use ($end_date) {
+                $q->whereDate('created_at', '<=', date("Y-m-d", strtotime($end_date)));
+            })
+            ->when($statusnot = $request->statusnot, function ($q) use ($statusnot) {
+                if (is_array($statusnot)) {
+                    // $jsonArray = str_replace(['[', ']', '"'], '', $statusnot);
+                    // $array = explode(',', $jsonArray[0]);
+                    $q->whereNotIn('status', $statusnot);
+                } else {
+                    $q->whereNotIn('status', $statusnot);
+                }
+            })
+            ->when($filter = $request->filter, function ($q) use ($filter) {
+                $q->where('order_id', 'like', "%$filter%");
+            })->when($tenant_id = $request->tenant_id, function ($q) use ($tenant_id) {
+                $q->where('tenant_id', $tenant_id);
+            })->when($order_type = $request->order_type, function ($q) use ($order_type) {
+                $q->where('order_type', $order_type);
+            })
+            ->when($customer_name = $request->customer_name, function ($q) use ($customer_name) {
+                $q->where('customer_name', $customer_name)->orwhere('nomor_name', $customer_name);
+            })
+            ->when($id = $request->id, function ($q) use ($id) {
+                $q->where('id', $id);
+            })->get();
 
 
-            // ->where('detil_derek.is_solve_derek', 3)->get();
+        // ->where('detil_derek.is_solve_derek', 3)->get();
         return $data;
     }
     public function orderHistory(Request $request)
