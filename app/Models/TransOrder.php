@@ -90,12 +90,17 @@ class TransOrder extends BaseModel
 
     public function detilDerek()
     {
-        return $this->hasMany(TransDerek::class, 'transaction_id_derek')->whereNotNull('transaction_id_derek');
+        return $this->hasOne(TransDerek::class, 'transaction_id_derek')->whereNotNull('transaction_id_derek');
     }
 
     public function product()
     {
         return $this->hasManyThrough(Product::class, TransOrderDetil::class);
+    }
+
+    public function Compare()
+    {
+        return $this->hasOne(VCompare::class, 'trans_order_id', 'id');
     }
 
     public function rest_area()

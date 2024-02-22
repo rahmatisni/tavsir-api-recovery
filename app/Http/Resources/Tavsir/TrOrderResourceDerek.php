@@ -14,6 +14,22 @@ class TrOrderResourceDerek extends JsonResource
      */
     public function toArray($request)
     {
+        $rekon_status = '';
+        switch ($this?->compare?->valid) {
+            case 0:
+                $rekon_status = 'NOT FOUND';
+                break;
+            case 1:
+                $rekon_status = 'MATCH';
+                break;
+            case 2:
+                $rekon_status = 'UNMATCH';
+                break;
+            default:
+                $rekon_status = 'INVALID STATUS';
+                break;
+        }
+
         $logo = $this->tenant->logo ?? null;
         $pairStrings = explode(',', substr($this->sharing_amount, 1, -1));
 
@@ -37,9 +53,8 @@ class TrOrderResourceDerek extends JsonResource
 
 
             $resultArray[] = $trimmedString;
-        }   
+        }
 
-        // dd($this->detilDerek);
         return [
             'id' => $this->id,
             'order_id' => $this->order_id,
@@ -60,7 +75,7 @@ class TrOrderResourceDerek extends JsonResource
             "customer_name" => @$this->customer_name,
             "customer_phone" => @$this->customer_phone,
             "created_at" => $this->created_at->format('Y-m-d H:i:s'),
-            "refund_at" => $this->status == 'REFUND' ? $this->updated_at->format('Y-m-d H:i:s'): null,
+            "refund_at" => $this->status == 'REFUND' ? $this->updated_at->format('Y-m-d H:i:s') : null,
             "payment_name" => $this->payment_method && $this->payment_method->name != null ? $this->payment_method->name : '',
             "payment_id" => $this->payment_id,
             "voucher_id" => $this->voucher_id,
@@ -74,7 +89,6 @@ class TrOrderResourceDerek extends JsonResource
             'fee' => $this->fee,
             'service_fee' => $this->service_fee,
             'status' => $this->status,
-            // 'status_label' => $this->statusLabel(),
             'canceled_by' => $this->canceled_by,
             'canceled_name' => $this->canceled_name,
             'bank_name' => $this->trans_edc->bank->name ?? '',
@@ -89,13 +103,15 @@ class TrOrderResourceDerek extends JsonResource
             "facebook" => $this->tenant->facebook ?? null,
             "website" => $this->tenant->website ?? null,
             "note" => $this->tenant->note ?? null,
-            'sharing_code' => $this->status == 'DONE' || $this->status == 'PAYMENT_SUCCESS' ? (json_decode($this->sharing_code)?? [(string)$this->tenant_id]) : [],
-            'sharing_proportion' => $this->status == 'DONE' ? (json_decode($this->sharing_proportion)??[100]) : [],
-            'sharing_amount' => $this->status == 'DONE'  || $this->status == 'PAYMENT_SUCCESS' ? (count($resultArray) > 1 ? $resultArray:[(string)$this->total]) : [],
+            'sharing_code' => $this->status == 'DONE' || $this->status == 'PAYMENT_SUCCESS' ? (json_decode($this->sharing_code) ?? [(string) $this->tenant_id]) : [],
+            'sharing_proportion' => $this->status == 'DONE' ? (json_decode($this->sharing_proportion) ?? [100]) : [],
+            'sharing_amount' => $this->status == 'DONE' || $this->status == 'PAYMENT_SUCCESS' ? (count($resultArray) > 1 ? $resultArray : [(string) $this->total]) : [],
             "invoice_id" => $this->invoice_derek->invoice_id ?? null,
             "invoice_status" => $this->invoice_derek->status ?? 'UNCLAIM',
+            "status_claim" => $this?->detilDerek?->is_solve_derek === 3 ? 'AVAILABLE' : 'NAN',
+            "rekon_status" => $rekon_status ?? null,
             "derek_data" => $this?->detilDerek ?? [],
-            // "derek_detail" =>  $this?->detilDerek?->detail ?? []
-            ];
+        ];
     }
+
 }

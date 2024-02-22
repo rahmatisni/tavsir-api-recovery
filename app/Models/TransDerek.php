@@ -130,12 +130,12 @@ class TransDerek extends BaseModel
   
     public function detail()
     {
-        return $this->hasMany(TransDerekDetail::class,'id','derek_detail_id_derek');
+        return $this->hasOne(TransDerekDetail::class,'id','derek_detail_id_derek');
     }
 
     public function refund()
     {
-        return $this->hasMany(TransDerekRefund::class,'id','derek_detail_id_derek');
+        return $this->hasOne(TransDerekRefund::class,'id','derek_detail_id_derek');
     }
         public function invoice_derek()
     {
