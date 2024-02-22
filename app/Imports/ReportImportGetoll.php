@@ -65,7 +65,7 @@ class ReportImportGetoll implements ToCollection
                     [
                         'Merchant' => $result[1],
                         'Sub_Merchant' => $result[2],
-                        'Ref_Number' => $result[3],
+                        'Ref_Number' => trim($result[3]),
                         'Kode_Metode_Pembayaran' => $result[4],
                         'Source_of_Fund' => $result[5],
                         'Nominal' => $result[6],
