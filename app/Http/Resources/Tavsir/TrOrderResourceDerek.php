@@ -108,7 +108,7 @@ class TrOrderResourceDerek extends JsonResource
             'sharing_amount' => $this->status == 'DONE' || $this->status == 'PAYMENT_SUCCESS' ? (count($resultArray) > 1 ? $resultArray : [(string) $this->total]) : [],
             "invoice_id" => $this->invoice_derek->invoice_id ?? null,
             "invoice_status" => $this->invoice_derek->status ?? 'UNCLAIM',
-            "status_claim" => $this?->detilDerek?->is_solve_derek === 3 ? 'AVAILABLE' : 'NAN',
+            "status_claim" => $this?->detilDerek?->is_solve_derek === 3 ? 'AVAILABLE' : 'NOT AVAILABLE',
             "rekon_status" => $rekon_status ?? null,
             "derek_data" => $this?->detilDerek ?? [],
         ];
