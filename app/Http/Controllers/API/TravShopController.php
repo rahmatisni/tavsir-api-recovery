@@ -1993,20 +1993,12 @@ class TravShopController extends Controller
             }
 
             if ($data->payment_method->code_name == 'pg_dd_mandiri') {
-                if (!$request->otp) {
-                    return response()->json([
-                        "message" => "The given data was invalid.",
-                        "errors" => [
-                            "otp" => [
-                                "The otp field is required."
-                            ]
-                        ]
-                    ], 422);
-                }
                 $payload = $data_payment;
-                $payload['otp'] = $request->otp;
                 $payload['submerchant_id'] = $data->sub_merchant_id;
-                $res = PgJmto::paymentDD($payload);
+                $payload['payrefnum'] = $data_payment['refnum'];
+                $res = PgJmto::statusDD($payload);
+                // $res = PgJmto::paymentDD($payload);
+
                 if ($res->successful()) {
                     $res = $res->json();
 
@@ -2018,7 +2010,16 @@ class TravShopController extends Controller
                             ]
                         ], 422);
                     }
-                    $res['responseData']['card_id'] = $payload['card_id'] ?? '';
+                    $is_dd_pg_success = $res['responseData']['pay_refnum'] ?? null;
+                    if ($is_dd_pg_success == null) {
+                        return response()->json([
+                            "message" => "ERROR!",
+                            "errors" => [
+                                $res
+                            ]
+                        ], 422);
+                    }
+
                     $respon = $res['responseData'];
                     if ($data->payment === null) {
                         $payment = new TransPayment();
@@ -2030,8 +2031,8 @@ class TravShopController extends Controller
                         $pay->save();
                     }
 
-                    $data->status = TransOrder::PAYMENT_SUCCESS;
 
+                    $data->status = TransOrder::PAYMENT_SUCCESS;
                     if ($data->order_type === TransOrder::ORDER_TRAVOY) {
                         return $this->payKios($data, $id);
                     }
@@ -2049,13 +2050,15 @@ class TravShopController extends Controller
                         return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
                     }
 
+                    //End payment kios
                     foreach ($data->detil as $key => $value) {
                         $this->stock_service->updateStockProduct($value);
                     }
                     $this->trans_sharing_service->calculateSharing($data);
                     DB::commit();
-                    return $data;
+                    return response()->json($data);
                 }
+
                 return response()->json($res->json(), 400);
             }
 
