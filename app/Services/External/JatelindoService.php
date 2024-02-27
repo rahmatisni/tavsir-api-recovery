@@ -399,11 +399,11 @@ class JatelindoService
         }
 
         $bit_48 = $result['bit48'];
-        $bit_61 = $result['bit61'];
+        // $bit_61 = $result['bit61'];
 
-        $total_token_unsold =  substr($bit_61, 27, 1);
-        $harga_token_unsold_1 =  substr($bit_61, 28, 11);
-        $harga_token_unsold_2 =  substr($bit_61, 39, 11);
+        // $total_token_unsold =  substr($bit_61, 27, 1);
+        // $harga_token_unsold_1 =  substr($bit_61, 28, 11);
+        // $harga_token_unsold_2 =  substr($bit_61, 39, 11);
 
         return [
             'Meter_ID' => substr($bit_48, 7, 11),
@@ -415,9 +415,9 @@ class JatelindoService
             'Tarif' => substr($bit_48, 120, 4),
             'Daya' => ltrim(substr($bit_48, 124, 9),'0'),
             'Pilihan_Token' => substr($bit_48, 133, 1),
-            'Total_Token_Unsold' => $total_token_unsold,
-            'Token_Unsold_1' => number_format((int) $harga_token_unsold_1,0,',','.'),
-            'Token_Unsold_2' => number_format((int) $harga_token_unsold_2,0,',','.'),
+            // 'Total_Token_Unsold' => $total_token_unsold,
+            // 'Token_Unsold_1' => number_format((int) $harga_token_unsold_1,0,',','.'),
+            // 'Token_Unsold_2' => number_format((int) $harga_token_unsold_2,0,',','.'),
         ];
     }
 }
