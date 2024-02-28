@@ -18,7 +18,7 @@ class JatelindoService
     public const advice = "172000";
     public const repeat = "173000";
 
-    public static function inquiry(int $flag = 0, string $id_pelanggan, ProductKiosBank $product, $price = null)
+    public static function inquiry(int $flag = 0, string $id_pelanggan, ProductKiosBank $product)
     {
         $date = Carbon::now();
         $md = $date->format('md');
@@ -31,7 +31,7 @@ class JatelindoService
             "mti" => "0200",
             "bit2" => '053502',
             "bit3" => self::inquiry,
-            "bit4" => str_pad($price == 0 ? 0 : $product->kode, 12, '0', STR_PAD_LEFT),
+            "bit4" => str_pad($product->kode, 12, '0', STR_PAD_LEFT),
             "bit7" => $md.$his,
             "bit11" => $his,
             "bit12" => $his,

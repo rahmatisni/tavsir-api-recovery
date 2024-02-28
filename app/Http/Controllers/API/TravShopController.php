@@ -1151,7 +1151,7 @@ class TravShopController extends Controller
                 case 'pg_va_bsi':
                     $payment_payload = [
                         "sof_code" => $payment_method->code,
-                        'bill_id' => $data->order_id,
+                        'bill_id' => app('env') != 'production' ? random_int(1000,9999) : $data->order_id ,
                         'bill_name' => 'GetPay',
                         'amount' => (string) $data->total,
                         'desc' => $data->tenant->name ?? 'Travoy',
@@ -1165,7 +1165,7 @@ class TravShopController extends Controller
 
                     $res = PgJmto::vaCreate(
                         $payment_method->code,
-                        $data->order_id,
+                        app('env') != 'production' ? random_int(100000,999999) : $data->order_id ,
                         'GetPay',
                         $data->total,
                         $data->tenant->name ?? 'Travoy',
@@ -1174,6 +1174,7 @@ class TravShopController extends Controller
                         $request->customer_name,
                         $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
                     );
+
                     if ($res['status'] == 'success') {
                         $pay = null;
                         if ($data->payment === null) {
@@ -1625,7 +1626,9 @@ class TravShopController extends Controller
                 //1. Purchase
                 $res_jatelindo = JatelindoService::purchase($data->log_kiosbank->data ?? []);
                 $result_jatelindo = $res_jatelindo->json();
+                dd($res_jatelindo);
                 $rc = $result_jatelindo['bit39'] ?? '';
+
                 //2. Cek req timout code 18
                 if ($rc == '18') {
                     //3. Advice 1 kali

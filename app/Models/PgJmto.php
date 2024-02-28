@@ -298,7 +298,7 @@ class PgJmto extends Model
         }
         $payload = [
             "sof_code" => $sof_code,
-            "bill_id" => $bill_id,
+            "bill_id" => (string) $bill_id,
             "bill_name" => $bill_name,
             "amount" => (string) $amount,
             "desc" => $desc,
