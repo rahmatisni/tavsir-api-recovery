@@ -59,9 +59,7 @@ class JatelindoService
                 ], 200)
             ]);
         }
-        $result = Http::withOptions([
-            'proxy' => '172.16.4.58:8090'
-        ])->post(config('jatelindo.url'), $payload);
+        $result = Http::post(config('jatelindo.url'), $payload);
     
         Log::info([
             'status' => self::responseTranslation($result->json())?->keterangan,
@@ -383,9 +381,7 @@ class JatelindoService
             "bit49" => "360", // COUNTRY CURRENCY CODE NUMBER IDR 
         ];
 
-        $result = Http::withOptions([
-            'proxy' => '172.16.4.58:8090'
-        ])->post(config('jatelindo.url'), $payload);
+        $result = Http::post(config('jatelindo.url'), $payload);
     
         Log::info([
             'status' => self::responseTranslation($result->json())?->keterangan,
