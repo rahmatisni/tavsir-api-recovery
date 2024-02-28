@@ -1626,7 +1626,7 @@ class TravShopController extends Controller
                 //1. Purchase
                 $res_jatelindo = JatelindoService::purchase($data->log_kiosbank->data ?? []);
                 $result_jatelindo = $res_jatelindo->json();
-                dd($res_jatelindo);
+
                 $rc = $result_jatelindo['bit39'] ?? '';
 
                 //2. Cek req timout code 18
