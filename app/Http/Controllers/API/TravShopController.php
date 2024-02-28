@@ -1658,7 +1658,13 @@ class TravShopController extends Controller
                     $data->save();
                     DB::commit();
                     $info = JatelindoService::infoPelanggan($log_kios, $data->status);
-                    return response()->json($info);
+                    $map = [
+                        'status' =>  $data->status,
+                        'kiosbank' => [
+                            'data' => $info
+                        ]
+                    ];
+                    return response()->json($map);
                 } else {
                     return response()->json(['status' => 422, 'data' => JatelindoService::responseTranslation($result_jatelindo)], 422);
                 }
