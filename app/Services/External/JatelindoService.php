@@ -381,7 +381,11 @@ class JatelindoService
             "bit49" => "360", // COUNTRY CURRENCY CODE NUMBER IDR 
         ];
 
-        $result = Http::post(config('jatelindo.url'), $payload);
+        $header = [];
+        if(app('env') != 'production'){
+            $header = ['proxy' => '172.16.4.58:8090'];
+        }
+        $result = Http::withOptions($header)->post(config('jatelindo.url'), $payload);
     
         Log::info([
             'status' => self::responseTranslation($result->json())?->keterangan,
@@ -395,25 +399,21 @@ class JatelindoService
         }
 
         $bit_48 = $result['bit48'];
-        // $bit_61 = $result['bit61'];
 
-        // $total_token_unsold =  substr($bit_61, 27, 1);
-        // $harga_token_unsold_1 =  substr($bit_61, 28, 11);
-        // $harga_token_unsold_2 =  substr($bit_61, 39, 11);
-
-        return [
+        $info_user = [
             'Meter_ID' => substr($bit_48, 7, 11),
             'Pelanggan_ID' => substr($bit_48, 18, 12),
             'Flag' => substr($bit_48, 30, 1),
-            'Transaksi_ID' => substr($bit_48, 31, 32),
-            'Ref_ID' => substr($bit_48, 63, 32),
+            // 'Transaksi_ID' => substr($bit_48, 31, 32),
+            // 'Ref_ID' => substr($bit_48, 63, 32),
             'Nama_Pelanggan' => substr($bit_48, 95, 25),
             'Tarif' => substr($bit_48, 120, 4),
             'Daya' => ltrim(substr($bit_48, 124, 9),'0'),
-            'Pilihan_Token' => substr($bit_48, 133, 1),
-            // 'Total_Token_Unsold' => $total_token_unsold,
-            // 'Token_Unsold_1' => number_format((int) $harga_token_unsold_1,0,',','.'),
-            // 'Token_Unsold_2' => number_format((int) $harga_token_unsold_2,0,',','.'),
+        ];
+
+        return [
+            'info' => $info_user,
+            'result_pln' => $result->json()
         ];
     }
 }

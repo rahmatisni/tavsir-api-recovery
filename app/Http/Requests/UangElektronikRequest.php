@@ -47,6 +47,7 @@ class UangElektronikRequest extends FormRequest
             'code' => 'required',
             'flag' => 'nullable',
             'pilihan_token' => 'nullable',
+            'result_pln' => 'nullable|array',
         ];
     }
 }
