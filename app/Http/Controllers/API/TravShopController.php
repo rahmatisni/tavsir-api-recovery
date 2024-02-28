@@ -1919,6 +1919,16 @@ class TravShopController extends Controller
                     return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
 
                 }
+                $product_kios_bank = $data->productKiosbank();
+                if ($product_kios_bank->integrator == 'JATELINDO') {
+                    $infoPelanggan = JatelindoService::infoPelanggan($data->log_kiosbank, $data);
+                    return response()->json([
+                        'status' => $data->status, 
+                        'kiosbank' => [
+                            'data' => $infoPelanggan
+                        ] 
+                    ]);
+                }
                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
             }
 
