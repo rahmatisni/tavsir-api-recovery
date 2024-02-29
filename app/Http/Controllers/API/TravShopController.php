@@ -1390,7 +1390,8 @@ class TravShopController extends Controller
                         "email" => $bind->email ?? $bind_before->data['email'],
                         "fee" => (string) $data->fee,
                         "customer_name" => $bind->customer_name ?? $bind_before->data['customer_name'],
-                        "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
+                    //    temp
+                    // "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
 
                     ];
                     // log::info('Request DD inquiry => '.$payment_payload);
@@ -2574,10 +2575,12 @@ class TravShopController extends Controller
                 }
                 $payload = $data_payment;
                 $payload['otp'] = $request->otp;
-                $payload['submerchant_id'] = $data->sub_merchant_id;
+                // $payload['submerchant_id'] = $data->sub_merchant_id;
                 $res = PgJmto::paymentDD($payload);
                 if ($res->successful()) {
                     $res = $res->json();
+
+                    dd($res);
 
                     if ($res['status'] == 'ERROR') {
                         return response()->json([
