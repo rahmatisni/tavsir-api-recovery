@@ -728,6 +728,8 @@ class PgJmto extends Model
         }
 
         unset($payload["card_id"]);
+        unset($payload["submerchant_id"]);
+
         Log::info('DD Payment Request', $payload);
         $res = self::service('POST', '/directdebit/payment', $payload);
         Log::info('DD payment Response', $res->json());
