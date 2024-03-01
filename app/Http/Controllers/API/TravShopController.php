@@ -1467,7 +1467,7 @@ class TravShopController extends Controller
                         "phone" => $bind->phone ?? $bind_before->data['phone'],
                         "email" => $bind->email ?? $bind_before->data['email'],
                         "customer_name" => $bind->customer_name ?? $bind_before->data['customer_name'],
-                        // "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
+                        "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
 
                     ];
                     $respon = PgJmto::inquiryDD($payment_payload);

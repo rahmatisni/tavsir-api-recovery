@@ -691,6 +691,7 @@ class PgJmto extends Model
         }
         Log::info('DD Req Inquiry', $payload);
         unset($payload["card_id"]);
+        unset($payload["submerchant_id"]);
         $res = self::service('POST', '/directdebit/inquiry', $payload);
         Log::info('DD Resp inquiry', $res->json());
         return $res;
@@ -763,6 +764,8 @@ class PgJmto extends Model
             //end fake
         }
         unset($payload["card_id"]);
+        // temp
+        unset($payload["submerchant_id"]);
         Log::info('DD Status Request', $payload);
         $res = self::service('POST', '/directdebit/advice', $payload);
         Log::info('DD Status Response', $res->json());
