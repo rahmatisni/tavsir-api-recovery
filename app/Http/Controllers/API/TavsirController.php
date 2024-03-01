@@ -2230,6 +2230,7 @@ class TavsirController extends Controller
 
     public function orderListDerek(Request $request)
     {
+        
         $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer', 'trans_edc.bank', 'detilDerek.detail', 'detilDerek.refund', 'Compare')
             ->when($status = request()->status, function ($q) use ($status) {
                 if (is_array($status)) {
@@ -2237,6 +2238,11 @@ class TavsirController extends Controller
                 } else {
                     $q->where('status', $status);
                 }
+            })->
+            when($status_derek = request()->status_derek, function ($q) use ($status_derek) {
+                $q->whereHas('detilDerek', function ($qq) use ($status_derek) {
+                    $qq->where('is_solve_derek',$status_derek);
+                });
             })
             ->when($start_date = $request->start_date, function ($q) use ($start_date) {
                 // dd(date("Y-m-d", strtotime($start_date)));
