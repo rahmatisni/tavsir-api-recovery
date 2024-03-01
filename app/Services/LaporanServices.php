@@ -30,16 +30,15 @@ class LaporanServices
     }
     public function listRekon(Request $request)
     {
-
         $tanggal_awal = $request->tanggal_awal;
         $tanggal_akhir = $request->tanggal_akhir;
         $sof = $request->sof;
         $tenant_id = $request->tenant_id;
         $business_id = $request->business_id;
         $status_rekon = $request->status_rekon;
-
+        $status_derek = $request->status_derek;
         $paymentMethodsparent = PaymentMethod::where('integrator', $sof)->pluck('id');
-        $all_rekon = CompareReport::when(
+        $all_rekon = CompareReport::with('detilDerek.detail', 'detilDerek.refund')->when(
             ($tanggal_awal && $tanggal_akhir),
             function ($q) use ($tanggal_awal, $tanggal_akhir) {
                 return $q->whereBetween(
@@ -51,6 +50,11 @@ class LaporanServices
                 );
             }
         )->
+            when($status_derek = request()->status_derek, function ($q) use ($status_derek) {
+                $q->whereHas('detilDerek', function ($qq) use ($status_derek) {
+                    $qq->where('is_solve_derek',$status_derek);
+                });
+            })->
             when($sof, function ($qq) use ($paymentMethodsparent) {
                 return $qq->whereIn('payment_method_id', $paymentMethodsparent);
             })->
