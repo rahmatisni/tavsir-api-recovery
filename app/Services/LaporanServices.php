@@ -458,6 +458,9 @@ class LaporanServices
                         );
                     }
                 )
+                ->when($tenant_id, function ($q) use ($tenant_id) {
+                    return $q->where('tenant_id', $tenant_id);
+                })
                 ->when($super_tenant_id, function ($q) use ($super_tenant_id) {
                     return $q->where('supertenant_id', $super_tenant_id);
                 })->orderBy('created_at')
