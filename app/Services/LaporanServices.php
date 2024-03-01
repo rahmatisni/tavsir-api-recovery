@@ -524,7 +524,7 @@ class LaporanServices
         //     ->orderBy('created_at')
         //     ->get();
         $data = $raw_data->where('status', 'DONE');
-        $data_w_refund = $raw_data->whereIn('status', ['DONE', 'REFUND']);
+        $data_w_refund = $raw_data->whereIn('status', ['DONE', 'REFUND'])->whereIn('order_type', ['POS', 'SELF_ORDER', 'TAKE_N_GO']);
         if ($data->count() == 0) {
             abort(404);
         }
