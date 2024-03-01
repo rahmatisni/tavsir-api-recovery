@@ -490,7 +490,8 @@ class LaporanServices
                 })->when($payment_method_id, function ($qq) use ($payment_method_id) {
                     return $qq->where('payment_method_id', $payment_method_id);
                 })
-                ->orderBy('created_at')
+                ->whereIn('order_type', ['POS', 'SELF_ORDER', 'TAKE_N_GO'])
+                ->orderBy('created_at', 'DESC')
                 ->get();
         }
         // $raw_data = $data = TransOrder::with('tenant')
