@@ -193,6 +193,9 @@ class InvoiceController extends Controller
 
     public function paidInvoiceDerek(Request $request, $id)
     {
+            if(auth()->user()->role != User::FINANCE) {
+                return response()->json(['status' => 'error', 'message'=> 'Anda Tidak Memiliki Akses!'], 403);
+            }
             $validator = Validator::make($request->all(), [
                 'file' => 'required|file|mimes:jpeg,png,pdf|max:10000', // max size in kilobytes
             ]);
