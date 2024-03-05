@@ -100,7 +100,7 @@ class TransOrder extends BaseModel
 
     public function Compare()
     {
-        return $this->hasOne(VCompare::class, 'trans_order_id', 'id');
+        return $this->hasOne(CompareReport::class, 'trans_order_id', 'id');
     }
 
     public function rest_area()

@@ -2231,7 +2231,7 @@ class TavsirController extends Controller
     public function orderListDerek(Request $request)
     {
         
-        $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer', 'trans_edc.bank', 'detilDerek.detail', 'detilDerek.refund', 'Compare')
+        $data = TransOrder::with('payment_method', 'payment', 'detil.product', 'tenant', 'casheer', 'trans_edc.bank', 'detilDerek.detail', 'detilDerek.refund', 'Compare', 'Compare.detilReport')
             ->when($status = request()->status, function ($q) use ($status) {
                 if (is_array($status)) {
                     $q->whereIn('status', $status)->orwhereIn('status', json_decode($status[0]) ?? []);

@@ -10,4 +10,11 @@ class VCompare extends BaseModel
 
     protected $fillable = [
     ];
+
+    public function detilReport()
+    {
+        return $this->hasOne(ReportGetoll::class, 'Ref_Number', 'refnum');
+    }
 }
+
+
