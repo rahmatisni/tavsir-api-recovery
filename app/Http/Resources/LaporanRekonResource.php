@@ -62,7 +62,7 @@ class LaporanRekonResource extends JsonResource
             "paid_date"=> $this->paid_date,
             "valid"=> (int)$this->valid,
             "derek" => $this->detilDerek,
-            "status_report" => $this->detilReport->Status_Report ?? null
+            "status_report" => $this->detilReport->Status_Report ?? '-'
         ];
     }
 }
