@@ -38,7 +38,7 @@ class LaporanServices
         $status_rekon = $request->status_rekon;
         $status_derek = $request->status_derek;
         $paymentMethodsparent = PaymentMethod::where('integrator', $sof)->pluck('id');
-        $all_rekon = CompareReport::with('detilDerek.detail', 'detilDerek.refund')->when(
+        $all_rekon = CompareReport::with('detilDerek.detail', 'detilDerek.refund','detilReport')->when(
             ($tanggal_awal && $tanggal_akhir),
             function ($q) use ($tanggal_awal, $tanggal_akhir) {
                 return $q->whereBetween(

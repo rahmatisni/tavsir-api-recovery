@@ -23,6 +23,10 @@ class CompareReport extends BaseModel
     {
         return $this->hasOne(TransDerek::class, 'transaction_id_derek', 'trans_order_id');
     }
+    public function detilReport()
+    {
+        return $this->hasOne(ReportGetoll::class, 'Ref_Number', 'refnum');
+    }
 
 
 }
