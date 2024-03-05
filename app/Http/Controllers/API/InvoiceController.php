@@ -201,7 +201,7 @@ class InvoiceController extends Controller
             ]);
         
             if ($validator->fails()) {
-                return response()->json(['status' => 'error', 'message'=> 'The file field is required.'], 422);
+                return response()->json(['status' => 'error', 'message'=> 'Periksa Format Bukti Bayar'], 422);
             }
     
             try {
