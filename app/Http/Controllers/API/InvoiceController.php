@@ -16,6 +16,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
+
 
 class InvoiceController extends Controller
 {
@@ -191,19 +193,31 @@ class InvoiceController extends Controller
 
     public function paidInvoiceDerek(Request $request, $id)
     {
-        $data = TransInvoiceDerek::findOrfail($id);
-        if ($data->status == TransInvoiceDerek::PAID) {
-            return response()->json(['message' => 'Invoice sudah dibayar'], 400);
-        }
-
-        $data->status = TransInvoice::PAID;
-        $data->pay_petugas_id = auth()->user()->id;
-        $data->paid_date = Carbon::now();
-        $data->kwitansi_id = ($data->pay_petugas_id ?? '0').'-RCP-'. date('YmdHis'); ;
-        $data->file = $request->file;
-        $data->save();
-
-        return response()->json($data);
+            $validator = Validator::make($request->all(), [
+                'file' => 'required|file|mimes:jpeg,png,pdf|max:10000', // max size in kilobytes
+            ]);
+        
+            if ($validator->fails()) {
+                return response()->json(['status' => 'error', 'message'=> 'The file field is required.'], 422);
+            }
+    
+            try {
+                $data = TransInvoiceDerek::findOrFail($id);
+                if($data->paid_date){
+                    return response()->json(['status' => 'error', 'message'=> 'Invoice Sudah Dibayar'], 404);
+                }
+            } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+                return response()->json(['status' => 'error', 'message'=> 'Invoice not found.'], 404);
+            }           
+            $data->status = TransInvoice::PAID;
+            $data->pay_petugas_id = auth()->user()->id;
+            $data->paid_date = Carbon::now();
+            $data->kwitansi_id = ($data->pay_petugas_id ?? '0') . '-RCP-' . date('YmdHis');
+            ;
+            $data->file = $request->file;
+            $data->save();
+            return response()->json($data);
+       
     }
 
     public function show()
