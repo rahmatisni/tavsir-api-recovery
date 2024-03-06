@@ -57,7 +57,7 @@ class LaporanRekonResource extends JsonResource
             "status"=>$this->status,
             'sharing_code' => $this->status == 'DONE' || $this->status == 'PAYMENT_SUCCESS' ? (json_decode($this->sharing_code) ?? [(string) $this->tenant_id]) : [],
             'sharing_proportion' => $this->status == 'DONE' || $this->status == 'PAYMENT_SUCCESS' ? (json_decode($this->sharing_proportion) ?? [100]) : [],
-            'sharing_amount' => $this->status == 'DONE' || $this->status == 'PAYMENT_SUCCESS' ? (count($resultArray) > 1 ? $resultArray : [(string) $this->total]) : [],
+            'sharing_amount' => $this->status == 'DONE' || $this->status == 'PAYMENT_SUCCESS' ? (count($resultArray) > 1 ?  $resultArray:[$this->total - $this->service_fee]) : [],
             "refnum"=> $this->refnum,
             "paid_date"=> $this->paid_date,
             "valid"=> (int)$this->valid,

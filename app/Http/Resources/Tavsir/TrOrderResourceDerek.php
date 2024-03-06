@@ -105,7 +105,7 @@ class TrOrderResourceDerek extends JsonResource
             "note" => $this->tenant->note ?? null,
             'sharing_code' => $this->status == 'DONE' || $this->status == 'PAYMENT_SUCCESS' ? (json_decode($this->sharing_code) ?? [(string) $this->tenant_id]) : [],
             'sharing_proportion' => $this->status == 'DONE' || $this->status == 'PAYMENT_SUCCESS' ? (json_decode($this->sharing_proportion) ?? [100]) : [],
-            'sharing_amount' => $this->status == 'DONE' || $this->status == 'PAYMENT_SUCCESS' ? (count($resultArray) > 1 ? $resultArray : [(string) $this->total]) : [],
+            'sharing_amount' => $this->status == 'DONE' || $this->status == 'PAYMENT_SUCCESS' ? (count($resultArray) > 1 ? $resultArray:[$this->total - $this->service_fee]) : [],
             "invoice_id" => $this->invoice_derek->invoice_id ?? null,
             "invoice_status" => $this->invoice_derek->status ?? 'UNCLAIM',
             "status_claim" => $this?->detilDerek?->is_solve_derek === 3 ? 'AVAILABLE' : 'NOT AVAILABLE',
