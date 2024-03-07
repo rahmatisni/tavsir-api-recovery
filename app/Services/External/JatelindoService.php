@@ -94,7 +94,7 @@ class JatelindoService
         }
 
         $result =  Http::withOptions([
-            'proxy' => '172.16.4.58:8090'
+            // 'proxy' => '172.16.4.58:8090'
         ])->post(config('jatelindo.url'), $payload);
 
         Log::info([
@@ -117,7 +117,7 @@ class JatelindoService
         $payload ["bit3"] = self::advice;
 
         $result =  Http::withOptions([
-            'proxy' => '172.16.4.58:8090'
+            // 'proxy' => '172.16.4.58:8090'
         ])->post(config('jatelindo.url'), $payload);
 
         Log::info([
@@ -140,7 +140,7 @@ class JatelindoService
         $payload ["bit3"] = self::repeat;
 
         $result =  Http::withOptions([
-            'proxy' => '172.16.4.58:8090'
+            // 'proxy' => '172.16.4.58:8090'
         ])->post(config('jatelindo.url'), $payload);
 
         Log::info([
