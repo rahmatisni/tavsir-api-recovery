@@ -181,6 +181,7 @@ class KiosBankService
     {
         $product = $this->cekStatusProduct();
         $status_respon = $product['rc'] ?? '';
+        $list_harga_pulsa = collect([]);
         if ($status_respon == '00') {
             if ($kategori && $sub_kategori) {
                 $data = ProductKiosBank::where('kategori', strtoupper($kategori))
@@ -207,8 +208,14 @@ class KiosBankService
                     // ->orderBy('name', 'asc')
                     ->orderBy('kode', 'asc')
                     ->get();
+                $prefix_id = $data->first()?->prefix_id;
+                if($prefix_id){
+                    $data_kios = $this->listProductOperatorPulsa($prefix_id);
+                    if ($data_kios['rc'] == '00') {
+                        $list_harga_pulsa = collect($data_kios['record']);
+                    }
+                }
             }
-
 
             $active = $product['active'];
             $active = explode(',', $active);
@@ -221,11 +228,9 @@ class KiosBankService
                     foreach ($data as $k => $v) {
                         if ($value == $v->kode) {
                             $v->status = true;
-                        }
-
-                        if($v?->integrator == 'JATELINDO')
-                        {
-                            $v->status = true;
+                            $price_from_kios = $list_harga_pulsa->where('code', $v->kode)->first()['price'] ?? 0;
+                            $v->price = $price_from_kios;
+                            $v->price_jmto = $v->harga + $price_from_kios;
                         }
 
                         if($v?->integrator == 'JATELINDO')
@@ -234,13 +239,6 @@ class KiosBankService
                         }
                     }
                 }
-
-                // foreach ($data as $x => $z){
-                //     if($z->status == false){
-                //         unset($data[$x]);
-                //     }
-
-                // }
             }
 
             return $data->groupBy('sub_kategori');
