@@ -195,7 +195,7 @@ class TsOrderResource extends JsonResource
         }
 
         $log_kios_bank = $this->order_type === 'ORDER_TRAVOY' ? ($product_kios_bank?->integrator == 'JATELINDO' ? ['data' => $product_kios] : ($temps ?? $this->log_kiosbank)) : null;
-        unset($log_kios_bank['name']);
+        unset($log_kios_bank['data']['name']);
         $logo = $this->tenant->log ?? null;
 
         return [
