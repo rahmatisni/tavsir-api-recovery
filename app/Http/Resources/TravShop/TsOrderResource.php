@@ -67,7 +67,7 @@ class TsOrderResource extends JsonResource
                         $daya = $product_kios['Daya'];
                         $product_kios['Daya'] = str_pad($daya, 9, "0", STR_PAD_LEFT);
                         unset($product_kios['Ref_ID']);
-                        $product_kios['Nama_Produk'] = $product_kios['name'];
+                        // $product_kios['Nama_Produk'] = $product_kios['name'];
                         // unset($product_kios['name']);
                         unset($product_kios['logo_url']);
                         unset($product_kios['Transaksi_ID']);
@@ -194,6 +194,8 @@ class TsOrderResource extends JsonResource
             $tenant_name = 'Multibiller';
         }
 
+        $log_kios_bank = $this->order_type === 'ORDER_TRAVOY' ? ($product_kios_bank?->integrator == 'JATELINDO' ? ['data' => $product_kios] : ($temps ?? $this->log_kiosbank)) : null;
+        unset($log_kios_bank['name']);
         $logo = $this->tenant->log ?? null;
 
         return [
@@ -229,7 +231,7 @@ class TsOrderResource extends JsonResource
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'paid_date' => $this->payment?->updated_at->format('Y-m-d H:i:s') ?? null,
             'payment' => $this->payment->data ?? null,
-            'log_kiosbank' => $this->order_type === 'ORDER_TRAVOY' ? ($product_kios_bank?->integrator == 'JATELINDO' ? ['data' => $product_kios] : ($temps ?? $this->log_kiosbank)) : null,
+            'log_kiosbank' => $log_kios_bank ?? null,
             'addon_total' => $this->addon_total,
             'addon_price' => $this->addon_price,
             'detil_kios' => $product_kios,
