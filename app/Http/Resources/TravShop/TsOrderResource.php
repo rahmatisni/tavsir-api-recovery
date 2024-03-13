@@ -57,6 +57,7 @@ class TsOrderResource extends JsonResource
                     'logo_url'
                 ]);
                 $product_kios['handphone'] = $product[1];
+                $product_kios['Nomor_Cust'] = $product[1];
                 if ($product_kios_bank->integrator == 'JATELINDO') {
                     unset($product_kios['handphone']);
                     unset($product_kios['kode']);
