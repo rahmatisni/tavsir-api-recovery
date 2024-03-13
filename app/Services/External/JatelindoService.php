@@ -400,6 +400,7 @@ class JatelindoService
 
         $bit_48 = $result['bit48'];
 
+        $info_daya = ltrim(substr($bit_48, 124, 9),'0');
         $info_user = [
             'Meter_ID' => substr($bit_48, 7, 11),
             'Pelanggan_ID' => substr($bit_48, 18, 12),
@@ -408,7 +409,8 @@ class JatelindoService
             // 'Ref_ID' => substr($bit_48, 63, 32),
             'Nama_Pelanggan' => substr($bit_48, 95, 25),
             'Tarif' => substr($bit_48, 120, 4),
-            'Daya' => ltrim(substr($bit_48, 124, 9),'0'),
+            'Daya' => str_pad($info_daya, 9, "0", STR_PAD_LEFT)
+
         ];
 
         return [
