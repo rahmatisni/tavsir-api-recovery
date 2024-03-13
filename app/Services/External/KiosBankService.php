@@ -173,7 +173,8 @@ class KiosBankService
         return $res_json;
     }
 
-    public function getSubKategoriProduct(){
+    public function getSubKategoriProduct()
+    {
         return ProductKiosBank::select('sub_kategori')->distinct()->get();
     }
 
@@ -181,17 +182,18 @@ class KiosBankService
     {
         $product = $this->cekStatusProduct();
         $status_respon = $product['rc'] ?? '';
-        $list_harga_pulsa = collect([]);
         if ($status_respon == '00') {
             if ($kategori && $sub_kategori) {
                 $data = ProductKiosBank::where('kategori', strtoupper($kategori))
                     ->where('sub_kategori', ucwords($sub_kategori))
                     ->where('is_active', 1)
+                    ->orderByRaw("CAST(REGEXP_REPLACE(name, '[^0-9]+', '') AS DECIMAL) ASC")
                     ->orderBy('kode', 'asc')
                     ->get();
             } else if ($kategori) {
                 $data = ProductKiosBank::where('kategori', strtoupper($kategori))
                     ->where('is_active', 1)
+                    ->orderByRaw("CAST(REGEXP_REPLACE(name, '[^0-9]+', '') AS DECIMAL) ASC")
                     ->orderBy('kode', 'asc')
                     ->get();
 
@@ -199,6 +201,7 @@ class KiosBankService
                 $data = ProductKiosBank::when($sub_kategori, function ($q) use ($sub_kategori) {
                     return $q->where('sub_kategori', $sub_kategori);
                 })->where('is_active', 1)
+                    ->orderByRaw("CAST(REGEXP_REPLACE(name, '[^0-9]+', '') AS DECIMAL) ASC")
                     ->orderBy('kode', 'asc')
                     ->get();
             } else {
@@ -206,15 +209,9 @@ class KiosBankService
                     return $q->where('kategori', $kategori_pulsa);
                 })->where('is_active', 1)
                     // ->orderBy('name', 'asc')
+                    ->orderByRaw("CAST(REGEXP_REPLACE(name, '[^0-9]+', '') AS DECIMAL) ASC")
                     ->orderBy('kode', 'asc')
                     ->get();
-                $prefix_id = $data->first()?->prefix_id;
-                if($prefix_id){
-                    $data_kios = $this->listProductOperatorPulsa($prefix_id);
-                    if ($data_kios['rc'] == '00') {
-                        $list_harga_pulsa = collect($data_kios['record']);
-                    }
-                }
             }
 
             $active = $product['active'];
@@ -228,19 +225,25 @@ class KiosBankService
                     foreach ($data as $k => $v) {
                         if ($value == $v->kode) {
                             $v->status = true;
-                            $price_from_kios = $list_harga_pulsa->where('code', $v->kode)->first()['price'] ?? 0;
-                            $v->price = $price_from_kios;
-                            $v->price_jmto = $v->harga + $price_from_kios;
                         }
 
-                        if($v?->integrator == 'JATELINDO')
-                        {
+                        if ($v?->integrator == 'JATELINDO') {
+                            $v->status = true;
+                        }
+
+                        if ($v?->integrator == 'JATELINDO') {
                             $v->status = true;
                         }
                     }
                 }
-            }
 
+                // foreach ($data as $x => $z){
+                //     if($z->status == false){
+                //         unset($data[$x]);
+                //     }
+
+                // }
+            }
             return $data->groupBy('sub_kategori');
         } else {
             return $product;
@@ -308,30 +311,30 @@ class KiosBankService
 
         $harga_jual_kios = ProductKiosBank::where('kode', $data['code'])->first();
         $order->margin = $harga_jual_kios?->harga + ($harga_jual_kios?->fee_admin_bank ?? 0);
-        $order->net_margin =  $order->margin - $disc;
+        $order->net_margin = $order->margin - $disc;
 
         $order->save();
         // $order->sub_total = ($harga_jual_kios?->harga ?? 0) + ($res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan']) - $disc ;
         // $order->total = $order->sub_total + $order->fee;
-      
-       
-        
+
+
+
 
         $request = [
             'referenceID' => '-',
             'data' => [
-                'noHandphone' => $data['phone'],
-                'harga_kios' => $harga_kios,
-                'harga' => $harga_final
-            ],
+                    'noHandphone' => $data['phone'],
+                    'harga_kios' => $harga_kios,
+                    'harga' => $harga_final
+                ],
             'description' => 'INQUIRY'
         ];
 
         $order->log_kiosbank()->updateOrCreate([
             'trans_order_id' => $order->id
         ], [
-                'data' => $request
-            ]);
+            'data' => $request
+        ]);
 
         //minta tambah updateOrCreate ke column inquiry
 
@@ -370,7 +373,7 @@ class KiosBankService
             $payload = [
                 'total' => sprintf("%012d", $total),
                 'admin' => $admin,
-                'tagihan' => sprintf("%012d", $total-$admin),
+                'tagihan' => sprintf("%012d", $total - $admin),
                 'sessionID' => $this->getSeesionId(),
                 'productID' => substr($order[0], 0, 6) ?? '',
                 'referenceID' => $order[2] ?? '',
@@ -477,8 +480,8 @@ class KiosBankService
                 $data->log_kiosbank()->updateOrCreate([
                     'trans_order_id' => $data->id
                 ], [
-                        'data' => $request
-                    ]);
+                    'data' => $request
+                ]);
                 DB::commit();
             }
         } catch (\Throwable $th) {
@@ -517,17 +520,16 @@ class KiosBankService
         $order->status = TransOrder::WAITING_PAYMENT;
 
         $product = ProductKiosBank::where('kode', $data['code'])->first();
-        if($product?->integrator == 'JATELINDO')
-        {
+        if ($product?->integrator == 'JATELINDO') {
             // $res_jatelindo = JatelindoService::inquiry($data['flag'] ?? 0, $data['phone'], $product)->json();
             $res_jatelindo = $data['result_pln'] ?? [];
             $res_jatelindo['bit4'] = str_pad($product->kode, 12, '0', STR_PAD_LEFT);
-            if(($res_jatelindo['bit39'] ?? '') == '00'){
+            if (($res_jatelindo['bit39'] ?? '') == '00') {
                 $pilihan_token = $data['pilihan_token'] ?? 0;
-                Log::info('Pilihan Token '.$pilihan_token);
-                Log::info('bit 48 '.$res_jatelindo['bit48']);
-                $res_jatelindo['bit48'] = $res_jatelindo['bit48'].$pilihan_token;
-                Log::info('bit 48 add pilihan '.$res_jatelindo['bit48']);
+                Log::info('Pilihan Token ' . $pilihan_token);
+                Log::info('bit 48 ' . $res_jatelindo['bit48']);
+                $res_jatelindo['bit48'] = $res_jatelindo['bit48'] . $pilihan_token;
+                Log::info('bit 48 add pilihan ' . $res_jatelindo['bit48']);
                 $order->sub_total = $product->harga;
                 $order->total = $order->sub_total + $order->fee;
                 $order->save();
@@ -535,7 +537,7 @@ class KiosBankService
                     'data' => $res_jatelindo
                 ]);
                 return ['code' => 200, 'data' => $order];
-            }else{
+            } else {
                 return ['code' => 422, 'data' => JatelindoService::responseTranslation($res_jatelindo), 422];
             }
         }
@@ -544,7 +546,7 @@ class KiosBankService
         $payload = [
             'sessionID' => $this->getSeesionId(),
             'merchantID' => env('KIOSBANK_MERCHANT_ID'),
-            'productID' =>  substr($ref[0], 0, 6),
+            'productID' => substr($ref[0], 0, 6),
             'customerID' => $data['phone'],
             'referenceID' => $ref[2]
             // 'productIDPLN' => $data['code']
@@ -558,13 +560,13 @@ class KiosBankService
         // }
         clock()->event('inquiry kios')->color('purple')->begin();
 
-        try{
-       
-        $res_json = $this->http('POST', self::INQUIRY, $payload);
-    } catch (\Throwable $th) {
-        // dd($th instanceof \Exception);
-        // throw new \Exception();
-        return $th;
+        try {
+
+            $res_json = $this->http('POST', self::INQUIRY, $payload);
+        } catch (\Throwable $th) {
+            // dd($th instanceof \Exception);
+            // throw new \Exception();
+            return $th;
         }
         clock()->event('inquiry kios')->end();
 
@@ -581,14 +583,14 @@ class KiosBankService
             if ($res_json['productID'] == '520021' || $res_json['productID'] == '520011') {
                 $disc = 0;
                 $order->harga_kios = $res_json['data']['total'];
-              
+
                 //harga jual
 
                 $harga_jual_kios = ProductKiosBank::where('kode', $res_json['productID'])->first() ?? $res_json['data']['total'];
                 $order->sub_total = ($harga_jual_kios?->harga ?? 0) + $res_json['data']['total'] - $disc;
 
                 $order->margin = $harga_jual_kios?->harga + $harga_jual_kios?->fee_admin_bank ?? 0;
-                $order->net_margin =  $order->margin - $disc;
+                $order->net_margin = $order->margin - $disc;
 
                 $order->total = $order->sub_total + $order->fee;
 
@@ -606,18 +608,17 @@ class KiosBankService
 
                 return $order;
 
-            }
-            else if ($res_json['productID'] == '100302') {
+            } else if ($res_json['productID'] == '100302') {
                 // $disc = 0;
                 $disc = 1850;
 
 
-                $harga_jual_kios = ProductKiosBank::where('kode', $res_json['productID'])->first() ??  ProductKiosBank::where('kode', $data['code'])->first() ?? $res_json['data']['total'];
+                $harga_jual_kios = ProductKiosBank::where('kode', $res_json['productID'])->first() ?? ProductKiosBank::where('kode', $data['code'])->first() ?? $res_json['data']['total'];
                 $temp_harga = preg_replace('/[^0-9]/', '', $harga_jual_kios['name']) + $res_json['data']['AB'];
-                
+
                 $order->harga_kios = $temp_harga;
                 $order->discount = $disc;
-                $order->sub_total = $temp_harga - $disc ;
+                $order->sub_total = $temp_harga - $disc;
 
                 $order->total = $order->sub_total + $order->fee;
                 $order->margin = $harga_jual_kios->fee_admin_bank ?? $order->sub_total - $harga_jual_kios->harga;
@@ -641,7 +642,7 @@ class KiosBankService
 
                 return $order;
 
-                
+
 
 
 
@@ -659,30 +660,28 @@ class KiosBankService
 
                 //minta tambah updateOrCreate ke column inquiry
 
-            }
-            
-            else {
+            } else {
                 $disc = 0;
                 $order->harga_kios = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'] ?? $res_json;
                 //harga jual
 
-            //     $deposit = $this->cekDeposit();
-            //     if ($deposit['rc'] == '00') {
-            //         if ((int) $deposit['deposit'] < $order->harga_kios) {
-            //             $data['rc'] = '71';
-            //             $data['description'] = 'MAINTENANCE';
-            //             return $data;            
-            //     } 
-            // }
+                //     $deposit = $this->cekDeposit();
+                //     if ($deposit['rc'] == '00') {
+                //         if ((int) $deposit['deposit'] < $order->harga_kios) {
+                //             $data['rc'] = '71';
+                //             $data['description'] = 'MAINTENANCE';
+                //             return $data;            
+                //     } 
+                // }
                 $harga_jual_kios = ProductKiosBank::where('kode', $res_json['productID'])->first();
-                
+
                 // $order->sub_total = $harga_jual_kios?->harga ?? $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
                 $order->discount = $disc;
-                $order->sub_total = ($harga_jual_kios?->harga ?? 0) + ($res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan']) - $disc ;
+                $order->sub_total = ($harga_jual_kios?->harga ?? 0) + ($res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan']) - $disc;
                 $order->total = $order->sub_total + $order->fee;
-              
+
                 $order->margin = $harga_jual_kios?->harga + ($harga_jual_kios?->fee_admin_bank ?? 0);
-                $order->net_margin =  $order->margin - $disc;
+                $order->net_margin = $order->margin - $disc;
 
                 $res_json['data']['harga_kios'] = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'];
                 $res_json['data']['harga'] = $order->sub_total;
