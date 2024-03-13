@@ -78,7 +78,6 @@ class TsOrderResource extends JsonResource
                         unset($product_kios['Pilihan_Token']);
                         unset($product_kios['Token_Unsold_1']);
                         unset($product_kios['Token_Unsold_2']);
-                        dd($product_kios);
 
                     // }
                     // if ($this->status === TransOrder::DONE) {
