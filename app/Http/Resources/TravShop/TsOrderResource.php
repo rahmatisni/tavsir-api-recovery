@@ -66,7 +66,6 @@ class TsOrderResource extends JsonResource
 
                         $daya = $product_kios['Daya'];
                         $product_kios['Daya'] = str_pad($daya, 9, "0", STR_PAD_LEFT);
-                        unset($product_kios['name']);
                         unset($product_kios['Ref_ID']);
                         unset($product_kios['Transaksi_ID']);
                         unset($product_kios['Vending_Number']);
