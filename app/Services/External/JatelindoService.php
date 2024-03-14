@@ -342,8 +342,7 @@ class JatelindoService
             'RP_STROM/TOKEN' => 'Rp. ' . number_format((int) substr($biaya_pembelian, 0, -$digit_pembelian), 0, ',', '.'),
             'JML_KWH' => number_format($biaya_kwh, 0, ',', '.'),
             'STROOM/TOKEN' => wordwrap($token, 4, ' ', true),
-            // not fixed v
-            'ADMIN_CA' => 1,
+            'ADMIN_CA' => 'Rp. ' . number_format((int) substr($biaya_admin, 0, -$digit_admin), 0, ',', '.'),
             'Informasi' => $bit_62,
 
 
