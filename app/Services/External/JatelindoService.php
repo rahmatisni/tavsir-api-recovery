@@ -328,7 +328,7 @@ class JatelindoService
             ];
         }
         return [
-            '\n' => '\n',
+            '' => '',
             'NO_METER' => $meter_id,
             'IDPEL' => $pelanggan_id,
             'NAMA' => $nama_pelanggan,
