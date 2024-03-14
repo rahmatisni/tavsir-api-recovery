@@ -76,6 +76,7 @@ class TsOrderResource extends JsonResource
                         unset($product_kios['Transaksi_ID']);
                         unset($product_kios['Vending_Number']);
                         $note = $product_kios['Informasi'] ?? null;
+                        $title = 'STRUK PEMBELIAN LISTRIK PRABAYAR';
                         unset($product_kios['Informasi']);
                         unset($product_kios['Flag']);
                         unset($product_kios['Pilihan_Pembelian']);
@@ -245,6 +246,7 @@ class TsOrderResource extends JsonResource
             "facebook" => $this->tenant->facebook ?? null,
             "website" => $this->tenant->website ?? null,
             "note" => $this->tenant->note ?? $note ?? null,
+            'title' => $title ?? null,
             'detil' => TsOrderDetilResource::collection($this->detil),
         ];
     }
