@@ -333,16 +333,16 @@ class JatelindoService
             'NAMA' => $nama_pelanggan,
             'TARIF/DAYA' => $tarif . '/' . $daya,
             'NO_REF' => $ref_id,
-            'RP_BAYAR' => 'Rp. ' . number_format((int) substr($biaya_pembelian, 0, -$digit_pembelian), 0, ',', '.'),
-            'METERAI' => 'Rp. ' . number_format((int) substr($biaya_materai, 0, -$digit_materai), 0, ',', '.'),
-            'PPn' => 'Rp. ' . number_format((int) substr($biaya_ppn, 0, -$digit_ppn), 0, ',', '.'),
-            'PBJT-TL' => 'Rp. ' . number_format((int) substr($biaya_ppju, 0, -$digit_ppju), 0, ',', '.'),
-            'ANGSURAN' => 'Rp. ' . number_format((int) substr($biaya_angsuran, 0, -$digit_angsuran), 0, ',', '.'),
-            // not fixed v
-            'RP_STROM/TOKEN' => 'Rp. ' . number_format((int) substr($biaya_pembelian, 0, -$digit_pembelian), 0, ',', '.'),
-            'JML_KWH' => number_format($biaya_kwh, 0, ',', '.'),
+            'RP_BAYAR' => 'Rp. ' . number_format((float) substr($biaya_pembelian, 0, -$digit_pembelian), 0, ',', '.').",00",
+            'METERAI' => 'Rp. ' . number_format((float) substr($biaya_materai, 0, -$digit_materai), 0, ',', '.').",00",
+            'PPn' => 'Rp. ' . number_format((float) substr($biaya_ppn, 0, -$digit_ppn), 0, ',', '.').",00",
+            'PBJT-TL' => 'Rp. ' . number_format((float) substr($biaya_ppju, 0, -$digit_ppju), 0, ',', '.').",00",
+            'ANGSURAN' => 'Rp. ' . number_format((float) substr($biaya_angsuran, 0, -$digit_angsuran), 0, ',', '.').",00",
+            // not fixed .",00"v
+            'RP_STROM/TOKEN' => 'Rp. ' . number_format((float) substr($biaya_pembelian, 0, -$digit_pembelian), 0, ',', '.').",00",
+            'JML_KWH' => number_format($biaya_kwh, 0, ',', '.').",00",
             'STROOM/TOKEN' => wordwrap($token, 4, ' ', true),
-            'ADMIN_CA' => 'Rp. ' . number_format((int) substr($biaya_admin, 0, -$digit_admin), 0, ',', '.'),
+            'ADMIN_CA' => 'Rp. ' . number_format((float) substr($biaya_admin, 0, -$digit_admin), 0, ',', '.').",00",
             'Informasi' => $bit_62,
 
 
