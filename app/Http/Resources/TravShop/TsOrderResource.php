@@ -73,7 +73,7 @@ class TsOrderResource extends JsonResource
                         unset($product_kios['logo_url']);
                         unset($product_kios['Transaksi_ID']);
                         unset($product_kios['Vending_Number']);
-                        unset($product_kios['Informasi']);
+                        // unset($product_kios['Informasi']);
                         unset($product_kios['Flag']);
                         unset($product_kios['Pilihan_Pembelian']);
                         unset($product_kios['Transaksi_ID']);
@@ -193,6 +193,7 @@ class TsOrderResource extends JsonResource
 
             $rest_area_name = 'Travoy';
             $tenant_name = 'Multibiller';
+            $note = $product_kios['Informasi'] ?? null;
         }
 
         $log_kios_bank = $this->order_type === 'ORDER_TRAVOY' ? ($product_kios_bank?->integrator == 'JATELINDO' ? ['data' => $product_kios] : ($temps ?? $this->log_kiosbank)) : null;
@@ -241,7 +242,7 @@ class TsOrderResource extends JsonResource
             "instagram" => $this->tenant->instagram ?? null,
             "facebook" => $this->tenant->facebook ?? null,
             "website" => $this->tenant->website ?? null,
-            "note" => $this->tenant->note ?? null,
+            "note" => $this->tenant->note ?? $note ?? null,
             'detil' => TsOrderDetilResource::collection($this->detil),
         ];
     }
