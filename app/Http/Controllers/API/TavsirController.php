@@ -362,7 +362,9 @@ class TavsirController extends Controller
         $data = TransOrder::with('detil.product.tenant')
             ->whereIn('status', [TransOrder::DONE, TransOrder::REFUND])
             ->where('supertenant_id', $tenant_user->supertenant_id ?? 0)
-
+            ->when($payment_method = request()->payment_method, function ($q) use ($payment_method) {
+                $q->where('payment_method_id', $payment_method);
+            })
             ->when($status = request()->status, function ($q) use ($status) {
                 if (is_array($status)) {
                     $q->whereIn('status', $status)->orwhereIn('status', json_decode($status[0]) ?? []);
@@ -2208,6 +2210,9 @@ class TavsirController extends Controller
                 })->when($order_type = request()->order_type, function ($q) use ($order_type) {
                     $q->where('order_type', $order_type);
                 })
+                ->when($payment_method = request()->payment_method, function ($q) use ($payment_method) {
+                    $q->where('payment_method_id', $payment_method);
+                })
                 ->when($customer_name = request()->customer_name, function ($q) use ($customer_name) {
                     $q->where('customer_name', $customer_name)->orwhere('nomor_name', $customer_name);
                 })
@@ -2269,6 +2274,9 @@ class TavsirController extends Controller
             })
             ->when($customer_name = $request->customer_name, function ($q) use ($customer_name) {
                 $q->where('customer_name', $customer_name)->orwhere('nomor_name', $customer_name);
+            })
+            ->when($payment_method = request()->payment_method, function ($q) use ($payment_method) {
+                $q->where('payment_method_id', $payment_method);
             })
             ->when($id = $request->id, function ($q) use ($id) {
                 $q->where('id', $id);
