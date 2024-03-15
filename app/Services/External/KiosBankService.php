@@ -200,6 +200,8 @@ class KiosBankService
             } else if ($sub_kategori) {
                 $data = ProductKiosBank::when($sub_kategori, function ($q) use ($sub_kategori) {
                     return $q->where('sub_kategori', $sub_kategori);
+                })->when($kategori_pulsa, function ($q) use ($kategori_pulsa) {
+                    return $q->where('kategori', $kategori_pulsa);
                 })->where('is_active', 1)
                     // ->orderBy('kode', 'asc')
                     ->orderByRaw("CAST(REGEXP_REPLACE(name, '[^0-9]+', '') AS DECIMAL) ASC")

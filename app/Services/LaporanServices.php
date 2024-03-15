@@ -441,8 +441,8 @@ class LaporanServices
         $business_id = $request->business_id;
         $order_type = $request->order_type;
         $payment_method_id = $request->payment_method_id;
-        $super_tenant_checker = auth()->user()->tenant->is_supertenant;
-        $super_tenant_id = auth()->user()->tenant->supertenant_id;
+        $super_tenant_checker = auth()->user()?->tenant?->is_supertenant;
+        $super_tenant_id = auth()->user()?->tenant?->supertenant_id;
 
         if ($super_tenant_checker < 1) {
             $raw_data = $data = TransOrder::with('tenant')
@@ -461,6 +461,7 @@ class LaporanServices
                 ->when($tenant_id, function ($q) use ($tenant_id) {
                     return $q->where('tenant_id', $tenant_id);
                 })
+
                 ->when($super_tenant_id, function ($q) use ($super_tenant_id) {
                     return $q->where('supertenant_id', $super_tenant_id);
                 })->orderBy('created_at')
