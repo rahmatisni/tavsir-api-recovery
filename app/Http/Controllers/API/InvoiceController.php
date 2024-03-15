@@ -197,12 +197,30 @@ class InvoiceController extends Controller
                 return response()->json(['status' => 'error', 'message'=> 'Anda Tidak Memiliki Akses!'], 403);
             }
             $validator = Validator::make($request->all(), [
-                'file' => 'required|file|mimes:jpeg,png,pdf|max:10000', // max size in kilobytes
-            ]);
+            'amount' => 'numeric', // Ensures it's a number
+            // Additional check to ensure it's a floating-point number
+            'file' => 'required|file|mimes:jpeg,png,pdf|max:10000', // max size in kilobytes
+        ]);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->toArray();
         
-            if ($validator->fails()) {
-                return response()->json(['status' => 'error', 'message'=> 'Periksa Format Bukti Bayar'], 422);
+            // Check if 'amount' field has errors
+            if (isset($errors['amount'])) {
+                // Handle errors for 'amount' field
+                return response()->json(['status' => 'error', 'message' => 'Nominal Input Tidak Sesuai!', 'errors' => $errors['amount']], 422);
             }
+        
+            // Check if 'file' field has errors
+            if (isset($errors['file'])) {
+                // Handle errors for 'file' field
+                return response()->json(['status' => 'error', 'message' => 'Format File Tidak Sesuai', 'errors' => $errors['file']], 422);
+            }
+        
+            // Handle other errors if needed
+            return response()->json(['status' => 'error', 'message' => 'Periksa Format Bukti Bayar', 'errors' => $errors], 422);
+        }
+        
     
             try {
                 $data = TransInvoiceDerek::findOrFail($id);
@@ -216,6 +234,7 @@ class InvoiceController extends Controller
             $data->pay_petugas_id = auth()->user()->id;
             $data->paid_date = Carbon::now();
             $data->kwitansi_id = ($data->pay_petugas_id ?? '0') . '-RCP-' . date('YmdHis');
+            $data->selisih = $request->amount - $data->nominal;
             ;
             $data->file = $request->file;
             $data->save();

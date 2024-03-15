@@ -62,7 +62,10 @@ class LaporanRekonResource extends JsonResource
             "paid_date"=> $this->paid_date,
             "valid"=> (int)$this->valid,
             "derek" => $this->detilDerek,
-            "status_report" => $this->detilReport->Status_Report ?? '-'
+            "nomor_rekon" => $this?->detilReport->Nomor_Rekon ?? '-',
+            "remark_disbursement" => $this?->detilReport->Remark_Disbursement ?? '-',
+            "remark_transaksi" => $this?->detilReport->Remark_Transaksi ?? '-',
+            "status_report" => $this?->detilReport->Status_Report ?? '-'
         ];
     }
 }

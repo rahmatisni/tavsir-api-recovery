@@ -111,6 +111,9 @@ class TrOrderResourceDerek extends JsonResource
             "status_claim" => $this?->detilDerek?->is_solve_derek === 3 ? 'AVAILABLE' : 'NOT AVAILABLE',
             "rekon_status" => $rekon_status ?? null,
             "derek_data" => $this?->detilDerek ?? [],
+            "nomor_rekon" => $this?->compare->detilReport->Nomor_Rekon ?? '-',
+            "remark_disbursement" => $this?->compare->detilReport->Remark_Disbursement ?? '-',
+            "remark_transaksi" => $this?->compare->detilReport->Remark_Transaksi ?? '-',
             "status_report" => $this?->compare->detilReport->Status_Report ?? '-'
         ];
     }
