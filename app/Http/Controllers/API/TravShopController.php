@@ -3227,6 +3227,7 @@ class TravShopController extends Controller
     public function infoPln(Request $request)
     {
         $data =JatelindoService::infoPln($request->meter_id);
+        dd($data);
         if($data['data']['code']!== 200){
             return response()->json(['statys'=>'error', 'message' => $data, ], 422);
         }
