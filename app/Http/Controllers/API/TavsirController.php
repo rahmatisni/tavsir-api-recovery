@@ -2161,9 +2161,22 @@ class TavsirController extends Controller
         if (auth()->user()->role === 'TENANT') {
             if (auth()->user()->tenant->is_derek > 0) {
                 $data = $this->orderListDerek($request);
-                // return response()->json($data);
 
-                return response()->json(TrOrderResourceDerek::collection($data));
+                $dataRes = TrOrderResourceDerek::collection($data);
+
+                $sharingCodeSum = collect($dataRes)->flatMap(function ($item) {
+                    return collect($item['sharing_code'])->zip($item['sharing_amount']);
+                })->groupBy(0)->map(function ($group) {
+                    return $group->sum(1);
+                })->toArray();
+                                
+                $result = [
+                    'sharing' => $sharingCodeSum ?? [],
+                    'record' => $dataRes ?? []
+                ];
+                // $mergedArray = array_merge($sharingCodeSum ?? [], $result);
+
+                return response()->json($result);
             }
 
         }
