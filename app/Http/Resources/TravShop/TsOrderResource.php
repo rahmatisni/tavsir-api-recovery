@@ -53,6 +53,7 @@ class TsOrderResource extends JsonResource
                     'kategori',
                     'sub_kategori',
                     'kode',
+                    'harga',
                     'name',
                     'logo_url'
                 ]);
@@ -187,7 +188,8 @@ class TsOrderResource extends JsonResource
             }
 
 
-            $temps['data']['Diskon'] = '-' . rupiah((int) $this->discount);
+            // $temps['data']['Diskon'] = '-' . rupiah((int) $this->discount);
+            $temps['data']['Diskon'] = $this->discount == 0 ? rupiah((int) $this->discount) : '-'.rupiah((int) $this->discount);
             unset($temps['sessionID']);
             // unset($temps['customerID']);
             unset($temps['merchantID']);
