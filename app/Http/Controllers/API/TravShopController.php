@@ -3224,6 +3224,34 @@ class TravShopController extends Controller
 
     }
 
+    public function callbackDerek(Request $request){
+        $data = TransOrder::where('order_type',TransOrder::ORDER_DEREK_ONLINE)->findOrFail($request->id);
+        if($data){
+            $all_sharing_amount = [];
+            $all_sharing_proportion = [];
+
+            foreach(json_decode($data->sharing_code) as $item) {
+                if($item == 'JMTO') {
+                    array_push($all_sharing_amount, $data->sub_total);
+                    array_push($all_sharing_proportion, 100);
+
+                }
+                else {
+                    array_push($all_sharing_amount, 0);
+                    array_push($all_sharing_proportion, 0);
+
+                }
+            }
+            $data->sharing_amount = $all_sharing_amount;
+            $data->sharing_proportion = $all_sharing_proportion;
+            $data->save();
+            return response()->json(['status'=>'success', 'data' => $data,], 200);
+        }
+        return response()->json(['status'=>'error', 'data' => 'Data Tidak di temukan',], 422);
+
+
+    }
+
     public function infoPln(Request $request)
     {
         return $this->response(JatelindoService::infoPln($request->meter_id));

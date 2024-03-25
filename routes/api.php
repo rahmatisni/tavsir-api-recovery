@@ -337,6 +337,8 @@ Route::post('payment-gateway/dd/inquiry', [App\Http\Controllers\API\PaymentGatew
 Route::post('payment-gateway/dd/payment', [App\Http\Controllers\API\PaymentGatewayController::class, 'ddPayment']);
 
 Route::post('/CallbackLinkAjaQRIS', [App\Http\Controllers\API\TavsirController::class, 'CallbackLinkAjaQRIS']);
+Route::post('/callbackDerek', [App\Http\Controllers\API\TravShopController::class, 'callbackDerek']);
+
 
 
 Route::get('/tokenpg', function (Request $request) {
