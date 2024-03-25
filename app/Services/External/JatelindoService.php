@@ -307,10 +307,9 @@ class JatelindoService
         $digit_pembelian = empty(substr($bit_48, 197, 1)) ? 0 : substr($bit_48, 197, 1); //Digit belakang koma
         $biaya_pembelian = substr($bit_48, 198, 12); //Biaya Pembelian listrik
         $digit_kwh = empty(substr($bit_48, 210, 1)) ? 0 : substr($bit_48, 210, 1); //Digit belakang koma
-        $biaya_kwh = (int) substr($bit_48, 211, 10); //Biaya Kwh
+        $biaya_kwh = substr($bit_48, 211, 10); //Biaya Kwh
         $token = substr($bit_48, 221, 20); //Token
         $tanggal_lunas = substr($bit_48, 241, 14); //Tanggal lunas 
-
 
         if ($trans_order_status == TransOrder::WAITING_PAYMENT) {
             return [
@@ -328,6 +327,7 @@ class JatelindoService
                 'Token_Unsold_2' => number_format((int) $harga_token_unsold_2, 0, ',', '.'),
             ];
         }
+
         return [
             '-' => '-',
             'NO_METER' => $meter_id,
@@ -341,7 +341,7 @@ class JatelindoService
             'PBJT-TL' => 'Rp. ' . number_format((float) substr($biaya_ppju, 0, -$digit_ppju), 0, ',', '.').",00",
             'ANGSURAN' => 'Rp. ' . number_format((float) substr($biaya_angsuran, 0, -$digit_angsuran), 0, ',', '.').",00",
             'RP_STROM/TOKEN' => 'Rp. ' . number_format((float) substr($biaya_pembelian, 0, -$digit_pembelian), 0, ',', '.').",00",
-            'JML_KWH' => number_format($biaya_kwh, 0, ',', '.').",00",
+            'JML_KWH' => number_format((float) substr($biaya_kwh, 0, -$digit_kwh)),
             'STROOM/TOKEN' => wordwrap($token, 4, ' ', true),
             'ADMIN_BANK' => 'Rp. ' . number_format((float) substr($biaya_admin, 0, -$digit_admin), 0, ',', '.').",00",
             'Informasi' => $bit_62,
