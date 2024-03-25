@@ -3253,7 +3253,7 @@ class TravShopController extends Controller
 
     public function callbackpg(Request $request)
     {
-        log::info(['returncallbackPG =>', $request->request()]);
+        log::info(['returncallbackPG =>', $request?->all() ?? null]);
         return response()->json(['status' => 'success', 'data' => 'Data di Terima'], 200);
     }
 
