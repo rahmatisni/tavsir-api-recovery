@@ -341,7 +341,7 @@ class JatelindoService
             'PBJT-TL' => 'Rp. ' . number_format((float) substr($biaya_ppju, 0, -$digit_ppju), 0, ',', '.').",00",
             'ANGSURAN' => 'Rp. ' . number_format((float) substr($biaya_angsuran, 0, -$digit_angsuran), 0, ',', '.').",00",
             'RP_STROM/TOKEN' => 'Rp. ' . number_format((float) substr($biaya_pembelian, 0, -$digit_pembelian), 0, ',', '.').",00",
-            'JML_KWH' => number_format((float) substr($biaya_kwh, 0, -$digit_kwh), 0, ',', '.'),
+            'JML_KWH' => number_format((float) substr($biaya_kwh, 0, -$digit_kwh)),
             'STROOM/TOKEN' => wordwrap($token, 4, ' ', true),
             'ADMIN_BANK' => 'Rp. ' . number_format((float) substr($biaya_admin, 0, -$digit_admin), 0, ',', '.').",00",
             'Informasi' => $bit_62,
