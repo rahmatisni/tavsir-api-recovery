@@ -3251,6 +3251,12 @@ class TravShopController extends Controller
         return response()->json(['status' => 'error', 'data' => 'Data Tidak di temukan',], 422);
     }
 
+    public function callbackpg(Request $request)
+    {
+        log::info($request);
+        return response()->json(['status' => 'success', 'data' => 'Data di Terima'], 200);
+    }
+
     public function infoPln(Request $request)
     {
         return $this->response(JatelindoService::infoPln($request->meter_id));
