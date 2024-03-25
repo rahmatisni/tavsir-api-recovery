@@ -310,6 +310,7 @@ class JatelindoService
         $biaya_kwh = substr($bit_48, 211, 10); //Biaya Kwh
         $token = substr($bit_48, 221, 20); //Token
         $tanggal_lunas = substr($bit_48, 241, 14); //Tanggal lunas 
+        $rp_bayar = (float)$biaya_pembelian + (float)$biaya_admin;
 
         if ($trans_order_status == TransOrder::WAITING_PAYMENT) {
             return [
@@ -335,7 +336,7 @@ class JatelindoService
             'NAMA' => $nama_pelanggan,
             'TARIF/DAYA' => $tarif . '/' . $daya,
             'NO_REF' => $ref_id,
-            'RP_BAYAR' => 'Rp. ' . number_format((float) substr($biaya_pembelian+$biaya_admin, 0, -$digit_pembelian), 0, ',', '.').",00",
+            'RP_BAYAR' => 'Rp. ' . number_format((float) substr($rp_bayar, 0, -$digit_pembelian), 0, ',', '.').",00",
             'METERAI' => 'Rp. ' . number_format((float) substr($biaya_materai, 0, -$digit_materai), 0, ',', '.').",00",
             'PPn' => 'Rp. ' . number_format((float) substr($biaya_ppn, 0, -$digit_ppn), 0, ',', '.').",00",
             'PBJT-TL' => 'Rp. ' . number_format((float) substr($biaya_ppju, 0, -$digit_ppju), 0, ',', '.').",00",
