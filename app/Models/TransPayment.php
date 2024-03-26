@@ -17,7 +17,7 @@ class TransPayment extends Model
 
     ];
     protected $fillable = [
-        'refnum', 'orderid_sof', 'tenant_kriteria','issuer_name'
+        'refnum', 'orderid_sof', 'tenant_kriteria','issuer_name', 'data', 'payment', 'inquiry'
 
     ];
     public function getDataAttribute($value)
@@ -28,6 +28,11 @@ class TransPayment extends Model
     public function setDataAttribute($value)
     {
         $this->attributes['data'] = json_encode($value);
+    }
+
+    public function setInquiryAttribute($value)
+    {
+        $this->attributes['inquiry'] = json_encode($value);
     }
 
     public function trans_order()

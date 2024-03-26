@@ -5,11 +5,12 @@ namespace App\Models;
 use App\Models\BaseModel;
 use App\Models\KiosBank\ProductKiosBank;
 use App\Models\Traits\Uuid;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\SoftDeletes;
 class TransOrder extends BaseModel
 {
-    use Uuid, SoftDeletes;
+    use Uuid, SoftDeletes, HasFactory;
     
     protected $table = 'trans_order';
     public const CART = 'CART';
@@ -65,7 +66,8 @@ class TransOrder extends BaseModel
         'sharing_code',
         'sharing_amount',
         'sharing_proportion',
-        'invoice_id'
+        'invoice_id',
+        'status'
     ];
 
     public function invoice_derek()

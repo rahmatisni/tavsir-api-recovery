@@ -68,10 +68,10 @@ class TransOrderFactory extends Factory
             'pickup_date' => $status == 'DONE' ? $created_at : null,
             'rating' => $status == 'DONE' ? $this->faker->randomElement([1,2,3,4,5]) : null,
             'rating_comment' => $status == 'DONE' ? $this->faker->sentence : null,
-            // 'sub_total' => $sub_total,
+            'sub_total' => $sub_total,
             'fee' => $fee,
             'service_fee' => $service_fee,
-            // 'total' => $total,
+            'total' => $total,
             'payment_method_id' => PaymentMethod::get()->random()->id,
             'casheer_id' => User::get()->random()->id,
         ];

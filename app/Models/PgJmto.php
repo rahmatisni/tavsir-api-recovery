@@ -97,6 +97,9 @@ class PgJmto extends Model
 
     public static function generateSignature($method, $path, $token, $timestamp, $request_body)
     {
+        if(env('PG_FAKE_RESPON') == true){
+            return 'fake_signatur';
+        }
         $request_body = json_encode($request_body);
 
         if ($method == 'GET') {
@@ -179,6 +182,7 @@ class PgJmto extends Model
                     ->retry(1, 100)
                     ->withoutVerifying()
                     ->post(env('PG_BASE_URL') . $path, $payload);
+
                 clock()->event("pg{$path}")->end();
 
                 // $bad = $response?->getStatusCode();
@@ -222,6 +226,7 @@ class PgJmto extends Model
         }
 
     }
+
     public static function serviceSnap($method, $path, $payload)
     {
         $token = self::getToken();
@@ -288,14 +293,6 @@ class PgJmto extends Model
 
     public static function vaCreate($sof_code, $bill_id, $bill_name, $amount, $desc, $phone, $email, $customer_name, $sub_merchant_id)
     {
-        // if ($amount > 1000000) {
-        //     throw new Exception("The amount must be less than 1000000", 422);
-        // }
-        $bi = env('SNAP_BI');
-        if ($bi === true) {
-            $va = self::vaCreateSnap($sof_code, $bill_id, $bill_name, $amount, $desc, $phone, $email, $customer_name, $sub_merchant_id);
-            return $va;
-        }
         $payload = [
             "sof_code" => $sof_code,
             "bill_id" => (string) $bill_id,
@@ -338,7 +335,6 @@ class PgJmto extends Model
                     "email" => $payload['email'],
                     "customer_name" => $payload['customer_name'],
                 ],
-                "requestData" => $payload
             ];
 
             Http::fake([
@@ -350,7 +346,6 @@ class PgJmto extends Model
         }
 
         $res = self::service('POST', '/va/create', $payload);
-
         Log::info($payload);
         Log::info('Va create res', $res->json() ?? 'ERROR' . $payload);
         return $res->json();
@@ -459,15 +454,11 @@ class PgJmto extends Model
                     "va_number" => $payload['va_number'],
                     "pay_status" => "1",
                     "amount" => "99999.00",
-                    "bill_name" => "FAKE BILL NAME",
+                    "name" => "FAKE BILL NAME",
                     "desc" => "FAKE DESC",
                     "exp_date" => "2022-08-12 00:00:00",
                     "refnum" => "VA20220811080829999999",
-                    "phone" => $payload['phone'],
-                    "email" => $payload['email'],
-                    "customer_name" => $payload['customer_name'],
                 ],
-                "requestData" => $payload
             ];
             Http::fake([
                 env('PG_BASE_URL') . '/va/cekstatus' => function () use ($fake_respon_status_va) {
@@ -673,17 +664,16 @@ class PgJmto extends Model
                         "responseData" => [
                             "sof_code" => $payload['sof_code'],
                             "card_no" => $payload['card_no'],
-                            "bill" => $payload['bill'],
+                            "bill" => $payload['amount'],
                             "fee" => 2500,
-                            "amount" => $payload['bill'] + 2500,
+                            "amount" => $payload['amount'] + 2500,
                             "trxid" => $payload['trxid'],
                             "remarks" => $payload['remarks'],
-                            "refnum" => $payload['refnum'],
+                            "refnum" => Str::uuid(),
                             "email" => $payload['email'],
                             "phone" => $payload['phone'],
                             "customer_name" => $payload['customer_name'],
                         ],
-                        "requestData" => $payload
                     ], 200);
                 },
             ]);
@@ -692,7 +682,9 @@ class PgJmto extends Model
         Log::info('DD Req Inquiry', $payload);
         unset($payload["card_id"]);
         unset($payload["submerchant_id"]);
+
         $res = self::service('POST', '/directdebit/inquiry', $payload);
+
         Log::info('DD Resp inquiry', $res->json());
         return $res;
     }
@@ -731,6 +723,7 @@ class PgJmto extends Model
         unset($payload["submerchant_id"]);
 
         Log::info('DD Payment Request', $payload);
+
         $res = self::service('POST', '/directdebit/payment', $payload);
         Log::info('DD payment Response', $res->json());
         return $res;
@@ -741,7 +734,7 @@ class PgJmto extends Model
         if (env('PG_FAKE_RESPON') === true) {
             //for fake
             Http::fake([
-                env('PG_BASE_URL') . '/directdebit/payment' => function () use ($payload) {
+                env('PG_BASE_URL') . '/directdebit/advice' => function () use ($payload) {
                     return Http::response([
                         "status" => "success",
                         "rc" => "0000",
@@ -765,7 +758,9 @@ class PgJmto extends Model
             ]);
             //end fake
         }
-        unset($payload["card_id"]);
+        if(isset($payload["card_id"])){
+            unset($payload["card_id"]);
+        }
         // temp
         unset($payload["submerchant_id"]);
         Log::info('DD Status Request', $payload);

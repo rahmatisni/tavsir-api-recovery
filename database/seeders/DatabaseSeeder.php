@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
         $this->call(SupertenantSeeder::class);
         $this->call(CategoryTenantSeeder::class);
         $this->call(TenantSeeder::class);
+        $this->call(TenantLaSeeder::class);
         $this->call(UserSeeder::class);
         $this->call(CategorySeeder::class);
         $this->call(CustomizeSeeder::class);

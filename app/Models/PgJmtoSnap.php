@@ -6,6 +6,7 @@ use App\Models\Dto\BindingDto;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -19,7 +20,7 @@ class PgJmtoSnap extends Model
 
     public static function getToken()
     {
-        $token = Redis::get('token_pg');
+        $token = Redis::get('token_snap_pg');
         if (!$token) {
             $now = Carbon::now();
             $hours = Carbon::now()->addMinute(59);
@@ -28,8 +29,10 @@ class PgJmtoSnap extends Model
             if ($token == '') {
                 // throw new Exception("token not found",422);
             }
-            Redis::set('token_pg', $token);
-            Redis::expire('token_pg', $diff);
+            if (env('PG_FAKE_RESPON') != true) {
+                Redis::set('token_snap_pg', $token);
+                Redis::expire('token_snap_pg', $diff);
+            }
         }
         return $token;
     }
@@ -39,7 +42,7 @@ class PgJmtoSnap extends Model
         if (env('PG_FAKE_RESPON') === true) {
             //for fake
             Http::fake([
-                env('PG_BASE_URL') . '/oauth/token' => function () {
+                env('PG_BASE_URL_SNAP') . '/oauth/token' => function () {
                     return Http::response([
                         'access_token' => 'ini-fake-access-token',
                         "token_type" => "Bearer",
@@ -52,77 +55,90 @@ class PgJmtoSnap extends Model
         }
 
         clock()->event('oauth token')->color('purple')->begin();
+        $timestamp = Carbon::now()->format('c');
+        $client_id = env('PG_CLIENT_ID');
+        $payload = $client_id . '|' . $timestamp;
+        $signature = self::generateSignatureToken($timestamp, $client_id, $payload);
+        $body = array(
+            'grantType' => 'client_credentials',
+            'additionalInfo' => array()
+        );
+
         $response = Http::withHeaders([
             'Accept' => 'application/json',
             'Authorization' => 'Basic ' . base64_encode(env('PG_CLIENT_ID') . ':' . env('PG_CLIENT_SECRET')),
             'Content-Type' => 'application/json',
+            'X-CLIENT-KEY' => $client_id,
+            'X-TIMESTAMP' => $timestamp,
+            'X-SIGNATURE' => $signature
         ])
-            ->withoutVerifying()
-            ->post(env('PG_BASE_URL') . '/oauth/token', ['grant_type' => 'client_credentials']);
+        ->withoutVerifying()
+        ->post(env('PG_BASE_URL_SNAP') . '/oauth/token', ['grant_type' => 'client_credentials', 'additionalInfo' => array()]);
         clock()->event("oauth token")->end();
         return $response->json();
     }
 
-    public static function generateSignature($method, $path, $token, $timestamp, $request_body)
+    public static function generateSignatureSnap($method, $path, $token, $payload, $timestamp)
     {
-        $request_body = json_encode($request_body);
-
         if ($method == 'GET') {
-            $request_body = '';
+            $payload = '';
         }
-        $has_body = hash('sha256', $request_body);
+        $has_body = hash('sha256', json_encode($payload, JSON_UNESCAPED_SLASHES));
+        $BodyHash = preg_replace('/\s+/', '', $has_body);
+        $data = $method . ':' . $path . ':' . $token . ':' . $BodyHash . ':' . $timestamp;
+        $secret_key = env('PG_CLIENT_SECRET');
+        $sign = base64_encode(hash_hmac('sha512', $data, $secret_key, true));
+        return [$sign, $timestamp, $BodyHash];
+    }
 
-        $data = $method . ':' . $path . ':' . 'Bearer ' . $token . ':' . $has_body . ':' . $timestamp;
-
+    public static function generateSignatureToken($timestamp, $client_id, $payload)
+    {
+        if(env('PG_FAKE_RESPON') == true){
+            return 'signature-fake';
+        }
+        
         $privateKey = env('PG_PRIVATE_KEY');
         $publicKey = env('PG_PUBLIC_KEY');
-        openssl_sign($data, $signature, $privateKey, 'sha256WithRSAEncryption');
+        openssl_sign($payload, $signature, $privateKey, 'sha256WithRSAEncryption');
         $sign = Base64::encode($signature);
-        $verify = openssl_verify($data, $signature, $publicKey, 'sha256WithRSAEncryption');
         return $sign;
+
     }
 
     public static function service($method, $path, $payload)
     {
         $token = self::getToken();
         $timestamp = Carbon::now()->format('c');
-        $signature = self::generateSignature($method, $path, $token, $timestamp, $payload);
+        $signature = self::generateSignatureSnap($method, $path, $token, $payload, $timestamp);
         switch ($method) {
             case 'POST':
                 clock()->event("pg{$path}")->color('purple')->begin();
-                $response = Http::withHeaders([
-                    'JMTO-TIMESTAMP' => $timestamp,
-                    'JMTO-SIGNATURE' => $signature,
-                    'JMTO-DEVICE-ID' => env('PG_DEVICE_ID', '123456789'),
-                    'CHANNEL-ID' => 'PC',
-                    'JMTO-LATITUDE' => '106.8795316',
-                    'JMTO-LONGITUDE' => '-6.2927969',
-                    'Content-Type' => 'Application/json',
-                    'Authorization' => 'Bearer ' . $token,
-                    'JMTO-IP-CLIENT' => '172.0.0.1',
-                    'JMTO-REQUEST-ID' => '123456789',
-                ])
-                ->timeout(10)
-                    ->retry(1, 100)
-                    ->withoutVerifying()
-                    ->post(env('PG_BASE_URL') . $path, $payload);
-                clock()->event("pg{$path}")->end();
+                try {
+                    $response = Http::withHeaders([
+                        'Content-Type' => 'Application/json',
+                        'Authorization' => 'Bearer ' . $token,
+                        'X-TIMESTAMP' => $signature[1],
+                        'X-SIGNATURE' => $signature[0],
+                        'ORIGIN' => env('ORIGIN'),
+                        'X-PARTNER-ID' => env('XPARTNERID'),
+                        'X-EXTERNAL-ID' => (string) rand(10000000000000000, 99999999999999999),
+                        'X-IP-ADDRESS' => env('XIPADDRESS'),
+                        'X-DEVICE-ID' => env('PG_DEVICE_ID', '123456789'),
+                        'X-LATITUDE' => env('XLATITUDE'),
+                        'X-LONGITUDE' => env('XLONGITUDE'),
+                        'CHANNEL-ID' => env('CHANNELID'),
+                    ])
+                        // ->withBody(json_encode($payload), 'Application/json')
+                        ->timeout(10)
+                        ->retry(1, 100)
+                        ->withoutVerifying()
+                        ->post(env('PG_BASE_URL_SNAP') . $path, $payload);
+                    clock()->event("pg{$path}")->end();
 
-                // $bad = $response?->getStatusCode();
-                // Log::error($bad);
-                // if ($bad === 400 || $bad === 504) {
-                //     $fake_respo_create_bad = [
-                //         "status" => 400,
-                //         "responseData" => [
-                //             "is_presentage" => null,
-                //             "value" => null
-                //         ]
-                //     ];
+                    return $response;
+                } catch (\Exception $e) {
+                }
 
-                //     return $fake_respo_create_bad;
-                //     // You don't need a break statement here as it's not inside a loop.
-                // }
-                return $response;
             case 'GET':
                 $response = Http::withHeaders([
                     'JMTO-TIMESTAMP' => $timestamp,
@@ -136,8 +152,8 @@ class PgJmtoSnap extends Model
                     'JMTO-IP-CLIENT' => '172.0.0.1',
                     'JMTO-REQUEST-ID' => '123456789',
                 ])
-                ->timeout(10)
-                ->retry(1, 100)
+                    ->timeout(10)
+                    ->retry(1, 100)
                     ->withoutVerifying()
                     ->get(env('PG_BASE_URL') . $path, $payload);
 
@@ -147,127 +163,132 @@ class PgJmtoSnap extends Model
                 # code...
                 break;
         }
-
     }
 
     public static function vaCreate($sof_code, $bill_id, $bill_name, $amount, $desc, $phone, $email, $customer_name, $sub_merchant_id)
     {
-        // if ($amount > 1000000) {
-        //     throw new Exception("The amount must be less than 1000000", 422);
-        // }
+        if ($sof_code === 'MANDIRI') {
+            $partnerServiceId = '51105';
+            $virtualNumber = rand(100000, 99999);
 
+        }
+        if ($sof_code === 'BRI') {
+            $partnerServiceId = '77777';
+            $virtualNumber = rand(100000000, 999999999);
+
+        }
+        $virtualNumber = '031456789';
         $payload = [
-            "sof_code" => $sof_code,
-            "bill_id" => $bill_id,
-            "bill_name" => $bill_name,
-            "amount" => (string) $amount,
-            "desc" => $desc,
-            "exp_date" => Carbon::now()->addMinutes(5)->format('Y-m-d H:i:s'),
-            "va_type" => "close",
-            "phone" => $phone,
-            "email" => $email,
-            "customer_name" => $customer_name,
-            "submerchant_id" => $sub_merchant_id
+            "customerNo" => (string) $virtualNumber,
+            "partnerServiceId" => $partnerServiceId,
+            "virtualAccountNo" => $partnerServiceId . $virtualNumber,
+            "virtualAccountName" => $customer_name,
+            "virtualAccountEmail" => $email,
+            "virtualAccountPhone" => $phone,
+            "totalAmount" => ["value" => $amount . ".00", "currency" => "IDR"],
+            "billDetails" => [["billName" => $bill_name]],
+            "virtualAccountTrxType" => "close",
+            "expiredDate" => Carbon::now()->addMinutes(5)->format('c'),
+            "trxId" => $bill_id,
+            "additionalInfo" => ["description" => ($bill_id . '-' . $desc . '-' . $amount)],
         ];
 
-        if (env('PG_FROM_TRAVOY') === true) {
-            return Http::withoutVerifying()->post(env('TRAVOY_URL') . '/pg-jmto', [
-                'method' => 'POST',
-                'path' => '/va/create',
-                'payload' => $payload
-            ])->json();
-        }
-
         if (env('PG_FAKE_RESPON') === true) {
-            $fake_respo_create_va = [
+            $fake = [
+                "responseCode"=> "2002700",
+                "responseMessage"=> "Success",
+                "virtualAccountData"=> [
+                    ...$payload,
+                ]
+            ];
+
+            Http::fake([
+                env('PG_BASE_URL_SNAP') . '/snap/merchant/v1.0/transfer-va/create-va' => function () use ($fake) {
+                    return Http::response($fake, 200);
+                }
+            ]);
+        }
+        $res = self::service('POST', '/snap/merchant/v1.0/transfer-va/create-va', $payload)->json();
+
+        if(($res['responseCode'] ?? null) == 2002700){
+            //remove nanti kalau dari pg sudah d fix padding respon virtual accountNo
+            $res['virtualAccountData']['virtualAccountNo'] = '51105031456789';
+            $res = [
                 "status" => "success",
                 "rc" => "0000",
                 "rcm" => "success",
                 "responseData" => [
                     "sof_code" => $sof_code,
-                    "va_number" => "7777700100299999",
-                    "bill" => $payload['amount'],
-                    "fee" => "1000",
-                    "amount" => (string) $amount + 1000,
-                    "bill_id" => $payload['bill_id'],
-                    "bill_name" => $payload['bill_name'],
-                    "desc" => $payload['desc'],
-                    "exp_date" => $payload['exp_date'],
-                    "refnum" => "VA" . Carbon::now()->format('YmdHis'),
-                    "phone" => $payload['phone'],
-                    "email" => $payload['email'],
-                    "customer_name" => $payload['customer_name'],
+                    "va_number" => $res['virtualAccountData']['virtualAccountNo'],
+                    "bill" => (string)((int) $res['virtualAccountData']['totalAmount']['value']),
+                    "bill_id" => $bill_id,
+                    "bill_name" => $bill_name,
+                    "exp_date" =>  Carbon::parse($res['virtualAccountData']['expiredDate'])->isoFormat('dddd, D MMMM YYYY, H:mm:ss'),
+                    "phone" => $phone,
+                    "email" => $email,
+                    "customer_name" => $customer_name,
+                    "fee" => (string)((int) $res['virtualAccountData']['totalAmount']['value'] - $amount),
+                    "responseCode" => "00",
+                    "responseMessage" => "Success",
+                    "desc" => $res['virtualAccountData']['additionalInfo']['description'],
                 ],
-                "requestData" => $payload
+                "responseSnap" => $res
             ];
-
-            Http::fake([
-                env('PG_BASE_URL') . '/va/create' => function () use ($fake_respo_create_va) {
-                    return Http::response($fake_respo_create_va, 200);
-                }
-            ]);
-            //end fake
         }
 
-        $res = self::service('POST', '/va/create', $payload);
-
-        Log::info($payload);
-        Log::info('Va create res', $res->json() ?? 'ERROR'.$payload);
-        return $res->json();
+        return $res;
     }
 
-    public static function vaStatus($sof_code, $bill_id, $va_number, $refnum, $phone, $email, $customer_name, $submerchant_id)
+    public static function vaStatus($payload)
     {
-        $payload = [
-            "sof_code" => $sof_code,
-            "bill_id" => $bill_id,
-            "va_number" => $va_number,
-            "refnum" => $refnum,
-            "phone" => $phone,
-            "email" => $email,
-            "customer_name" => $customer_name,
-            "submerchant_id" => $submerchant_id ?? ''
-        ];
+        $payload = Arr::only($payload,[
+            "partnerServiceId",
+            "customerNo",
+            "virtualAccountNo",
+            "additionalInfo",
+            "inquiryRequestId",
+            "virtualAccountEmail",
+            "virtualAccountName",
+            "virtualAccountPhone",
+            "trxId",
+        ]);
 
-        if (env('PG_FROM_TRAVOY') === true) {
-            return Http::withoutVerifying()->post(env('TRAVOY_URL') . '/pg-jmto', [
-                'method' => 'POST',
-                'path' => '/va/cekstatus',
-                'payload' => $payload
-            ])->json();
-        }
+        $payload['inquiryRequestId'] = $payload['trxId'];
 
         if (env('PG_FAKE_RESPON') === true) {
             //for fake
             $fake_respon_status_va = [
-                "status" => "success",
-                "rc" => "0000",
-                "rcm" => "success",
-                "responseData" => [
-                    "sof_code" => $payload['sof_code'],
-                    "bill_id" => $payload['bill_id'],
-                    "va_number" => $payload['va_number'],
-                    "pay_status" => "1",
-                    "amount" => "99999.00",
-                    "bill_name" => "FAKE BILL NAME",
-                    "desc" => "FAKE DESC",
-                    "exp_date" => "2022-08-12 00:00:00",
-                    "refnum" => "VA20220811080829999999",
-                    "phone" => $payload['phone'],
-                    "email" => $payload['email'],
-                    "customer_name" => $payload['customer_name'],
-                ],
-                "requestData" => $payload
+                "responseCode" => "2002700",
+                "responseMessage" => "Success",
+                "virtualAccountData" => [
+                    ...$payload,
+                    "totalAmount" => [
+                        "value" => "0.00",
+                        "currency" => "IDR"
+                    ],
+                    "billDetails" => [
+                        [
+                            "billName" => ""
+                        ]
+                    ],
+                    "virtualAccountTrxType" => null,
+                    "expiredDate" => "",
+                    "trxId" => null,
+                    "inquiryRequestId" => "VE123456789000001",
+                    "paymentRequestId" => "",
+                    "flagAdvise" => "0",
+                    "paymentFlagStatus" => "1",
+                ]
             ];
             Http::fake([
-                env('PG_BASE_URL') . '/va/cekstatus' => function () use ($fake_respon_status_va) {
+                env('PG_BASE_URL_SNAP') . '/snap/merchant/v1.0/transfer-va/status' => function () use ($fake_respon_status_va) {
                     return Http::response($fake_respon_status_va, 200);
                 }
             ]);
             //end fake
         }
 
-        $res = self::service('POST', '/va/cekstatus', $payload);
+        $res = self::service('POST', '/snap/merchant/v1.0/transfer-va/status', $payload);
         Log::info(['Payload PG =>', $payload, 'Va status => ', $res->json() ?? 'ERROR']);
         return $res->json();
     }
