@@ -1138,9 +1138,8 @@ class TavsirController extends Controller
             DB::commit();
             $response = $paymentResult->data;
             unset($response['responseSnap']);
-            return $response;
+            return response()->json($response);
         } catch (\Throwable $th) {
-            dd($th);
             DB::rollback();
             return response()->json(['error' => $th->getMessage(), $payment_payload], 500);
         }

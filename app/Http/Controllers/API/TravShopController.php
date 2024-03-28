@@ -40,6 +40,7 @@ use App\Services\External\JatelindoService;
 use App\Models\NumberTable;
 use App\Services\External\KiosBankService;
 use App\Services\External\TravoyService;
+use App\Services\Payment\PaymentService;
 use App\Services\StockServices;
 use App\Services\TransSharingServices;
 use Illuminate\Support\Facades\DB;
@@ -51,21 +52,15 @@ use Illuminate\Validation\ValidationException;
 
 class TravShopController extends Controller
 {
-    protected $stock_service;
-    protected $trans_sharing_service;
-    protected $kiosBankService;
-    protected $travoyService;
-
-    public function __construct(StockServices $stock_service, TransSharingServices $trans_sharing_service, KiosBankService $kiosBankService, TravoyService $travoyService)
+    public function __construct(
+        protected StockServices $stock_service, 
+        protected TransSharingServices $trans_sharing_service, 
+        protected KiosBankService $kiosBankService, 
+        protected TravoyService $travoyService,
+        protected PaymentService $servicePayment,
+    )
     {
-        $this->stock_service = $stock_service;
-        $this->trans_sharing_service = $trans_sharing_service;
-        $this->kiosBankService = $kiosBankService;
-        $this->travoyService = $travoyService;
-
     }
-
-
 
     public function tableList(Request $request)
     {
@@ -594,7 +589,6 @@ class TravShopController extends Controller
         }
     }
 
-
     public function orderByMeja($id, Request $request)
     {
         // dd($request->id);
@@ -649,7 +643,6 @@ class TravShopController extends Controller
         }
         return response()->json($data);
     }
-
 
     public function orderCustomer($id, Request $request)
     {
@@ -1101,6 +1094,26 @@ class TravShopController extends Controller
                     throw ValidationException::withMessages($error);
                 }
             }
+
+            $paymentResult = $this->servicePayment->create($data, $payment_method, $request->all());
+            $payment_payload = $paymentResult->data;
+
+            if ($paymentResult->status == false) {
+                return response()->json($paymentResult, 422);
+            }
+
+            $data->service_fee = $paymentResult->fee;
+            $data->total = $data->total + $data->service_fee;
+            $data->sub_merchant_id = $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id;
+            $data->save();
+            $response = $paymentResult->data;
+            unset($response['responseSnap']);
+            DB::commit();
+            return response()->json($response);
+
+            //END REFACTOR
+            //CODE DIBWAH INI TIDAK DI EKSEUSI, SEMENTARA UNTUK KOMPARE DATA DENGAN REFACTOR
+
             switch ($payment_method->code_name) {
                 case 'pg_va_mandiri':
                     $payment_payload = [
@@ -1610,8 +1623,6 @@ class TravShopController extends Controller
         }
     }
 
-
-
     public function payKios($data, $id)
     {
         $kios = [];
@@ -1940,7 +1951,19 @@ class TravShopController extends Controller
                 return response()->json(['status' => $data->status, 'responseData' => null]);
             }
 
-            $data_payment = $data->payment->data;
+            $payment_result = $this->servicePayment->statusOrder($data, $request->all());
+
+            if ($payment_result->status != true) {
+                return response()->json([
+                    ...$payment_result->data,
+                    'status' => $data->status
+                ], 422);
+            }
+            $data->save();
+            DB::commit();
+            return response()->json($payment_result->data);
+            //END REFACTOR
+            //CODE DIBWAH INI TIDAK DI EKSEUSI, SEMENTARA UNTUK KOMPARE DATA DENGAN REFACTOR
             if ($data->payment_method->code_name == 'pg_dd_bri') {
                 $payload = $data_payment;
                 $payload['submerchant_id'] = $data->sub_merchant_id;
@@ -2230,8 +2253,6 @@ class TravShopController extends Controller
             // return response()->json(['error' => 'Coba Kembali'], 500);
         }
     }
-
-
 
     public function statusPaymentDD(Request $request, $id)
     {
