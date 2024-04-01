@@ -200,7 +200,7 @@ class JatelindoService
                 break;
 
             case '31':
-                $keterangan = 'Id Bank masih belum didaftarkan';
+                $keterangan = 'Kode bank belum terdaftar, silahkan hubungin tim Jatelindo';
                 $message = 'TRANSAKSI GAGAL';
                 break;
 
