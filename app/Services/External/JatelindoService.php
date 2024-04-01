@@ -267,8 +267,8 @@ class JatelindoService
                 break;
 
             default:
-                $keterangan = 'Code Undefined';
-                $message = 'Code Undefined';
+                $keterangan = 'Code '.($bit39 ?? 'Undefined');
+                $message = 'Code '.($bit39 ?? 'Undefined');
                 break;
         }
 
