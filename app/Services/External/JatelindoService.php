@@ -23,8 +23,9 @@ class JatelindoService
         $date = Carbon::now();
         $md = $date->format('md');
         $his = $date->format('his');
+        $lengt = strlen($id_pelanggan);
         $id = str_pad($id_pelanggan, 11, '0', STR_PAD_LEFT) . '000000000000' . '0';
-        if ($flag != 0) {
+        if ($lengt != 11) {
             $id = '00000000000' . str_pad($id_pelanggan, 12, '0', STR_PAD_LEFT) . '1';
         }
         $payload = [
