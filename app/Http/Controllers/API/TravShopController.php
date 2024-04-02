@@ -904,7 +904,7 @@ class TravShopController extends Controller
     {
         $paymentMethods = PaymentMethod::all();
         $self_order = [4, 5, 7, 9, 11];
-        $travshop = [5, 6, 7, 8, 9, 11];
+        $travshop = [5, 6, 7, 8, 9, 11,12,13];
         $tavsir = [1, 2, 3, 4, 10];
 
         if ($request->trans_order_id) {
@@ -1011,7 +1011,7 @@ class TravShopController extends Controller
                         }
                     }
                 }
-                if ($value->id == 4) {
+                if ($value->id == 4 || $value->id == 12 || $value->id = 13) {
                     $value->fee = 0;
                 }
 
@@ -1095,7 +1095,7 @@ class TravShopController extends Controller
                 }
             }
 
-            $paymentResult = $this->servicePayment->create($data, $payment_method, $request->all());
+            $paymentResult = $this->servicePayment->create($payment_method, $data, $request->all());
             $payment_payload = $paymentResult->data;
 
             if ($paymentResult->status == false) {
