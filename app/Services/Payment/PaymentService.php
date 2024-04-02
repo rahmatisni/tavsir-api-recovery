@@ -40,7 +40,7 @@ class PaymentService
                 break;
 
             case Str::contains($payment_method->code_name, PaymentMethodCode::PG_VA):
-                $result = $this->createPgVA($payment_method, $data);
+                $result = $this->createPgVA($payment_method, $data, $additonal_data);
                 break;
             
             case Str::contains($payment_method->code_name, PaymentMethodCode::PG_DD):
@@ -137,7 +137,7 @@ class PaymentService
             amount: $trans_order->total,
             customer_name: $trans_order->customer_name ?? ($trans_order->tenant->name ?? 'Travoy'),
             phone: $additonal_data['customer_phone'] ?? $trans_order->customer_phone ?? ($trans_order->tenant->phone ?? '08123456789'),
-            email: env('APP_ENV') == 'testing' ? 'rahmatisni@gmail.com' : ($additonal_data['customer_phone'] ?? $trans_order->tenant->email ?? 'travoy@jmto.co.id'),
+            email: env('APP_ENV') == 'testing' ? 'rahmatisni@gmail.com' : ($additonal_data['customer_email'] ?? $trans_order->tenant->email ?? 'travoy@jmto.co.id'),
             desc: $trans_order->tenant->name ?? 'Travoy',
             sub_merchant_id: $trans_order->tenant?->sub_merchant_id ?? $trans_order->sub_merchant_id
         );
@@ -158,7 +158,7 @@ class PaymentService
         );
     }
 
-    public function createPgVA($payment_method, $trans_order) : object
+    public function createPgVA($payment_method, $trans_order, $additonal_data) : object
     {
         $status = false;
         $fee = 0;
@@ -168,8 +168,8 @@ class PaymentService
             bill_name: 'GetPay',
             amount: $trans_order->total,
             desc: $trans_order->tenant->name ?? 'Travoy',
-            phone: $trans_order->tenant->phone,
-            email: $trans_order->tenant->email,
+            phone: $additonal_data['customer_phone'] ?? $trans_order->customer_phone ?? ($trans_order->tenant->phone ?? '08123456789'),
+            email: env('APP_ENV') == 'testing' ? 'rahmatisni@gmail.com' : ($additonal_data['customer_email'] ?? $trans_order->tenant->email ?? 'travoy@jmto.co.id'),
             customer_name: $trans_order->customer_name,
             sub_merchant_id:$trans_order->tenant?->sub_merchant_id ?? $trans_order->sub_merchant_id
         );
