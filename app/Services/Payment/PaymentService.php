@@ -36,7 +36,7 @@ class PaymentService
     {
         switch (true) {
             case Str::contains($payment_method->code_name, PaymentMethodCode::SNAP_VA):
-                $result = $this->createSnapVA($payment_method, $data);
+                $result = $this->createSnapVA($payment_method, $data, $additonal_data);
                 break;
 
             case Str::contains($payment_method->code_name, PaymentMethodCode::PG_VA):
@@ -127,7 +127,7 @@ class PaymentService
         return $result;
     }
 
-    public function createSnapVA($payment_method, $trans_order) : object
+    public function createSnapVA($payment_method, $trans_order, $additonal_data) : object
     {
         $status = false;
         $res = PgJmtoSnap::vaCreate(
@@ -136,8 +136,8 @@ class PaymentService
             bill_name: 'GetPay',
             amount: $trans_order->total,
             customer_name: $trans_order->customer_name ?? ($trans_order->tenant->name ?? 'Travoy'),
-            phone: $trans_order->customer_phone ?? ($trans_order->tenant->phone ?? '08123456789'),
-            email: env('APP_ENV') == 'testing' ? 'rahmatisni@gmail.com' : ($trans_order->tenant->email ?? 'travoy@jmto.co.id'),
+            phone: $additonal_data['customer_phone'] ?? $trans_order->customer_phone ?? ($trans_order->tenant->phone ?? '08123456789'),
+            email: env('APP_ENV') == 'testing' ? 'rahmatisni@gmail.com' : ($additonal_data['customer_phone'] ?? $trans_order->tenant->email ?? 'travoy@jmto.co.id'),
             desc: $trans_order->tenant->name ?? 'Travoy',
             sub_merchant_id: $trans_order->tenant?->sub_merchant_id ?? $trans_order->sub_merchant_id
         );
