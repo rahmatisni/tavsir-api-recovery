@@ -904,7 +904,7 @@ class TravShopController extends Controller
     {
         $paymentMethods = PaymentMethod::all();
         $self_order = [4, 5, 7, 9, 11];
-        $travshop = [5, 6, 7, 8, 9, 11,12,13];
+        $travshop = [5, 6, 7, 8, 9, 11, 12, 13];
         $tavsir = [1, 2, 3, 4, 10];
 
         if ($request->trans_order_id) {
@@ -912,7 +912,7 @@ class TravShopController extends Controller
             $param_removes = Tenant::where('id', $trans_order->tenant_id)->first();
             if ($param_removes == null && $trans_order->order_type == 'ORDER_TRAVOY') {
                 $self_order = [];
-                $travshop = [5, 6, 7, 8, 9, 11,12,13];
+                $travshop = [5, 6, 7, 8, 9];
                 // $travshop = [5, 6, 7, 8, 9];
                 $tavsir = [];
 
