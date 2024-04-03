@@ -188,7 +188,6 @@ class LaJmto extends Model
 
         $res = self::service('POST', '/qr/generate', $payload)->json();
         Log::info([$payload, $res]);
-        $res = $res['responseData'];
         if($res['responseCode'] == 00){
         $response = [
             "status" => "success",
