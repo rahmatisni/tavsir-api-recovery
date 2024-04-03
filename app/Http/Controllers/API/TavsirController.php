@@ -1058,6 +1058,7 @@ class TavsirController extends Controller
         $payment_payload = [];
         $data = TransOrder::with('tenant')->findOrfail($id);
         try {
+
             if (request()->order_from_qr == true) {
                 if ($data->status == TransOrder::CART || $data->status == TransOrder::PENDING || $data->status == null) {
                     $data->status = TransOrder::WAITING_PAYMENT;
@@ -1071,9 +1072,10 @@ class TavsirController extends Controller
                 $data->status = TransOrder::WAITING_PAYMENT;
             }
 
-            if ($data->status != TransOrder::WAITING_PAYMENT) {
-                return response()->json(['info' => $data->status], 422);
-            }
+            // command ini
+            // if ($data->status != TransOrder::WAITING_PAYMENT) {
+            //     return response()->json(['info' => $data->status], 422);
+            // }
             //Cek deposit
             if ($data->order_type == TransOrder::ORDER_TRAVOY) {
                 $cekProduct = ProductKiosBank::where('kode', $data->codeProductKiosbank())->first();
@@ -1089,6 +1091,7 @@ class TavsirController extends Controller
                     }
                 }
             }
+
 
             $data->payment_method_id = $request->payment_method_id;
             $payment_method = PaymentMethod::find($request->payment_method_id);
