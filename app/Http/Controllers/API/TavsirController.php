@@ -1076,6 +1076,7 @@ class TavsirController extends Controller
             // if ($data->status != TransOrder::WAITING_PAYMENT) {
             //     return response()->json(['info' => $data->status], 422);
             // }
+            
             //Cek deposit
             if ($data->order_type == TransOrder::ORDER_TRAVOY) {
                 $cekProduct = ProductKiosBank::where('kode', $data->codeProductKiosbank())->first();

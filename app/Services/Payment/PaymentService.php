@@ -142,7 +142,6 @@ class PaymentService
             sub_merchant_id: $trans_order->tenant?->sub_merchant_id ?? $trans_order->sub_merchant_id
         );
         $code = ($res['responseSnap']['responseCode'] ?? false);
-
         if($code == 2002700){
             $trans_order->payment()->updateOrCreate([
                 'trans_order_id' => $trans_order->id
