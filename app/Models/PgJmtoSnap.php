@@ -258,7 +258,6 @@ class PgJmtoSnap extends Model
             "virtualAccountPhone",
             "trxId",
         ]);
-
         $payload['inquiryRequestId'] = $payload['trxId'];
 
         if (env('PG_FAKE_RESPON') === true) {
