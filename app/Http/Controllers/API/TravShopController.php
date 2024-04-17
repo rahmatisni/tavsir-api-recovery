@@ -1106,7 +1106,7 @@ class TravShopController extends Controller
             $data->sub_merchant_id = $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id;
             $data->save();
             $response = $paymentResult->data;
-            unset($response['responseSnap']);
+            // unset($response['responseSnap']);
             DB::commit();
             return response()->json($response);
 

@@ -242,7 +242,6 @@ class PgJmtoSnap extends Model
                 ],
             ];
         }
-
         return $res;
     }
 
