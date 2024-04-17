@@ -238,7 +238,7 @@ class TsOrderResource extends JsonResource
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'paid_date' => $this->payment?->updated_at->format('Y-m-d H:i:s') ?? null,
             // 'payment' => $this->payment->data ?? null,
-            'payment' => $this->payment?->data['responseData'] ?? null,
+            'payment' => $this->payment?->data['responseData'] ?? $this->payment->data ?? null,
             'log_kiosbank' => $log_kios_bank ?? null,
             'addon_total' => $this->addon_total,
             'addon_price' => $this->addon_price,
