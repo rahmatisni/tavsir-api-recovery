@@ -469,7 +469,7 @@ class PaymentService
             $res = $trans_order->payment->data;
             if($status == true){
                 $res['responseData']['pay_status'] = 1;
-                $status_order = TransOrder::PAYMENT_SUCCESS;
+                // $status_order = TransOrder::PAYMENT_SUCCESS;
             }else{
                 $res['responseData']['pay_status'] = 0;
                 $status_order = TransOrder::WAITING_PAYMENT;
