@@ -150,7 +150,8 @@ class PaymentService
             $trans_order->payment()->updateOrCreate([
                 'trans_order_id' => $trans_order->id
             ],[
-                'data' => $res,
+                'data' => $res['responseData'],
+                'inquiry' => $res['responseData'],
             ]);
 
             $status = true;
@@ -461,7 +462,7 @@ class PaymentService
     public function statusSnapVA($trans_order)
     {
         $status = false;
-        $payment_data = $trans_order->payment->data['responseSnap']['virtualAccountData'];
+        $payment_data = $trans_order->payment->data['responseData']['responseSnap']['virtualAccountData'] ?? [];
         $res = PgJmtoSnap::vaStatus($payment_data);
         if(($res['responseCode'] ?? null) == '2002700'){
             $status = ($res['virtualAccountData']['paymentFlagStatus'] ?? 0) == 1 ? true : false;
@@ -471,8 +472,6 @@ class PaymentService
             }else{
                 $res['responseData']['pay_status'] = 0;
             }
-            
-            unset($res['responseSnap']);
             $trans_order->payment()->updateOrCreate([
                 'trans_order_id' => $trans_order->id
             ],[

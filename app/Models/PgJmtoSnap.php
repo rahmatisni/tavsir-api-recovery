@@ -238,8 +238,8 @@ class PgJmtoSnap extends Model
                     "responseCode" => "00",
                     "responseMessage" => "Success",
                     "desc" => $res['virtualAccountData']['additionalInfo']['description'],
+                    "responseSnap" => $res
                 ],
-                "responseSnap" => $res
             ];
         }
 
