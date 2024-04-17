@@ -1134,8 +1134,8 @@ class TavsirController extends Controller
             if ($paymentResult->status == false) {
                 return response()->json($paymentResult, 422);
             }
-
-            $data->service_fee = $paymentResult->fee;
+            $data->service_fee = $paymentResult->data['responseData']['fee'];
+            // $data->service_fee = $paymentResult->fee;
             $data->total = $data->total + $data->service_fee;
             $data->sub_merchant_id = $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id;
             $data->save();
