@@ -470,6 +470,7 @@ class PaymentService
             if($status == true){
                 $res['responseData']['pay_status'] = 1;
                 // $status_order = TransOrder::PAYMENT_SUCCESS;
+                $status_order = TransOrder::PAYMENT_SUCCESS;
             }else{
                 $res['responseData']['pay_status'] = 0;
                 $status_order = TransOrder::WAITING_PAYMENT;
@@ -484,7 +485,7 @@ class PaymentService
         }
         $log = $trans_order->log_kiosbank()->where('trans_order_id', $trans_order->id)->first();
         $result = [
-            'status' => $status_order,
+            'status' => $status_order ?? 'BAD REQUEST',
             'responseData'=>$res,
             'kiosbank' => $log?->data ?? []
         ];
