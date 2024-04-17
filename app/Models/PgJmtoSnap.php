@@ -173,11 +173,16 @@ class PgJmtoSnap extends Model
 
         }
         if ($sof_code === 'BRI') {
-            $partnerServiceId = '77777';
-            $virtualNumber = rand(100000000, 999999999);
+            $partnerServiceId = '77777031';
+             //031 ganti jadi id merchant/submerchant
+            $virtualNumber = rand(10000000, 99999999);
 
         }
-        $virtualNumber = '031456789';
+
+        $trx_id = 'Travoy'. Str::random(25);
+
+
+        // $virtualNumber = '12345678';
         $payload = [
             "customerNo" => (string) $virtualNumber,
             "partnerServiceId" => $partnerServiceId,
@@ -189,7 +194,7 @@ class PgJmtoSnap extends Model
             "billDetails" => [["billName" => $bill_name]],
             "virtualAccountTrxType" => "close",
             "expiredDate" => Carbon::now()->addMinutes(5)->format('c'),
-            "trxId" => $bill_id,
+            "trxId" => $trx_id,
             "additionalInfo" => ["description" => ($bill_id . '-' . $desc . '-' . $amount)],
         ];
 
@@ -211,7 +216,7 @@ class PgJmtoSnap extends Model
         $res = self::service('POST', '/snap/merchant/v1.0/transfer-va/create-va', $payload)->json();
         if(($res['responseCode'] ?? null) == 2002700){
             //remove nanti kalau dari pg sudah d fix padding respon virtual accountNo
-            $res['virtualAccountData']['virtualAccountNo'] = '51105031456789';
+            // $res['virtualAccountData']['virtualAccountNo'] = '51105031456789';
             $res = [
                 "status" => "success",
                 "rc" => "0000",
