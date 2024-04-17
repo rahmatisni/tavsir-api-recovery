@@ -53,7 +53,7 @@ class TrOrderResource extends JsonResource
             'canceled_by' => $this->canceled_by,
             'canceled_name' => $this->canceled_name,
             'bank_name' => $this->trans_edc->bank->name ?? '',
-            'payment' => $this->payment,
+            'payment' => $this->payment?->responseData ?? $this->payment,
             'code_verif' => $this->code_verif,
             'rating' => $this->rating,
             'addon_total' => $this->addon_total,
