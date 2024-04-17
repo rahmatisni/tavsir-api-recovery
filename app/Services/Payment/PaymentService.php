@@ -142,9 +142,10 @@ class PaymentService
             sub_merchant_id: $trans_order->tenant?->sub_merchant_id ?? $trans_order->sub_merchant_id
         );
         $code = ($res['responseSnap']['responseCode'] ?? false);
-        // dd($res['responseSnap']);
+        $exp = $res['responseSnap']['virtualAccountData']['expiredDate'];
         $kalkulasi = $trans_order->sub_total + $trans_order->addon_total + $trans_order->fee;
         $res['fee'] = $res['responseSnap']['virtualAccountData']['totalAmount']['value'] - $kalkulasi;
+        $res['responseData']['exp_date'] = $exp;
         if($code == 2002700){
             $trans_order->payment()->updateOrCreate([
                 'trans_order_id' => $trans_order->id
