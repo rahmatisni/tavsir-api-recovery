@@ -63,27 +63,29 @@ class TsOrderResource extends JsonResource
                     // $product_kios['RP_BAYAR'] = $product_kios['harga'];
                     unset($product_kios['handphone']);
                     unset($product_kios['kode']);
-                   
 
-                    
+
+
                     $product_kios = array_merge($product_kios, JatelindoService::infoPelanggan($this->log_kiosbank, $this->status));
                     // if ($this->status === TransOrder::WAITING_PAYMENT) {
-
+                    // unset($product_kios['RP_BAYAR']);
+                    if ($product_kios['RP_BAYAR']) {
                         unset($product_kios['RP_BAYAR']);
                         $product_kios['RP_BAYAR'] = $product_kios['harga'];
-                        unset($product_kios['logo_url']);
-                        unset($product_kios['Transaksi_ID']);
-                        unset($product_kios['Vending_Number']);
-                        $note = $product_kios['Informasi'] ?? null;
-                        $title = 'STRUK PEMBELIAN LISTRIK PRABAYAR';
-                        unset($product_kios['Informasi']);
-                        unset($product_kios['Flag']);
-                        unset($product_kios['Pilihan_Pembelian']);
-                        unset($product_kios['Transaksi_ID']);
-                        unset($product_kios['Total_Token_Unsold']);
-                        unset($product_kios['Pilihan_Token']);
-                        unset($product_kios['Token_Unsold_1']);
-                        unset($product_kios['Token_Unsold_2']);
+                    }
+                    unset($product_kios['logo_url']);
+                    unset($product_kios['Transaksi_ID']);
+                    unset($product_kios['Vending_Number']);
+                    $note = $product_kios['Informasi'] ?? null;
+                    $title = 'STRUK PEMBELIAN LISTRIK PRABAYAR';
+                    unset($product_kios['Informasi']);
+                    unset($product_kios['Flag']);
+                    unset($product_kios['Pilihan_Pembelian']);
+                    unset($product_kios['Transaksi_ID']);
+                    unset($product_kios['Total_Token_Unsold']);
+                    unset($product_kios['Pilihan_Token']);
+                    unset($product_kios['Token_Unsold_1']);
+                    unset($product_kios['Token_Unsold_2']);
 
                     // }
                     // if ($this->status === TransOrder::DONE) {
@@ -187,7 +189,7 @@ class TsOrderResource extends JsonResource
 
 
             // $temps['data']['Diskon'] = '-' . rupiah((int) $this->discount);
-            $temps['data']['Diskon'] = $this->discount == 0 ? rupiah((int) $this->discount) : '-'.rupiah((int) $this->discount);
+            $temps['data']['Diskon'] = $this->discount == 0 ? rupiah((int) $this->discount) : '-' . rupiah((int) $this->discount);
             unset($temps['sessionID']);
             // unset($temps['customerID']);
             unset($temps['merchantID']);
