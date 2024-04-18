@@ -228,6 +228,13 @@ class JatelindoService
                 $keterangan = 'SALDO ANDA TIDAK MENCUKUPI';
                 $message = 'SALDO ANDA TIDAK MENCUKUPI';
                 break;
+                
+            case '63':
+                $keterangan = 'KONSUMEN ….. DIBLOKIR
+                    HUBUNGI PLN';
+                $message = 'KONSUMEN ….. DIBLOKIR
+                    HUBUNGI PLN';
+                break;
 
             case '73':
                 $keterangan = 'Kode produk belum terdaftar di TID, silahkan hubungi tim Jatelindo';
