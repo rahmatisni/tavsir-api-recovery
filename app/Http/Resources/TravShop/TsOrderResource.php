@@ -60,6 +60,7 @@ class TsOrderResource extends JsonResource
                 $product_kios['handphone'] = $product[1];
                 $product_kios['Nomor_Cust'] = $product[1];
                 if ($product_kios_bank->integrator == 'JATELINDO') {
+                    // $product_kios['RP_BAYAR'] = $product_kios['harga'];
                     unset($product_kios['handphone']);
                     unset($product_kios['kode']);
                    
@@ -68,11 +69,8 @@ class TsOrderResource extends JsonResource
                     $product_kios = array_merge($product_kios, JatelindoService::infoPelanggan($this->log_kiosbank, $this->status));
                     // if ($this->status === TransOrder::WAITING_PAYMENT) {
 
-                        // $daya = $product_kios['Daya'];
-                        // $product_kios['Daya'] = str_pad($daya, 9, "0", STR_PAD_LEFT);
-                        unset($product_kios['Ref_ID']);
-                        // $product_kios['Nama_Produk'] = $product_kios['name'];
-                        // unset($product_kios['name']);
+                        unset($product_kios['RP_BAYAR']);
+                        $product_kios['RP_BAYAR'] = $product_kios['harga'];
                         unset($product_kios['logo_url']);
                         unset($product_kios['Transaksi_ID']);
                         unset($product_kios['Vending_Number']);
