@@ -69,7 +69,7 @@ class TsOrderResource extends JsonResource
                     $product_kios = array_merge($product_kios, JatelindoService::infoPelanggan($this->log_kiosbank, $this->status));
                     // if ($this->status === TransOrder::WAITING_PAYMENT) {
                     // unset($product_kios['RP_BAYAR']);
-                    if ($product_kios['RP_BAYAR']) {
+                    if (isset($product_kios['RP_BAYAR'])){
                         unset($product_kios['RP_BAYAR']);
                         $product_kios['RP_BAYAR'] = $product_kios['harga'];
                     }
