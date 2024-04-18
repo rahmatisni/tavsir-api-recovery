@@ -16,7 +16,7 @@ use Illuminate\Support\Collection;
 function rupiah($angka)
 {
 
-    $hasil_rupiah = "Rp." . number_format($angka, 0, ',', '.');
+    $hasil_rupiah = "Rp. " . number_format($angka, 0, ',', '.');
     return $hasil_rupiah;
 
 }
@@ -70,8 +70,7 @@ class TsOrderResource extends JsonResource
                     // if ($this->status === TransOrder::WAITING_PAYMENT) {
                     // unset($product_kios['RP_BAYAR']);
                     if (isset($product_kios['RP_BAYAR'])){
-                        unset($product_kios['RP_BAYAR']);
-                        $product_kios['RP_BAYAR'] = rupiah((int)$product_kios['harga']);
+                        $product_kios['RP_BAYAR'] = rupiah((int)$product_kios['harga']).',00';
                     }
                     unset($product_kios['logo_url']);
                     unset($product_kios['Transaksi_ID']);
