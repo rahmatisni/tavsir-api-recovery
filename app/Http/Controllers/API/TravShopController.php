@@ -1951,12 +1951,12 @@ class TravShopController extends Controller
             }
 
             $payment_result = $this->servicePayment->statusOrder($data, $request->all());
-            // if ($payment_result->status != true) {
-            //     return response()->json([
-            //         ...$payment_result->data,
-            //         'status' => $data->status
-            //     ], 422);
-            // }
+            if ($payment_result->status != true) {
+                return response()->json([
+                    ...$payment_result->data,
+                    'status' => $data->status
+                ], 422);
+            }
             $data->save();
             DB::commit();
             return response()->json($payment_result->data);
