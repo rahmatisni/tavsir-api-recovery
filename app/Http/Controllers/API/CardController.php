@@ -146,7 +146,7 @@ class CardController extends Controller
             if ($res->successful()) {
                 $res = $res->json();
                 if ($res['status'] == 'ERROR') {
-                    $bind->delete();
+                    // $bind->delete();
                     return ['message' => 'Kartu sudah terunbind sebelumnya.'];
                     // return response()->json($res, 400);
 
