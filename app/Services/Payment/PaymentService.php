@@ -648,6 +648,8 @@ class PaymentService
         $kios['data']['harga'] = $data->sub_total ?? '0';
 
         $data->status = TransOrder::PAYMENT_SUCCESS;
+        $status = true;
+
         $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
             'data' => $kios,
             'payment' => $kios,
@@ -659,10 +661,6 @@ class PaymentService
             if(str_contains($status_description, 'BERHASIL') || str_contains($status_description, 'SUKSES')){
                 $status = true;
                 $data->status = TransOrder::DONE;
-            }
-            else {
-                $status = true;
-                $data->status = TransOrder::PAYMENT_SUCCESS;
             }
         }
         $data->save();
