@@ -94,10 +94,14 @@ class JatelindoService
                 ], 200)
             ]);
         }
+        $options = [];
+        if(config('app.env') == 'local'){
+            $options = [
+                'proxy' => '172.16.4.58:8090'
+            ];
+        };
 
-        $result = Http::withOptions([
-            // 'proxy' => '172.16.4.58:8090'
-        ])->post(config('jatelindo.url'), $payload);
+        $result = Http::withOptions($options)->post(config('jatelindo.url'), $payload);
 
         Log::info([
             'status' => self::responseTranslation($result->json())?->keterangan,
