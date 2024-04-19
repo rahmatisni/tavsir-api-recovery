@@ -524,7 +524,6 @@ class KiosBankService
         $product = ProductKiosBank::where('kode', $data['code'])->first();
         if($product?->integrator == 'JATELINDO')
         {
-            // $res_jatelindo = JatelindoService::inquiry($data['flag'] ?? 0, $data['phone'], $product)->json();
             $res_jatelindo = $data['result_pln'] ?? [];
             $res_jatelindo['bit4'] = str_pad($product->kode, 12, '0', STR_PAD_LEFT);
             if(($res_jatelindo['bit39'] ?? '') == '00'){
