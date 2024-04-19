@@ -56,7 +56,6 @@ class PaymentService
                 $customer_name = $additonal_data['customer_name'] ?? null;
                 $customer_email = $additonal_data['customer_email'] ?? null;
                 $customer_phone = $additonal_data['customer_phone'] ?? null;
-                $payment_payload = $this->paymentPayload($payment_method, $data, $additonal_data);
                 $result = $this->payQR($data, $voucher, $customer_name, $customer_email, $customer_phone);
                 break;
 
@@ -179,10 +178,12 @@ class PaymentService
         );
 
         if (($res['status'] ?? null) == 'success') {
-            $trans_order->payment()->create([
-                'data' => $res['responseData'],
-                'inquiry' => $res['responseData'],
-            ]);
+            $trans_order->payment()->updateOrCreate([
+                    'trans_order_id' => $trans_order->id
+                ],[
+                    'data' => $res['responseData'],
+                    'inquiry' => $res['responseData']
+                ]);
             $status = true;
             $fee = $res['responseData']['fee'] ?? 0;
         }
@@ -213,9 +214,11 @@ class PaymentService
         );
 
         if (($res['status'] ?? null) == 'success') {
-            $trans_order->payment()->create([
+            $trans_order->payment()->updateOrCreate([
+                'trans_order_id' => $trans_order->id
+            ],[
                 'data' => $res['responseData'],
-                'inquiry' => $res['responseData'],
+                'inquiry' => $res['responseData']
             ]);
             $status = true;
             $fee = $res['responseData']['fee'] ?? 0;
@@ -277,9 +280,11 @@ class PaymentService
             $res['responseData']['bind_id'] = $bind->bind_id;
             $res['responseData']['card_id'] = $card_id;
             $respon = $res['responseData'];
-            $trans_order->payment()->create([
+            $trans_order->payment()->updateOrCreate([
+                'trans_order_id' => $trans_order->id
+            ],[
                 'data' => $res['responseData'],
-                'inquiry' => $res['responseData'],
+                'inquiry' => $res['responseData']
             ]);
 
             $status = true;
@@ -347,9 +352,11 @@ class PaymentService
             'customer_name' => $customer_name,
             'voucher' => $voucher->id
         ];
-        $data->payment()->create([
+        $data->payment()->updateOrCreate([
+            'data$data_id' => $data->id
+        ],[
             'data' => $payment_payload,
-            'inquiry' => $payment_payload,
+            'inquiry' => $payment_payload
         ]);
 
         return $this->responsePayment(
@@ -557,23 +564,6 @@ class PaymentService
             'status' => $status,
             'data' => $data,
             'fee' => $fee
-        ];
-    }
-
-    private function paymentPayload($payment_method, $data, $additonal_data = [])
-    {
-        return [
-            "sof_code" => $payment_method->code,
-            'bill_id' => $data->order_id,
-            'bill_name' => 'GetPay',
-            'amount' => (string) $data->total,
-            'desc' => $data->tenant->name ?? 'Travoy',
-            "exp_date" => Carbon::now()->addMinutes(5)->format('Y-m-d H:i:s'),
-            "va_type" => "close",
-            'phone' => $additonal_data['customer_phone'] ?? $data->tenant->phone,
-            'email' => $additonal_data['customer_email'] ?? $data->tenant->email,
-            'customer_name' => $additonal_data['customer_name'] ?? $data->nomor_name,
-            "submerchant_id" => $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id,
         ];
     }
     
