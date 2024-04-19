@@ -660,6 +660,10 @@ class PaymentService
                 $status = true;
                 $data->status = TransOrder::DONE;
             }
+            else {
+                $status = true;
+                $data->status = TransOrder::PAYMENT_SUCCESS;
+            }
         }
         $data->save();
 
