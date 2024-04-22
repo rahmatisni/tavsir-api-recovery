@@ -51,6 +51,10 @@ class PaymentService
                 $result = $this->createLinkAja($payment_method, $data);
                 break;
                     
+            case Str::contains($payment_method->code_name, PaymentMethodCode::QRJTL):
+                $result = $this->createQRISVA($payment_method, $data, $additonal_data);
+                break;
+                        
             case Str::contains($payment_method->code_name, PaymentMethodCode::QR):
                 $voucher = $additonal_data['voucher'] ?? null;
                 $customer_name = $additonal_data['customer_name'] ?? null;
@@ -89,6 +93,11 @@ class PaymentService
                 $result = $this->statusLinkAja($data);
                 break;
 
+            case Str::contains($payment_method->code_name, PaymentMethodCode::QRJTL):
+                $result = $this->statusQRISPG($data);
+                break;
+
+                
             default:
                 $result = $this->responsePayment(false, ['message' => $payment_method->name . ' Belum tersedia']);
         }
@@ -184,6 +193,39 @@ class PaymentService
                     'data' => $res['responseData'],
                     'inquiry' => $res['responseData']
                 ]);
+            $status = true;
+            $fee = $res['responseData']['fee'] ?? 0;
+        }
+
+        return $this->responsePayment(
+            status: $status,
+            data: $res,
+            fee: $fee
+        );
+    }
+
+
+    public function createQRISVA($payment_method, $trans_order, $additional_data) : object
+    {
+        $status = false;
+        $fee = 0;
+        $res = PgJmto::vaCreate(
+            sof_code: $payment_method->code,
+            bill_id: $trans_order->order_id,
+            bill_name: 'GetPay',
+            amount: $trans_order->total,
+            desc: $trans_order->tenant->name ?? 'Travoy',
+            phone: $additonal_data['customer_phone'] ?? $trans_order->customer_phone ?? ($trans_order->tenant->phone ?? '08123456789'),
+            email: env('APP_ENV') == 'testing' ? 'rahmatisni@gmail.com' : ($additonal_data['customer_email'] ?? $trans_order->tenant->email ?? 'travoy@jmto.co.id'),
+            customer_name: $trans_order->customer_name,
+            sub_merchant_id:$trans_order->tenant?->sub_merchant_id ?? $trans_order->sub_merchant_id
+        );
+
+        if (($res['status'] ?? null) == 'success') {
+            $trans_order->payment()->create([
+                'data' => $res['responseData'],
+                'inquiry' => $res['responseData'],
+            ]);
             $status = true;
             $fee = $res['responseData']['fee'] ?? 0;
         }
@@ -542,6 +584,29 @@ class PaymentService
         $res = LAJmto::qrStatus(
             $data_payment['bill_id'],
             $data_la
+        );
+
+        if(($res['status'] ?? null) == 'success'){
+            $status = ($res['responseData']['pay_status'] ?? 0) == 1 ? true : false;
+            unset($res['la_response']);
+
+            $trans_order->payment()->updateOrCreate([
+                'trans_order_id' => $trans_order->id
+            ],[
+                'data' => $res,
+            ]);
+        }
+
+        return $this->responsePayment($status, $res);
+    }
+
+    public function statusQRISPG($trans_order)
+    {
+        $data_payment = $trans_order->payment->data;
+        $data_la = TenantLa::where('tenant_id', $trans_order->tenant_id)->firstOrFail();
+        $res = PgJmto::QRStatus(
+           
+            $data_payment, $data_la
         );
 
         if(($res['status'] ?? null) == 'success'){

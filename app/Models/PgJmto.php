@@ -474,6 +474,52 @@ class PgJmto extends Model
         return $res->json();
     }
 
+    public static function QRStatus($data_payment, $data_la)
+    {
+        $payload = [
+            "sof_code" => $data_payment,
+            "bill_id" => $data_payment,
+            "reff_number" => $data_payment,
+        ];
+
+        if (env('PG_FROM_TRAVOY') === true) {
+            return Http::withoutVerifying()->post(env('TRAVOY_URL') . '/pg-jmto', [
+                'method' => 'POST',
+                'path' => '/va/cekstatus',
+                'payload' => $payload
+            ])->json();
+        }
+
+        if (env('PG_FAKE_RESPON') === true) {
+            //for fake
+            $fake_respon_status_va = [
+                "status" => "success",
+                "rc" => "0000",
+                "rcm" => "success",
+                "responseData" => [
+                    "sof_code" => $payload['sof_code'],
+                    "bill_id" => $payload['bill_id'],
+                    "va_number" => $payload['va_number'],
+                    "pay_status" => "1",
+                    "amount" => "99999.00",
+                    "name" => "FAKE BILL NAME",
+                    "desc" => "FAKE DESC",
+                    "exp_date" => "2022-08-12 00:00:00",
+                    "refnum" => "VA20220811080829999999",
+                ],
+            ];
+            Http::fake([
+                env('PG_BASE_URL') . '/qr/cekstatus' => function () use ($fake_respon_status_va) {
+                    return Http::response($fake_respon_status_va, 200);
+                }
+            ]);
+            //end fake
+        }
+
+        $res = self::service('POST', '/qr/cekstatus', $payload);
+        Log::info(['Payload PG =>', $payload, 'Va status => ', $res->json() ?? 'ERROR']);
+        return $res->json();
+    }
     public static function vaBriDelete($sof_code, $bill_id, $va_number, $refnum, $phone, $email, $customer_name)
     {
         $payload = [

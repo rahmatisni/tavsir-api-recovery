@@ -273,6 +273,9 @@ Route::prefix('travshop')->group(function () {
     Route::post('/order', [App\Http\Controllers\API\TravShopController::class, 'order']);
     Route::post('/self-order', [App\Http\Controllers\API\TravShopController::class, 'selfOrder']);
     Route::post('/derek-order', [App\Http\Controllers\API\TravShopController::class, 'derekOrder']);
+    Route::post('/hu-order', [App\Http\Controllers\API\TravShopController::class, 'huOrder']);
+
+    
 
     Route::get('/order/{id}', [App\Http\Controllers\API\TravShopController::class, 'orderById']);
     Route::get('/order-meja/{id}', [App\Http\Controllers\API\TravShopController::class, 'orderByMeja']);
