@@ -605,7 +605,7 @@ class TravShopController extends Controller
             $data->customer_name = $request->customer_name;
             $data->customer_phone = $request->customer_phone;
             $data->merchant_id = $tenant->merchant_id;
-            $data->sub_merchant_id = $tenant->sub_merchant_id;
+            $data->sub_merchant_id = '';
             $data->sub_total = $request->sub_total;
 
             $data->save();
