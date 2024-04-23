@@ -2126,7 +2126,7 @@ class TravShopController extends Controller
                         ], 422);
                     }
                     $is_dd_pg_success = $res['responseData']['pay_refnum'] ?? null;
-                    if ($is_dd_pg_success == null) {
+                    if ($is_dd_pg_success == null || "") {
                         return response()->json([
                             "message" => "ERROR!",
                             "errors" => [
