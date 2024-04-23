@@ -359,6 +359,7 @@ class JatelindoService
             'STROOM/TOKEN' => wordwrap($token, 4, ' ', true),
             'ADMIN_BANK' => $biaya_admin == 0 ? 0 : 'Rp. ' . number_format((float) substr($biaya_admin, 0, -$digit_admin), 0, ',', '.').",00",
             'Informasi' => $bit_62,
+            'KETERANGAN' => self::responseTranslation($log->data)?->message,
 
 
 
