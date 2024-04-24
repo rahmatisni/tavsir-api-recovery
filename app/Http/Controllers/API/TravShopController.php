@@ -2681,6 +2681,16 @@ class TravShopController extends Controller
                             ]
                         ], 422);
                     }
+                    $is_dd_pg_success = $res['responseData']['pay_refnum'] ?? null;
+                    if ($is_dd_pg_success == null || $is_dd_pg_success == "") {
+                        return response()->json([
+                            "message" => "ERROR!",
+                            "errors" => [
+                                $res
+                            ]
+                        ], 422);
+                    }
+
                     $res['responseData']['card_id'] = $payload['card_id'] ?? '';
                     $respon = $res['responseData'];
                     if ($data->payment === null) {
