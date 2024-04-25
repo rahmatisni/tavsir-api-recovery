@@ -705,7 +705,7 @@ class PaymentService
                 if ($rc == '00') {
                     //return token listrik
                     $data->status = TransOrder::DONE;
-                    array_push($res_jatelindo, ['is_sucess' => true]);
+                    array_push($result_jatelindo, ['is_sucess' => true]);
                     $log_kios = $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                         'data' => $result_jatelindo
                     ]);
