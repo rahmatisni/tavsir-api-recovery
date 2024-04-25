@@ -651,8 +651,10 @@ class PaymentService
                 $is_advice = $data_log_kios['is_advice'] ?? false;
                 $result_jatelindo = [];
                 $is_time_out = false;
+                $is_retry = true;
                 $rc = null;
                 if($is_purchase != true){
+                    $is_retry = false;
                     //1. Purchase
                     $res_jatelindo = JatelindoService::purchase($data_log_kios);
                     $result_jatelindo = $res_jatelindo->json();
@@ -669,7 +671,8 @@ class PaymentService
                     DB::commit();
                 }
 
-                if(($is_purchase && !$is_advice) && $is_time_out){
+                if(($is_purchase && $is_time_out) || !$is_advice){
+                    $is_retry = false;
                     Log::info('Advice begin');
                     //2. Advice
                     $is_time_out = false;
@@ -686,7 +689,7 @@ class PaymentService
                     DB::commit();
                 }
 
-                if($is_advice && $is_time_out){
+                if(($is_advice && $is_time_out) || $is_retry){
                     $try = 1;
                     do {
                         $res_jatelindo = JatelindoService::repeat($data->log_kiosbank->data ?? []);
@@ -702,6 +705,7 @@ class PaymentService
                 if ($rc == '00') {
                     //return token listrik
                     $data->status = TransOrder::DONE;
+                    $res_jatelindo['is_sucess'] = true;
                     $log_kios = $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                         'data' => $result_jatelindo
                     ]);

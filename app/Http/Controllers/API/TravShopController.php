@@ -1834,6 +1834,10 @@ class TravShopController extends Controller
                 if ($data->order_type == TransOrder::ORDER_TRAVOY && $data->status != TransOrder::DONE) {
 
                     if ($data->productKiosbank()->integrator == 'JATELINDO') {
+                        $is_success = $data->log_kiosbank->data['is_success'] ?? false;
+                        if(!$is_success){
+                            return $this->servicePayment->payKios($data);
+                        }
                         return response()->json(['token' => $data->log_kiosbank->data['bit62'] ?? '']);
                     }
 
