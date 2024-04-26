@@ -3377,7 +3377,7 @@ class TravShopController extends Controller
                     
                     $data->save();
                     $kios = $this->servicePayment->payKios($data);
-                    log::info($kios);
+                    log::info('kiossss',[$kios]);
                 }
                 $trans_payment->update(['data' => $request->all(), 'payment' => $request->all()]);
             }
