@@ -3369,7 +3369,7 @@ class TravShopController extends Controller
                 $data = TransOrder::where('id', $trans_payment->trans_order_id)->firstOrFail();
                 $data->status = TransOrder::PAYMENT_SUCCESS;
                 $data->save();
-                $trans_payment->update(['data' => $request, 'payment' => $request]);
+                $trans_payment->update(['data' => $request->all(), 'payment' => $request->all()]);
             }
             DB::commit();
             return response()->json(['status' => 'success', 'data' => 'Data di Terima'], 200);
