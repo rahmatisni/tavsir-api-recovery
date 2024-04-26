@@ -2060,6 +2060,7 @@ class TravShopController extends Controller
                     }
                     $is_dd_pg_success = $res['responseData']['pay_refnum'] ?? null;
                     if ($is_dd_pg_success == null) {
+                        $res['rcm'] = "PENDING";
                         return response()->json([
                             "message" => "PENDING",
                             "errors" => [
@@ -2551,6 +2552,7 @@ class TravShopController extends Controller
                         ], 422);
                     }
                     $is_dd_pg_success = $res['responseData']['pay_refnum'] ?? null;
+                    $res['rcm'] = "PENDING";
                     if ($is_dd_pg_success == null) {
                         return response()->json([
                             "message" => "PENDING",
@@ -2687,6 +2689,7 @@ class TravShopController extends Controller
                     }
                     $is_dd_pg_success = $res['responseData']['pay_refnum'] ?? null;
                     if ($is_dd_pg_success == null || $is_dd_pg_success == "") {
+                        $res['rcm'] = "PENDING";
                         return response()->json([
                             "message" => "PENDING",
                             "errors" => [
@@ -3367,8 +3370,10 @@ class TravShopController extends Controller
         try {
             if ($trans_payment) {
                 $data = TransOrder::where('id', $trans_payment->trans_order_id)->firstOrFail();
-                $data->status = TransOrder::PAYMENT_SUCCESS;
-                $data->save();
+                if($request->latestTransactionStatus == '00' && $request->additionalInfo['description'] == 'Transaction completed' &&  $request->additionalInfo['responseMessage'] == 'SUCCESSFUL' && $request->additionalInfo['responseCode'] == '2005600' && $request->transactionStatusDesc == 'Success'){
+                    $data->status = TransOrder::PAYMENT_SUCCESS;
+                    $data->save();
+                }
                 $trans_payment->update(['data' => $request->all(), 'payment' => $request->all()]);
             }
             DB::commit();
