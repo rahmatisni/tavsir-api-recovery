@@ -2062,11 +2062,11 @@ class TravShopController extends Controller
                     $is_dd_pg_success = $res['responseData']['pay_refnum'] ?? null;
                     if ($is_dd_pg_success == null) {
                         return response()->json([
-                            "message" => "ERROR!",
+                            "message" => "PENDING",
                             "errors" => [
                                 $res
                             ]
-                        ], 422);
+                        ], 201);
                     }
 
                     $respon = $res['responseData'];
@@ -2129,14 +2129,15 @@ class TravShopController extends Controller
                             ]
                         ], 422);
                     }
+                   
                     $is_dd_pg_success = $res['responseData']['pay_refnum'] ?? null;
-                    if ($is_dd_pg_success == null || $is_dd_pg_success == "") {
+                    if ($is_dd_pg_success == null) {
                         return response()->json([
-                            "message" => "ERROR!",
+                            "message" => "PENDING",
                             "errors" => [
                                 $res
                             ]
-                        ], 422);
+                        ], 201);
                     }
 
                     $respon = $res['responseData'];
@@ -2553,11 +2554,11 @@ class TravShopController extends Controller
                     $is_dd_pg_success = $res['responseData']['pay_refnum'] ?? null;
                     if ($is_dd_pg_success == null) {
                         return response()->json([
-                            "message" => "ERROR!",
+                            "message" => "PENDING",
                             "errors" => [
                                 $res
                             ]
-                        ], 422);
+                        ], 201);
                     }
 
                     $respon = $res['responseData'];
@@ -2688,11 +2689,11 @@ class TravShopController extends Controller
                     $is_dd_pg_success = $res['responseData']['pay_refnum'] ?? null;
                     if ($is_dd_pg_success == null || $is_dd_pg_success == "") {
                         return response()->json([
-                            "message" => "ERROR!",
+                            "message" => "PENDING",
                             "errors" => [
                                 $res
                             ]
-                        ], 422);
+                        ], 201);
                     }
 
                     $res['responseData']['card_id'] = $payload['card_id'] ?? '';
