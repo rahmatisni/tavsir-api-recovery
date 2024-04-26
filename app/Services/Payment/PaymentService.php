@@ -651,45 +651,62 @@ class PaymentService
                 $is_advice = $data_log_kios['is_advice'] ?? false;
                 $result_jatelindo = [];
                 $is_time_out = false;
-                $is_retry = true;
                 $rc = null;
                 if($is_purchase != true){
-                    $is_retry = false;
                     //1. Purchase
-                    $res_jatelindo = JatelindoService::purchase($data_log_kios);
-                    $result_jatelindo = $res_jatelindo->json();
-                    $data_log_kios = $result_jatelindo;
-                    $rc = $result_jatelindo['bit39'] ?? '';
-                    Log::info('Purchase rc = '.$rc);
-                    if($rc == '18'){
-                        $is_time_out = true;
+                    try {
+                        $res_jatelindo = JatelindoService::purchase($data_log_kios);
+                        $result_jatelindo = $res_jatelindo->json();
+                        $data_log_kios = $result_jatelindo;
+                        $rc = $result_jatelindo['bit39'] ?? '';
+                        Log::info('Purchase rc = '.$rc);
+                        $data_log_kios['is_purchase'] = true;
+                        $data->log_kiosbank()->update(['data' => $data_log_kios]);
+                        DB::commit();
+                        $is_purchase = true;
+                        if($rc == '18'){
+                            //2. Advice
+                            Log::info('Advice begin');
+                            $is_advice = true;
+                            $data_log_kios['is_advice'] = true;
+                            $data->log_kiosbank()->update(['data' => $data_log_kios]);
+                            DB::commit();
+
+                            $res_jatelindo = JatelindoService::advice($data_log_kios);
+                            $result_jatelindo = $res_jatelindo->json();
+                            $rc = $result_jatelindo['bit39'] ?? '';
+                            Log::info('Advice rc = '.$rc);
+                            if($rc == '18'){
+                                $is_time_out = true;
+                            }
+                            $data_log_kios = $result_jatelindo;
+                            $data_log_kios['is_advice'] = true;
+                            $data->log_kiosbank()->update(['data' => $data_log_kios]);
+                            DB::commit();
+                        }
+                    } catch (\Illuminate\Http\Client\ConnectionException $e) {
+                        Log::info('Purchase timeout & advice ='.$is_advice.'. '.$e->getMessage().' ');
+                        if(!$is_advice){
+                            try {
+                                $data_log_kios['is_advice'] = true;
+                                $data->log_kiosbank()->update(['data' => $data_log_kios]);
+                                DB::commit();
+
+                                $res_jatelindo = JatelindoService::advice($data_log_kios);
+                                $result_jatelindo = $res_jatelindo->json();
+                                Log::info('Advice rc = '.$rc);
+                                $data->log_kiosbank()->update(['data' => $data_log_kios]);
+                                DB::commit();
+                                $is_advice = true;
+                            } catch (\Throwable $th) {
+                                Log::info('Advice timeout : '. $th->getMessage());
+                                $is_time_out = true;
+                            }
+                        }
                     }
-                    $data_log_kios['is_purchase'] = true;
-                    $data->log_kiosbank()->update(['data' => $data_log_kios]);
-                    $is_purchase = true;
-                    $data->save();
-                    DB::commit();
                 }
 
-                if(($is_purchase && $is_time_out) || !$is_advice){
-                    $is_retry = false;
-                    Log::info('Advice begin');
-                    //2. Advice
-                    $is_time_out = false;
-                    $res_jatelindo = JatelindoService::advice($data_log_kios);
-                    $result_jatelindo = $res_jatelindo->json();
-                    $rc = $result_jatelindo['bit39'] ?? '';
-                    Log::info('Advice rc = '.$rc);
-                    if($rc == '18'){
-                        $is_time_out = true;
-                    }
-                    $data_log_kios['is_advice'] = true;
-                    $data->log_kiosbank()->update(['data' => $data_log_kios]);
-                    $is_advice = true;
-                    DB::commit();
-                }
-
-                if(($is_advice && $is_time_out) || $is_retry){
+                if($is_purchase || $is_time_out){
                     $try = 1;
                     do {
                         $res_jatelindo = JatelindoService::repeat($data->log_kiosbank->data ?? []);
@@ -699,8 +716,6 @@ class PaymentService
                         Log::info('Repeate ' . $try . ' rc = ' . $rc);
                     } while ($try <= 3 && $rc == '18');
                 }
-
-                Log::info($data_log_kios);
 
                 if ($rc == '00') {
                     //return token listrik

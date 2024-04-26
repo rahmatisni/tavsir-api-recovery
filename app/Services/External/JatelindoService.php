@@ -101,7 +101,7 @@ class JatelindoService
             ];
         };
 
-        $result = Http::withOptions($options)->post(config('jatelindo.url'), $payload);
+        $result = Http::withOptions($options)->timeout(40)->post(config('jatelindo.url'), $payload);
 
         Log::info([
             'status' => self::responseTranslation($result->json())?->keterangan,
@@ -124,7 +124,7 @@ class JatelindoService
 
         $result = Http::withOptions([
             // 'proxy' => '172.16.4.58:8090'
-        ])->post(config('jatelindo.url'), $payload);
+        ])->timeout(40)->post(config('jatelindo.url'), $payload);
 
         Log::info([
             'status' => self::responseTranslation($result->json())?->keterangan,
@@ -147,7 +147,7 @@ class JatelindoService
 
         $result = Http::withOptions([
             // 'proxy' => '172.16.4.58:8090'
-        ])->post(config('jatelindo.url'), $payload);
+        ])->timeout(40)->post(config('jatelindo.url'), $payload);
 
         Log::info([
             'status' => self::responseTranslation($result->json())?->keterangan,
