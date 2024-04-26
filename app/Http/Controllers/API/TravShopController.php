@@ -3371,8 +3371,13 @@ class TravShopController extends Controller
             if ($trans_payment) {
                 $data = TransOrder::where('id', $trans_payment->trans_order_id)->firstOrFail();
                 if($request->latestTransactionStatus == '00' && $request->additionalInfo['description'] == 'Transaction completed' &&  $request->additionalInfo['responseMessage'] == 'SUCCESSFUL' && $request->additionalInfo['responseCode'] == '2005600' && $request->transactionStatusDesc == 'Success'){
+                    if($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::READY || $data->status == TransOrder::DONE){
+                    }
                     $data->status = TransOrder::PAYMENT_SUCCESS;
+                    
                     $data->save();
+                    $kios = $this->servicePayment->payKios($data);
+                    log::info($kios);
                 }
                 $trans_payment->update(['data' => $request->all(), 'payment' => $request->all()]);
             }
