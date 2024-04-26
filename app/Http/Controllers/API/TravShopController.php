@@ -2714,6 +2714,13 @@ class TravShopController extends Controller
                     if ($data->order_type == TransOrder::POS) {
                         $data->status = TransOrder::DONE;
                     }
+                    if ($data->order_type === TransOrder::ORDER_DEREK_ONLINE) {
+                        $data->save();
+                        DB::commit();
+
+                        $travoy = $this->travoyService->detailDerek($id, $request->id_user, $request->token);
+                        return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
+                    }
                     $data->save();
                     foreach ($data->detil as $key => $value) {
                         $this->stock_service->updateStockProduct($value);
