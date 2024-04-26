@@ -3361,7 +3361,7 @@ class TravShopController extends Controller
 
     public function callbackpg(Request $request)
     {
-        dump($request->originalPartnerRewferenceNo);
+        log::info('callback DD PG' ,[$request->all()]);
         DB::beginTransaction();
         $trans_payment = TransPayment::where('inquiry', 'like', '%' . $request->originalPartnerRewferenceNo . '%')->first();
         try {
