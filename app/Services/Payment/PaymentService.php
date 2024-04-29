@@ -573,7 +573,7 @@ class PaymentService
             $trans_order->payment()->updateOrCreate([
                 'trans_order_id' => $trans_order->id
             ],[
-                'data' => $res,
+                'data' => $res['responseData'],
             ]);
         }
 
@@ -680,6 +680,8 @@ class PaymentService
                                 Log::info('Advice rc = '.$rc);
                                 if($rc == '18'){
                                     $is_time_out = true;
+                                }else{
+                                    $is_purchase = false;
                                 }
                             } catch (\Throwable $e) {
                                 Log::info('Advice timeout : '. $e->getMessage());
