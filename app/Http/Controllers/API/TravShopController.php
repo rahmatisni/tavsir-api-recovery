@@ -2007,6 +2007,11 @@ class TravShopController extends Controller
                     return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
 
                 }
+                if ($data->order_type == TransOrder::ORDER_HU) {
+                    $travoy = $this->travoyService->detailHU($id);
+                    return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
+
+                }
                 $product_kios_bank = $data->productKiosbank();
                 if ($product_kios_bank->integrator == 'JATELINDO') {
                     $infoPelanggan = JatelindoService::infoPelanggan($data->log_kiosbank, $data);
@@ -2099,6 +2104,14 @@ class TravShopController extends Controller
                         return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
                     }
 
+                    if ($data->order_type == TransOrder::ORDER_HU) {
+                        $data->save();
+                        DB::commit();
+                        $travoy = $this->travoyService->detailHU($id);
+                        return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
+    
+                    }
+
                     //End payment kios
                     foreach ($data->detil as $key => $value) {
                         $this->stock_service->updateStockProduct($value);
@@ -2169,6 +2182,14 @@ class TravShopController extends Controller
                         $travoy = $this->travoyService->detailDerek($id, $request->id_user, $request->token);
                         return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
                     }
+                    
+                    if ($data->order_type === TransOrder::ORDER_HU) {
+                        $data->save();
+                        DB::commit();
+
+                        $travoy = $this->travoyService->detailHU($id);
+                        return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
+                    }
 
                     //End payment kios
                     foreach ($data->detil as $key => $value) {
@@ -2229,6 +2250,15 @@ class TravShopController extends Controller
                             DB::commit();
 
                             $travoy = $this->travoyService->detailDerek($id, $request->id_user, $request->token);
+                            return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
+
+                        }
+                        if ($data->order_type === TransOrder::ORDER_HU) {
+                            $data->status = TransOrder::PAYMENT_SUCCESS;
+                            $data->save();
+                            DB::commit();
+
+                            $travoy = $this->travoyService->detailHU($id);
                             return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
 
                         }
@@ -2302,6 +2332,16 @@ class TravShopController extends Controller
                         DB::commit();
 
                         $travoy = $this->travoyService->detailDerek($id, $request->id_user, $request->token);
+                        return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
+
+                    }
+
+                    if ($data->order_type === TransOrder::ORDER_HU) {
+                        $data->status = TransOrder::PAYMENT_SUCCESS;
+                        $data->save();
+                        DB::commit();
+
+                        $travoy = $this->travoyService->detailHU($id);
                         return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
 
                     }
@@ -2719,6 +2759,13 @@ class TravShopController extends Controller
                         DB::commit();
 
                         $travoy = $this->travoyService->detailDerek($id, $request->id_user, $request->token);
+                        return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
+                    }
+                    if ($data->order_type === TransOrder::ORDER_HU) {
+                        $data->save();
+                        DB::commit();
+
+                        $travoy = $this->travoyService->detailHU($id);
                         return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
                     }
                     $data->save();

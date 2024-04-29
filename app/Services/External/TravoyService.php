@@ -18,6 +18,8 @@ class TravoyService
 
     public const detilDerek = '/status_payment';
 
+    public const detilHU = '/subsciption/payment-status';
+
 
     function __construct()
     {
@@ -29,7 +31,7 @@ class TravoyService
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => $this->baseUrl . self::detilDerek,
+            CURLOPT_URL => $this->baseUrl . $path,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -65,6 +67,19 @@ class TravoyService
         $res_json = $this->http('POST', self::detilDerek, $payLoad);
 
 
+        return $res_json;
+
+    }
+    
+    public function detailHU($id)
+    {
+
+        $payLoad = [
+            'trans_id' => $id
+            
+        ];
+
+        $res_json = $this->http('POST', self::detilHU, $payLoad);
         return $res_json;
 
     }
