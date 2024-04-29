@@ -126,7 +126,14 @@ class PaymentService
         if ($data->order_type == TransOrder::POS) {
             $data->status = TransOrder::DONE;
         }
+        if ($data->order_type == TransOrder::ORDER_HU) {
+            $data->status = TransOrder::PAYMENT_SUCCESS;
+    
+            $travoy = $this->travoyService->detailHU($data->id);
+            $result->data['travoy'] = $travoy ?? '';
+            return $result;
 
+        }
         foreach ($data->detil as $value) {
             $this->stock_service->updateStockProduct($value);
         }

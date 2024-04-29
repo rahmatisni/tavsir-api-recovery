@@ -2336,15 +2336,7 @@ class TravShopController extends Controller
 
                     }
 
-                    if ($data->order_type === TransOrder::ORDER_HU) {
-                        $data->status = TransOrder::PAYMENT_SUCCESS;
-                        $data->save();
-                        DB::commit();
-
-                        $travoy = $this->travoyService->detailHU($id);
-                        return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
-
-                    }
+                 
                     foreach ($data->detil as $key => $value) {
                         $this->stock_service->updateStockProduct($value);
                     }
