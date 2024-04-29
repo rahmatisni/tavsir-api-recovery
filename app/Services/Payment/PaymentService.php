@@ -717,6 +717,7 @@ class PaymentService
 
                 if($is_purchase || $is_time_out){
                     $try = 1;
+                    $rc = null;
                     do {
                         $res_jatelindo = JatelindoService::repeat($data->log_kiosbank->data ?? []);
                         $result_jatelindo = $res_jatelindo->json();
@@ -748,7 +749,7 @@ class PaymentService
                     $data->save();
                     DB::commit();
                 }
-                return $this->responsePayment(false, ['status' => 200, 'data' => JatelindoService::responseTranslation($result_jatelindo)]);
+                return $this->responsePayment(true, ['status' => $data->status, 'data' => JatelindoService::responseTranslation($result_jatelindo)]);
             }
             $tagihan = $datalog['data']['data']['tagihan'] ?? $datalog['data']['data']['harga_kios'];
             $admin = $datalog['data']['data']['adminBank'] ?? $datalog['data']['data']['AB'] ?? '000000000000';
