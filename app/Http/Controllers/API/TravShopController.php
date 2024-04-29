@@ -2042,6 +2042,11 @@ class TravShopController extends Controller
             }
             $data->save();
             DB::commit();
+            
+            if ($data->order_type == TransOrder::ORDER_HU) {
+                $travoy = $this->travoyService->detailHU($id);
+                return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
+            }
             return response()->json($payment_result->data);
             //END REFACTOR
             //CODE DIBWAH INI TIDAK DI EKSEUSI, SEMENTARA UNTUK KOMPARE DATA DENGAN REFACTOR
