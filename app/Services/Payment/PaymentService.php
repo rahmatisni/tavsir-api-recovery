@@ -657,23 +657,23 @@ class PaymentService
                 if($is_purchase != true){
                     //1. Purchase
                     try {
+                        $data_log_kios['is_purchase'] = true;
+                        $data->log_kiosbank()->update(['data' => $data_log_kios]);
                         $res_jatelindo = JatelindoService::purchase($data_log_kios);
                         $result_jatelindo = $res_jatelindo->json();
                         $data_log_kios = $result_jatelindo;
                         $rc = $result_jatelindo['bit39'] ?? '';
                         Log::info('Purchase rc = '.$rc);
-                        $data_log_kios['is_purchase'] = true;
-                        $data->log_kiosbank()->update(['data' => $data_log_kios]);
                         DB::commit();
                         $is_purchase = true;
                         if($rc == '18'){
                             //2. Advice
-                            Log::info('Advice begin');
-                            $is_advice = true;
-                            $data_log_kios['is_advice'] = true;
-                            $data->log_kiosbank()->update(['data' => $data_log_kios]);
-                            DB::commit();
                             try {
+                                Log::info('Advice begin');
+                                $is_advice = true;
+                                $data_log_kios['is_advice'] = true;
+                                $data->log_kiosbank()->update(['data' => $data_log_kios]);
+                                DB::commit();
                                 $res_jatelindo = JatelindoService::advice($data_log_kios);
                                 $result_jatelindo = $res_jatelindo->json();
                                 $rc = $result_jatelindo['bit39'] ?? '';
