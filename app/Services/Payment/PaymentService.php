@@ -114,6 +114,8 @@ class PaymentService
 
         $data->status = TransOrder::PAYMENT_SUCCESS;
         if ($data->order_type === TransOrder::ORDER_TRAVOY) {
+            $data->save();
+            Db::commit();
             return $this->payKios($data);
         }
         if ($data->order_type === TransOrder::ORDER_DEREK_ONLINE) {
@@ -671,12 +673,16 @@ class PaymentService
                             $data_log_kios['is_advice'] = true;
                             $data->log_kiosbank()->update(['data' => $data_log_kios]);
                             DB::commit();
-
-                            $res_jatelindo = JatelindoService::advice($data_log_kios);
-                            $result_jatelindo = $res_jatelindo->json();
-                            $rc = $result_jatelindo['bit39'] ?? '';
-                            Log::info('Advice rc = '.$rc);
-                            if($rc == '18'){
+                            try {
+                                $res_jatelindo = JatelindoService::advice($data_log_kios);
+                                $result_jatelindo = $res_jatelindo->json();
+                                $rc = $result_jatelindo['bit39'] ?? '';
+                                Log::info('Advice rc = '.$rc);
+                                if($rc == '18'){
+                                    $is_time_out = true;
+                                }
+                            } catch (\Throwable $e) {
+                                Log::info('Advice timeout : '. $e->getMessage());
                                 $is_time_out = true;
                             }
                             $data_log_kios = $result_jatelindo;
@@ -684,7 +690,7 @@ class PaymentService
                             $data->log_kiosbank()->update(['data' => $data_log_kios]);
                             DB::commit();
                         }
-                    } catch (\Illuminate\Http\Client\ConnectionException $e) {
+                    } catch (\Throwable $e) {
                         Log::info('Purchase timeout & advice ='.$is_advice.'. '.$e->getMessage().' ');
                         if(!$is_advice){
                             try {
