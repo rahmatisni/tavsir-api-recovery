@@ -742,6 +742,10 @@ class PaymentService
                         ]
                     ];
                     return $this->responsePayment(true, $map);
+                }else{
+                    $data->status = TransOrder::READY;
+                    $data->save();
+                    DB::commit();
                 }
                 return $this->responsePayment(false, ['status' => 422, 'data' => JatelindoService::responseTranslation($result_jatelindo)]);
             }
