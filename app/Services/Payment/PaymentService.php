@@ -207,7 +207,6 @@ class PaymentService
         );
     }
 
-
     public function createQRISVA($payment_method, $trans_order, $additional_data) : object
     {
         $status = false;
@@ -415,7 +414,7 @@ class PaymentService
     {
         $status = false;
 
-        $data_payment = $trans_order->payment->data;
+        $data_payment = $trans_order->payment->inquiry;
         $payload = $data_payment;
         $payload['submerchant_id'] = $trans_order->sub_merchant_id;
         $payload['payrefnum'] = $data_payment['refnum'];
@@ -446,6 +445,7 @@ class PaymentService
             'trans_order_id' => $trans_order->id
         ],[
             'data' => $respon,
+            'payment' => $respon,
         ]);
 
         $status = true;
@@ -473,7 +473,7 @@ class PaymentService
             ]);
         }
         
-        $data_payment = $trans_order->payment->data;
+        $data_payment = $trans_order->payment->inquiry;
         $data_payment['submerchant_id'] = $trans_order->sub_merchant_id;
         $data_payment['otp'] = $otp;
         $data_payment['card_id'] = $card_id;
@@ -514,7 +514,7 @@ class PaymentService
     public function statusSnapVA($trans_order)
     {
         $status = false;
-        $payment_data = $trans_order->payment->data['responseSnap']['virtualAccountData'] ?? [];
+        $payment_data = $trans_order->payment->inquiry['responseSnap']['virtualAccountData'] ?? [];
         $res = PgJmtoSnap::vaStatus($payment_data);
 
         if(($res['responseCode'] ?? null) == '2002700'){
@@ -535,6 +535,7 @@ class PaymentService
                 'trans_order_id' => $trans_order->id
             ],[
                 'data' => $res,
+                'payment' => $res,
             ]);
         }
 
@@ -550,7 +551,7 @@ class PaymentService
     public function statusVA($trans_order)
     {
         $status = false;
-        $payment_data = $trans_order->payment->data;
+        $payment_data = $trans_order->payment->inquiry;
         $res = PgJmto::vaStatus(
             $payment_data['sof_code'],
             $payment_data['bill_id'],
@@ -574,6 +575,7 @@ class PaymentService
                 'trans_order_id' => $trans_order->id
             ],[
                 'data' => $res['responseData'],
+                'payment' => $res['responseData'],
             ]);
         }
 
@@ -582,7 +584,7 @@ class PaymentService
 
     public function statusLinkAja($trans_order)
     {
-        $data_payment = $trans_order->payment->data;
+        $data_payment = $trans_order->payment->inquiry;
         $data_la = TenantLa::where('tenant_id', $trans_order->tenant_id)->firstOrFail();
         $res = LAJmto::qrStatus(
             $data_payment['bill_id'],
@@ -597,6 +599,7 @@ class PaymentService
                 'trans_order_id' => $trans_order->id
             ],[
                 'data' => $res,
+                'payment' => $res,
             ]);
         }
 
@@ -605,7 +608,7 @@ class PaymentService
 
     public function statusQRISPG($trans_order)
     {
-        $data_payment = $trans_order->payment->data;
+        $data_payment = $trans_order->payment->inquiry;
         $data_la = TenantLa::where('tenant_id', $trans_order->tenant_id)->firstOrFail();
         $res = PgJmto::QRStatus(
            
@@ -620,6 +623,7 @@ class PaymentService
                 'trans_order_id' => $trans_order->id
             ],[
                 'data' => $res,
+                'payment' => $res,
             ]);
         }
 
@@ -648,7 +652,7 @@ class PaymentService
 
         if ($data->description == 'dual') {
             if ($data->productKiosbank()->integrator == 'JATELINDO') {
-                $data_log_kios = $data->log_kiosbank->data ?? [];
+                $data_log_kios = $data->log_kiosbank->inquiry ?? [];
                 $is_purchase = $data_log_kios['is_purchase'] ?? false;
                 $is_advice = $data_log_kios['is_advice'] ?? false;
                 $result_jatelindo = [];
@@ -658,7 +662,7 @@ class PaymentService
                     //1. Purchase
                     try {
                         $data_log_kios['is_purchase'] = true;
-                        $data->log_kiosbank()->update(['data' => $data_log_kios]);
+                        $data->log_kiosbank()->update(['data' => $data_log_kios, 'payment' => $data_log_kios]);
                         $res_jatelindo = JatelindoService::purchase($data_log_kios);
                         $result_jatelindo = $res_jatelindo->json();
                         $data_log_kios = $result_jatelindo;
@@ -672,7 +676,7 @@ class PaymentService
                                 Log::info('Advice begin');
                                 $is_advice = true;
                                 $data_log_kios['is_advice'] = true;
-                                $data->log_kiosbank()->update(['data' => $data_log_kios]);
+                                $data->log_kiosbank()->update(['data' => $data_log_kios, 'payment' => $data_log_kios]);
                                 DB::commit();
                                 $res_jatelindo = JatelindoService::advice($data_log_kios);
                                 $result_jatelindo = $res_jatelindo->json();
@@ -689,7 +693,7 @@ class PaymentService
                             }
                             $data_log_kios = $result_jatelindo;
                             $data_log_kios['is_advice'] = true;
-                            $data->log_kiosbank()->update(['data' => $data_log_kios]);
+                            $data->log_kiosbank()->update(['data' => $data_log_kios, 'payment' => $data_log_kios]);
                             DB::commit();
                         }
                     } catch (\Throwable $e) {
@@ -697,14 +701,14 @@ class PaymentService
                         if(!$is_advice){
                             try {
                                 $data_log_kios['is_advice'] = true;
-                                $data->log_kiosbank()->update(['data' => $data_log_kios]);
+                                $data->log_kiosbank()->update(['data' => $data_log_kios, 'payment' => $data_log_kios]);
                                 DB::commit();
 
                                 $res_jatelindo = JatelindoService::advice($data_log_kios);
                                 $result_jatelindo = $res_jatelindo->json();
                                 $rc = $result_jatelindo['bit39'] ?? '';
                                 Log::info('Advice rc = '.$rc);
-                                $data->log_kiosbank()->update(['data' => $data_log_kios]);
+                                $data->log_kiosbank()->update(['data' => $data_log_kios, 'payment' => $data_log_kios]);
                                 DB::commit();
                                 $is_advice = true;
                             } catch (\Throwable $th) {
@@ -732,7 +736,8 @@ class PaymentService
                     $data->status = TransOrder::DONE;
                     array_push($result_jatelindo, ['is_sucess' => true]);
                     $log_kios = $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-                        'data' => $result_jatelindo
+                        'data' => $result_jatelindo,
+                        'payment' => $result_jatelindo
                     ]);
                     $data->save();
                     DB::commit();
