@@ -702,6 +702,7 @@ class PaymentService
 
                                 $res_jatelindo = JatelindoService::advice($data_log_kios);
                                 $result_jatelindo = $res_jatelindo->json();
+                                $rc = $result_jatelindo['bit39'] ?? '';
                                 Log::info('Advice rc = '.$rc);
                                 $data->log_kiosbank()->update(['data' => $data_log_kios]);
                                 DB::commit();
@@ -747,7 +748,7 @@ class PaymentService
                     $data->save();
                     DB::commit();
                 }
-                return $this->responsePayment(false, ['status' => 422, 'data' => JatelindoService::responseTranslation($result_jatelindo)]);
+                return $this->responsePayment(false, ['status' => 200, 'data' => JatelindoService::responseTranslation($result_jatelindo)]);
             }
             $tagihan = $datalog['data']['data']['tagihan'] ?? $datalog['data']['data']['harga_kios'];
             $admin = $datalog['data']['data']['adminBank'] ?? $datalog['data']['data']['AB'] ?? '000000000000';
