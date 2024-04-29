@@ -80,6 +80,7 @@ class TravoyService
         ];
 
         $res_json = $this->http('POST', self::detilHU, $payLoad);
+        Log::info($res_json);
         return $res_json;
 
     }
