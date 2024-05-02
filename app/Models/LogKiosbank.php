@@ -27,6 +27,26 @@ class LogKiosbank extends Model
         $this->attributes['data'] = json_encode($value);
     }
 
+    public function getInquiryAttribute($value)
+    {
+        return json_decode($value, true);
+    }
+
+    public function setInquiryAttribute($value)
+    {
+        $this->attributes['inquiry'] = json_encode($value);
+    }
+
+    public function getPaymentAttribute($value)
+    {
+        return json_decode($value, true);
+    }
+
+    public function setPaymentAttribute($value)
+    {
+        $this->attributes['payment'] = json_encode($value);
+    }
+
     public function trans_order()
     {
         return $this->belongsTo(TransOrder::class, 'trans_order_id');
