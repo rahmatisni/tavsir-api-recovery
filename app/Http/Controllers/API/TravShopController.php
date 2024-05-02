@@ -798,7 +798,7 @@ class TravShopController extends Controller
     public function orderById($id)
     {
         $data = TransOrder::findOrfail($id);
-        if ($data->order_type == TransOrder::ORDER_TRAVOY && $data->status != TransOrder::DONE) {
+        if ($data->order_type == TransOrder::ORDER_TRAVOY && $data->status == TransOrder::PAYMENT_SUCCESS) {
             try {
                 DB::beginTransaction();
                 if ($data->productKiosbank()->integrator == 'JATELINDO') {
