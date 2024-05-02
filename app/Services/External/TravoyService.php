@@ -77,8 +77,8 @@ class TravoyService
             'trans_id' => $id
             
         ];
-
         $res_json = $this->http('POST', self::detilHU, $payLoad);
+        log::info('callbackHU', $res_json->json());
         return $res_json;
 
     }
