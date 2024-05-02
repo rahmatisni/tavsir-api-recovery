@@ -193,7 +193,7 @@ class PgJmtoSnap extends Model
             "totalAmount" => ["value" => $amount . ".00", "currency" => "IDR"],
             "billDetails" => [["billName" => $bill_name]],
             "virtualAccountTrxType" => "close",
-            "expiredDate" => Carbon::now()->addMinutes(5)->format('c'),
+            "expiredDate" => Carbon::now()->addMinutes(10)->format('c'),
             "trxId" => $trx_id,
             "additionalInfo" => ["description" => ($bill_id . '-' . $desc . '-' . $amount)],
         ];

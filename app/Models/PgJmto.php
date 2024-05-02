@@ -300,7 +300,7 @@ class PgJmto extends Model
             "bill_name" => $bill_name,
             "amount" => (string) $amount,
             "desc" => $desc,
-            "exp_date" => Carbon::now()->addMinutes(5)->format('Y-m-d H:i:s'),
+            "exp_date" => Carbon::now()->addMinutes(10)->format('Y-m-d H:i:s'),
             "va_type" => "close",
             "phone" => $phone,
             "email" => $email,
@@ -377,7 +377,7 @@ class PgJmto extends Model
             "totalAmount" => ["value" => $amount . ".00", "currency" => "IDR"],
             "billDetails" => [["billName" => $bill_name]],
             "virtualAccountTrxType" => "close",
-            "expiredDate" => Carbon::now()->addMinutes(5)->format('c'),
+            "expiredDate" => Carbon::now()->addMinutes(10)->format('c'),
             "trxId" => $bill_id,
             "additionalInfo" => ["description" => ($bill_id . '-' . $desc . '-' . $amount)],
         ];
