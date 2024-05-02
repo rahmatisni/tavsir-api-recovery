@@ -202,7 +202,7 @@ class JatelindoService
 
             case '18':
                 $keterangan = 'Request Timeout';
-                $message = 'TRANSAKSI GAGAL';
+                $message = 'TRANSAKSI ANDA SUSPECT SILAHKAN ULANGI LAGI BEBERAPA MENIT';
                 break;
 
             case '31':

@@ -798,6 +798,14 @@ class TravShopController extends Controller
     public function orderById($id)
     {
         $data = TransOrder::findOrfail($id);
+        if ($data->order_type == TransOrder::ORDER_TRAVOY && $data->status != TransOrder::DONE) {
+            if ($data->productKiosbank()->integrator == 'JATELINDO') {
+                $is_success = $data->log_kiosbank->data['is_success'] ?? false;
+                if (!$is_success) {
+                    return $this->servicePayment->payKios($data);
+                }
+            }
+        }
         // dd($data);
         return response()->json(new TsOrderResource($data));
     }
