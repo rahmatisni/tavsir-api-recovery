@@ -536,7 +536,8 @@ class KiosBankService
                 $order->total = $order->sub_total + $order->fee;
                 $order->save();
                 $order->log_kiosbank()->updateOrCreate(['trans_order_id' => $order->id], [
-                    'data' => $res_jatelindo
+                    'data' => $res_jatelindo,
+                    'inquiry' => $res_jatelindo
                 ]);
                 return ['code' => 200, 'data' => $order];
             }else{
