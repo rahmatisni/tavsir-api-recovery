@@ -798,21 +798,6 @@ class TravShopController extends Controller
     public function orderById($id)
     {
         $data = TransOrder::findOrfail($id);
-        if ($data->order_type == TransOrder::ORDER_TRAVOY && $data->status == TransOrder::PAYMENT_SUCCESS) {
-            try {
-                DB::beginTransaction();
-                if ($data->productKiosbank()->integrator == 'JATELINDO') {
-                    $is_success = $data->log_kiosbank->data['is_success'] ?? false;
-                    if (!$is_success) {
-                        return $this->servicePayment->payKios($data);
-                    }
-                }
-            } catch (\Throwable $th) {
-                DB::rollBack();
-                return response()->json(['error' => (string) $th->getMessage()], 500);
-            }
-        }
-        // dd($data);
         return response()->json(new TsOrderResource($data));
     }
 
@@ -3526,5 +3511,10 @@ class TravShopController extends Controller
     public function infoPln(Request $request)
     {
         return $this->response(JatelindoService::infoPln($request->meter_id));
+    }
+
+    public function repeatManual($id)
+    {
+        return $this->response($this->servicePayment->repeatManual($id));
     }
 }

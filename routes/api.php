@@ -308,6 +308,7 @@ Route::prefix('travshop')->group(function () {
     });
 
     Route::post('/info-pelanggan', [App\Http\Controllers\API\TravShopController::class, 'infoPln']);
+    Route::post('/repeate-manual/{id}', [App\Http\Controllers\API\TravShopController::class, 'repeateManual']);
 });
 
 Route::middleware('customRateLimit:key,1,10')->group(function () {
