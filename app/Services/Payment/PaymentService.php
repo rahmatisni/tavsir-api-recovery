@@ -669,7 +669,6 @@ class PaymentService
                         $rc = $result_jatelindo['bit39'] ?? '';
                         Log::info('Purchase rc = '.$rc);
                         DB::commit();
-                        $is_purchase = true;
                         if($rc == '18'){
                             //2. Advice
                             try {
@@ -684,8 +683,6 @@ class PaymentService
                                 Log::info('Advice rc = '.$rc);
                                 if($rc == '18'){
                                     $is_time_out = true;
-                                }else{
-                                    $is_purchase = false;
                                 }
                             } catch (\Throwable $e) {
                                 Log::info('Advice timeout : '. $e->getMessage());

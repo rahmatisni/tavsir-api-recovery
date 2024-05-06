@@ -19,7 +19,7 @@ class LogKiosbank extends Model
 
     public function getDataAttribute($value)
     {
-        return json_decode($value, true);
+        return $value ? json_decode($value, true) : $value;
     }
 
     public function setDataAttribute($value)
@@ -29,7 +29,7 @@ class LogKiosbank extends Model
 
     public function getInquiryAttribute($value)
     {
-        return json_decode($value, true);
+        return $value ? json_decode($value, true) : $value;
     }
 
     public function setInquiryAttribute($value)
@@ -39,7 +39,7 @@ class LogKiosbank extends Model
 
     public function getPaymentAttribute($value)
     {
-        return json_decode($value, true);
+        return $value ? json_decode($value, true) : $value;
     }
 
     public function setPaymentAttribute($value)
