@@ -72,6 +72,7 @@ class TsOrderResource extends JsonResource
                     if (isset($product_kios['RP_BAYAR'])){
                         $product_kios['RP_BAYAR'] = rupiah((int)$product_kios['harga']).',00';
                     }
+                    $product_kios['Daya'] = str_pad($product_kios['Daya'], 9, '0', STR_PAD_LEFT); 
                     unset($product_kios['logo_url']);
                     unset($product_kios['Transaksi_ID']);
                     unset($product_kios['Vending_Number']);
