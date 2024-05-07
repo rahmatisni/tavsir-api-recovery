@@ -291,16 +291,15 @@ class PgJmto extends Model
 
     }
 
-    public static function vaCreate($sof_code, $bill_id, $bill_name, $amount, $desc, $phone, $email, $customer_name, $sub_merchant_id)
+    public static function vaCreate($sof_code, $bill_id, $bill_name, $amount, $desc, $phone, $email, $customer_name, $sub_merchant_id, $order_type)
     {
         $payload = [
             "sof_code" => $sof_code,
-            // "bill_id" => (string) $bill_id,
-            "bill_id" => '123123',
+            "bill_id" => (string) $bill_id,
             "bill_name" => $bill_name,
             "amount" => (string) $amount,
             "desc" => $desc,
-            "exp_date" => Carbon::now()->addMinutes(10)->format('Y-m-d H:i:s'),
+            "exp_date" => ($order_type == Transorder::ORDER_TRAVOY ? Carbon::now()->addMinutes(10)->format('Y-m-d H:i:s') : Carbon::now()->addMinutes(5)->format('Y-m-d H:i:s')),
             "va_type" => "close",
             "phone" => $phone,
             "email" => $email,
@@ -377,7 +376,7 @@ class PgJmto extends Model
             "totalAmount" => ["value" => $amount . ".00", "currency" => "IDR"],
             "billDetails" => [["billName" => $bill_name]],
             "virtualAccountTrxType" => "close",
-            "expiredDate" => Carbon::now()->addMinutes(10)->format('c'),
+            "expiredDate" => Carbon::now()->addMinutes(5)->format('c'),
             "trxId" => $bill_id,
             "additionalInfo" => ["description" => ($bill_id . '-' . $desc . '-' . $amount)],
         ];
