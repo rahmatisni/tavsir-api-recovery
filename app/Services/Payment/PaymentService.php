@@ -669,6 +669,7 @@ class PaymentService
                         $res_jatelindo = JatelindoService::purchase($data_log_kios);
                         $result_jatelindo = $res_jatelindo->json();
                         $data_log_kios = $result_jatelindo;
+                        $data->log_kiosbank()->update(['data' => $data_log_kios, 'payment' => $data_log_kios]);
                         $rc = $result_jatelindo['bit39'] ?? '';
                         Log::info('Purchase rc = '.$rc);
                         DB::commit();
