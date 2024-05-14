@@ -654,12 +654,13 @@ class PaymentService
 
         if ($data->description == 'dual') {
             if ($data->productKiosbank()->integrator == 'JATELINDO') {
-                $data_log_kios = $data->log_kiosbank->inquiry ?? [];
+                $data_log_kios = $data->log_kiosbank->data ?? [];
                 $is_purchase = $data_log_kios['is_purchase'] ?? false;
                 $is_advice = $data_log_kios['is_advice'] ?? false;
                 $result_jatelindo = [];
                 $is_time_out = false;
                 $rc = null;
+
                 if($is_purchase != true){
                     //1. Purchase
                     try {
