@@ -802,7 +802,7 @@ class TravShopController extends Controller
             $travoy = $this->travoyService->detailHU($id);
             $response = new TsOrderResource($data);
             $responseArray = $response->toArray(request());
-            $responseArray['detil_hu'] = $travoy->message->order_data;
+            $responseArray['detil_hu'] = $travoy?->message?->order_data ?? null;
             
             return response()->json($responseArray);
             
