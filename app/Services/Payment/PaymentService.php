@@ -804,7 +804,7 @@ class PaymentService
 
     public function repeatManual($id)
     {
-        $data = TransOrder::wiht('log_kiosbank')->findOrFail($id);
+        $data = TransOrder::with('log_kiosbank')->findOrFail($id);
         $data_log_kios = $data->log_kiosbank->inquiry ?? ($data->log_kiosbank->data ?? []);
         try {
             $is_success = $data_log_kios['is_success'] ?? false;
