@@ -1211,8 +1211,7 @@ class TravShopController extends Controller
                         $request->customer_phone,
                         $request->customer_email,
                         $request->customer_name,
-                        $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id,
-                        $data->order_type
+                        $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
                     );
                     if ($res['status'] == 'success') {
                         $pay = null;
@@ -1258,9 +1257,7 @@ class TravShopController extends Controller
                         $request->customer_phone,
                         $request->customer_email,
                         $request->customer_name,
-                        $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id,
-                        $data->order_type
-
+                        $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
                     );
 
                     if ($res['status'] == 'success') {
@@ -1307,8 +1304,7 @@ class TravShopController extends Controller
                         $request->customer_phone,
                         $request->customer_email,
                         $request->customer_name,
-                        $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id,
-                        $data->order_type
+                        $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
                     );
 
                     if ($res['status'] == 'success') {
@@ -1355,8 +1351,7 @@ class TravShopController extends Controller
                         $request->customer_phone,
                         $request->customer_email,
                         $request->customer_name,
-                        $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id,
-                        $data->order_type
+                        $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
                     );
                     if ($res['status'] == 'success') {
                         $pay = null;
@@ -3518,7 +3513,7 @@ class TravShopController extends Controller
         return $this->response(JatelindoService::infoPln($request->meter_id));
     }
 
-    public function repeatManual($id)
+    public function repeateManual($id)
     {
         return $this->response($this->servicePayment->repeatManual($id));
     }
