@@ -798,6 +798,15 @@ class TravShopController extends Controller
     public function orderById($id)
     {
         $data = TransOrder::findOrfail($id);
+        if($data->order_type === TransOrder::ORDER_HU){
+            $travoy = $this->travoyService->detailHU($id);
+            $response = new TsOrderResource($data);
+            $responseArray = $response->toArray(request());
+            $responseArray['detil_hu'] = $travoy->message->order_data;
+            
+            return response()->json($responseArray);
+            
+        }
         return response()->json(new TsOrderResource($data));
     }
 

@@ -222,7 +222,8 @@ class PaymentService
             phone: $additonal_data['customer_phone'] ?? $trans_order->customer_phone ?? ($trans_order->tenant->phone ?? '08123456789'),
             email: env('APP_ENV') == 'testing' ? 'rahmatisni@gmail.com' : ($additonal_data['customer_email'] ?? $trans_order->tenant->email ?? 'travoy@jmto.co.id'),
             customer_name: $trans_order->customer_name,
-            sub_merchant_id:$trans_order->tenant?->sub_merchant_id ?? $trans_order->sub_merchant_id
+            sub_merchant_id:$trans_order->tenant?->sub_merchant_id ?? $trans_order->sub_merchant_id,
+            order_type: $trans_order->order_type
         );
 
         if (($res['status'] ?? null) == 'success') {
