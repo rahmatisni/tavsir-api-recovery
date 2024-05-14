@@ -19,6 +19,8 @@ class TravoyService
     public const detilDerek = '/status_payment';
 
     public const detilHU = '/subsciption/payment-status';
+    public const detilHUPlan = '/subsciption/Callback';
+
 
 
     function __construct()
@@ -78,7 +80,20 @@ class TravoyService
             
         ];
         $res_json = $this->http('POST', self::detilHU, $payLoad);
-        log::info('callbackHU',[$payLoad, $res_json]);
+        log::info('callbackHU',$payLoad);
+        return $res_json;
+
+    }
+
+    public function detailHUPlan($id)
+    {
+
+        $payLoad = [
+            'trans_id' => $id
+            
+        ];
+        $res_json = $this->http('POST', self::detilHUPlan, $payLoad);
+        log::info('callbackHUDetail',$payLoad);
         return $res_json;
 
     }

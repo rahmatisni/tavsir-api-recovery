@@ -799,10 +799,11 @@ class TravShopController extends Controller
     {   
         $data = TransOrder::findOrfail($id);
         if($data->order_type === TransOrder::ORDER_HU){
+            $travoy = $this->travoyService->detailHUPlan($id);
             $response = new TsOrderResource($data);
             $responseArray = $response->toArray(request());
-            $responseArray['detil_hu'] = $request?->plan_data ?? [];
-        
+            $responseArray['detil_hu'] = $travoy?->message ?? [];
+
             return response()->json($responseArray);    
         }
         return response()->json(new TsOrderResource($data));
