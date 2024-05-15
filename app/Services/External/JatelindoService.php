@@ -79,6 +79,15 @@ class JatelindoService
         if (isset($payload['bit39'])) {
             unset($payload['bit39']);
         }
+        if (isset($payload['is_purchase'])) {
+            unset($payload['is_purchase']);
+        }
+        if (isset($payload['is_advice'])) {
+            unset($payload['is_advice']);
+        }
+        if (isset($payload['is_success'])) {
+            unset($payload['is_success']);
+        }
         $payload["mti"] = "0200";
         $payload["bit3"] = self::purchase;
         //fake respone
@@ -119,6 +128,15 @@ class JatelindoService
         if (isset($payload['bit39'])) {
             unset($payload['bit39']);
         }
+        if (isset($payload['is_purchase'])) {
+            unset($payload['is_purchase']);
+        }
+        if (isset($payload['is_advice'])) {
+            unset($payload['is_advice']);
+        }
+        if (isset($payload['is_success'])) {
+            unset($payload['is_success']);
+        }
         $payload["mti"] = "0220";
         $payload["bit3"] = self::advice;
 
@@ -141,6 +159,15 @@ class JatelindoService
         //bit
         if (isset($payload['bit39'])) {
             unset($payload['bit39']);
+        }
+        if (isset($payload['is_purchase'])) {
+            unset($payload['is_purchase']);
+        }
+        if (isset($payload['is_advice'])) {
+            unset($payload['is_advice']);
+        }
+        if (isset($payload['is_success'])) {
+            unset($payload['is_success']);
         }
         $payload["mti"] = "0221";
         $payload["bit3"] = self::repeat;
