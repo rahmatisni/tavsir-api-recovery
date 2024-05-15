@@ -677,6 +677,7 @@ class PaymentService
                         if($rc == '18'){
                             //2. Advice
                             try {
+                                Log::info('Purchase rc='.$rc.' Delay 35 detik');
                                 sleep(35);
                                 Log::info('Advice begin');
                                 $is_advice = true;
@@ -700,9 +701,9 @@ class PaymentService
                             DB::commit();
                         }
                     } catch (\Throwable $e) {
-                        sleep(35);
                         Log::info('Purchase timeout & advice ='.$is_advice.'. '.$e->getMessage().' ');
-                        Log::info('Delay 30 detik');
+                        Log::info('Delay 35 detik');
+                        sleep(35);
                         if(!$is_advice){
                             try {
                                 $data_log_kios['is_advice'] = true;
@@ -725,9 +726,18 @@ class PaymentService
                 }
 
                 if($is_purchase || $is_time_out){
+                    Log::info('Repeat  or timeout');
+
                     $try = 1;
                     $rc = null;
                     do {
+                        if($is_time_out){
+                            Log::info('Repeat timeout Delay 35 detik');
+                            
+                        }else{
+                            Log::info('Repeat purchase Delay 35 detik');
+                        }
+
                         if($rc == '18' || $rc == '96' || $is_time_out){
                             sleep(35);
                         }
