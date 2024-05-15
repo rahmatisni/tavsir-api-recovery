@@ -677,6 +677,7 @@ class PaymentService
                         if($rc == '18'){
                             //2. Advice
                             try {
+                                sleep(35);
                                 Log::info('Advice begin');
                                 $is_advice = true;
                                 $data_log_kios['is_advice'] = true;
@@ -699,9 +700,9 @@ class PaymentService
                             DB::commit();
                         }
                     } catch (\Throwable $e) {
+                        sleep(35);
                         Log::info('Purchase timeout & advice ='.$is_advice.'. '.$e->getMessage().' ');
                         Log::info('Delay 30 detik');
-                        sleep(35);
                         if(!$is_advice){
                             try {
                                 $data_log_kios['is_advice'] = true;
@@ -727,6 +728,10 @@ class PaymentService
                     $try = 1;
                     $rc = null;
                     do {
+                        if($rc == '18' || $rc == '96' || $is_time_out){
+                            sleep(35);
+                        }
+
                         $res_jatelindo = JatelindoService::repeat($data->log_kiosbank->data ?? []);
                         $result_jatelindo = $res_jatelindo->json();
                         $rc = $result_jatelindo['bit39'] ?? '';
