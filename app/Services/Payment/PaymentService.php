@@ -700,6 +700,8 @@ class PaymentService
                         }
                     } catch (\Throwable $e) {
                         Log::info('Purchase timeout & advice ='.$is_advice.'. '.$e->getMessage().' ');
+                        Log::info('Delay 30 detik');
+                        sleep(35);
                         if(!$is_advice){
                             try {
                                 $data_log_kios['is_advice'] = true;
@@ -806,6 +808,8 @@ class PaymentService
     public function repeatManual($id)
     {
         $data = TransOrder::with('log_kiosbank')->findOrFail($id);
+        Log::info('Repeat Manual Delay 30 detik');
+        sleep(35);
         $data_log_kios = $data->log_kiosbank->data ?? [];
         try {
             $is_success = $data_log_kios['is_success'] ?? false;
