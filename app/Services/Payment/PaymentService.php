@@ -727,12 +727,12 @@ class PaymentService
                     $try = 1;
                     $rc = null;
                     do {
-                        $res_jatelindo = JatelindoService::repeat($data->log_kiosbank->payment ?? []);
+                        $res_jatelindo = JatelindoService::repeat($data->log_kiosbank->data ?? []);
                         $result_jatelindo = $res_jatelindo->json();
                         $rc = $result_jatelindo['bit39'] ?? '';
                         $try++;
                         Log::info('Repeate ' . $try . ' rc = ' . $rc);
-                    } while ($try <= 3 && $rc == '18');
+                    } while ($try <= 3 && ($rc == '18' || $rc == '96'));
                     array_push($result_jatelindo, ['repeate_date' => Carbon::now()->toDateTimeString()]);
                     $log_kios = $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                         'data' => $result_jatelindo,
