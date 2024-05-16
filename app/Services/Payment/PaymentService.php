@@ -108,8 +108,10 @@ class PaymentService
     public function statusOrder(TransOrder $data, $additonal_data = [])
     {
         $result = $this->cekStatus($data, $additonal_data);
+
         if($result->status != true){
             return $result;
+
         }
 
         $data->status = TransOrder::PAYMENT_SUCCESS;
@@ -213,7 +215,7 @@ class PaymentService
     {
         $status = false;
         $fee = 0;
-        $res = PgJmto::vaCreate(
+        $res = PgJmto::qrJTLCreate(
             sof_code: $payment_method->code,
             bill_id: $trans_order->order_id,
             bill_name: 'GetPay',
@@ -612,14 +614,13 @@ class PaymentService
     public function statusQRISPG($trans_order)
     {
         $data_payment = $trans_order->payment->inquiry;
-        $data_la = TenantLa::where('tenant_id', $trans_order->tenant_id)->firstOrFail();
+        // $data_la = TenantLa::where('tenant_id', $trans_order->tenant_id)->firstOrFail();
         $res = PgJmto::QRStatus(
-           
-            $data_payment, $data_la
+            $data_payment
         );
 
         if(($res['status'] ?? null) == 'success'){
-            $status = ($res['responseData']['pay_status'] ?? 0) == 1 ? true : false;
+            $status = ($res['responseData']['status'] ?? 0) == true ? true : false;
             unset($res['la_response']);
 
             $trans_order->payment()->updateOrCreate([
@@ -629,7 +630,6 @@ class PaymentService
                 'payment' => $res,
             ]);
         }
-
         return $this->responsePayment($status, $res);
     }
 
