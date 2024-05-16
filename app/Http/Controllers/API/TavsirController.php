@@ -1187,7 +1187,8 @@ class TavsirController extends Controller
                         $value->percentage = null;
                         $value->fee = null;
                     } else {
-                        $data = PgJmto::tarifFee($value->sof_id, $value->payment_method_id, $value->sub_merchant_id, $trans_order->sub_total);
+                        // $data = PgJmto::tarifFee($value->sof_id, $value->payment_method_id, $value->sub_merchant_id, $trans_order->sub_total);
+                        $data = null;
                         Log::warning($data);
                         $value->percentage = $data['is_presentage'] ?? null;
                         $x = $data['value'] ?? 'x';
