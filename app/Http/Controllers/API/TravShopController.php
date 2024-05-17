@@ -1190,6 +1190,10 @@ class TravShopController extends Controller
             $data->sub_merchant_id = $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id;
             $data->save();
             $response = $paymentResult->data;
+            // Convert to 'yyyy-mm-dd HH:mm:ss' format
+            if (Carbon::createFromFormat('Y-m-d\TH:i:s\Z', $response['responseData']['exp_date']) !== false) {
+                $response['responseData']['exp_date'] = Carbon::parse($response['responseData']['exp_date'])->format('Y-m-d H:i:s');
+            }
             // unset($response['responseSnap']);
             DB::commit();
             return response()->json($response);

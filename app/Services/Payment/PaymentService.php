@@ -629,7 +629,8 @@ class PaymentService
                     "sof_code" =>  "FELLO",
                     "bill_id" =>  "155337",
                     "reff_number" =>  "QR20240516152712000000",
-                    "status" =>  true
+                    "status" =>  true,
+                    "pay_status" => 1
                     ]
     
             ];   
@@ -646,7 +647,8 @@ class PaymentService
                     "sof_code" =>  "FELLO",
                     "bill_id" =>  "155337",
                     "reff_number" =>  "QR20240516152712000000",
-                    "status" =>  false
+                    "status" =>  false,
+                    "pay_status" => 0
                     ]
             ];
             $status = $res['responseData']['status'];
@@ -658,7 +660,7 @@ class PaymentService
             if (($res['status'] ?? null) == 'success') {
                 $status = ($res['responseData']['status'] ?? 0) == true ? true : false;
                 unset($res['la_response']);
-
+                $res['pay_status'] = ($status === true ? 1:0);
                 $trans_order->payment()->updateOrCreate([
                     'trans_order_id' => $trans_order->id
                 ], [
