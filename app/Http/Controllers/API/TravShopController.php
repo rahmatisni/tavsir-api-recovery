@@ -1190,9 +1190,11 @@ class TravShopController extends Controller
             $data->sub_merchant_id = $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id;
             $data->save();
             $response = $paymentResult->data;
-            // Convert to 'yyyy-mm-dd HH:mm:ss' format
-            if (Carbon::createFromFormat('Y-m-d\TH:i:s\Z', $response['responseData']['exp_date']) !== false) {
-                $response['responseData']['exp_date'] = Carbon::parse($response['responseData']['exp_date'])->format('Y-m-d H:i:s');
+            if (preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $response['responseData']['exp_date'])) {
+            } else {
+                // The date is not in the desired format, so convert it
+                $carbonDate = Carbon::parse($response['responseData']['exp_date']);
+                $response['responseData']['exp_date'] = $carbonDate->format('Y-m-d H:i:s');
             }
             // unset($response['responseSnap']);
             DB::commit();
