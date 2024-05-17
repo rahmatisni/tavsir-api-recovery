@@ -95,7 +95,7 @@ class PaymentService
                 break;
 
             case Str::contains($payment_method->code_name, PaymentMethodCode::QRJTL):
-                $result = $this->statusQRISPG($data);
+                $result = $this->statusQRISPG($data);   
                 break;
 
                 
@@ -108,7 +108,7 @@ class PaymentService
     public function statusOrder(TransOrder $data, $additonal_data = [])
     {
         $result = $this->cekStatus($data, $additonal_data);
-
+        
         if($result->status != true){
             return $result;
         }
