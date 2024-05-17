@@ -619,7 +619,7 @@ class PaymentService
         //     $data_payment
         // );
 
-        if($data_payment['amount'] == 100000) {
+        if($trans_order->sub_total == 100000) {
             $res = [
 
                 "status" =>  "success",
@@ -635,9 +635,14 @@ class PaymentService
     
             ];   
             $status = $res['responseData']['status'];
- 
+            $trans_order->payment()->updateOrCreate([
+                'trans_order_id' => $trans_order->id
+            ], [
+                'data' => $res,
+                'payment' => $res,
+            ]);
         }
-        else if ($data_payment['amount'] == 50000) {
+        else if($trans_order->sub_total == 50000) {
             $res = [
 
                 "status" =>  "success",
@@ -651,6 +656,12 @@ class PaymentService
                     "pay_status" => 0
                     ]
             ];
+            $trans_order->payment()->updateOrCreate([
+                'trans_order_id' => $trans_order->id
+            ], [
+                'data' => $res,
+                'payment' => $res,
+            ]);
             $status = $res['responseData']['status'];
 
         } else {
@@ -682,6 +693,8 @@ class PaymentService
         //         'payment' => $res,
         //     ]);
         // }
+        // dump($status, $res);
+        // dd('x');
         return $this->responsePayment($status, $res);
     }
 
