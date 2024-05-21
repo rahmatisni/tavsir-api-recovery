@@ -628,7 +628,7 @@ class TravShopController extends Controller
             $data->fee = env('PLATFORM_FEE');
             $data->sub_total = $sub_total;
             $data->total = $data->sub_total + $data->fee + $data->service_fee + $data->addon_total;
-            $data->status = TransOrder::CART;
+            $data->status = TransOrder::WAITING_PAYMENT;
 
             $now = Carbon::now()->format('Y-m-d H:i:s');
             $sharing = Sharing::where('tenant_id', $request->tenant_id)->whereIn('status', ['sedang_berjalan', 'belum_berjalan'])
