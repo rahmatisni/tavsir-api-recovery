@@ -61,12 +61,15 @@ class JatelindoService
                 ], 200)
             ]);
         }
+        Log::info([
+            'action' => 'Inquiry',
+            'payload' => $payload,
+        ]);
         $result = Http::post(config('jatelindo.url'), $payload);
 
         Log::info([
             'status' => self::responseTranslation($result->json())?->keterangan,
             'action' => 'Inquiry',
-            'payload' => $payload,
             'respons' => $result->json(),
         ]);
 
@@ -109,13 +112,15 @@ class JatelindoService
                 'proxy' => '172.16.4.58:8090'
             ];
         };
-
+        Log::info([
+            'action' => 'Purchase',
+            'payload' => $payload,
+        ]);
         $result = Http::withOptions($options)->timeout(40)->post(config('jatelindo.url'), $payload);
 
         Log::info([
             'status' => self::responseTranslation($result->json())?->keterangan,
             'action' => 'Purchase',
-            'payload' => $payload,
             'respons' => $result->json(),
         ]);
 
@@ -139,7 +144,10 @@ class JatelindoService
         }
         $payload["mti"] = "0220";
         $payload["bit3"] = self::advice;
-
+        Log::info([
+            'action' => 'Advice',
+            'payload' => $payload,
+        ]);
         $result = Http::withOptions([
             // 'proxy' => '172.16.4.58:8090'
         ])->timeout(40)->post(config('jatelindo.url'), $payload);
@@ -147,7 +155,6 @@ class JatelindoService
         Log::info([
             'status' => self::responseTranslation($result->json())?->keterangan,
             'action' => 'Advice',
-            'payload' => $payload,
             'respons' => $result->json(),
         ]);
 
@@ -172,6 +179,10 @@ class JatelindoService
         $payload["mti"] = "0221";
         $payload["bit3"] = self::repeat;
 
+        Log::info([
+            'action' => 'Repeate',
+            'payload' => $payload,
+        ]);
         $result = Http::withOptions([
             // 'proxy' => '172.16.4.58:8090'
         ])->timeout(40)->post(config('jatelindo.url'), $payload);
@@ -179,7 +190,6 @@ class JatelindoService
         Log::info([
             'status' => self::responseTranslation($result->json())?->keterangan,
             'action' => 'Repeate',
-            'payload' => $payload,
             'respons' => $result->json(),
         ]);
 
