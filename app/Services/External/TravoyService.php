@@ -21,6 +21,8 @@ class TravoyService
     public const detilHU = '/subsciption/payment-status';
     public const detilHUPlan = '/subsciption/Callback';
 
+    public const detilPaymentHU = '/subscription/updatestatusva';
+
 
 
     function __construct()
@@ -94,6 +96,23 @@ class TravoyService
         ];
         $res_json = $this->http('POST', self::detilHUPlan, $payLoad);
         log::info('callbackHUDetail',$payLoad);
+        return $res_json;
+
+    }
+    public function PaymentRequesthu($id)
+    {
+
+        $payLoad = [
+            'trans_id' => $id
+            
+        ];
+
+        try {
+            $res_json = $this->http('POST', self::detilPaymentHU, $payLoad);
+        } catch (\Throwable $th) {
+            $res_json = [];
+        }
+        log::info('callbackHUDetail', $payLoad);
         return $res_json;
 
     }
