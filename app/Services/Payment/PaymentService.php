@@ -67,12 +67,7 @@ class PaymentService
             default:
                 $result = $this->responsePayment(false, ['message' => $payment_method->name . ' Belum tersedia']);
         }
-        // dd($data->order_type);
-        if($data->order_type === 'HU_ORDER'){
-            $this->travoyService->PaymentRequesthu($data->id);
-            
-        }
-
+       
         return $result;
     }
 

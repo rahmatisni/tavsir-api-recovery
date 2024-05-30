@@ -1180,6 +1180,7 @@ class TravShopController extends Controller
 
             $paymentResult = $this->servicePayment->create($payment_method, $data, $request->all());
             $payment_payload = $paymentResult->data;
+            
 
             if ($paymentResult->status == false) {
                 return response()->json($paymentResult, 422);
@@ -1198,6 +1199,10 @@ class TravShopController extends Controller
             }
             // unset($response['responseSnap']);
             DB::commit();
+            
+            if($data->order_type === 'HU_ORDER'){
+                $this->travoyService->PaymentRequesthu($data->id);
+            }
             return response()->json($response);
 
             //END REFACTOR
