@@ -21,7 +21,7 @@ class TravoyService
     public const detilHU = '/subsciption/payment-status';
     public const detilHUPlan = '/subsciption/Callback';
 
-    public const detilPaymentHU = '/subscription/updatestatusva';
+    public const detilPaymentHU = '/subsciption/updatestatusva';
 
 
 
