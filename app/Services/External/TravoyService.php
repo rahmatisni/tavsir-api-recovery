@@ -112,7 +112,7 @@ class TravoyService
         } catch (\Throwable $th) {
             $res_json = [];
         }
-        log::info('callbackHUDetail', $payLoad);
+        log::info('callbackHUDetail', [$payLoad, $res_json]);
         return $res_json;
 
     }
