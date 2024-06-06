@@ -512,6 +512,8 @@ class JatelindoService
 
         return [
             'info' => $info_user,
+            'info_tambahan' => env('PLN_INFO_TAMBAHAN', "1. Transaksi Produk Listrik PLN yang dilakukan pukul 23:30 - 00:30 WIB akan mulai diprosess setelah 00:30 WIB sesuai kebijakan pihak PLN.
+2. Proses verifikasi transaksi <b>maksimal 2x24 jam hari kerja.</b>"),
             'result_pln' => $result->json()
         ];
     }
