@@ -728,6 +728,20 @@ class PaymentService
                 $is_time_out = false;
                 $rc = null;
 
+                $repeate_date = $data_log_kios['repeate_date'] ?? null;
+                $repeate_count = $data_log_kios['repeate_count'] ?? 0;
+
+                if($repeate_date && $repeate_count > 3){
+                    $repeate_date = Carbon::parse($repeate_date);
+                    if($repeate_date->diffInMinutes(Carbon::now()) <= 35){
+                        return $this->responsePayment(false, [
+                            'status' => $data->status, 
+                            'repeate_date' => $repeate_date,
+                            'repate_count' => $repeate_count
+                        ]);
+                    }   
+                }
+
                 if($is_purchase != true){
                     //1. Purchase
                     try {
@@ -796,6 +810,7 @@ class PaymentService
 
                     $try = 1;
                     $rc = null;
+                    $repeate_count =  $data->log_kiosbank->data['repeate_count'] ?? 0;
                     do {
                         if($is_time_out){
                             Log::info('Repeat timeout Delay 35 detik');
@@ -813,8 +828,8 @@ class PaymentService
                         $rc = $result_jatelindo['bit39'] ?? '';
                         $try++;
                         Log::info('Repeate ' . $try . ' rc = ' . $rc);
-                    } while ($try <= 3 && ($rc == '18' || $rc == '96'));
-                    array_push($result_jatelindo, ['repeate_date' => Carbon::now()->toDateTimeString()]);
+                    } while ($try <= 1 && ($rc == '18' || $rc == '96'));
+                    array_push($result_jatelindo, ['repeate_date' => Carbon::now()->toDateTimeString(), 'repeate_count' => $repeate_count ++]);
                     $log_kios = $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                         'data' => $result_jatelindo,
                         'payment' => $result_jatelindo
@@ -844,7 +859,12 @@ class PaymentService
                     $data->save();
                     DB::commit();
                 }
-                return $this->responsePayment(true, ['status' => $data->status, 'data' => JatelindoService::responseTranslation($result_jatelindo)]);
+                return $this->responsePayment(true, [
+                    'status' => $data->status, 
+                    'data' => JatelindoService::responseTranslation($result_jatelindo), 
+                    'repeate_date' => $log_kios->data['repeate_date'] ?? null,
+                    'repate_count' => $log_kios->data['repate_count'] ?? 0
+                ]);
             }
             $tagihan = $datalog['data']['data']['tagihan'] ?? $datalog['data']['data']['harga_kios'];
             $admin = $datalog['data']['data']['adminBank'] ?? $datalog['data']['data']['AB'] ?? '000000000000';
