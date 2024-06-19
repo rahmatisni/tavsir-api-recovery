@@ -936,6 +936,7 @@ class PaymentService
             if($data->status == TransOrder::PAYMENT_SUCCESS && !$is_success && $data->order_type == TransOrder::ORDER_TRAVOY && $data->desctiption == 'dual'){
                 $data_log_kios = $data->log_kiosbank->inquiry ?? ($data->log_kiosbank->data ?? []);
                 $date_repeate = $data_log_kios['repeat_date'] ?? Carbon::now()->addMinute(6)->toDateTimeString();
+                $count_repeate = $data_log_kios['repeate_count'] ?? 0;
                 $date_repeate = Carbon::parse($date_repeate);
                 $now = Carbon::now();
                 if($date_repeate->gte($now->addMinute(5))){
@@ -959,14 +960,20 @@ class PaymentService
                         ];
                         return $this->responsePayment(true, $map);
                     }else{
-                        array_push($result_jatelindo, ['repeat_date' => Carbon::now()->toDateTimeString()]);
+                        array_push($result_jatelindo, ['repeat_date' => Carbon::now()->toDateTimeString(), 'repeate_count' => $count_repeate ++]);
                         $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                             'data' => $result_jatelindo,
                             'payment' => $result_jatelindo
                         ]);
                     }
                 }
-                return $this->responsePayment(true, ['status' => $data->status, 'data' => JatelindoService::responseTranslation($data_log_kios)]);
+
+                return $this->responsePayment(true, [
+                    'status' => $data->status, 
+                    'data' => JatelindoService::responseTranslation($data_log_kios),
+                    'repeate_date' => $result_jatelindo['repeate_date'] ?? null,
+                    'repate_count' => $result_jatelindo['repeate_count'] ?? 0
+                ]);
             }
             abort(404);
         } catch (\Throwable $th) {
