@@ -207,8 +207,12 @@ class TsOrderResource extends JsonResource
         unset($log_kios_bank['data']['name']);
         $logo = $this->tenant->logo ?? null;
 
+        $repeat_date = $log_kios_bank['repeate_date'] ?? null;
+        $repeat_count = $log_kios_bank['repeate_count'] ?? 0;
         return [
             "id" => $this->id,
+            "repeate_date" => $repeat_date,
+            "repeate_count" => $repeat_count,
             'rest_area_name' => $rest_area_name,
             'business_name' => $this->tenant->business->name ?? null,
             'tenant_id' => $this->tenant_id,
