@@ -781,7 +781,7 @@ class PaymentService
                             DB::commit();
                         }
                     } catch (\Throwable $e) {
-                        array_push($result_jatelindo, ['repeate_date' => Carbon::now()->toDateTimeString(), 'repeate_count' => $repeate_count ++]);
+                        array_push($result_jatelindo, ['repeate_date' => Carbon::now()->toDateTimeString(), 'repeate_count' => $repeate_count ++, 'is_purchase' => true]);
                         $log_kios = $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                             'data' => $result_jatelindo,
                             'payment' => $result_jatelindo
@@ -794,8 +794,8 @@ class PaymentService
                         return $this->responsePayment(true, [
                             'status' => $data->status, 
                             'data' => JatelindoService::responseTranslation($result_jatelindo), 
-                            'repeate_date' => $log_kios->data['repeate_date'] ?? null,
-                            'repate_count' => $log_kios->data['repate_count'] ?? 0
+                            'repeate_date' => $result_jatelindo['repeate_date'] ?? null,
+                            'repate_count' => $result_jatelindo['repeate_count'] ?? 0
                         ]);
 
 
