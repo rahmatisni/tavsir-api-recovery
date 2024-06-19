@@ -737,7 +737,8 @@ class PaymentService
                         return $this->responsePayment(false, [
                             'status' => $data->status, 
                             'repeate_date' => $repeate_date,
-                            'repate_count' => $repeate_count
+                            'repate_count' => $repeate_count,
+                            'id' => $data->id
                         ]);
                     }   
                 }
@@ -795,7 +796,8 @@ class PaymentService
                             'status' => $data->status, 
                             'data' => JatelindoService::responseTranslation($result_jatelindo), 
                             'repeate_date' => $result_jatelindo['repeate_date'] ?? null,
-                            'repate_count' => $result_jatelindo['repeate_count'] ?? 0
+                            'repate_count' => $result_jatelindo['repeate_count'] ?? 0,
+                            'id' => $data->id
                         ]);
 
 
@@ -931,7 +933,7 @@ class PaymentService
         Log::info('Repeat Manual Delay 30 detik');
         sleep(35);
         $data_log_kios = $data->log_kiosbank->data ?? [];
-        $res = [];
+        $res =$data_log_kios;
         try {
             $is_success = $data_log_kios['is_success'] ?? false;
             if($data->status == TransOrder::PAYMENT_SUCCESS && !$is_success && $data->order_type == TransOrder::ORDER_TRAVOY && $data->desctiption == 'dual'){
@@ -940,6 +942,7 @@ class PaymentService
                 $count_repeate = $data_log_kios['repeate_count'] ?? 0;
                 $date_repeate = Carbon::parse($date_repeate);
                 $now = Carbon::now();
+                array_push($res, ['repeat_date' => $date_repeate, 'repeate_count' => $count_repeate ++]);
                 if($date_repeate->gte($now->addMinute(5))){
                     array_push($res, ['repeat_date' => $date_repeate, 'repeate_count' => $count_repeate ++]);
                     $res_jatelindo = JatelindoService::repeat($data_log_kios);
@@ -975,7 +978,8 @@ class PaymentService
                     'status' => $data->status, 
                     'data' => JatelindoService::responseTranslation($data_log_kios),
                     'repeate_date' => $res['repeate_date'] ?? null,
-                    'repate_count' => $res['repeate_count'] ?? 0
+                    'repate_count' => $res['repeate_count'] ?? 0,
+                    'id' => $id
                 ]);
             }
             abort(404);
@@ -991,7 +995,8 @@ class PaymentService
                 'data' => JatelindoService::responseTranslation($data_log_kios),
                 'message' => $th->getMessage(),
                 'repeate_date' => $res['repeate_date'] ?? null,
-                'repate_count' => $res['repeate_count'] ?? 0
+                'repate_count' => $res['repeate_count'] ?? 0,
+                'id' => $id
             ]);
         }
     }
