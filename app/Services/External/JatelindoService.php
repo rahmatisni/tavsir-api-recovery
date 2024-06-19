@@ -185,7 +185,7 @@ class JatelindoService
         ]);
         $result = Http::withOptions([
             // 'proxy' => '172.16.4.58:8090'
-        ])->timeout(40)->post(config('jatelindo.url'), $payload);
+        ])->timeout(1)->post(config('jatelindo.url'), $payload);
 
         Log::info([
             'status' => self::responseTranslation($result->json())?->keterangan,

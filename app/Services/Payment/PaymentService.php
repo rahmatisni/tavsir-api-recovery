@@ -933,7 +933,7 @@ class PaymentService
         Log::info('Repeat Manual Delay 30 detik');
         sleep(35);
         $data_log_kios = $data->log_kiosbank->data ?? [];
-        $res =$data_log_kios;
+        $res = $data_log_kios;
         try {
             $is_success = $data_log_kios['is_success'] ?? false;
             if($data->status == TransOrder::PAYMENT_SUCCESS && !$is_success && $data->order_type == TransOrder::ORDER_TRAVOY && $data->desctiption == 'dual'){
@@ -942,9 +942,8 @@ class PaymentService
                 $count_repeate = $data_log_kios['repeate_count'] ?? 0;
                 $date_repeate = Carbon::parse($date_repeate);
                 $now = Carbon::now();
-                array_push($res, ['repeat_date' => $date_repeate, 'repeate_count' => $count_repeate ++]);
                 if($date_repeate->gte($now->addMinute(5))){
-                    array_push($res, ['repeat_date' => $date_repeate, 'repeate_count' => $count_repeate ++]);
+                    array_push($res, ['repeat_date' => $date_repeate->toDateTimeString(), 'repeate_count' => $count_repeate ++]);
                     $res_jatelindo = JatelindoService::repeat($data_log_kios);
                     $result_jatelindo = $res_jatelindo->json();
                     array_push($res, $res_jatelindo);
@@ -985,7 +984,6 @@ class PaymentService
             abort(404);
         } catch (\Throwable $th) {
             Log::info('Advice timeout : '. $th->getMessage());
-            array_push($data_log_kios, ['repeat_date' => Carbon::now()->toDateTimeString()]);
             $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                 'data' => $res,
                 'payment' => $res
