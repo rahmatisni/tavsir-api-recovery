@@ -781,27 +781,46 @@ class PaymentService
                             DB::commit();
                         }
                     } catch (\Throwable $e) {
-                        Log::info('Purchase timeout & advice ='.$is_advice.'. '.$e->getMessage().' ');
-                        Log::info('Delay 35 detik');
-                        sleep(35);
-                        if(!$is_advice){
-                            try {
-                                $data_log_kios['is_advice'] = true;
-                                $data->log_kiosbank()->update(['data' => $data_log_kios, 'payment' => $data_log_kios]);
-                                DB::commit();
+                        array_push($result_jatelindo, ['repeate_date' => Carbon::now()->toDateTimeString(), 'repeate_count' => $repeate_count ++]);
+                        $log_kios = $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
+                            'data' => $result_jatelindo,
+                            'payment' => $result_jatelindo
+                        ]);
 
-                                $res_jatelindo = JatelindoService::advice($data_log_kios);
-                                $result_jatelindo = $res_jatelindo->json();
-                                $rc = $result_jatelindo['bit39'] ?? '';
-                                Log::info('Advice rc = '.$rc);
-                                $data->log_kiosbank()->update(['data' => $data_log_kios, 'payment' => $data_log_kios]);
-                                DB::commit();
-                                $is_advice = true;
-                            } catch (\Throwable $th) {
-                                Log::info('Advice timeout : '. $th->getMessage());
-                                $is_time_out = true;
-                            }
-                        }
+                        $data->status = TransOrder::READY;
+                        $data->save();
+                        DB::commit();
+
+                        return $this->responsePayment(true, [
+                            'status' => $data->status, 
+                            'data' => JatelindoService::responseTranslation($result_jatelindo), 
+                            'repeate_date' => $log_kios->data['repeate_date'] ?? null,
+                            'repate_count' => $log_kios->data['repate_count'] ?? 0
+                        ]);
+
+
+                        // Log::info('Purchase timeout & advice ='.$is_advice.'. '.$e->getMessage().' ');
+                        
+                        // Log::info('Delay 35 detik');
+                        // sleep(35);
+                        // if(!$is_advice){
+                        //     try {
+                        //         $data_log_kios['is_advice'] = true;
+                        //         $data->log_kiosbank()->update(['data' => $data_log_kios, 'payment' => $data_log_kios]);
+                        //         DB::commit();
+
+                        //         $res_jatelindo = JatelindoService::advice($data_log_kios);
+                        //         $result_jatelindo = $res_jatelindo->json();
+                        //         $rc = $result_jatelindo['bit39'] ?? '';
+                        //         Log::info('Advice rc = '.$rc);
+                        //         $data->log_kiosbank()->update(['data' => $data_log_kios, 'payment' => $data_log_kios]);
+                        //         DB::commit();
+                        //         $is_advice = true;
+                        //     } catch (\Throwable $th) {
+                        //         Log::info('Advice timeout : '. $th->getMessage());
+                        //         $is_time_out = true;
+                        //     }
+                        // }
                     }
                 }
 
