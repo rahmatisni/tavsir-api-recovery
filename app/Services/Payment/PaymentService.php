@@ -927,6 +927,19 @@ class PaymentService
         $temp_repeate_date = $data_log_kios['repeate_date'] ?? Carbon::now()->toDateTimeString();
         $temp_repeate_count = $data_log_kios['repeate_count'] ?? 0;
 
+        if(Carbon::parse($temp_repeate_date)->diffInMinutes(Carbon::now()) >= 35){
+            $temp_repeate_date = Carbon::now()->toDateTimeString();
+            $temp_repeate_count = 0;
+        }
+
+        if($temp_repeate_count >=3){
+            return  [
+                'kode' => 00, 
+                'keterangan' => 'TRANSAKI SUSPECT,MOHON HUBUNGI CUSTOMER SERVICE', 
+                'message' => 'TRANSAKI SUSPECT,MOHON HUBUNGI CUSTOMER SERVICE'
+            ];
+        }
+
         try {
             $is_success = $data_log_kios['is_success'] ?? false;
             if(($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::READY)  && !$is_success && $data->order_type == TransOrder::ORDER_TRAVOY && $data->description == 'dual'){
