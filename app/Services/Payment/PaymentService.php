@@ -717,31 +717,29 @@ class PaymentService
             $kios = $this->serviceKiosBank->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
             Log::info(['bayar depan => ', $kios]);
         }
-        $datalog = $data->log_kiosbank;
+        $data_log_kios = $data->log_kiosbank->data ?? [];
 
         if ($data->description == 'dual') {
             if ($data->productKiosbank()->integrator == 'JATELINDO') {
-                $data_log_kios = $data->log_kiosbank->data ?? [];
                 $is_purchase = $data_log_kios['is_purchase'] ?? false;
                 $is_advice = $data_log_kios['is_advice'] ?? false;
                 $result_jatelindo = [];
                 $is_time_out = false;
                 $rc = null;
 
-                $repeate_date = $data_log_kios['repeate_date'] ?? null;
+                $repeate_date = $data_log_kios['repeate_date'] ?? Carbon::now()->toDateTimeString();
                 $repeate_count = $data_log_kios['repeate_count'] ?? 0;
 
-                if($repeate_date && $repeate_count > 3){
-                    $repeate_date = Carbon::parse($repeate_date);
-                    if($repeate_date->diffInMinutes(Carbon::now()) <= 35){
-                        return $this->responsePayment(false, [
-                            'status' => $data->status, 
-                            'repeate_date' => $repeate_date,
-                            'repate_count' => $repeate_count,
-                            'id' => $data->id
-                        ]);
-                    }   
+                //reset repeate tiap 35 menit
+                if(Carbon::parse($repeate_date)->diffInMinutes(Carbon::now()) >= 35){
+                    $repeate_date = Carbon::now()->toDateTimeString();
+                    $repeate_count = 1;
+                }else{
+                    $repeate_count = $repeate_count + 1;
                 }
+
+                $data_log_kios['repeate_date'] = $repeate_date;
+                $data_log_kios['repeate_count'] = $repeate_count;
 
                 if($is_purchase != true){
                     //1. Purchase
@@ -782,12 +780,6 @@ class PaymentService
                             DB::commit();
                         }
                     } catch (\Throwable $e) {
-                        array_push($result_jatelindo, ['repeate_date' => Carbon::now()->toDateTimeString(), 'repeate_count' => $repeate_count ++, 'is_purchase' => true]);
-                        $log_kios = $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-                            'data' => $result_jatelindo,
-                            'payment' => $result_jatelindo
-                        ]);
-
                         $data->status = TransOrder::READY;
                         $data->save();
                         DB::commit();
@@ -795,8 +787,8 @@ class PaymentService
                         return $this->responsePayment(true, [
                             'status' => $data->status, 
                             'data' => JatelindoService::responseTranslation($result_jatelindo), 
-                            'repeate_date' => $result_jatelindo['repeate_date'] ?? null,
-                            'repate_count' => $result_jatelindo['repeate_count'] ?? 0,
+                            'repeate_date' => $data_log_kios['repeate_date'],
+                            'repate_count' => $data_log_kios['repeate_count'],
                             'id' => $data->id
                         ]);
 
