@@ -933,11 +933,19 @@ class PaymentService
         }
 
         if($temp_repeate_count >=3){
-            return  [
+            $data_error =  [
                 'kode' => 00, 
                 'keterangan' => 'TRANSAKI SUSPECT,MOHON HUBUNGI CUSTOMER SERVICE', 
                 'message' => 'TRANSAKI SUSPECT,MOHON HUBUNGI CUSTOMER SERVICE'
             ];
+
+            return $this->responsePayment(true, [
+                'status' => $data->status, 
+                'data' => $data_error,
+                'repeate_date' => $temp['repeate_date'] ?? null,
+                'repate_count' => $temp['repeate_count'] ?? 0,
+                'id' => $id
+            ]);
         }
 
         try {
