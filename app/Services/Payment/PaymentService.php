@@ -939,7 +939,7 @@ class PaymentService
                 'message' => 'TRANSAKI SUSPECT,MOHON HUBUNGI CUSTOMER SERVICE'
             ];
 
-            return $this->responsePayment(true, [
+            return $this->responsePayment(false, [
                 'status' => $data->status, 
                 'data' => $data_error,
                 'repeate_date' => $temp['repeate_date'] ?? null,
