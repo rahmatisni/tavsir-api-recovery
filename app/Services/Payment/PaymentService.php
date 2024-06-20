@@ -929,7 +929,7 @@ class PaymentService
 
         try {
             $is_success = $data_log_kios['is_success'] ?? false;
-            if($data->status == TransOrder::PAYMENT_SUCCESS && !$is_success && $data->order_type == TransOrder::ORDER_TRAVOY && $data->description == 'dual'){
+            if(($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::READY)  && !$is_success && $data->order_type == TransOrder::ORDER_TRAVOY && $data->description == 'dual'){
                 $data_log_kios = $data->log_kiosbank->inquiry ?? ($data->log_kiosbank->data ?? []);
 
                 $data_log_kios['repeate_date'] = Carbon::now()->toDateTimeString();
