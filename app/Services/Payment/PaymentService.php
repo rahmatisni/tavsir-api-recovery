@@ -843,7 +843,8 @@ class PaymentService
                 }
 
                 if($is_purchase || $is_time_out){
-                    Log::info('Repeat  or timeout');
+                    Log::info('Repeate Delay 35 detik');
+                    sleep(35);
 
                     $try = 1;
                     $rc = null;
@@ -866,7 +867,8 @@ class PaymentService
                         $try++;
                         Log::info('Repeate ' . $try . ' rc = ' . $rc);
                     } while ($try <= 1 && ($rc == '18' || $rc == '96'));
-                    array_push($result_jatelindo, ['repeate_date' => Carbon::now()->toDateTimeString(), 'repeate_count' => $repeate_count ++]);
+                    $result_jatelindo['repeate_date'] = Carbon::now()->toDateTimeString();
+                    $result_jatelindo['repeate_count'] = $repeate_count ++;
                     $log_kios = $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                         'data' => $result_jatelindo,
                         'payment' => $result_jatelindo
@@ -899,8 +901,8 @@ class PaymentService
                 return $this->responsePayment(true, [
                     'status' => $data->status, 
                     'data' => JatelindoService::responseTranslation($result_jatelindo), 
-                    'repeate_date' => $log_kios->data['repeate_date'] ?? null,
-                    'repate_count' => $log_kios->data['repate_count'] ?? 0
+                    'repeate_date' => $datalog->data['repeate_date'] ?? Carbon::now()->toDateString(),
+                    'repate_count' => $datalog->data['repeate_count'] ?? $repeate_count,
                 ]);
             }
             $tagihan = $datalog['data']['data']['tagihan'] ?? $datalog['data']['data']['harga_kios'];
