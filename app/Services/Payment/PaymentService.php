@@ -718,6 +718,7 @@ class PaymentService
             Log::info(['bayar depan => ', $kios]);
         }
         $data_log_kios = $data->log_kiosbank->data ?? [];
+        $datalog = $data_log_kios;
 
         if ($data->description == 'dual') {
             if ($data->productKiosbank()->integrator == 'JATELINDO') {
