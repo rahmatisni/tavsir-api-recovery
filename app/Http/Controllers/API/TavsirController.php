@@ -279,7 +279,7 @@ class TavsirController extends Controller
             return response()->json(TransOrder::with('detil')->find($data->id));
         } catch (\Throwable $th) {
             DB::rollback();
-            Log::error($th);
+            Log::error($th->getMessage());
             return response()->json(['error' => $th->getMessage()], 500);
         }
     }
@@ -854,7 +854,7 @@ class TavsirController extends Controller
             return response()->json(TransOrder::with('detil')->find($data->id));
         } catch (\Throwable $th) {
             DB::rollback();
-            Log::error($th);
+            Log::error($th->getMessage());
             return response()->json(['error' => $th->getMessage()], 500);
         }
     }
@@ -984,7 +984,7 @@ class TavsirController extends Controller
 
 
             foreach ($paymentMethods as $value) {
-                Log::warning($value);
+                // Log::warning($value);
                 $value->platform_fee = env('PLATFORM_FEE');
                 $value->fee = 0;
 
@@ -1029,7 +1029,7 @@ class TavsirController extends Controller
                         $value->fee = null;
                     } else {
                         $data = PgJmto::tarifFee($value->sof_id, $value->payment_method_id, $value->sub_merchant_id, $trans_order->sub_total);
-                        Log::warning($data);
+                        // Log::warning($data);
                         $value->percentage = $data['is_presentage'] ?? null;
                         $x = $data['value'] ?? 'x';
                         $state = $data['is_presentage'] ?? null;
@@ -2021,7 +2021,7 @@ class TavsirController extends Controller
             return response()->json(new TrOrderResource($data));
         } catch (\Throwable $th) {
             DB::rollback();
-            Log::error($th);
+            Log::error($th->getMessage());
             return response()->json(['error' => $th->getMessage()], 500);
         }
     }
@@ -2116,7 +2116,7 @@ class TavsirController extends Controller
         try {
             // log::info('Callback LA');
             $trans = TransOrder::with('payment')->where('payment_method_id', 4)->where('order_id', 'like', '%' . $request->msg)->first();
-            log::info(['Callback LA', $trans, $request]);
+            // log::info(['Callback LA', $trans, $request]);
 
             if (!$trans) {
                 // temp
@@ -2161,7 +2161,7 @@ class TavsirController extends Controller
             return response()->json($datax);
         } catch (\Throwable $th) {
             // DB::rollback();
-            Log::error($th);
+            Log::error($th->getMessage());
             return response()->json(['error' => $th->getMessage()], 500);
         }
     }
@@ -2182,7 +2182,7 @@ class TavsirController extends Controller
             ]);
         } catch (\Throwable $th) {
             DB::rollback();
-            Log::error($th);
+            Log::error($th->getMessage());
             return response()->json(['error' => $th->getMessage()], 500);
         }
     }

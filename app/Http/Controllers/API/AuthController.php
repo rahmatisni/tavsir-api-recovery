@@ -255,7 +255,7 @@ class AuthController extends Controller
             ], 422);
         } catch (\Throwable $th) {
             DB::rollBack();
-            Log::error($th);
+            Log::error($th->getMessage());
             return response()->json($th->getMessage(), 500);
         }
     }
@@ -286,7 +286,7 @@ class AuthController extends Controller
             ], 422);
         } catch (\Throwable $th) {
             DB::rollBack();
-            Log::error($th);
+            Log::error($th->getMessage());
             return response()->json($th->getMessage(), 500);
         }
     }
