@@ -780,6 +780,29 @@ class PaymentService
                             DB::commit();
                         }
                     } catch (\Throwable $e) {
+                        //2. Advice
+                        try {
+                            Log::info('Purchase rc='.$rc.' Delay 35 detik');
+                            sleep(35);
+                            Log::info('Advice begin');
+                            $is_advice = true;
+                            $data_log_kios['is_advice'] = true;
+                            $data->log_kiosbank()->update(['data' => $data_log_kios, 'payment' => $data_log_kios]);
+                            DB::commit();
+                            $res_jatelindo = JatelindoService::advice($data_log_kios);
+                            $result_jatelindo = $res_jatelindo->json();
+                            $rc = $result_jatelindo['bit39'] ?? '';
+                            Log::info('Advice rc = '.$rc);
+                            if($rc == '18'){
+                                $is_time_out = true;
+                            }
+                        } catch (\Throwable $e) {
+                            Log::info('Advice timeout : '. $e->getMessage());
+                            $is_time_out = true;
+                        }
+                        $data_log_kios = $result_jatelindo;
+                        $data_log_kios['is_advice'] = true;
+                        $data->log_kiosbank()->update(['data' => $data_log_kios, 'payment' => $data_log_kios]);
                         $data->status = TransOrder::READY;
                         $data->save();
                         DB::commit();
