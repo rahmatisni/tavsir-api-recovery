@@ -179,12 +179,7 @@ class KiosBankService
 
     public function getProduct($kategori_pulsa = null, $kategori = null, $sub_kategori = null)
     {
-        $product = [
-            'rc'=>'00'
-        ];
-
-        // uncommand disini
-        // $product = $this->cekStatusProduct();
+        $product = $this->cekStatusProduct();
         $status_respon = $product['rc'] ?? '';
         $list_harga_pulsa = collect([]);
         if ($status_respon == '00') {
@@ -228,32 +223,29 @@ class KiosBankService
                 }
             }
 
-            // uncommand disini
+            $active = $product['active'];
+            $active = explode(',', $active);
+            foreach ($data as $key => $value) {
+                $value->status = false;
+            }
 
-            // $active = $product['active'];
-            // $active = explode(',', $active);
-            // foreach ($data as $key => $value) {
-            //     $value->status = false;
-            // }
+            if (count($active) > 1) {
+                foreach ($active as $key => $value) {
+                    foreach ($data as $k => $v) {
+                        if ($value == $v->kode) {
+                            $v->status = true;
+                            $price_from_kios = $list_harga_pulsa->where('code', $v->kode)->first()['price'] ?? 0;
+                            $v->price = $price_from_kios;
+                            $v->price_jmto = $price_from_kios > 0 ? $v->harga + $price_from_kios : null;
+                        }
+                        if($v?->integrator == 'JATELINDO')
+                        {
+                            $v->status = true;
+                        }
+                    }
+                }
+            }
 
-            // if (count($active) > 1) {
-            //     foreach ($active as $key => $value) {
-            //         foreach ($data as $k => $v) {
-            //             if ($value == $v->kode) {
-            //                 $v->status = true;
-            //                 $price_from_kios = $list_harga_pulsa->where('code', $v->kode)->first()['price'] ?? 0;
-            //                 $v->price = $price_from_kios;
-            //                 $v->price_jmto = $price_from_kios > 0 ? $v->harga + $price_from_kios : null;
-            //             }
-            //             if($v?->integrator == 'JATELINDO')
-            //             {
-            //                 $v->status = true;
-            //             }
-            //         }
-            //     }
-            // }
-        
-            // uncommand disini
             return $data->groupBy('sub_kategori');
         } else {
             return $product;
