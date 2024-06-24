@@ -144,10 +144,10 @@ class JatelindoService
         }
         $payload["mti"] = "0220";
         $payload["bit3"] = self::advice;
-        Log::info([
-            'action' => 'Advice',
-            'payload' => $payload,
-        ]);
+        // Log::info([
+        //     'action' => 'Advice',
+        //     'payload' => $payload,
+        // ]);
         $result = Http::withOptions([
             // 'proxy' => '172.16.4.58:8090'
         ])->timeout(40)->post(config('jatelindo.url'), $payload);
