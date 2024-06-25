@@ -433,7 +433,7 @@ class PgJmto extends Model
             "customerNo" => (string) $virtualNumber,
             "partnerServiceId" => $partnerServiceId,
             "virtualAccountNo" => $partnerServiceId . $virtualNumber,
-            "virtualAccountName" => $customer_name,
+            // "virtualAccountName" => $customer_name,
             "virtualAccountEmail" => $email,
             "virtualAccountPhone" => $phone,
             "totalAmount" => ["value" => $amount . ".00", "currency" => "IDR"],
