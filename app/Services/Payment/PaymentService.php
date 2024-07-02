@@ -950,11 +950,11 @@ class PaymentService
         $data = TransOrder::with('log_kiosbank')->findOrFail($id);
         $data_log_kios = $data->log_kiosbank->data ?? [];
 
-        $temp_repeate_date = $data_log_kios['repeate_date'] ?? Carbon::now()->toDateTimeString();
+        $temp_repeate_date = $data_log_kios['repeate_date'] ?? Carbon::now()->addMinute(5)->toDateTimeString();
         $temp_repeate_count = $data_log_kios['repeate_count'] ?? 0;
 
         if(Carbon::parse($temp_repeate_date)->diffInMinutes(Carbon::now()) >= 35){
-            $temp_repeate_date = Carbon::now()->toDateTimeString();
+            $temp_repeate_date = Carbon::now()->addMinute(5)->toDateTimeString();
             $temp_repeate_count = 0;
         }
 
