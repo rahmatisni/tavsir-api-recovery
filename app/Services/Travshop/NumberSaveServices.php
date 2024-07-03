@@ -9,7 +9,7 @@ use App\Models\NumberSave;
 
 class NumberSaveServices
 {
-    public function list($filter)
+    public function list($request, $filter)
     {
         // return NumberSave::myWheres($filter)->get();
         return NumberSave::where('customer_id', $filter)->get();
