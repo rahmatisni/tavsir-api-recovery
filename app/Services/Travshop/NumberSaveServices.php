@@ -9,9 +9,13 @@ use App\Models\NumberSave;
 
 class NumberSaveServices
 {
-    public function list($filter)
+    public function list($request, $filter)
     {
-        return NumberSave::myWheres($filter)->get();
+        return NumberSave::myWheres($filter)
+        ->when($customer_id = $request->customer_id, function($item) use ($customer_id){
+            $item->where('customer_id', $customer_id);
+        })
+        ->get();
     }
 
     public function create(array $paylod)

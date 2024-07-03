@@ -17,7 +17,7 @@ class NumberSaveController extends Controller
 
     public function index(Request $request)
     {
-        $data = $this->service->list($request->filter);
+        $data = $this->service->list($request, $request->filter);
         return $this->response(NumberSaveResource::collection($data));
     }
 
