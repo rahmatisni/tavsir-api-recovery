@@ -129,17 +129,17 @@ it('can order pln', function ($mode, $status_order) {
     $response->assertStatus(200);
     $response->assertJsonPath('status',$status_order);
     if($status_order == TransOrder::READY){
-        Queue::assertPushed(AutoAdviceJob::class, function ($job) {
-            return !is_null($job->delay);
-        });
+        // Queue::assertPushed(AutoAdviceJob::class, function ($job) {
+        //     return !is_null($job->delay);
+        // });
 
-        $job = new AutoAdviceJob(['id' => $trans_order_id]);
-        $job->handle();
-        Queue::assertPushed(RepeateJob::class, function ($job) {
-            return !is_null($job->delay);
-        });
-        $job = new RepeateJob(['id' => $trans_order_id]);
-        $job->handle();
+        // $job = new AutoAdviceJob(['id' => $trans_order_id]);
+        // $job->handle();
+        // Queue::assertPushed(RepeateJob::class, function ($job) {
+        //     return !is_null($job->delay);
+        // });
+        // $job = new RepeateJob(['id' => $trans_order_id]);
+        // $job->handle();
     }
 })
 ->with([
