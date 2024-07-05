@@ -20,8 +20,8 @@ class CreateTransOrder extends Migration
             $table->string('consume_type')->comment('dine_in or take_away')->nullable();
             $table->string('nomor_name')->comment('nomor meja atau nama customer')->nullable();
             $table->integer('sub_total')->unsigned();
-            $table->integer('fee')->unsigned();
-            $table->integer('service_fee')->unsigned();
+            $table->integer('fee')->unsigned()->default(0);
+            $table->integer('service_fee')->unsigned()->default(0);
             $table->integer('total')->unsigned();
             $table->date('pickup_date')->nullable();
             $table->date('confirm_date')->nullable();

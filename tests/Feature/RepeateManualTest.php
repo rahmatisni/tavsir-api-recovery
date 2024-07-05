@@ -31,4 +31,4 @@ it('can repate manual', function () {
     if($date_repeate->gte($now->addMinute(5)));
 
     dd($res);
-})->group('cek');
+});

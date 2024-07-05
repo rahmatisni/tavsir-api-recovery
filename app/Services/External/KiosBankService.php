@@ -525,7 +525,7 @@ class KiosBankService
         $order->customer_phone = $data['customer_phone'];
         $order->merchant_id = '';
         $order->sub_merchant_id = env('MERCHANT_KIOS', '');
-        $order->fee = env('PLATFORM_FEE');
+        $order->fee = env('PLATFORM_FEE', 0);
         $order->description = 'dual';
         $order->status = TransOrder::WAITING_PAYMENT;
 

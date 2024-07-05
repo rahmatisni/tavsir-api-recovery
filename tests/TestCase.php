@@ -7,19 +7,20 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Http;
 use Laravel\Passport\Passport;
 
 abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
-    use RefreshDatabase;
+    // use RefreshDatabase;
     use WithFaker;
 
     protected function setUp(): void
     {
         parent::setUp();
         
-        Artisan::call('migrate:fresh --seed');
+        // Artisan::call('migrate:fresh --seed');
     }
 
     public function loginAs($user = null)
@@ -43,5 +44,13 @@ abstract class TestCase extends BaseTestCase
         ];
 
         return $data;
+    }
+
+    public function resetHttpFake()
+    {
+        $reflection = new \ReflectionObject(Http::getFacadeRoot());
+        $property = $reflection->getProperty('stubCallbacks');
+        $property->setAccessible(true);
+        $property->setValue(Http::getFacadeRoot(), collect());
     }
 }

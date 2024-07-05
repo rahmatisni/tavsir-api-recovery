@@ -297,6 +297,16 @@ class ProductKiosBankSeeder extends Seeder
             [ 'id' => 279, 'kategori' => 'DANA', 'sub_kategori' => 'Uang Elektronik', 'kode' => '754131', 'name' => 'TOPUP SALDO DANA 800.000', 'prefix_id' => null],
             [ 'id' => 280, 'kategori' => 'DANA', 'sub_kategori' => 'Uang Elektronik', 'kode' => '754141', 'name' => 'TOPUP SALDO DANA 900.000', 'prefix_id' => null],
             [ 'id' => 281, 'kategori' => 'DANA', 'sub_kategori' => 'Uang Elektronik', 'kode' => '754151', 'name' => 'TOPUP SALDO DANA 1.000.000', 'prefix_id' => null],
+            //PLN
+            [
+                'kategori' => 'TOKEN PLN', 
+                'sub_kategori' => 'PLN', 
+                'kode' => '20000', 
+                'name' => 'PLN 20.000', 
+                'prefix_id' => null, 
+                'harga' => 20000,
+                'integrator' => 'JATELINDO'
+            ],
         ];
 
         foreach ($data as $key => $value) {

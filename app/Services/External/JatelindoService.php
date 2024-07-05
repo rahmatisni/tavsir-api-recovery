@@ -8,6 +8,7 @@ use App\Models\LogKiosbank;
 use App\Models\Product;
 use App\Models\TransOrder;
 use Carbon\Carbon;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -50,16 +51,42 @@ class JatelindoService
         ];
 
         //fake respone
-        if (false) {
-            $fake_payload = $payload;
-            $fake_payload['mti'] = "0210";
-            $fake_payload['bit39'] = "00";
-            $fake_payload['bit62'] = "5151106021222222 060000";
-            Http::fake([
-                config('jatelindo.url') => Http::response([
-                    ...$fake_payload
-                ], 200)
-            ]);
+        $test_mode = config('jatelindo.inquiry_mode');
+        $fake = [];
+        if ($test_mode) {
+            switch ($test_mode) {
+                case 'success':
+                    $fake_payload = $payload;
+                    $fake_payload['mti'] = "0210";
+                    $fake_payload['bit39'] = "00";
+                    $fake_payload['bit62'] = "5151106021222222 060000";
+                    $fake = [
+                        config('jatelindo.url') => Http::response($fake_payload, 200)
+                    ];
+                    break;
+
+                case 'error':
+                    $fake_payload = $payload;
+                    $fake_payload['mti'] = "0210";
+                    $fake_payload['bit39'] = "19";
+                    $fake_payload['bit62'] = "5151106021222222 060000";
+                    $fake = [
+                        config('jatelindo.url') => Http::response($fake_payload, 200)
+                    ];
+                    break;
+
+                case 'timeout':
+                    $fake = [
+                        config('jatelindo.url') => throw new ConnectionException('Connection timed out')
+                    ];
+                    break;
+                
+                default:
+                    # code...
+                    break;
+            }
+
+            Http::fake($fake);
         }
         Log::info([
             'action' => 'Inquiry',
