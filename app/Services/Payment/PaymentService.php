@@ -755,7 +755,8 @@ class PaymentService
                         Log::info('Dispatch Auto AdviceJob reason timeout '.$e->getMessage());
                         $data->log_jatelindo()->updateOrCreate([
                             'trans_order_id' => $data->trans_order_id,
-                            'type' => LogJatelindo::repeat,
+                            // 'type' => LogJatelindo::repeat,
+                            'type' => LogJatelindo::purchase,
                             'request' => $data_log_kios,
                             'response' => [$e->getMessage()],
                         ]);
