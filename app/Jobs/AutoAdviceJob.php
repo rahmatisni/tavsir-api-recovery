@@ -44,11 +44,11 @@ class AutoAdviceJob implements ShouldQueue
             }
             $log_kios = $trans_order->log_kiosbank?->inquiry ?? null;
             if(!$log_kios){
-                Log::info('Reoeate no data inquiry ');
+                Log::info('Repeate no data inquiry ');
                 return;
             }
             $log_kios['is_advice'] = true;
-            $trans_order->log_kiosbank()->update(['data' => $log_kios, 'payment' => $log_kios]);
+            $trans_order->log_kiosbank()->update(['data' => $log_kios, 'inquiry' => $log_kios]);
             $res_jatelindo = JatelindoService::advice($log_kios);
             $result_jatelindo = $res_jatelindo->json();
             $rc = $result_jatelindo['bit39'] ?? '';

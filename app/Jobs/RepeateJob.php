@@ -53,7 +53,7 @@ class RepeateJob implements ShouldQueue
 
             $trans_order->log_kiosbank()->updateOrCreate(['trans_order_id' => $trans_order->id], [
                 'data' => $log_kios,
-                'payment' => $log_kios
+                'inquiry' => $log_kios,
             ]);
 
             if($count > 3){
