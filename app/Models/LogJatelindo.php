@@ -13,7 +13,6 @@ class LogJatelindo extends BaseModel
     public const advice = "advice";
     public const repeat = "repeat";
 
-    use SoftDeletes;
     protected $table = 'log_jatelindo';
 
     protected $fillable = [

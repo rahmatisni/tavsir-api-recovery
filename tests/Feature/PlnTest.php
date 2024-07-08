@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Queue;
 use Mockery\MockInterface;
 
 it('can order pln', function ($mode, $status_order) {
-    Queue::fake();
+    // Queue::fake();
 
     Http::fake([
         config('jatelindo.url') => Http::response([
