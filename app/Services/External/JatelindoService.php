@@ -637,7 +637,7 @@ class JatelindoService
 
         LogJatelindo::updateOrCreate([
             'type' => LogJatelindo::inquiry,
-            'response' => $$result->json(),
+            'response' => $result->json(),
         ]);
 
         if (($result['bit39'] ?? '') != '00') {
