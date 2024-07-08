@@ -829,7 +829,7 @@ class PaymentService
     public function repeatManual($id)
     {
         $data = TransOrder::with('log_kiosbank')->findOrFail($id);
-        $data_log_kios = $data->log_kiosbank->data ?? [];
+        $data_log_kios = $data->log_kiosbank->payment ?? ($data->log_kiosbank->inquiry ?? []);
 
         $temp_repeate_date = $data_log_kios['repeate_date'] ?? Carbon::now()->addMinute(5)->toDateTimeString();
         $temp_repeate_count = $data_log_kios['repeate_count'] ?? 0;
@@ -855,6 +855,22 @@ class PaymentService
             ]);
         }
 
+        if($temp_repeate_count >=3){
+            $data_error =  [
+                'kode' => 00, 
+                'keterangan' => 'TRANSAKI SUSPECT,MOHON HUBUNGI CUSTOMER SERVICE', 
+                'message' => 'TRANSAKI SUSPECT,MOHON HUBUNGI CUSTOMER SERVICE'
+            ];
+
+            return $this->responsePayment(false, [
+                'status' => $data->status, 
+                'data' => $data_error,
+                'repeate_date' => $temp_repeate_date,
+                'repate_count' => $temp_repeate_count,
+                'id' => $id
+            ]);
+        }
+        
         try {
             $is_success = $data_log_kios['is_success'] ?? false;
             if(($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::READY)  && !$is_success && $data->order_type == TransOrder::ORDER_TRAVOY && $data->description == 'dual'){
@@ -897,6 +913,7 @@ class PaymentService
                         'data' => $result_jatelindo,
                         'payment' => $result_jatelindo
                     ]);
+                   
                 }
 
                 return $this->responsePayment(true, [

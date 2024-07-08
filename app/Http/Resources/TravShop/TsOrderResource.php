@@ -219,9 +219,15 @@ class TsOrderResource extends JsonResource
                 "harga",
                 "Nomor_Cust",
             ]);
+
+            if($repeat_count >=3){
+                $log_kios_bank['KETERANGAN'] = 'TRANSAKI SUSPECT,MOHON HUBUNGI CUSTOMER SERVICE'; 
+            }
         }
+
         return [
             "id" => $this->id,
+            'can_repeate' => $can_repete ?? false,
             "repeate_date" => $repeat_date,
             "repeate_count" => $repeat_count,
             'rest_area_name' => $rest_area_name,
