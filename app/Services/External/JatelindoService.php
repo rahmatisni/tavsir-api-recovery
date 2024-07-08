@@ -4,6 +4,7 @@ namespace App\Services\External;
 
 use App\Models\Constanta\PLNAREA;
 use App\Models\KiosBank\ProductKiosBank;
+use App\Models\LogJatelindo;
 use App\Models\LogKiosbank;
 use App\Models\Product;
 use App\Models\TransOrder;
@@ -103,7 +104,7 @@ class JatelindoService
         return $result;
     }
 
-    public static function purchase(array $payload)
+    public static function purchase(array $payload, $transOrder = null)
     {
         //bit
         if (isset($payload['bit39'])) {
@@ -151,18 +152,31 @@ class JatelindoService
             'action' => 'Purchase',
             'payload' => $payload,
         ]);
+        if($transOrder){
+            $transOrder->log_jatelindo()->updateOrCreate([
+                'type' => LogJatelindo::purchase,
+                'request' => $payload,
+            ]);
+        }
         $result = Http::withOptions($options)->timeout(40)->post(config('jatelindo.url'), $payload);
-
+        
         Log::info([
             'status' => self::responseTranslation($result->json())?->keterangan,
             'action' => 'Purchase',
             'respons' => $result->json(),
         ]);
 
+        if($transOrder){
+            $transOrder->log_jatelindo()->updateOrCreate([
+                'type' => LogJatelindo::purchase,
+                'response' => $result->json(),
+            ]);
+        }
+
         return $result;
     }
 
-    public static function advice(array $payload)
+    public static function advice(array $payload, $transOrder = null)
     {
         //bit
         if (isset($payload['bit39'])) {
@@ -184,11 +198,18 @@ class JatelindoService
             unset($payload['repeate_count']);
         }
         $payload["mti"] = "0220";
-        $payload["bit3"] = self::advice;
+        $payload["bit3"] = JatelindoService::advice;
         // Log::info([
         //     'action' => 'Advice',
         //     'payload' => $payload,
         // ]);
+
+        if($transOrder){
+            $transOrder->log_jatelindo()->updateOrCreate([
+                'type' => LogJatelindo::advice,
+                'request' => $payload,
+            ]);
+        }
         $result = Http::withOptions([
             // 'proxy' => '172.16.4.58:8090'
         ])->timeout(40)->post(config('jatelindo.url'), $payload);
@@ -199,10 +220,17 @@ class JatelindoService
             'respons' => $result->json(),
         ]);
 
+        if($transOrder){
+            $transOrder->log_jatelindo()->updateOrCreate([
+                'type' => LogJatelindo::advice,
+                'response' => $payload,
+            ]);
+        }
+
         return $result;
     }
 
-    public static function repeat(array $payload)
+    public static function repeat(array $payload, $transOrder)
     {
         //bit
         if (isset($payload['bit39'])) {
@@ -230,6 +258,13 @@ class JatelindoService
             'action' => 'Repeate',
             'payload' => $payload,
         ]);
+
+        if($transOrder){
+            $transOrder->log_jatelindo()->updateOrCreate([
+                'type' => LogJatelindo::repeat,
+                'request' => $payload,
+            ]);
+        }
         $result = Http::withOptions([
             // 'proxy' => '172.16.4.58:8090'
         ])->timeout(40)->post(config('jatelindo.url'), $payload);
@@ -239,6 +274,13 @@ class JatelindoService
             'action' => 'Repeate',
             'respons' => $result->json(),
         ]);
+
+        if($transOrder){
+            $transOrder->log_jatelindo()->updateOrCreate([
+                'type' => LogJatelindo::repeat,
+                'response' => $payload,
+            ]);
+        }
 
         return $result;
     }

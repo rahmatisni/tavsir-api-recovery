@@ -1729,7 +1729,7 @@ class TravShopController extends Controller
             $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
             if ($data->productKiosbank()->integrator == 'JATELINDO') {
                 //1. Purchase
-                $res_jatelindo = JatelindoService::purchase($data->log_kiosbank->data ?? []);
+                $res_jatelindo = JatelindoService::purchase($data->log_kiosbank->data ?? [], $data);
                 $result_jatelindo = $res_jatelindo->json();
 
                 $rc = $result_jatelindo['bit39'] ?? '';
@@ -1737,7 +1737,7 @@ class TravShopController extends Controller
                 //2. Cek req timout code 18
                 if ($rc == '18') {
                     //3. Advice 1 kali
-                    $res_jatelindo = JatelindoService::advice($data->log_kiosbank->data ?? []);
+                    $res_jatelindo = JatelindoService::advice($data->log_kiosbank->data ?? [], $data);
                     $result_jatelindo = $res_jatelindo->json();
                     $rc = $result_jatelindo['bit39'] ?? '';
                     //4. Cek advice timout
@@ -1745,7 +1745,7 @@ class TravShopController extends Controller
                         //5. Advice Repeate max 3x percobaan
                         $try = 1;
                         do {
-                            $res_jatelindo = JatelindoService::repeat($data->log_kiosbank->data ?? []);
+                            $res_jatelindo = JatelindoService::repeat($data->log_kiosbank->data ?? [], $data);
                             $result_jatelindo = $res_jatelindo->json();
                             $rc = $result_jatelindo['bit39'] ?? '';
                             $try++;

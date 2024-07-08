@@ -62,7 +62,7 @@ class RepeateJob implements ShouldQueue
                 return;
             }
             
-            $res_jatelindo = JatelindoService::repeat($log_kios);
+            $res_jatelindo = JatelindoService::repeat($log_kios, $trans_order);
             $result_jatelindo = $res_jatelindo->json();
             $rc = $result_jatelindo['bit39'] ?? '';
             Log::info('Repeate ke-'.$count.' rc = '.$rc);

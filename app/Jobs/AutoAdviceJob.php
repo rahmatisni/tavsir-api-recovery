@@ -49,7 +49,7 @@ class AutoAdviceJob implements ShouldQueue
             }
             $log_kios['is_advice'] = true;
             $trans_order->log_kiosbank()->update(['data' => $log_kios, 'inquiry' => $log_kios]);
-            $res_jatelindo = JatelindoService::advice($log_kios);
+            $res_jatelindo = JatelindoService::advice($log_kios, $trans_order);
             $result_jatelindo = $res_jatelindo->json();
             $rc = $result_jatelindo['bit39'] ?? '';
             Log::info('Auto Advice rc = '.$rc);

@@ -738,7 +738,7 @@ class PaymentService
                     try {
                         $data_log_kios['is_purchase'] = true;
                         $data->log_kiosbank()->update(['data' => $data_log_kios, 'payment' => $data_log_kios]);
-                        $res_jatelindo = JatelindoService::purchase($data_log_kios);
+                        $res_jatelindo = JatelindoService::purchase($data_log_kios, $data);
                         $result_jatelindo = $res_jatelindo->json();
                         $data_log_kios = $result_jatelindo;
                         $data->log_kiosbank()->update(['data' => $data_log_kios, 'payment' => $data_log_kios]);
@@ -884,7 +884,7 @@ class PaymentService
                     'payment' => $data_log_kios
                 ]);
 
-                $res_jatelindo = JatelindoService::repeat($data_log_kios);
+                $res_jatelindo = JatelindoService::repeat($data_log_kios, $data);
                 $result_jatelindo = $res_jatelindo->json();
                 $rc = $result_jatelindo['bit39'] ?? '';
                 $result_jatelindo['repeate_date'] = $data_log_kios['repeate_date'];
