@@ -15,7 +15,7 @@ class CreateLogJatelindoTable extends Migration
     {
         Schema::create('log_jatelindo', function (Blueprint $table) {
             $table->id();
-            $table->string('trans_order_id');
+            $table->string('trans_order_id')->nullable();
             $table->string('type')->comment('inquiry, advice, repeate, purchase');
             $table->text('request')->nullable();
             $table->text('response')->nullable();
