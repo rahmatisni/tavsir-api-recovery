@@ -118,6 +118,14 @@ class JatelindoService
         if (isset($payload['is_success'])) {
             unset($payload['is_success']);
         }
+
+        if (isset($payload['repeate_date'])) {
+            unset($payload['repeate_date']);
+        }
+
+        if (isset($payload['repeate_count'])) {
+            unset($payload['repeate_count']);
+        }
         $payload["mti"] = "0200";
         $payload["bit3"] = self::purchase;
         //fake respone
@@ -169,6 +177,12 @@ class JatelindoService
         if (isset($payload['is_success'])) {
             unset($payload['is_success']);
         }
+        if (isset($payload['repeate_date'])) {
+            unset($payload['repeate_date']);
+        }
+        if (isset($payload['repeate_count'])) {
+            unset($payload['repeate_count']);
+        }
         $payload["mti"] = "0220";
         $payload["bit3"] = self::advice;
         // Log::info([
@@ -202,6 +216,12 @@ class JatelindoService
         }
         if (isset($payload['is_success'])) {
             unset($payload['is_success']);
+        }
+        if (isset($payload['repeate_date'])) {
+            unset($payload['repeate_date']);
+        }
+        if (isset($payload['repeate_count'])) {
+            unset($payload['repeate_count']);
         }
         $payload["mti"] = "0221";
         $payload["bit3"] = self::repeat;
