@@ -26,4 +26,24 @@ class LogJatelindo extends BaseModel
     {
         return $this->belongsTo(TransOrder::class, 'trans_order_id')->withTrashed();
     }
+
+    public function getRequestAttribute($value)
+    {
+        return $value ? json_decode($value, true) : $value;
+    }
+
+    public function setRequestAttribute($value)
+    {
+        $this->attributes['request'] = json_encode($value);
+    }
+
+    public function getResponseAttribute($value)
+    {
+        return $value ? json_decode($value, true) : $value;
+    }
+
+    public function setResponseAttribute($value)
+    {
+        $this->attributes['response'] = json_encode($value);
+    }
 }
