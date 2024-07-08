@@ -497,6 +497,29 @@ class JatelindoService
 
     public static function infoPln(string $meter_id, int $flag = 0)
     {
+        if(env('PLN_FAKE')){
+            Http::fake([
+                config('jatelindo.url') => Http::response([
+                    'bit48' => 'JTL53L31499999999812999999999907FC72D057D33CBE9738B085D661213460007210Z96A2EFAD8828F3810CCD1763NURCAHYO SETIAWAN.SH     R1  000000450',
+                    'bit7' => '0708121346',
+                    'bit37' => '000000121346',
+                    'bit39' => '00',
+                    'bit3' => '380000',
+                    'bit12' => '121346',
+                    'bit4' => '000000000000',
+                    'bit13' => '0708',
+                    'bit2' => '053502',
+                    'bit11' => '121346',
+                    'mti' => '0210',
+                    'bit18' => '6012',
+                    'bit15' => '0708',
+                    'bit62' => '5151106222            060000',
+                    'bit42' => '200900100800000',
+                    'bit41' => 'DEVJMT01',
+                    'bit32' => '008',
+                ])
+            ]);
+        }
         $date = Carbon::now();
         $md = $date->format('md');
         $his = $date->format('his');

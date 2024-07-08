@@ -42,7 +42,7 @@ class AutoAdviceJob implements ShouldQueue
             if($trans_order->status == TransOrder::DONE){
                 return;
             }
-            $log_kios = $trans_order->log_kiosbank?->inquiry ?? null;
+            $log_kios = $trans_order->log_kiosbank?->inquiry ?? ($trans_order->log_kiosbank?->data ?? null);
             if(!$log_kios){
                 Log::info('Repeate no data inquiry ');
                 return;
