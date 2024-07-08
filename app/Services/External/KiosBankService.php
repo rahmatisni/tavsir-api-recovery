@@ -3,6 +3,7 @@
 namespace App\Services\External;
 
 use App\Models\KiosBank\ProductKiosBank;
+use App\Models\LogJatelindo;
 use App\Models\TransOrder;
 use Carbon\Carbon;
 use Exception;
@@ -546,6 +547,10 @@ class KiosBankService
                 $order->log_kiosbank()->updateOrCreate(['trans_order_id' => $order->id], [
                     'data' => $res_jatelindo,
                     'inquiry' => $res_jatelindo
+                ]);
+                $order->log_kiosbank()->updateOrCreate(['trans_order_id' => $order->id], [
+                    'type' => LogJatelindo::inquiry,
+                    'response' => $res_jatelindo
                 ]);
                 return ['code' => 200, 'data' => $order];
             }else{
