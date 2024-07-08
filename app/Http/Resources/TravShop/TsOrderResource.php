@@ -6,6 +6,7 @@ use App\Models\KiosBank\ProductKiosBank;
 use App\Models\TransOrder;
 use App\Services\External\JatelindoService;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
 /**
@@ -211,6 +212,14 @@ class TsOrderResource extends JsonResource
         $repeat_date = $this->log_kiosbank->data['repeate_date'] ?? null;
         $repeat_count = $this->log_kiosbank->data['repeate_count'] ?? 0;
 
+        if(($this->status == TransOrder::PAYMENT_SUCCESS || $this->status == TransOrder::READY) && $product_kios_bank?->integrator == 'JATELINDO'){
+            $log_kios_bank = Arr::only($log_kios_bank['data'],[
+                "kategori",
+                "sub_kategori",
+                "harga",
+                "Nomor_Cust",
+            ]);
+        }
         return [
             "id" => $this->id,
             "repeate_date" => $repeat_date,
