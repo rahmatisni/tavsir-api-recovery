@@ -111,8 +111,9 @@ class JatelindoService
 
         if($transOrder){
             $transOrder->log_jatelindo()->updateOrCreate([
-                'trans_order_id' => $req_log->trans_order_id
+                'id' => $req_log->id,
             ],[
+                'trans_order_id' => $req_log->trans_order_id,
                 'type' => LogJatelindo::inquiry,
                 'response' => $result->json(),
             ]);
@@ -188,9 +189,10 @@ class JatelindoService
 
         if($transOrder){
             $transOrder->log_jatelindo()->updateOrCreate([
+                'id' => $req_log->id,
+            ],[
                 'trans_order_id' => $req_log->trans_order_id,
                 'type' => LogJatelindo::purchase,
-            ],[
                 'response' => $result->json(),
             ]);
         }
@@ -245,9 +247,10 @@ class JatelindoService
 
         if($transOrder){
             $transOrder->log_jatelindo()->updateOrCreate([
+                'id' => $req_log->id,
+            ],[
                 'trans_order_id' => $req_log->trans_order_id,
                 'type' => LogJatelindo::advice,
-            ],[
                 'response' => $result->json(),
             ]);
         }
@@ -303,9 +306,10 @@ class JatelindoService
 
         if($transOrder){
             $transOrder->log_jatelindo()->updateOrCreate([
+                'id' => $req_log->trans_order_id
+            ],[
                 'trans_order_id' => $req_log->trans_order_id,
                 'type' => LogJatelindo::repeat,
-            ],[
                 'response' => $result->json(),
             ]);
         }
