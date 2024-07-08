@@ -731,6 +731,7 @@ class PaymentService
                 $data_log_kios['repeate_date'] = $repeate_date;
                 $data_log_kios['repeate_count'] = $repeate_count;
                 $rc = null;
+                $result_jatelindo = null;
 
                 if($is_purchase != true){
                     //1. Purchase

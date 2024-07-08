@@ -42,7 +42,11 @@ class RepeateJob implements ShouldQueue
             if($trans_order->status == TransOrder::DONE){
                 return;
             }
-            $log_kios = $trans_order->log_kiosbank?->data ?? [];
+            $log_kios = $trans_order->log_kiosbank?->inquiry ?? null;
+            if(!$log_kios){
+                Log::info('Reoeate no data inquiry ');
+                return;
+            }
             $count = $log_kios['repeate_count'] ?? 0;
             $count = $count +1;
             $log_kios['repeate_count'] = $count;
@@ -54,6 +58,7 @@ class RepeateJob implements ShouldQueue
 
             if($count > 3){
                 Log::info('Repeate count telah mencapai '.$count);
+
                 return;
             }
             
@@ -63,6 +68,10 @@ class RepeateJob implements ShouldQueue
             Log::info('Repeate ke-'.$count.' rc = '.$rc);
             if($rc == '18' || $rc == '13' || $rc == '96'){
                 Log::info('Dispatch RepeateJob reason rc '.$rc);
+                $trans_order->log_kiosbank()->updateOrCreate(['trans_order_id' => $trans_order->id], [
+                    'data' => $result_jatelindo,
+                    'payment' => $result_jatelindo
+                ]);
                 RepeateJob::dispatch($this->data)->delay(now()->addSecond(35));
                 $trans_order->status = TransOrder::READY;
                 $trans_order->save();

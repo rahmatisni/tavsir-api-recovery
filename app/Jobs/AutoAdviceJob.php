@@ -42,7 +42,11 @@ class AutoAdviceJob implements ShouldQueue
             if($trans_order->status == TransOrder::DONE){
                 return;
             }
-            $log_kios = $trans_order->log_kiosbank?->data ?? [];
+            $log_kios = $trans_order->log_kiosbank?->inquiry ?? null;
+            if(!$log_kios){
+                Log::info('Reoeate no data inquiry ');
+                return;
+            }
             $log_kios['is_advice'] = true;
             $trans_order->log_kiosbank()->update(['data' => $log_kios, 'payment' => $log_kios]);
             $res_jatelindo = JatelindoService::advice($log_kios);
@@ -51,9 +55,10 @@ class AutoAdviceJob implements ShouldQueue
             Log::info('Auto Advice rc = '.$rc);
             if($rc == '18' || $rc == '13' || $rc == '96'){
                 Log::info('Dispatch RepeateJob reason rc '.$rc);
+                $trans_order->log_kiosbank()->update(['data' => $result_jatelindo, 'payment' => $result_jatelindo]);
                 RepeateJob::dispatch($this->data)->delay(now()->addSecond(35));
                 $trans_order->status = TransOrder::READY;
-                $trans_order->save();
+    $trans_order->save();
             }
 
             if($rc == '00'){

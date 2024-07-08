@@ -348,9 +348,9 @@ class JatelindoService
 
     public static function infoPelanggan(LogKiosbank $log, string $trans_order_status)
     {
-        $bit_48 = $log->data['bit48'] ?? '';
-        $bit_61 = $log->data['bit61'] ?? ($log->data['bit62'] ?? '');
-        $bit_62 = $log->data['bit62'] ?? '';
+        $bit_48 = $log->payment['bit48'] ?? ($log->inquiry['bit48']) ?? '';
+        $bit_61 = $log->payment['bit61'] ?? ($log->inquiry['bit61']) ?? ($log->payment['bit62'] ?? ($log->inquiry['bit62']) ?? '');
+        $bit_62 = $log->payment['bit62'] ?? ($log->inquiry['bit62']) ?? '';
 
         $kode_distirbusi = substr($bit_61, 0, 2);
         $unit_service = substr($bit_61, 2, 5);
@@ -423,7 +423,7 @@ class JatelindoService
             'STROOM/TOKEN' => wordwrap($token, 4, ' ', true),
             'ADMIN_BANK' => $biaya_admin == 0 ? 0 : 'Rp. ' . number_format((float) substr($biaya_admin, 0, -$digit_admin), 0, ',', '.').",00",
             'Informasi' => $bit_62,
-            'KETERANGAN' => self::responseTranslation($log->data)?->message,
+            'KETERANGAN' => self::responseTranslation(($log->payment ?? $log->inquiry))?->message,
 
 
 
