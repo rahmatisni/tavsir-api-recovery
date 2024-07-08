@@ -260,7 +260,7 @@ class TransOrder extends BaseModel
         return 0;
     }
 
-    public function log_jaletino()
+    public function log_jatelindo()
     {
         return $this->hasMany(LogJatelindo::class, 'trans_order_id');
     }
