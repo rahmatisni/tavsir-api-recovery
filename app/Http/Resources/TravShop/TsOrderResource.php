@@ -213,7 +213,7 @@ class TsOrderResource extends JsonResource
         $repeat_count = $this->log_kiosbank->data['repeate_count'] ?? 0;
 
         if(($this->status == TransOrder::PAYMENT_SUCCESS || $this->status == TransOrder::READY) && $product_kios_bank?->integrator == 'JATELINDO'){
-            $log_kios_bank = Arr::only($log_kios_bank['data'],[
+            $log_kios_bank['data'] = Arr::only($log_kios_bank['data'],[
                 "kategori",
                 "sub_kategori",
                 "harga",
@@ -221,7 +221,7 @@ class TsOrderResource extends JsonResource
             ]);
 
             if($repeat_count >=3){
-                $log_kios_bank['KETERANGAN'] = 'TRANSAKI SUSPECT,MOHON HUBUNGI CUSTOMER SERVICE'; 
+                $log_kios_bank['data']['KETERANGAN'] = 'TRANSAKI SUSPECT,MOHON HUBUNGI CUSTOMER SERVICE'; 
             }
         }
 
