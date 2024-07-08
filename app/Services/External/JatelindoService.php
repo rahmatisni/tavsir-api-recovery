@@ -183,7 +183,7 @@ class JatelindoService
         Log::info([
             'status' => self::responseTranslation($result->json())?->keterangan,
             'action' => 'Purchase',
-            'respons' => $result->json(),
+            'response' => $result->json(),
         ]);
 
         if($transOrder){
@@ -298,7 +298,7 @@ class JatelindoService
         Log::info([
             'status' => self::responseTranslation($result->json())?->keterangan,
             'action' => 'Repeate',
-            'respons' => $result->json(),
+            'response' => $result->json(),
         ]);
 
         if($transOrder){
