@@ -622,10 +622,7 @@ class JatelindoService
         if (app('env') != 'production') {
             $header = ['proxy' => '172.16.4.58:8090'];
         }
-        LogJatelindo::updateOrCreate([
-            'type' => LogJatelindo::inquiry,
-            'request' => $payload,
-        ]);
+
         $result = Http::withOptions($header)->post(config('jatelindo.url'), $payload);
 
         Log::info([
@@ -637,6 +634,7 @@ class JatelindoService
 
         LogJatelindo::updateOrCreate([
             'type' => LogJatelindo::inquiry,
+            'request' => $payload,
             'response' => $result->json(),
         ]);
 
