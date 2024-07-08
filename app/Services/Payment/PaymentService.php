@@ -6,6 +6,7 @@ use App\Jobs\AutoAdviceJob;
 use App\Models\Bind;
 use App\Models\Constanta\PaymentMethodCode;
 use App\Models\LaJmto;
+use App\Models\LogJatelindo;
 use App\Models\LogKiosbank;
 use App\Models\PaymentMethod;
 use App\Models\PgJmto;
@@ -752,6 +753,12 @@ class PaymentService
                         }
                     } catch (\Throwable $e) {
                         Log::info('Dispatch Auto AdviceJob reason timeout '.$e->getMessage());
+                        $data->log_jatelindo()->updateOrCreate([
+                            'trans_order_id' => $data->trans_order_id,
+                            'type' => LogJatelindo::repeat,
+                            'request' => $data_log_kios,
+                            'response' => [$e->getMessage()],
+                        ]);
                         AutoAdviceJob::dispatch([ 'id' => $data->id])->delay(now()->addSecond(35));
                     }
                 }

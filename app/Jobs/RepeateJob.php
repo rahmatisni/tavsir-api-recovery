@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\LogJatelindo;
 use App\Models\LogKiosbank;
 use App\Models\TransOrder;
 use App\Services\External\JatelindoService;
@@ -85,6 +86,12 @@ class RepeateJob implements ShouldQueue
             }
         } catch (\Throwable $e) {
             Log::info('Repeate timeout : '. $e->getMessage());
+            $trans_order->log_jatelindo()->updateOrCreate([
+                'trans_order_id' => $trans_order->trans_order_id,
+                'type' => LogJatelindo::repeat,
+                'request' => $log_kios,
+                'response' => [$e->getMessage()],
+            ]);
             RepeateJob::dispatch($this->data)->delay(now()->addSecond(35));
             Log::info('Dispatch RepeateJob reason timeout');
             $trans_order->status = TransOrder::READY;

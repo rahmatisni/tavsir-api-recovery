@@ -94,13 +94,6 @@ class JatelindoService
             'payload' => $payload,
         ]);
 
-        $req_log = null;
-        if($transOrder){
-            $req_log = $transOrder->log_jatelindo()->updateOrCreate([
-                'type' => LogJatelindo::inquiry,
-                'request' => $payload,
-            ]);
-        }
         $result = Http::post(config('jatelindo.url'), $payload);
 
         Log::info([
@@ -111,10 +104,9 @@ class JatelindoService
 
         if($transOrder){
             $transOrder->log_jatelindo()->updateOrCreate([
-                'id' => $req_log->id,
-            ],[
-                'trans_order_id' => $req_log->trans_order_id,
+                'trans_order_id' => $transOrder->trans_order_id,
                 'type' => LogJatelindo::inquiry,
+                'request' => $payload(),
                 'response' => $result->json(),
             ]);
         }
@@ -171,14 +163,6 @@ class JatelindoService
             'payload' => $payload,
         ]);
 
-        $req_log = null;
-        if($transOrder){
-            $req_log = $transOrder->log_jatelindo()->updateOrCreate([
-                'type' => LogJatelindo::purchase,
-                'request' => $payload,
-            ]);
-        }
-
         $result = Http::withOptions($options)->timeout(40)->post(config('jatelindo.url'), $payload);
         
         Log::info([
@@ -189,10 +173,9 @@ class JatelindoService
 
         if($transOrder){
             $transOrder->log_jatelindo()->updateOrCreate([
-                'id' => $req_log->id,
-            ],[
-                'trans_order_id' => $req_log->trans_order_id,
+                'trans_order_id' => $transOrder->trans_order_id,
                 'type' => LogJatelindo::purchase,
+                'request' => $payload(),
                 'response' => $result->json(),
             ]);
         }
@@ -227,14 +210,6 @@ class JatelindoService
         //     'action' => 'Advice',
         //     'payload' => $payload,
         // ]);
-
-        $req_log = null;
-        if($transOrder){
-            $req_log = $transOrder->log_jatelindo()->updateOrCreate([
-                'type' => LogJatelindo::advice,
-                'request' => $payload,
-            ]);
-        }
         $result = Http::withOptions([
             // 'proxy' => '172.16.4.58:8090'
         ])->timeout(40)->post(config('jatelindo.url'), $payload);
@@ -247,10 +222,9 @@ class JatelindoService
 
         if($transOrder){
             $transOrder->log_jatelindo()->updateOrCreate([
-                'id' => $req_log->id,
-            ],[
-                'trans_order_id' => $req_log->trans_order_id,
+                'trans_order_id' => $transOrder->trans_order_id,
                 'type' => LogJatelindo::advice,
+                'request' => $payload(),
                 'response' => $result->json(),
             ]);
         }
@@ -287,13 +261,6 @@ class JatelindoService
             'payload' => $payload,
         ]);
 
-        $req_log = null;
-        if($transOrder){
-            $req_log = $transOrder->log_jatelindo()->updateOrCreate([
-                'type' => LogJatelindo::repeat,
-                'request' => $payload,
-            ]);
-        }
         $result = Http::withOptions([
             // 'proxy' => '172.16.4.58:8090'
         ])->timeout(40)->post(config('jatelindo.url'), $payload);
@@ -306,10 +273,9 @@ class JatelindoService
 
         if($transOrder){
             $transOrder->log_jatelindo()->updateOrCreate([
-                'id' => $req_log->trans_order_id
-            ],[
-                'trans_order_id' => $req_log->trans_order_id,
+                'trans_order_id' => $transOrder->trans_order_id,
                 'type' => LogJatelindo::repeat,
+                'request' => $payload(),
                 'response' => $result->json(),
             ]);
         }

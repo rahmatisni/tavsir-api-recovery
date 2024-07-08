@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\LogJatelindo;
 use App\Models\LogKiosbank;
 use App\Models\TransOrder;
 use App\Services\External\JatelindoService;
@@ -58,7 +59,7 @@ class AutoAdviceJob implements ShouldQueue
                 $trans_order->log_kiosbank()->update(['data' => $result_jatelindo, 'payment' => $result_jatelindo]);
                 RepeateJob::dispatch($this->data)->delay(now()->addSecond(35));
                 $trans_order->status = TransOrder::READY;
-    $trans_order->save();
+                $trans_order->save();
             }
 
             if($rc == '00'){
@@ -69,6 +70,12 @@ class AutoAdviceJob implements ShouldQueue
         } catch (\Throwable $e) {
             Log::info('Advice timeout : '. $e->getMessage());
             Log::info('Dispatch RepeateJob reason timeout');
+            $trans_order->log_jatelindo()->updateOrCreate([
+                'trans_order_id' => $trans_order->trans_order_id,
+                'type' => LogJatelindo::repeat,
+                'request' => $log_kios,
+                'response' => [$e->getMessage()],
+            ]);
             RepeateJob::dispatch($this->data)->delay(now()->addSecond(35));
             $trans_order->status = TransOrder::READY;
             $trans_order->save();
