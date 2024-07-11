@@ -482,7 +482,7 @@ class JatelindoService
             // 'JML_KWH' => number_format((float)$biaya_kwh / 100, $digit_kwh, ',', '.'),
             'JML_KWH' => number_format((float)$biaya_kwh / 100, 1, ',', '.'),
             'STROOM/TOKEN' => wordwrap($token, 4, ' ', true),
-            'ADMIN_BANK' => $biaya_admin == 0 ? 0 : 'Rp. ' . number_format((float) substr($biaya_admin, 0, -$digit_admin), 0, ',', '.').",00",
+            'ADMIN_BANK' => $biaya_admin == 0 ? 0 : 'Rp. ' . number_format((float) substr($biaya_admin, 0, -$digit_admin), 0, ',', '.'),
             'Informasi' => $bit_62,
             'KETERANGAN' => self::responseTranslation(($log->payment ?? $log->inquiry))?->message,
 
