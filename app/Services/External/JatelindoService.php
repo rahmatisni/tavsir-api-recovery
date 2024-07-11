@@ -411,6 +411,7 @@ class JatelindoService
         $bit_48 = $log->payment['bit48'] ?? ($log->inquiry['bit48']) ?? '';
         $bit_61 = $log->payment['bit61'] ?? ($log->inquiry['bit61']) ?? ($log->payment['bit62'] ?? ($log->inquiry['bit62']) ?? '');
         $bit_62 = $log->payment['bit62'] ?? ($log->inquiry['bit62']) ?? '';
+        $bit_39 = $log->payment['bit39'] ?? '';
 
         $kode_distirbusi = substr($bit_61, 0, 2);
         $unit_service = substr($bit_61, 2, 5);
@@ -466,7 +467,7 @@ class JatelindoService
             ];
         }
 
-        return [
+        $jatl = [
             '-' => '-',
             'NO_METER' => $meter_id,
             'IDPEL' => $pelanggan_id,
@@ -484,32 +485,61 @@ class JatelindoService
             'STROOM/TOKEN' => wordwrap($token, 4, ' ', true),
             'ADMIN_BANK' => $biaya_admin == 0 ? 0 : 'Rp. ' . number_format((float) substr($biaya_admin, 0, -$digit_admin), 0, ',', '.'),
             'Informasi' => $bit_62,
-            'KETERANGAN' => self::responseTranslation(($log->payment ?? $log->inquiry))?->message,
+            'KETERANGAN' => self::responseTranslation(($log->payment ?? $log->inquiry))?->message
 
-
-
-
-
-
-            // // 'Flag' => $flag,
-            // 'Transaksi_ID' => $transaksi_id,
-            // // 'Ref_ID' => $ref_id,
-            // 'Vending_Number' => $vending_number,
-            // 'Tarif' => $tarif,
-            // 'Daya' => $daya,
-            // 'Pilihan_Pembelian' => $pilihan_pembelian,
-            // 'Biaya_Admin' => 'Rp. ' . number_format((int) substr($biaya_admin, 0, -$digit_admin), 0, ',', '.'),
-            // 'Biaya_materai' => 'Rp. ' . number_format((int) substr($biaya_materai, 0, -$digit_materai), 0, ',', '.'),
-            // 'Biaya_ppn' => 'Rp. ' . number_format((int) substr($biaya_ppn, 0, -$digit_ppn), 0, ',', '.'),
-            // 'Biaya_ppju' => 'Rp. ' . number_format((int) substr($biaya_ppju, 0, -$digit_ppju), 0, ',', '.'),
-            // 'Biaya_angsuran' => 'Rp. ' . number_format((int) substr($biaya_angsuran, 0, -$digit_angsuran), 0, ',', '.'),
-            // // 'Biaya_pembelian' => 'Rp. '.number_format((int) substr($biaya_pembelian,0,-$digit_pembelian),0,',','.'),
-            // 'Jumlah_KWH' => number_format($biaya_kwh, 0, ',', '.'),
-            // 'Token' => wordwrap($token, 4, ' ', true),
-            // 'Tanggal_Lunas' => Carbon::parse($tanggal_lunas)->format('Y-m-d H:i:s'),
-            // 'Max_KWH' => $max_kwh,
-            // 'Informasi' => $bit_62,
         ];
+        if ($bit_39 == '00'){
+            unset($jatl['KETERANGAN']);
+            return $jatl;
+        }
+        else {
+            return $jatl;
+        }
+
+        // return [
+        //     '-' => '-',
+        //     'NO_METER' => $meter_id,
+        //     'IDPEL' => $pelanggan_id,
+        //     'NAMA' => $nama_pelanggan,
+        //     'TARIF/DAYA' => $tarif . '/' . $daya.'VA',
+        //     'NO_REF' => $ref_id,
+        //     'RP_BAYAR' => 'Rp. ' . number_format((float) substr($rp_bayar, 0, -$digit_pembelian), 0, ',', '.'),
+        //     'METERAI' => 'Rp. ' . number_format((float) substr($biaya_materai, 0, -$digit_materai), 0, ',', '.').",00",
+        //     'PPn' => 'Rp. ' . number_format((float) substr($biaya_ppn, 0, -$digit_ppn), 0, ',', '.').",00",
+        //     'PBJT-TL' => 'Rp. ' . number_format((float) substr($biaya_ppju, 0, -$digit_ppju), 0, ',', '.').",00",
+        //     'ANGSURAN' => 'Rp. ' . number_format((float) substr($biaya_angsuran, 0, -$digit_angsuran), 0, ',', '.').",00",
+        //     'RP_STROM/TOKEN' => 'Rp. ' . number_format((float) substr($biaya_pembelian, 0, -$digit_pembelian), 0, ',', '.').",00",
+        //     // 'JML_KWH' => number_format((float)$biaya_kwh / 100, $digit_kwh, ',', '.'),
+        //     'JML_KWH' => number_format((float)$biaya_kwh / 100, 1, ',', '.'),
+        //     'STROOM/TOKEN' => wordwrap($token, 4, ' ', true),
+        //     'ADMIN_BANK' => $biaya_admin == 0 ? 0 : 'Rp. ' . number_format((float) substr($biaya_admin, 0, -$digit_admin), 0, ',', '.'),
+        //     'Informasi' => $bit_62,
+        //     'KETERANGAN' => self::responseTranslation(($log->payment ?? $log->inquiry))?->message,
+
+
+
+
+
+
+        //     // // 'Flag' => $flag,
+        //     // 'Transaksi_ID' => $transaksi_id,
+        //     // // 'Ref_ID' => $ref_id,
+        //     // 'Vending_Number' => $vending_number,
+        //     // 'Tarif' => $tarif,
+        //     // 'Daya' => $daya,
+        //     // 'Pilihan_Pembelian' => $pilihan_pembelian,
+        //     // 'Biaya_Admin' => 'Rp. ' . number_format((int) substr($biaya_admin, 0, -$digit_admin), 0, ',', '.'),
+        //     // 'Biaya_materai' => 'Rp. ' . number_format((int) substr($biaya_materai, 0, -$digit_materai), 0, ',', '.'),
+        //     // 'Biaya_ppn' => 'Rp. ' . number_format((int) substr($biaya_ppn, 0, -$digit_ppn), 0, ',', '.'),
+        //     // 'Biaya_ppju' => 'Rp. ' . number_format((int) substr($biaya_ppju, 0, -$digit_ppju), 0, ',', '.'),
+        //     // 'Biaya_angsuran' => 'Rp. ' . number_format((int) substr($biaya_angsuran, 0, -$digit_angsuran), 0, ',', '.'),
+        //     // // 'Biaya_pembelian' => 'Rp. '.number_format((int) substr($biaya_pembelian,0,-$digit_pembelian),0,',','.'),
+        //     // 'Jumlah_KWH' => number_format($biaya_kwh, 0, ',', '.'),
+        //     // 'Token' => wordwrap($token, 4, ' ', true),
+        //     // 'Tanggal_Lunas' => Carbon::parse($tanggal_lunas)->format('Y-m-d H:i:s'),
+        //     // 'Max_KWH' => $max_kwh,
+        //     // 'Informasi' => $bit_62,
+        // ];
 
         // return [
         //     'Meter_ID' => $meter_id,
