@@ -46,9 +46,9 @@ class JatelindoService
             "bit37" => "000000{$his}",
             "bit41" => config('jatelindo.bit_41'),
             "bit42" => config('jatelindo.bit_42'),
-            //Format SwitcherID + MeterID (11 digit) + PelangganID (12 digit) + Flag MeterID (0) atau PelangganID (1)  
+            //Format SwitcherID + MeterID (11 digit) + PelangganID (12 digit) + Flag MeterID (0) atau PelangganID (1)
             "bit48" => 'JTL53L3' . $id,
-            "bit49" => "360", // COUNTRY CURRENCY CODE NUMBER IDR 
+            "bit49" => "360", // COUNTRY CURRENCY CODE NUMBER IDR
         ];
 
         //fake respone
@@ -81,7 +81,7 @@ class JatelindoService
                         config('jatelindo.url') => throw new ConnectionException('Connection timed out')
                     ];
                     break;
-                
+
                 default:
                     # code...
                     break;
@@ -164,7 +164,7 @@ class JatelindoService
         ]);
 
         $result = Http::withOptions($options)->timeout(40)->post(config('jatelindo.url'), $payload);
-        
+
         Log::info([
             'status' => self::responseTranslation($result->json())?->keterangan,
             'action' => 'Purchase',
@@ -358,7 +358,7 @@ class JatelindoService
                 $keterangan = 'SALDO ANDA TIDAK MENCUKUPI';
                 $message = 'SALDO ANDA TIDAK MENCUKUPI';
                 break;
-                
+
             case '63':
                 $keterangan = 'KONSUMEN ….. DIBLOKIR
                     HUBUNGI PLN';
@@ -446,7 +446,7 @@ class JatelindoService
         $digit_kwh = empty(substr($bit_48, 210, 1)) ? 0 : substr($bit_48, 210, 1); //Digit belakang koma
         $biaya_kwh = substr($bit_48, 211, 10); //Biaya Kwh
         $token = substr($bit_48, 221, 20); //Token
-        $tanggal_lunas = substr($bit_48, 241, 14); //Tanggal lunas 
+        $tanggal_lunas = substr($bit_48, 241, 14); //Tanggal lunas
         $rp_bayar = (float)$biaya_pembelian + (float)$biaya_admin;
 
         if ($trans_order_status == TransOrder::WAITING_PAYMENT) {
@@ -471,14 +471,14 @@ class JatelindoService
             'NO_METER' => $meter_id,
             'IDPEL' => $pelanggan_id,
             'NAMA' => $nama_pelanggan,
-            'TARIF/DAYA' => $tarif . '/' . $daya,
+            'TARIF/DAYA' => $tarif . '/' . $daya.'VA',
             'NO_REF' => $ref_id,
-            'RP_BAYAR' => 'Rp. ' . number_format((float) substr($rp_bayar, 0, -$digit_pembelian), 0, ',', '.').",00",
+            'RP_BAYAR' => 'Rp. ' . number_format((float) substr($rp_bayar, 0, -$digit_pembelian), 0, ',', '.')."",
             'METERAI' => 'Rp. ' . number_format((float) substr($biaya_materai, 0, -$digit_materai), 0, ',', '.').",00",
             'PPn' => 'Rp. ' . number_format((float) substr($biaya_ppn, 0, -$digit_ppn), 0, ',', '.').",00",
             'PBJT-TL' => 'Rp. ' . number_format((float) substr($biaya_ppju, 0, -$digit_ppju), 0, ',', '.').",00",
             'ANGSURAN' => 'Rp. ' . number_format((float) substr($biaya_angsuran, 0, -$digit_angsuran), 0, ',', '.').",00",
-            'RP_STROM/TOKEN' => 'Rp. ' . number_format((float) substr($biaya_pembelian, 0, -$digit_pembelian), 0, ',', '.').",00",
+            'RP_STROM/TOKEN' => 'Rp. ' . number_format((float) substr($biaya_pembelian, 0, -$digit_pembelian), 0, ',', '.').",0",
             'JML_KWH' => number_format((float)$biaya_kwh / 100, $digit_kwh, ',', '.'),
             'STROOM/TOKEN' => wordwrap($token, 4, ' ', true),
             'ADMIN_BANK' => $biaya_admin == 0 ? 0 : 'Rp. ' . number_format((float) substr($biaya_admin, 0, -$digit_admin), 0, ',', '.').",00",
@@ -583,9 +583,9 @@ class JatelindoService
             "bit37" => "000000{$his}",
             "bit41" => config('jatelindo.bit_41'),
             "bit42" => config('jatelindo.bit_42'),
-            //Format SwitcherID + MeterID (11 digit) + PelangganID (12 digit) + Flag MeterID (0) atau PelangganID (1)  
+            //Format SwitcherID + MeterID (11 digit) + PelangganID (12 digit) + Flag MeterID (0) atau PelangganID (1)
             "bit48" => 'JTL53L3' . $id,
-            "bit49" => "360", // COUNTRY CURRENCY CODE NUMBER IDR 
+            "bit49" => "360", // COUNTRY CURRENCY CODE NUMBER IDR
         ];
 
         $header = [];
