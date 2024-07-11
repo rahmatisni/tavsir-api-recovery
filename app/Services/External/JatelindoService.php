@@ -13,8 +13,6 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Illuminate\Support\Arr;
-
 
 class JatelindoService
 {
@@ -495,8 +493,9 @@ class JatelindoService
             return $jatl;
         }
         else {
-            return Arr::only($jatl['KETERANGAN']);
-            // return $jatl;
+            return [
+                'KETERANGAN' => self::responseTranslation(($log->payment ?? $log->inquiry))?->message
+            ];
         }
 
         // return [
