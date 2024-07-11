@@ -473,7 +473,7 @@ class JatelindoService
             'NAMA' => $nama_pelanggan,
             'TARIF/DAYA' => $tarif . '/' . $daya.'VA',
             'NO_REF' => $ref_id,
-            'RP_BAYAR' => 'Rp. ' . number_format((float) substr($rp_bayar, 0, -$digit_pembelian), 0, ',', '.')."",
+            'RP_BAYAR' => 'Rp. ' . number_format((float) substr($rp_bayar, 0, -$digit_pembelian), 0, ',', '.'),
             'METERAI' => 'Rp. ' . number_format((float) substr($biaya_materai, 0, -$digit_materai), 0, ',', '.').",00",
             'PPn' => 'Rp. ' . number_format((float) substr($biaya_ppn, 0, -$digit_ppn), 0, ',', '.').",00",
             'PBJT-TL' => 'Rp. ' . number_format((float) substr($biaya_ppju, 0, -$digit_ppju), 0, ',', '.').",00",
