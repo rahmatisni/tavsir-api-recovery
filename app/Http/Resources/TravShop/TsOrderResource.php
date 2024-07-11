@@ -71,7 +71,7 @@ class TsOrderResource extends JsonResource
                     // if ($this->status === TransOrder::WAITING_PAYMENT) {
                     // unset($product_kios['RP_BAYAR']);
                     if (isset($product_kios['RP_BAYAR'])){
-                        $product_kios['RP_BAYAR'] = rupiah((int)$product_kios['harga']).',00';
+                        $product_kios['RP_BAYAR'] = rupiah((int)$product_kios['harga']);
                     }
                     if (isset($product_kios['Daya'])){
                         $product_kios['Daya'] = str_pad($product_kios['Daya'], 9, '0', STR_PAD_LEFT); 
