@@ -30,9 +30,6 @@ class KiosBankController extends Controller
         }
 
         $data = $this->service->getProduct($kategori_pulsa, $kategori, $sub_kategori);
-        // dd($data);
-        $arr = json_decode($data);
-        dd($arr);
         return response()->json($data);
     }
 
