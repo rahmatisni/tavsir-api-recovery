@@ -622,52 +622,52 @@ class PaymentService
         //     $data_payment
         // );
 
-        if($trans_order->sub_total == 100000) {
-            $res = [
+        // if($trans_order->sub_total == 100000) {
+        //     $res = [
 
-                "status" =>  "success",
-                "rc" =>  "0000",
-                "rcm" =>  "success",
-                "responseData" =>  [
-                    "sof_code" =>  "FELLO",
-                    "bill_id" =>  "155337",
-                    "reff_number" =>  "QR20240516152712000000",
-                    "status" =>  true,
-                    "pay_status" => 1
-                    ]
+        //         "status" =>  "success",
+        //         "rc" =>  "0000",
+        //         "rcm" =>  "success",
+        //         "responseData" =>  [
+        //             "sof_code" =>  "FELLO",
+        //             "bill_id" =>  "155337",
+        //             "reff_number" =>  "QR20240516152712000000",
+        //             "status" =>  true,
+        //             "pay_status" => 1
+        //             ]
     
-            ];   
-            $status = $res['responseData']['status'];
-            $trans_order->payment()->updateOrCreate([
-                'trans_order_id' => $trans_order->id
-            ], [
-                'data' => $res,
-                'payment' => $res,
-            ]);
-        }
-        else if($trans_order->sub_total == 50000) {
-            $res = [
+        //     ];   
+        //     $status = $res['responseData']['status'];
+        //     $trans_order->payment()->updateOrCreate([
+        //         'trans_order_id' => $trans_order->id
+        //     ], [
+        //         'data' => $res,
+        //         'payment' => $res,
+        //     ]);
+        // }
+        // else if($trans_order->sub_total == 50000) {
+        //     $res = [
 
-                "status" =>  "success",
-                "rc" =>  "0000",
-                "rcm" =>  "success",
-                "responseData" =>  [
-                    "sof_code" =>  "FELLO",
-                    "bill_id" =>  "155337",
-                    "reff_number" =>  "QR20240516152712000000",
-                    "status" =>  false,
-                    "pay_status" => 0
-                    ]
-            ];
-            $trans_order->payment()->updateOrCreate([
-                'trans_order_id' => $trans_order->id
-            ], [
-                'data' => $res,
-                'payment' => $res,
-            ]);
-            $status = $res['responseData']['status'];
+        //         "status" =>  "success",
+        //         "rc" =>  "0000",
+        //         "rcm" =>  "success",
+        //         "responseData" =>  [
+        //             "sof_code" =>  "FELLO",
+        //             "bill_id" =>  "155337",
+        //             "reff_number" =>  "QR20240516152712000000",
+        //             "status" =>  false,
+        //             "pay_status" => 0
+        //             ]
+        //     ];
+        //     $trans_order->payment()->updateOrCreate([
+        //         'trans_order_id' => $trans_order->id
+        //     ], [
+        //         'data' => $res,
+        //         'payment' => $res,
+        //     ]);
+        //     $status = $res['responseData']['status'];
 
-        } else {
+        // } else {
             $res = PgJmto::QRStatus(
                 $data_payment
             );
@@ -682,7 +682,7 @@ class PaymentService
                     'payment' => $res,
                 ]);
             }
-        }
+        // }
 
         // true sight
         // if(($res['status'] ?? null) == 'success'){
