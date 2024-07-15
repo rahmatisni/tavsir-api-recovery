@@ -569,7 +569,7 @@ class PgJmto extends Model
         $payload = [
             "sof_id" => $sof_id,
             "payment_method_id" => $payment_method_id,
-            "sub_merchant_id" => $sub_merchant_id,
+            "submerchant_id" => $sub_merchant_id,
             "bill_amount" => $bill_amount,
         ];
 
