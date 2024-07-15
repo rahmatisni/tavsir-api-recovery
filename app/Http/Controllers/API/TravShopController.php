@@ -1081,7 +1081,7 @@ class TravShopController extends Controller
                         $data = PgJmto::tarifFee($value->sof_id, $value->payment_method_id, $trans_order->sub_merchant_id, $trans_order->sub_total);
                         // Log::warning($data);
                         // dump($data);
-                        // dump([$value->sof_id, $value->payment_method_id, $trans_order->sub_merchant_id, $trans_order->sub_total]);
+                        dump([$value->code_name, $value->sof_id, $value->payment_method_id, $trans_order->sub_merchant_id, $trans_order->sub_total]);
                         $value->percentage = $data['is_presentage'] ?? null;
                         $x = $data['value'] ?? 'x';
                         $state = $data['is_presentage'] ?? null;
