@@ -566,6 +566,7 @@ class PgJmto extends Model
 
     public static function tarifFee($sof_id, $payment_method_id, $sub_merchant_id, $bill_amount)
     {
+        
         $payload = [
             "sof_id" => $sof_id,
             "payment_method_id" => $payment_method_id,
@@ -574,6 +575,7 @@ class PgJmto extends Model
         ];
 
         try {
+            dump($payload);
             $res = self::service('POST', '/sof/tariffee', $payload);
             // Log::warning($res);
             // if ($res['status'] == 400) {
