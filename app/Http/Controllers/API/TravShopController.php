@@ -1080,12 +1080,13 @@ class TravShopController extends Controller
                     } else {
                         $data = PgJmto::tarifFee($value->sof_id, $value->payment_method_id, $value->sub_merchant_id, $trans_order->sub_total);
                         // Log::warning($data);
+                        dump($data);
                         $value->percentage = $data['is_presentage'] ?? null;
                         $x = $data['value'] ?? 'x';
                         $state = $data['is_presentage'] ?? null;
 
 
-                        if ($state == (false || null)) {
+                        if ($state == (false || null)) {    
                             $value->fee = $data['value'] ?? null;
                         } else {
                             $value->fee = (int) ceil((float) $x / 100 * $trans_order->sub_total);
