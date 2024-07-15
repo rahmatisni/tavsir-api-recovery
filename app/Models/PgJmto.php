@@ -575,9 +575,7 @@ class PgJmto extends Model
         ];
 
         try {
-            dump([$payload, env('PG_BASE_URL')]);
             $res = self::service('POST', '/sof/tariffee', $payload);
-            dump(['hasil',$res->json()]);
 
             // Log::warning($res);
             // if ($res['status'] == 400) {
