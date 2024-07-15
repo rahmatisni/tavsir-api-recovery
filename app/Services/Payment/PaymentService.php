@@ -230,6 +230,7 @@ class PaymentService
             order_type: $trans_order->order_type
         );
 
+        log::info(['Nih Yo', $res]);
         if (($res['status'] ?? null) == 'success') {
             $trans_order->payment()->create([
                 'data' => $res['responseData'],
