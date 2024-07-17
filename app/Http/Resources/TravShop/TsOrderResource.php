@@ -224,12 +224,7 @@ class TsOrderResource extends JsonResource
                 $log_kios_bank['data']['KETERANGAN'] = 'TRANSAKI SUSPECT,MOHON HUBUNGI CUSTOMER SERVICE'; 
             }
         }
-        else {
-            unset($product_kios['harga']);
-            unset($product_kios['logo_url']);
-
-        }
-
+        
         return [
             "id" => $this->id,
             'can_repeate' => $can_repete ?? false,
