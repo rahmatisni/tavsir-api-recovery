@@ -226,6 +226,8 @@ class TsOrderResource extends JsonResource
         }
         else {
             unset($product_kios['harga']);
+            unset($product_kios['logo_url']);
+
         }
 
         return [
