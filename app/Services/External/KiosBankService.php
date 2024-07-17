@@ -711,7 +711,9 @@ class KiosBankService
                 $res_json['description'] = 'INQUIRY';
                 $order->save();
                 $order->log_kiosbank()->updateOrCreate(['trans_order_id' => $order->id], [
-                    'data' => $res_json
+                    'data' => $res_json,
+                    'inquiry' => $res_json
+
                 ]);
 
                 //minta tambah updateOrCreate ke column inquiry
