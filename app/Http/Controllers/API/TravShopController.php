@@ -1759,7 +1759,9 @@ class TravShopController extends Controller
                     //return token listrik
                     $data->status = TransOrder::DONE;
                     $log_kios = $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-                        'data' => $result_jatelindo
+                        'data' => $result_jatelindo,
+                        'payment' => $result_jatelindo
+
                     ]);
                     $data->save();
                     DB::commit();
@@ -1924,7 +1926,9 @@ class TravShopController extends Controller
 
                                 $data->save();
                                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-                                    'data' => $res_json
+                                    'data' => $res_json,
+                                    'payment' => $res_json
+
                                 ]);
                             } else {
                                 $data->harga_kios = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'] ?? $data->harga_kios;
@@ -2019,7 +2023,8 @@ class TravShopController extends Controller
                     }
 
                     $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-                        'data' => $kios
+                        'data' => $kios,
+                        'payment' => $kios
                     ]);
                     $data->save();
                     DB::commit();
@@ -2480,7 +2485,8 @@ class TravShopController extends Controller
 
                                 $data->save();
                                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-                                    'data' => $res_json
+                                    'data' => $res_json,
+                                    'inquiry' => $res_json
                                 ]);
                             } else {
                                 $data->harga_kios = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'] ?? $data->harga_kios;
@@ -2497,7 +2503,9 @@ class TravShopController extends Controller
                                 $data->save();
                                 Log::info($data);
                                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-                                    'data' => $res_json
+                                    'data' => $res_json,
+                                    'payment' => $res_json
+                                    
                                 ]);
                             }
 
@@ -2575,7 +2583,8 @@ class TravShopController extends Controller
                     }
 
                     $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-                        'data' => $kios
+                        'data' => $kios,
+                        'payment' => $kios
                     ]);
                     $data->save();
                     DB::commit();
@@ -2998,7 +3007,8 @@ class TravShopController extends Controller
 
                                 $data->save();
                                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-                                    'data' => $res_json
+                                    'data' => $res_json,
+                                    'payment' => $res_json
                                 ]);
                             } else {
                                 $data->harga_kios = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'] ?? $data->harga_kios;
@@ -3015,7 +3025,8 @@ class TravShopController extends Controller
                                 $data->save();
                                 Log::info($data);
                                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-                                    'data' => $res_json
+                                    'data' => $res_json,
+                                    'payment' => $res_json
                                 ]);
                             }
 
@@ -3093,7 +3104,9 @@ class TravShopController extends Controller
                     }
 
                     $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-                        'data' => $kios
+                        'data' => $kios,
+                        'payment' => $kios
+
                     ]);
                     $data->save();
                     DB::commit();
