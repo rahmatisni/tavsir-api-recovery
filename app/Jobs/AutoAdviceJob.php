@@ -54,6 +54,16 @@ class AutoAdviceJob implements ShouldQueue
             $result_jatelindo = $res_jatelindo->json();
             $rc = $result_jatelindo['bit39'] ?? '';
             Log::info('Auto Advice rc = '.$rc);
+
+            if($rc == '47' || $rc == '90'){
+                Log::info('Dispatch RepeateJob reason rc '.$rc);
+                $trans_order->log_kiosbank()->update(['data' => $result_jatelindo, 'payment' => $result_jatelindo]);
+                // RepeateJob::dispatch($this->data)->delay(now()->addSecond(35));
+                $trans_order->status = TransOrder::REFUND;
+                $trans_order->save();
+            }
+
+
             if($rc == '18' || $rc == '13' || $rc == '96'){
                 Log::info('Dispatch RepeateJob reason rc '.$rc);
                 $trans_order->log_kiosbank()->update(['data' => $result_jatelindo, 'payment' => $result_jatelindo]);
