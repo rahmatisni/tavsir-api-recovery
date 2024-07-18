@@ -110,6 +110,7 @@ class PaymentService
 
     public function statusOrder(TransOrder $data, $additonal_data = [])
     {
+        dd(1);
         $result = $this->cekStatus($data, $additonal_data);
 
         if($result->status != true){

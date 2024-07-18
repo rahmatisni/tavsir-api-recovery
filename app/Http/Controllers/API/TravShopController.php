@@ -1859,7 +1859,6 @@ class TravShopController extends Controller
     {
         $data = TransOrder::with('payment_method')->findOrfail($id);
 
-        dd(2);
         try {
             DB::beginTransaction();
             if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::DONE || $data->status == TransOrder::READY) {
