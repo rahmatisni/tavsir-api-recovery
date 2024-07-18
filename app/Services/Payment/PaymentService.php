@@ -124,11 +124,19 @@ class PaymentService
         }
         if ($data->order_type === TransOrder::ORDER_DEREK_ONLINE) {
             $data->save();
-
+            DB::commit();
             $travoy = $this->travoyService->detailDerek($data->id, ($additonal_data['id_user'] ?? null), ($additonal_data['token'] ?? null));
             $result->data['travoy'] = $travoy ?? '';
             return $result;
         }
+        if ($data->order_type == TransOrder::ORDER_HU) {
+            $data->save();
+            DB::commit();
+            $travoy = $this->travoyService->detailHU($data->id);
+            $result->data['travoy'] = $travoy ?? '';
+            return $result;
+        }
+
         if ($data->order_type == TransOrder::POS) {
             $data->status = TransOrder::DONE;
         }
