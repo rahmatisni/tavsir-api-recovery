@@ -129,10 +129,11 @@ class PaymentService
             $result->data['travoy'] = $travoy ?? '';
             return $result;
         }
-        if ($data->order_type == TransOrder::ORDER_HU) {
+        if ($data->order_type === TransOrder::ORDER_HU) {
             $data->save();
             DB::commit();
             $travoy = $this->travoyService->detailHU($data->id);
+            dd($travoy);
             $result->data['travoy'] = $travoy ?? '';
             return $result;
         }
