@@ -592,18 +592,19 @@ class TravShopController extends Controller
         try {
             DB::beginTransaction();
             $data = new TransOrder;
-            // $tenant = Tenant::find($request->tenant_id);
+            $tenant = Tenant::find($request->tenant_id);
             // dd($tenant);
             $data->order_type = TransOrder::ORDER_HU;
+            $data->order_id = $request->order_id;
             // $data->order_id = ($tenant->rest_area_id ?? '0') . '-' . ($tenant->id ?? '0') . '-DO-' . date('YmdHis');
             $data->order_id = $request->order_id;
-            // $data->rest_area_id = $tenant->rest_area_id;
+            $data->rest_area_id = $tenant?->rest_area_id ?? 0;
             $data->tenant_id = $request->tenant_id;
-            // $data->business_id = $tenant->business_id;
+            $data->business_id = $tenant?->business_id ?? 0;
             $data->customer_id = $request->customer_id;
             $data->customer_name = $request->customer_name;
             $data->customer_phone = $request->customer_phone;
-            // $data->merchant_id = $tenant->merchant_id;
+            $data->merchant_id = $tenant?->merchant_id ?? 0;
             $data->sub_merchant_id = '13';
             $data->sub_total = $request->sub_total;
 
@@ -998,13 +999,13 @@ class TravShopController extends Controller
                 $tavsir = [];
 
             }
-            else if ($param_removes == null && $trans_order->order_type == 'HU_ORDER') {
-                $self_order = [];
-                $travshop = [5, 6, 7, 8, 9, 11, 12, 13];
-                // $travshop = [5, 6, 7, 8, 9];
-                $tavsir = [];
+            // else if ($param_removes == null && $trans_order->order_type == 'HU_ORDER') {
+            //     $self_order = [];
+            //     $travshop = [5, 6, 7, 8, 9, 11, 12, 13];
+            //     // $travshop = [5, 6, 7, 8, 9];
+            //     $tavsir = [];
 
-            } 
+            // } 
             else {
                 $intersect = json_decode($param_removes->list_payment);
                 if ($param_removes->list_payment == null) {

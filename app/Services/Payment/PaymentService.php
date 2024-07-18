@@ -135,10 +135,7 @@ class PaymentService
                 $travoy = $this->travoyService->detailHU($data->id);
                 $result->data['travoy'] = $travoy ?? '';
                 return $result;
-    
                 // return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
-
-            
         }
         if ($data->order_type == TransOrder::POS) {
             $data->status = TransOrder::DONE;
