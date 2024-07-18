@@ -592,64 +592,64 @@ class TravShopController extends Controller
         try {
             DB::beginTransaction();
             $data = new TransOrder;
-            $tenant = Tenant::find($request->tenant_id);
+            // $tenant = Tenant::find($request->tenant_id);
             // dd($tenant);
             $data->order_type = TransOrder::ORDER_HU;
             // $data->order_id = ($tenant->rest_area_id ?? '0') . '-' . ($tenant->id ?? '0') . '-DO-' . date('YmdHis');
             $data->order_id = $request->order_id;
-            $data->rest_area_id = $tenant->rest_area_id;
+            // $data->rest_area_id = $tenant->rest_area_id;
             $data->tenant_id = $request->tenant_id;
-            $data->business_id = $tenant->business_id;
+            // $data->business_id = $tenant->business_id;
             $data->customer_id = $request->customer_id;
             $data->customer_name = $request->customer_name;
             $data->customer_phone = $request->customer_phone;
-            $data->merchant_id = $tenant->merchant_id;
-            $data->sub_merchant_id = $tenant->sub_merchant_id;
+            // $data->merchant_id = $tenant->merchant_id;
+            $data->sub_merchant_id = '13';
             $data->sub_total = $request->sub_total;
 
             $data->save();
 
             $sub_total = $request->sub_total;
 
-            $extra_price = ExtraPrice::byTenant($data->tenant_id)->aktif()->get();
-            foreach ($extra_price as $value) {
-                $addon = new AddonPrice();
-                $addon->trans_order_id = $data->id;
-                $addon->name = $value->name;
-                $addon->price = $value->price;
-                if ($value->is_percent == 1) {
-                    $addon->price = ($sub_total * $value->price) / 100;
-                }
+            // $extra_price = ExtraPrice::byTenant($data->tenant_id)->aktif()->get();
+            // foreach ($extra_price as $value) {
+            //     $addon = new AddonPrice();
+            //     $addon->trans_order_id = $data->id;
+            //     $addon->name = $value->name;
+            //     $addon->price = $value->price;
+            //     if ($value->is_percent == 1) {
+            //         $addon->price = ($sub_total * $value->price) / 100;
+            //     }
 
-                $addon->save();
-                $data->addon_total += $addon->price;
-            }
+            //     $addon->save();
+            //     $data->addon_total += $addon->price;
+            // }
 
             $data->fee = env('PLATFORM_FEE');
             $data->sub_total = $sub_total;
             $data->total = $data->sub_total + $data->fee + $data->service_fee + $data->addon_total;
             $data->status = TransOrder::WAITING_PAYMENT;
-
-            $now = Carbon::now()->format('Y-m-d H:i:s');
-            $sharing = Sharing::where('tenant_id', $request->tenant_id)->whereIn('status', ['sedang_berjalan', 'belum_berjalan'])
-                ->where('waktu_mulai', '<=', $now)
-                ->where('waktu_selesai', '>=', $now)->first();
-            if ($sharing?->sharing_config) {
-                $nilai_sharing = json_decode($sharing->sharing_config);
-                foreach ($nilai_sharing as $value) {
-                    $harga = (int) ($data->sub_total) + (int) ($data->addon_total);
-                    $sharing_amount_unround = (($value / 100) * $harga);
-                    // $sharing_amount[] = ($value/100).'|'.$harga.'|'.$sharing_amount_unround;
-                    $sharing_amount[] = $sharing_amount_unround;
-                }
-                $data->sharing_code = $sharing->sharing_code ?? null;
-                $data->sharing_amount = $sharing_amount ?? null;
-                $data->sharing_proportion = $sharing->sharing_config ?? null;
-            } else {
-                $data->sharing_code = [(string) $data->tenant_id];
-                $data->sharing_proportion = [100];
-                $data->sharing_amount = [$data->sub_total + (int) ($data->addon_total)];
-            }
+// 
+            // $now = Carbon::now()->format('Y-m-d H:i:s');
+            // $sharing = Sharing::where('tenant_id', $request->tenant_id)->whereIn('status', ['sedang_berjalan', 'belum_berjalan'])
+            //     ->where('waktu_mulai', '<=', $now)
+            //     ->where('waktu_selesai', '>=', $now)->first();
+            // if ($sharing?->sharing_config) {
+            //     $nilai_sharing = json_decode($sharing->sharing_config);
+            //     foreach ($nilai_sharing as $value) {
+            //         $harga = (int) ($data->sub_total) + (int) ($data->addon_total);
+            //         $sharing_amount_unround = (($value / 100) * $harga);
+            //         // $sharing_amount[] = ($value/100).'|'.$harga.'|'.$sharing_amount_unround;
+            //         $sharing_amount[] = $sharing_amount_unround;
+            //     }
+            //     $data->sharing_code = $sharing->sharing_code ?? null;
+            //     $data->sharing_amount = $sharing_amount ?? null;
+            //     $data->sharing_proportion = $sharing->sharing_config ?? null;
+            // } else {
+            //     $data->sharing_code = [(string) $data->tenant_id];
+            //     $data->sharing_proportion = [100];
+            //     $data->sharing_amount = [$data->sub_total + (int) ($data->addon_total)];
+            // }
 
             $data->save();
 
