@@ -997,7 +997,15 @@ class TravShopController extends Controller
                 // $travshop = [5, 6, 7, 8, 9];
                 $tavsir = [];
 
-            } else {
+            }
+            else if ($param_removes == null && $trans_order->order_type == 'HU_ORDER') {
+                $self_order = [];
+                $travshop = [5, 6, 7, 8, 9, 11, 12, 13];
+                // $travshop = [5, 6, 7, 8, 9];
+                $tavsir = [];
+
+            } 
+            else {
                 $intersect = json_decode($param_removes->list_payment);
                 if ($param_removes->list_payment == null) {
                     $self_order = [];
