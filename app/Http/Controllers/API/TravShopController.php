@@ -1858,7 +1858,6 @@ class TravShopController extends Controller
     public function statusPayment(Request $request, $id)
     {
         $data = TransOrder::with('payment_method')->findOrfail($id);
-        dd($data->status);
 
         try {
             DB::beginTransaction();
@@ -2046,6 +2045,7 @@ class TravShopController extends Controller
                 }
                 if ($data->order_type == TransOrder::ORDER_HU) {
                     $travoy = $this->travoyService->detailHU($id);
+                    dd($travoy);
                     return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
 
                 }
