@@ -1858,6 +1858,7 @@ class TravShopController extends Controller
     public function statusPayment(Request $request, $id)
     {
         $data = TransOrder::with('payment_method')->findOrfail($id);
+        dd($data->status);
 
         try {
             DB::beginTransaction();
@@ -2068,7 +2069,6 @@ class TravShopController extends Controller
             if (!$data->payment) {
                 return response()->json(['status' => $data->status, 'responseData' => null]);
             }
-            dd(2);
 
             $payment_result = $this->servicePayment->statusOrder($data, $request->all());
             if ($payment_result->status != true) {
