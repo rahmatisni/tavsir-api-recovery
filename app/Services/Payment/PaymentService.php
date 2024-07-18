@@ -110,13 +110,11 @@ class PaymentService
 
     public function statusOrder(TransOrder $data, $additonal_data = [])
     {
-        dd($data);
         $result = $this->cekStatus($data, $additonal_data);
 
         if($result->status != true){
             return $result;
         }
-        dd($result);
 
         $data->status = TransOrder::PAYMENT_SUCCESS;
         if ($data->order_type === TransOrder::ORDER_TRAVOY) {
