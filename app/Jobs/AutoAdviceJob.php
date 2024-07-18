@@ -59,7 +59,7 @@ class AutoAdviceJob implements ShouldQueue
                 Log::info('Dispatch RepeateJob reason rc '.$rc);
                 $trans_order->log_kiosbank()->update(['data' => $result_jatelindo, 'payment' => $result_jatelindo]);
                 // RepeateJob::dispatch($this->data)->delay(now()->addSecond(35));
-                $trans_order->status = TransOrder::REFUND;
+                $trans_order->status = TransOrder::READY;
                 $trans_order->save();
             }
 
