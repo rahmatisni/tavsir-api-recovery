@@ -1004,6 +1004,7 @@ class TravShopController extends Controller
                 $travshop = [5, 6, 7, 8, 9, 11, 12, 13];
                 // $travshop = [5, 6, 7, 8, 9];
                 $tavsir = [];
+
             } 
             else {
                 $intersect = json_decode($param_removes->list_payment);
@@ -2068,7 +2069,6 @@ class TravShopController extends Controller
                 return response()->json(['status' => $data->status, 'responseData' => null]);
             }
 
-            dd(1);
             $payment_result = $this->servicePayment->statusOrder($data, $request->all());
             if ($payment_result->status != true) {
                 return response()->json([
