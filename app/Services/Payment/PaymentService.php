@@ -111,7 +111,7 @@ class PaymentService
     public function statusOrder(TransOrder $data, $additonal_data = [])
     {
         $result = $this->cekStatus($data, $additonal_data);
-        dd($result);
+
         if($result->status != true){
             return $result;
         }
@@ -135,7 +135,10 @@ class PaymentService
                 $travoy = $this->travoyService->detailHU($data->id);
                 $result->data['travoy'] = $travoy ?? '';
                 return $result;
+    
                 // return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
+
+            
         }
         if ($data->order_type == TransOrder::POS) {
             $data->status = TransOrder::DONE;
