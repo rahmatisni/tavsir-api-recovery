@@ -311,9 +311,9 @@ Route::prefix('travshop')->group(function () {
     Route::post('/repeate-manual/{id}', [App\Http\Controllers\API\TravShopController::class, 'repeateManual']);
 });
 
-Route::middleware('customRateLimit:key,1,50')->group(function () {
+// Route::middleware('customRateLimit:key,1,50')->group(function () {
     Route::get('/travshop/payment-status/{id}', [App\Http\Controllers\API\TravShopController::class, 'statusPayment']);
-});
+// });
 
 // Route::middleware('customRateLimit:key,10,60')->group(function () {
     Route::post('/reset-password', [App\Http\Controllers\API\UserController::class, 'resetPass']);
