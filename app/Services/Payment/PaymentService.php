@@ -112,7 +112,6 @@ class PaymentService
     {
         $result = $this->cekStatus($data, $additonal_data);
 
-        dd($result);
         if($result->status != true){
             return $result;
         }
@@ -129,6 +128,17 @@ class PaymentService
             $travoy = $this->travoyService->detailDerek($data->id, ($additonal_data['id_user'] ?? null), ($additonal_data['token'] ?? null));
             $result->data['travoy'] = $travoy ?? '';
             return $result;
+        }
+        if ($data->order_type == TransOrder::ORDER_HU) {
+                $data->save();
+                DB::commit();
+                $travoy = $this->travoyService->detailHU($data->id);
+                $result->data['travoy'] = $travoy ?? '';
+                return $result;
+    
+                // return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
+
+            
         }
         if ($data->order_type == TransOrder::POS) {
             $data->status = TransOrder::DONE;
