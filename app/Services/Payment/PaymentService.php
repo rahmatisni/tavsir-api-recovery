@@ -115,6 +115,7 @@ class PaymentService
         if($result->status != true){
             return $result;
         }
+        dd($result);
 
         $data->status = TransOrder::PAYMENT_SUCCESS;
         if ($data->order_type === TransOrder::ORDER_TRAVOY) {
