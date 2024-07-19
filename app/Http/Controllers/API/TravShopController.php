@@ -2045,7 +2045,6 @@ class TravShopController extends Controller
                 }
                 if ($data->order_type == TransOrder::ORDER_HU) {
                     $travoy = $this->travoyService->detailHU($id);
-                    dd($travoy);
                     return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
 
                 }
