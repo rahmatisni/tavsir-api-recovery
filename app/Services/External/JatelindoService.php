@@ -288,6 +288,7 @@ class JatelindoService
         $keterangan = '';
         $message = '';
         $bit39 = $response['bit39'] ?? '';
+        $bit48 = $response['bit48'] ?? '';
         switch ($bit39) {
             case '00':
                 $keterangan = 'Approved';
@@ -366,6 +367,11 @@ class JatelindoService
                     HUBUNGI PLN';
                 break;
 
+            case '66':
+                    $keterangan = $bit48;
+                    $message = $bit48;
+                    break;
+    
             case '73':
                 $keterangan = 'Kode produk belum terdaftar di TID, silahkan hubungi tim Jatelindo';
                 $message = 'TRANSAKSI GAGAL';
