@@ -472,7 +472,7 @@ class JatelindoService
                 'Total_Token_Unsold' => $total_token_unsold,
                 'Token_Unsold_1' => number_format((int) $harga_token_unsold_1, 0, ',', '.'),
                 'Token_Unsold_2' => number_format((int) $harga_token_unsold_2, 0, ',', '.'),
-                'Admin_Bank' =>  $biaya_admin == 0 ? 0 : 'Rp. ' . number_format((float) substr($biaya_admin, 0, -$digit_admin), 0, ',', '.'),
+                'Admin_Bank' => $biaya_admin === 0 ? 0 : 'Rp. ' . number_format((float) $biaya_admin, 0, ',', '.'),
 
             ];
         }
@@ -493,7 +493,7 @@ class JatelindoService
             // 'JML_KWH' => number_format((float)$biaya_kwh / 100, $digit_kwh, ',', '.'),
             'JML_KWH' => number_format((float)$biaya_kwh / 100, 1, ',', '.'),
             'STROOM/TOKEN' => wordwrap($token, 4, ' ', true),
-            'Admin_Bank' =>  $biaya_admin == 0 ? 0 : 'Rp. ' . number_format((float) substr($biaya_admin, 0, -$digit_admin), 0, ',', '.'),
+            'Admin_Bank' => $biaya_admin === 0 ? 0 : 'Rp. ' . number_format((float) $biaya_admin, 0, ',', '.'),
             'Informasi' => $bit_62,
             'KETERANGAN' => self::responseTranslation(($log->payment ?? $log->inquiry))?->message
 
