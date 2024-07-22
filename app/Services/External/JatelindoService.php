@@ -439,7 +439,8 @@ class JatelindoService
         $daya = substr($bit_48, 132, 9);
         $pilihan_pembelian = substr($bit_48, 141, 1); //Generat token baru atau token unsold
         $digit_admin = empty(substr($bit_48, 142, 1)) ? 0 : substr($bit_48, 142, 1); //Digit belakang koma
-        $biaya_admin = substr($bit_48, 143, 10); //Biaya Admin
+        // $biaya_admin = substr($bit_48, 143, 10); //Biaya Admin
+        $biaya_admin = 100;
         $digit_materai = empty(substr($bit_48, 153, 1)) ? 0 : substr($bit_48, 153, 1); //Digit belakang koma
         $biaya_materai = substr($bit_48, 154, 10); //Biaya Materai
         $digit_ppn = empty(substr($bit_48, 164, 1)) ? 0 : substr($bit_48, 164, 1); //Digit belakang koma
