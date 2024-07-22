@@ -418,6 +418,7 @@ class JatelindoService
         $bit_61 = $log->payment['bit61'] ?? ($log->inquiry['bit61']) ?? ($log->payment['bit62'] ?? ($log->inquiry['bit62']) ?? '');
         $bit_62 = $log->payment['bit62'] ?? ($log->inquiry['bit62']) ?? '';
         $bit_39 = $log->payment['bit39'] ?? '';
+        $ADMIN_BANK =  $log->payment['ADMIN_BANK'] ?? ($log->inquiry['ADMIN_BANK']) ?? 0;
 
         $kode_distirbusi = substr($bit_61, 0, 2);
         $unit_service = substr($bit_61, 2, 5);
@@ -440,7 +441,7 @@ class JatelindoService
         $pilihan_pembelian = substr($bit_48, 141, 1); //Generat token baru atau token unsold
         $digit_admin = empty(substr($bit_48, 142, 1)) ? 0 : substr($bit_48, 142, 1); //Digit belakang koma
         // $biaya_admin = substr($bit_48, 143, 10); //Biaya Admin
-        $biaya_admin = 100;
+        $biaya_admin = $ADMIN_BANK;
         $digit_materai = empty(substr($bit_48, 153, 1)) ? 0 : substr($bit_48, 153, 1); //Digit belakang koma
         $biaya_materai = substr($bit_48, 154, 10); //Biaya Materai
         $digit_ppn = empty(substr($bit_48, 164, 1)) ? 0 : substr($bit_48, 164, 1); //Digit belakang koma
@@ -471,6 +472,8 @@ class JatelindoService
                 'Total_Token_Unsold' => $total_token_unsold,
                 'Token_Unsold_1' => number_format((int) $harga_token_unsold_1, 0, ',', '.'),
                 'Token_Unsold_2' => number_format((int) $harga_token_unsold_2, 0, ',', '.'),
+                'ADMIN_BANK' => $biaya_admin == 0 ? 0 : 'Rp. ' . number_format((float) substr($biaya_admin, 0, -$digit_admin), 0, ',', '.'),
+
             ];
         }
 
@@ -490,6 +493,7 @@ class JatelindoService
             // 'JML_KWH' => number_format((float)$biaya_kwh / 100, $digit_kwh, ',', '.'),
             'JML_KWH' => number_format((float)$biaya_kwh / 100, 1, ',', '.'),
             'STROOM/TOKEN' => wordwrap($token, 4, ' ', true),
+            // 'ADMIN_BANK' => $biaya_admin == 0 ? 0 : 'Rp. ' . number_format((float) substr($biaya_admin, 0, -$digit_admin), 0, ',', '.'),
             'ADMIN_BANK' => $biaya_admin == 0 ? 0 : 'Rp. ' . number_format((float) substr($biaya_admin, 0, -$digit_admin), 0, ',', '.'),
             'Informasi' => $bit_62,
             'KETERANGAN' => self::responseTranslation(($log->payment ?? $log->inquiry))?->message
