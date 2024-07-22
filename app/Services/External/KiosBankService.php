@@ -541,7 +541,7 @@ class KiosBankService
                 Log::info('bit 48 '.$res_jatelindo['bit48']);
                 $res_jatelindo['bit48'] = $res_jatelindo['bit48'].$pilihan_token;
                 Log::info('bit 48 add pilihan '.$res_jatelindo['bit48']);
-                $res_jatelindo['ADMIN_BANK'] = 100; 
+                $res_jatelindo['ADMIN_BANK'] = env('JATELINDO_FEE') ?? 0; 
                 $order->sub_total = $product->harga + $res_jatelindo['ADMIN_BANK'];
                 $order->total = $order->sub_total + $order->fee;
                 $order->save();
