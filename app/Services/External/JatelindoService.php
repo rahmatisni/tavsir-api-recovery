@@ -137,6 +137,9 @@ class JatelindoService
         if (isset($payload['repeate_count'])) {
             unset($payload['repeate_count']);
         }
+        if (isset($payload['ADMIN_BANK'])) {
+            unset($payload['ADMIN_BANK']);
+        }
         $payload["mti"] = "0200";
         $payload["bit3"] = self::purchase;
         //fake respone
