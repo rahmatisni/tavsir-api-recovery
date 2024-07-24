@@ -807,7 +807,6 @@ class PaymentService
             $tagihan = $datalog['data']['tagihan'] ?? $datalog['data']['harga_kios'];
             $admin = $datalog['data']['adminBank'] ?? $datalog['data']['AB'] ?? '000000000000';
             $total = $datalog['data']['total'] ?? $datalog['data']['harga_kios'] ?? $tagihan;
-            dd($tagihan, $admin, $total);
             $kios = $this->serviceKiosBank->dualPayment($data->sub_total, $data->order_id, $tagihan, $admin, $total);
             Log::info(['bayar depan => ', $kios]);
         }
