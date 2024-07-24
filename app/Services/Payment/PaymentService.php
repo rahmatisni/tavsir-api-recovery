@@ -115,12 +115,11 @@ class PaymentService
             return $result;
         }
         $data->status = TransOrder::PAYMENT_SUCCESS;
-        dd($result);
         $data->payment()->updateOrCreate([
             'trans_order_id' => $data->id
         ],[
-            'data' => $result['responseData'],
-            'payment' => $result['responseData']
+            'data' => $result->data['responseData'],
+            'payment' => $result->data['responseData']
         ]);
 
         
