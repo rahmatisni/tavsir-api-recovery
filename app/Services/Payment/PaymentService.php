@@ -589,7 +589,6 @@ class PaymentService
                 $res['responseData']['pay_status'] = 0;
             }
 
-            dd($res);
             $trans_order->payment()->updateOrCreate([
                 'trans_order_id' => $trans_order->id
             ],[
