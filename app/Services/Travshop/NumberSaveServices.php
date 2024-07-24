@@ -11,7 +11,9 @@ class NumberSaveServices
 {
     public function list($filter)
     {
-        return NumberSave::myWheres($filter)->get();
+        // return NumberSave::myWheres($filter)->get();
+        return NumberSave::where('customer_id', $filter)->get();
+
     }
 
     public function create(array $paylod)
