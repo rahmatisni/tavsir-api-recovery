@@ -732,7 +732,6 @@ class PaymentService
         }
         $data_log_kios = $data->log_kiosbank->inquiry ?? [];
         $datalog = $data_log_kios;
-        dd($datalog);
         if ($data->description == 'dual') {
             if ($data->productKiosbank()->integrator == 'JATELINDO') {
                 $is_purchase = $data_log_kios['is_purchase'] ?? false;
@@ -808,6 +807,7 @@ class PaymentService
             $tagihan = $datalog['inquiry']['data']['tagihan'] ?? $datalog['inquiry']['data']['harga_kios'];
             $admin = $datalog['inquiry']['data']['adminBank'] ?? $datalog['inquiry']['data']['AB'] ?? '000000000000';
             $total = $datalog['inquiry']['data']['total'] ?? $datalog['inquiry']['data']['harga_kios'] ?? $tagihan;
+            dd($tagihan, $admin, $total);
             $kios = $this->serviceKiosBank->dualPayment($data->sub_total, $data->order_id, $tagihan, $admin, $total);
             Log::info(['bayar depan => ', $kios]);
         }
