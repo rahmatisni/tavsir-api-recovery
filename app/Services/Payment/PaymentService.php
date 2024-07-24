@@ -594,7 +594,7 @@ class PaymentService
             ],[
                 'data' => $res['responseData'],
             ],[
-                'payment' => $res['responseData'],
+                'payment' => $res['responseData']
             ]);
         }
 
