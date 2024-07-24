@@ -114,8 +114,16 @@ class PaymentService
         if($result->status != true){
             return $result;
         }
-        dd($result);
         $data->status = TransOrder::PAYMENT_SUCCESS;
+        
+        $data->payment()->updateOrCreate([
+            'trans_order_id' => $data->id
+        ],[
+            'data' => $result->responseData,
+            'payment' => $result->responseData
+        ]);
+
+        
         if ($data->order_type === TransOrder::ORDER_TRAVOY) {
             $data->save();
             Db::commit();
