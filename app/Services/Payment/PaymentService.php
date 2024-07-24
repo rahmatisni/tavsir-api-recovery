@@ -593,6 +593,7 @@ class PaymentService
                 'trans_order_id' => $trans_order->id
             ],[
                 'data' => $res['responseData'],
+            ],[
                 'payment' => $res['responseData'],
             ]);
         }
