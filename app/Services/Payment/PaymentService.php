@@ -114,7 +114,7 @@ class PaymentService
         if($result->status != true){
             return $result;
         }
-
+        dd($result);
         $data->status = TransOrder::PAYMENT_SUCCESS;
         if ($data->order_type === TransOrder::ORDER_TRAVOY) {
             $data->save();
@@ -583,19 +583,17 @@ class PaymentService
 
         if(($res['status'] ?? null) == 'success'){
             $status = ($res['responseData']['pay_status'] ?? 0) == 1 ? true : false;
-            if($status == true){
+            if ($status == true) {
                 $res['responseData']['pay_status'] = 1;
-            }else{
+            } else {
                 $res['responseData']['pay_status'] = 0;
             }
-            $updateResult = $trans_order->payment()->updateOrCreate([
+            $trans_order->payment()->updateOrCreate([
                 'trans_order_id' => $trans_order->id
-            ],[
+            ], [
                 'data' => $res['responseData'],
                 'payment' => $res['responseData']
             ]);
-            $updateResult->save();
-            DB::commit();
         }
 
         return $this->responsePayment($status, $res);
