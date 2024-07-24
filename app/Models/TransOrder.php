@@ -5,11 +5,12 @@ namespace App\Models;
 use App\Models\BaseModel;
 use App\Models\KiosBank\ProductKiosBank;
 use App\Models\Traits\Uuid;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\SoftDeletes;
 class TransOrder extends BaseModel
 {
-    use Uuid, SoftDeletes;
+    use Uuid, SoftDeletes, HasFactory;
     
     protected $table = 'trans_order';
     public const CART = 'CART';
@@ -34,6 +35,7 @@ class TransOrder extends BaseModel
     public const ORDER_TRAVOY = 'ORDER_TRAVOY';
 
     public const ORDER_DEREK_ONLINE = 'DEREK_ORDER';
+    public const ORDER_HU = 'HU_ORDER';
 
 
     public const DINE_IN = 'dine_in';
@@ -65,8 +67,14 @@ class TransOrder extends BaseModel
         'sharing_code',
         'sharing_amount',
         'sharing_proportion',
-        'invoice_id'
+        'invoice_id',
+        'status'
     ];
+
+    public function invoice_derek()
+    {
+        return $this->hasOne(TransInvoiceDerek::class, 'id', 'invoice_id');
+    }
 
     public function trans_order_arsip()
     {
@@ -83,9 +91,19 @@ class TransOrder extends BaseModel
         return $this->hasMany(TransOrderDetil::class, 'trans_order_id');
     }
 
+    public function detilDerek()
+    {
+        return $this->hasOne(TransDerek::class, 'transaction_id_derek')->whereNotNull('transaction_id_derek');
+    }
+
     public function product()
     {
         return $this->hasManyThrough(Product::class, TransOrderDetil::class);
+    }
+
+    public function Compare()
+    {
+        return $this->hasOne(CompareReport::class, 'trans_order_id', 'id');
     }
 
     public function rest_area()
@@ -240,5 +258,10 @@ class TransOrder extends BaseModel
             return $this->sub_total - $this->harga_kios;   
         }
         return 0;
+    }
+
+    public function log_jatelindo()
+    {
+        return $this->hasMany(LogJatelindo::class, 'trans_order_id');
     }
 }

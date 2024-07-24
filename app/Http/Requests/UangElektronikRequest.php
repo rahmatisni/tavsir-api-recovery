@@ -31,22 +31,23 @@ class UangElektronikRequest extends FormRequest
             'customer_phone' => 'required',
             'phone' => [
                 'required',
-                function($a, $v, $f){
-                    if($v){
-                        $barier = TransOrder::where('order_id','LIKE','%'.$v.'%')
-                        ->where('created_at', '>=', Carbon::today())
-                        ->where('description','dual')
-                        ->whereIn('status', array('DONE','READY', 'PAYMENT_SUCCESS'))
-                        ->count();
-                        if ($barier >= 3) {
-                            $f("Maximum transaksi $v 3x");
-                        }
-                    }
-                }
+                // beariri 3 x
+                // function($a, $v, $f){
+                //     if($v){
+                //         $barier = TransOrder::where('order_id','LIKE','%'.$v.'%')
+                //         ->where('created_at', '>=', Carbon::today())
+                //         ->where('description','dual')
+                //         ->whereIn('status', array('DONE','READY', 'PAYMENT_SUCCESS'))
+                //         ->count();
+                //         if ($barier >= 3) {
+                //             $f("Maximum transaksi $v 3x");
+                //         }
+                //     }
+                // }
             ],
             'code' => 'required',
-            'flag' => 'nullable',
             'pilihan_token' => 'nullable',
+            'result_pln' => 'nullable|array',
         ];
     }
 }

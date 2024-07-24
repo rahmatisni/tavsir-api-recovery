@@ -24,6 +24,7 @@ class ListInvoiceResourceDerek extends JsonResource
             'kwitansi_id' => $this->kwitansi_id,
             'nominal' => $this->nominal,
             'terbilang '=> '',
+            'selisih' => $this->selisih,
             'claim_date' => $this->claim_date,
             'claimed_by' => $this->cashier?->name, 
             'paid_date' => $this->paid_date,

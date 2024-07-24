@@ -47,6 +47,21 @@ class CreateRefTenant extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+
+        Schema::create('ref_tenant_la', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('tenant_id')->unsigned()->nullable();
+            $table->integer('kategori')->unsigned()->nullable();
+            $table->string('partner_mid')->nullable();
+            $table->string('merchant_id')->nullable();
+            $table->string('merchant_pan')->nullable();
+            $table->string('merchant_name')->nullable();
+            $table->string('merchant_criteria')->nullable();
+            $table->string('postal_code')->nullable();
+            $table->string('city')->nullable();
+            $table->softDeletes();
+
+        });
     }
 
     /**
@@ -56,6 +71,7 @@ class CreateRefTenant extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('ref_tenant_la');
         Schema::dropIfExists('ref_tenant');
     }
 }

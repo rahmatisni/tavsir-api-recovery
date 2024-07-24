@@ -26,7 +26,8 @@ class ReportGetoll extends BaseModel
         'Nomor_Rekon',
         'Tanggal_Rekon',
         'Remark_Disbursement',
-        'Remark_Transaksi'
+        'Remark_Transaksi',
+        'Status_Report'
     ];
 
     // public function voucher_detail()

@@ -18,6 +18,12 @@ class TravoyService
 
     public const detilDerek = '/status_payment';
 
+    public const detilHU = '/subsciption/payment-status';
+    public const detilHUPlan = '/subsciption/Callback';
+
+    public const detilPaymentHU = '/subsciption/updatestatusva';
+
+
 
     function __construct()
     {
@@ -25,11 +31,10 @@ class TravoyService
     }
     function http($method, $path, $payload = [])
     {
-
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => $this->baseUrl . self::detilDerek,
+            CURLOPT_URL => $this->baseUrl . $path,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -65,6 +70,49 @@ class TravoyService
         $res_json = $this->http('POST', self::detilDerek, $payLoad);
 
 
+        return $res_json;
+
+    }
+    
+    public function detailHU($id)
+    {
+
+        $payLoad = [
+            'trans_id' => $id
+            
+        ];
+        $res_json = $this->http('POST', self::detilHU, $payLoad);
+        log::info('callbackHU',$payLoad);
+        return $res_json;
+
+    }
+
+    public function detailHUPlan($id)
+    {
+
+        $payLoad = [
+            'trans_id' => $id
+            
+        ];
+        $res_json = $this->http('POST', self::detilHUPlan, $payLoad);
+        log::info('callbackHUDetail',$payLoad);
+        return $res_json;
+
+    }
+    public function PaymentRequesthu($id)
+    {
+
+        $payLoad = [
+            'trans_id' => $id
+            
+        ];
+
+        try {
+            $res_json = $this->http('POST', self::detilPaymentHU, $payLoad);
+        } catch (\Throwable $th) {
+            $res_json = [];
+        }
+        log::info('callbackHUDetail', [$payLoad, $res_json]);
         return $res_json;
 
     }

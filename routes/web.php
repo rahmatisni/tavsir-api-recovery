@@ -17,10 +17,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    // dd(JatelindoService::signIn());
-    // return view('welcome');
-	return response()->json(['error' => 'Udah kenapa ga usah nyoba terus. gue mau pulang!'], 404);
-
+    return response()->json(['error' => 'Udah kenapa ga usah nyoba terus. gue mau pulang!'], 404);
 });
 
 

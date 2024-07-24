@@ -200,7 +200,7 @@ Route::middleware('auth:api')->group(function () {
         Route::apiResource('customize', App\Http\Controllers\API\CustomizeController::class);
         Route::post('/order-change-status/{id}', [App\Http\Controllers\API\TavsirController::class, 'changeStatusOrder']);
         Route::get('/invoice', [App\Http\Controllers\API\InvoiceController::class, 'index']);
-        Route::get('/invoice-derek', [App\Http\Controllers\API\InvoiceController::class, 'indexDerek']);
+        Route::post('/invoice-list-derek', [App\Http\Controllers\API\InvoiceController::class, 'indexDerek']);
 
         Route::get('/invoice/{id}', [App\Http\Controllers\API\InvoiceController::class, 'show']);
         Route::post('/invoice', [App\Http\Controllers\API\InvoiceController::class, 'store']);
@@ -273,6 +273,9 @@ Route::prefix('travshop')->group(function () {
     Route::post('/order', [App\Http\Controllers\API\TravShopController::class, 'order']);
     Route::post('/self-order', [App\Http\Controllers\API\TravShopController::class, 'selfOrder']);
     Route::post('/derek-order', [App\Http\Controllers\API\TravShopController::class, 'derekOrder']);
+    Route::post('/hu-order', [App\Http\Controllers\API\TravShopController::class, 'huOrder']);
+
+    
 
     Route::get('/order/{id}', [App\Http\Controllers\API\TravShopController::class, 'orderById']);
     Route::get('/order-meja/{id}', [App\Http\Controllers\API\TravShopController::class, 'orderByMeja']);
@@ -305,11 +308,12 @@ Route::prefix('travshop')->group(function () {
     });
 
     Route::post('/info-pelanggan', [App\Http\Controllers\API\TravShopController::class, 'infoPln']);
+    Route::post('/repeate-manual/{id}', [App\Http\Controllers\API\TravShopController::class, 'repeateManual']);
 });
 
-Route::middleware('customRateLimit:key,1,10')->group(function () {
+// Route::middleware('customRateLimit:key,1,50')->group(function () {
     Route::get('/travshop/payment-status/{id}', [App\Http\Controllers\API\TravShopController::class, 'statusPayment']);
-});
+// });
 
 // Route::middleware('customRateLimit:key,10,60')->group(function () {
     Route::post('/reset-password', [App\Http\Controllers\API\UserController::class, 'resetPass']);
@@ -337,6 +341,8 @@ Route::post('payment-gateway/dd/inquiry', [App\Http\Controllers\API\PaymentGatew
 Route::post('payment-gateway/dd/payment', [App\Http\Controllers\API\PaymentGatewayController::class, 'ddPayment']);
 
 Route::post('/CallbackLinkAjaQRIS', [App\Http\Controllers\API\TavsirController::class, 'CallbackLinkAjaQRIS']);
+Route::post('/callbackDerek', [App\Http\Controllers\API\TravShopController::class, 'callbackDerek']);
+Route::post('/callbackPg', [App\Http\Controllers\API\TravShopController::class, 'callbackpg']);
 
 
 Route::get('/tokenpg', function (Request $request) {

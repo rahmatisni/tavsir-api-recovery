@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\RestArea;
 use App\Models\Voucher;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class VoucherSeeder extends Seeder
 {
@@ -18,6 +19,7 @@ class VoucherSeeder extends Seeder
         $restarea = RestArea::first();
 
         Voucher::create([
+            'voucher_uuid' => Str::uuid(),
             'nama_lengkap' => 'Admin',
             'username' => '1-08123456789',
             'password' => bcrypt('password'),

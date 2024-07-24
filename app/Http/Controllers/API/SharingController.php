@@ -121,7 +121,7 @@ class SharingController extends Controller
             foreach ($validator as $value) {
                
 
-                if ($value->waktu_selesai > $request->waktu_selesai) {
+                if ($value->waktu_selesai > $request->waktu_selesai && $value->status != 'sudah_berakhir') {
                     return response()->json(['status' => "error", 'message' => "Terdapat PKS yang masih berlaku"], 422);
                 }
                 if ($value->waktu_mulai < $request->waktu_mulai && $request->waktu_mulai > date((Carbon::now()->format('Y-m-d H:i:s')))) {

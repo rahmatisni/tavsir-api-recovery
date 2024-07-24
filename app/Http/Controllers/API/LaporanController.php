@@ -70,6 +70,7 @@ class LaporanController extends Controller
 
     public function listRekon(Request $request)
     {
+        
         $record = $this->services->listRekon($request);
 
         $data = [

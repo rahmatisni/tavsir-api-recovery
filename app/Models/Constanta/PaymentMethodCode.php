@@ -1,0 +1,17 @@
+<?php
+
+
+namespace App\Models\Constanta;
+
+class PaymentMethodCode
+{
+   const SNAP_VA = 'snap_va_';
+   const PG_VA = 'pg_va_';
+   const PG_VA_BRI = 'pg_va_bri';
+   const PG_DD = 'pg_dd_';
+   const PG_DD_BRI = 'pg_dd_bri';
+   const PG_DD_MANDIRI = 'pg_dd_mandiri';
+   const QR = 'qr';
+   const LINK = 'link';
+   const QRJTL = 'pg_qris';
+}

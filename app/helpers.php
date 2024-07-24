@@ -38,10 +38,11 @@ function  codefikasiNomor($phone)
             '0821' => 'TELKOMSEL',
             '0822' => 'TELKOMSEL',
             '0851' => 'TELKOMSEL',
-            '0816' => 'INDOSAT',
+            '0852' => 'TELKOMSEL',
+            '0857' => 'INDOSAT', 
+            '0856' => 'INDOSAT', 
             '0858' => 'INDOSAT',
-            '0857' => 'INDOSAT',
-            '0856' => 'INDOSAT',
+            '0816' => 'INDOSAT',
             '0895' => 'THREE',
             '0896' => 'THREE',
             '0897' => 'THREE',
@@ -65,6 +66,7 @@ function  codefikasiNomor($phone)
             '0886' => 'SMARTFREN',
             '0887' => 'SMARTFREN',
             '0888' => 'SMARTFREN',
+            '0889' => 'SMARTFREN'
         ];
     return $code[$code_phone] ?? null;
 }

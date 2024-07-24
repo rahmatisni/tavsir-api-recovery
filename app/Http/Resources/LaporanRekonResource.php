@@ -55,12 +55,17 @@ class LaporanRekonResource extends JsonResource
             "customer_phone"=> $this->customer_phone,
             "payment_method_id"=> $this->payment_method_id,
             "status"=>$this->status,
-            'sharing_code' => $this->status == 'DONE' ? (json_decode($this->sharing_code)?? [(string)$this->tenant_id]) : [],
-            'sharing_proportion' => $this->status == 'DONE' ? (json_decode($this->sharing_proportion)??[100]) : [],
-            'sharing_amount' => $this->status == 'DONE' ? (count($resultArray) > 1 ? $resultArray:[(string)$this->total]) : [],
+            'sharing_code' => $this->status == 'DONE' || $this->status == 'PAYMENT_SUCCESS' ? (json_decode($this->sharing_code) ?? [(string) $this->tenant_id]) : [],
+            'sharing_proportion' => $this->status == 'DONE' || $this->status == 'PAYMENT_SUCCESS' ? (json_decode($this->sharing_proportion) ?? [100]) : [],
+            'sharing_amount' => $this->status == 'DONE' || $this->status == 'PAYMENT_SUCCESS' ? (count($resultArray) > 1 ?  $resultArray:[$this->total - $this->service_fee]) : [],
             "refnum"=> $this->refnum,
             "paid_date"=> $this->paid_date,
             "valid"=> (int)$this->valid,
+            "derek" => $this->detilDerek,
+            "nomor_rekon" => $this?->detilReport->Nomor_Rekon ?? '-',
+            "remark_disbursement" => $this?->detilReport->Remark_Disbursement ?? '-',
+            "remark_transaksi" => $this?->detilReport->Remark_Transaksi ?? '-',
+            "status_report" => $this?->detilReport->Status_Report ?? '-'
         ];
     }
 }

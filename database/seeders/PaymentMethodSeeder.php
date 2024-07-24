@@ -59,12 +59,23 @@ class PaymentMethodSeeder extends Seeder
                 'code_name' => 'pg_va_bni',
                 'code' => 'BNI',
             ],
+            [
+                'name' => 'Virtual Account Mandiri',
+                'code_name' => 'snap_va_mandiri',
+                'sof_id' => '51105',
+                'code' => 'MANDIRI',
+                'description' => 'Bank Mandiri',
+                'payment_method_id' => '51105',
+                'payment_method_code' => 'VA',
+                'logo' => 'images/DOntCFLHbI9iRn4lJxeXX2ERtc0Nl1PbTfTCvRxr.png',
+                'integrator' => 'getoll',
+            ],
 
         ];
 
         foreach ($data as $key => $value) {
             PaymentMethod::updateOrCreate($value);
         }
-        Artisan::call('sof:sync');
+        // Artisan::call('sof:sync');
     }
 }

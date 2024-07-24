@@ -30,16 +30,15 @@ class LaporanServices
     }
     public function listRekon(Request $request)
     {
-
         $tanggal_awal = $request->tanggal_awal;
         $tanggal_akhir = $request->tanggal_akhir;
         $sof = $request->sof;
         $tenant_id = $request->tenant_id;
         $business_id = $request->business_id;
         $status_rekon = $request->status_rekon;
-
+        $status_derek = $request->status_derek;
         $paymentMethodsparent = PaymentMethod::where('integrator', $sof)->pluck('id');
-        $all_rekon = CompareReport::when(
+        $all_rekon = CompareReport::with('detilDerek.detail', 'detilDerek.refund','detilReport')->when(
             ($tanggal_awal && $tanggal_akhir),
             function ($q) use ($tanggal_awal, $tanggal_akhir) {
                 return $q->whereBetween(
@@ -51,6 +50,11 @@ class LaporanServices
                 );
             }
         )->
+            when($status_derek = request()->status_derek, function ($q) use ($status_derek) {
+                $q->whereHas('detilDerek', function ($qq) use ($status_derek) {
+                    $qq->where('is_solve_derek',$status_derek);
+                });
+            })->
             when($sof, function ($qq) use ($paymentMethodsparent) {
                 return $qq->whereIn('payment_method_id', $paymentMethodsparent);
             })->
@@ -437,8 +441,8 @@ class LaporanServices
         $business_id = $request->business_id;
         $order_type = $request->order_type;
         $payment_method_id = $request->payment_method_id;
-        $super_tenant_checker = auth()->user()->tenant->is_supertenant;
-        $super_tenant_id = auth()->user()->tenant->supertenant_id;
+        $super_tenant_checker = auth()->user()?->tenant?->is_supertenant;
+        $super_tenant_id = auth()->user()?->tenant?->supertenant_id;
 
         if ($super_tenant_checker < 1) {
             $raw_data = $data = TransOrder::with('tenant')
@@ -454,6 +458,10 @@ class LaporanServices
                         );
                     }
                 )
+                ->when($tenant_id, function ($q) use ($tenant_id) {
+                    return $q->where('tenant_id', $tenant_id);
+                })
+
                 ->when($super_tenant_id, function ($q) use ($super_tenant_id) {
                     return $q->where('supertenant_id', $super_tenant_id);
                 })->orderBy('created_at')
@@ -486,7 +494,8 @@ class LaporanServices
                 })->when($payment_method_id, function ($qq) use ($payment_method_id) {
                     return $qq->where('payment_method_id', $payment_method_id);
                 })
-                ->orderBy('created_at')
+                ->whereIn('order_type', ['POS', 'SELF_ORDER', 'TAKE_N_GO'])
+                ->orderBy('created_at', 'DESC')
                 ->get();
         }
         // $raw_data = $data = TransOrder::with('tenant')
@@ -519,7 +528,7 @@ class LaporanServices
         //     ->orderBy('created_at')
         //     ->get();
         $data = $raw_data->where('status', 'DONE');
-        $data_w_refund = $raw_data->whereIn('status', ['DONE', 'REFUND']);
+        $data_w_refund = $raw_data->whereIn('status', ['DONE', 'REFUND'])->whereIn('order_type', ['POS', 'SELF_ORDER', 'TAKE_N_GO']);
         if ($data->count() == 0) {
             abort(404);
         }

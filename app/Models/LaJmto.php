@@ -42,9 +42,6 @@ class LaJmto extends Model
     public static function service($method, $path, $payload)
     {
         $signature = self::generateSignature($payload);
-        // dd($payload, $signature);
-
-        
         switch ($method) {
             case 'POST':
                 clock()->event("LA{$path}")->color('purple')->begin();
@@ -134,7 +131,7 @@ class LaJmto extends Model
 
         // Get the last element
         $lastElement = end($parts);
-        
+
 
         $payload = [
             "fee"  =>str_pad(env('PLATFORM_FEE'), 10, '0', STR_PAD_LEFT).'00',
@@ -149,31 +146,7 @@ class LaJmto extends Model
             "partnerMerchantID" =>  $data_la['partner_mid'] ?? "12345678910", //tenant merchdant i
         ];
 
-        
         if (env('LA_FAKE_RESPON') === true) {
-            
-
-            // $fake_respo_create_va = [
-            //     "status" => "success",
-            //     "rc" => "0000",
-            //     "rcm" => "success",
-            //     "responseData" => [
-            //         "sof_code" => $sof_code,
-            //         "va_number" => "7777700100299999",
-            //         "bill" => $payload['amount'],
-            //         "fee" => "1000",
-            //         "amount" => (string) $amount + 1000,
-            //         "bill_id" => $payload['bill_id'],
-            //         "bill_name" => $payload['bill_name'],
-            //         "desc" => $payload['desc'],
-            //         "exp_date" => $payload['exp_date'],
-            //         "refnum" => "VA" . Carbon::now()->format('YmdHis'),
-            //         "phone" => $payload['phone'],
-            //         "email" => $payload['email'],
-            //         "customer_name" => $payload['customer_name'],
-            //     ],
-            //     "requestData" => $payload
-            // ];
             $fake_respo_create_va = [
                 "status" => "success",
                 "rc" => "0000",
@@ -246,6 +219,7 @@ class LaJmto extends Model
             "la_response" => $res
 
         ];
+
         Log::info([$payload, $response]);
 
         return $response;
@@ -271,51 +245,21 @@ class LaJmto extends Model
         // Get the last element
         $lastElement = end($parts);
         $payload = [
-
-            // "merchantName" => $data_la['merchant_name'] ?? env('LA_MERCHANT_NAME'),
-            // "merchantID" =>  $data_la['merchant_id'] ?? env('LA_MERCHANT_ID'),
-            // "merchantPan" =>  $data_la['merchant_pan'] ?? env('LA_MERCHANT_PAN'),
-            // "merchantCriteria" =>  $data_la['merchant_criteria'] ?? "UME",
-            // "merchantTrxID" => str_replace('-', '', $lastElement),
-            // "partnerMerchantID" =>  $data_la['partner_mid'] ?? "12345678910", //tenant merchdant i
-
             "merchantID" =>  $data_la['merchant_id'] ?? env('LA_MERCHANT_ID'),
             "merchantTrxID" =>$lastElement
         ];
-        
-        // $payload = [
-        //     "merchantID" =>  '605111309311801',
-        //     "merchantTrxID" => 'TEST7329893845'
-        // ];
 
         if (env('LA_FAKE_RESPON') === true) {
             //for fake
             $fake_respon_status_va = [
-                "status" => "success",
-                "rc" => "0000",
-                "msg" => "success",
-                "responseData" => [
-                    "pay_status" => "1",
-                    "sof_code" => $sof_code,
-                    "bill" => $amount,
-                    "fee" => 0,
-                    "amount" => $amount,
-                    "trxid" => $bill_id,
-                    "remarks" => "",
-                    "refnum" => "",
-                    "pay_refnum" => "",
-                    "email" => $email,
-                    "phone" => $phone,
-                    "customer_name" => $customer_name,
-                    "status" => "00",
-                    "message" => "SUCCESS",
-                    "data" => [
-                        "bill_id" => $bill_id,
-                        "trxId" => $bill_id,
-                        "fromAccount" => "9360001430000034980",
-                        "trxDate" => "0719185915",
-                        // "amount" => $amount
-                    ]
+                "status" => "00",
+                "message" => "success",
+                "data" => [
+                    "bill_id" => $bill_id,
+                    "trxId" => $bill_id,
+                    "fromAccount" => "9360001430000034980",
+                    "trxDate" => "0719185915",
+                    "amount" => '999999'
                 ]
             ];
             Http::fake([
@@ -328,34 +272,6 @@ class LaJmto extends Model
 
         $res = self::service('POST', '/transaction/inform/status', $payload)->json();
         Log::info([$payload, $res]);
-        // $res = [
-        //     "status" => "success",
-        //     "rc" => "0000",
-        //     "msg" => "success",
-        //     "responseData" => [
-        //         "pay_status" => "1",
-        //         "sof_code" => $sof_code,
-        //         "bill" => $amount,
-        //         "fee" => 0,
-        //         "amount" => $amount,
-        //         "trxid" => $bill_id,
-        //         "remarks" => "",
-        //         "refnum" => "",
-        //         "pay_refnum" => "",
-        //         "email" => $email,
-        //         "phone" => $phone,
-        //         "customer_name" => $customer_name,
-        //         "status" => "00",
-        //         "message" => "SUCCESS",
-        //         "data" => [
-        //             "bill_id" => $bill_id,
-        //             "trxId" => $bill_id,
-        //             "fromAccount" => "9360001430000034980",
-        //             "trxDate" => "0719185915",
-        //             // "amount" => $amount
-        //         ]
-        //     ]
-        // ];
 
         if($res['status'] == 00){
             $response = [
@@ -380,28 +296,21 @@ class LaJmto extends Model
 
             return $response;
     
-            }
-            else {
-                $response = [
-                    "status" => "error",
-                    "rc" => $res['status'],
-                    "msg" => $res['message'],
-                    "responseData" => [
-                        "pay_status" => "0"
-                    ],
-                    "la_response" => $res
-                ];
-                 
-                Log::info([$payload, $response]);
+        }else {
+            $response = [
+                "status" => "error",
+                "rc" => $res['status'],
+                "msg" => $res['message'],
+                "responseData" => [
+                    "pay_status" => "0"
+                ],
+                "la_response" => $res
+            ];
+                
+            Log::info([$payload, $response]);
 
-                return $response;
-            }
-            // 
-
-
-        // Log::info($payload);
-        // // Log::info(['Payload PG =>', $payload, 'Va status => ', $res->json()]);
-        // return $res;
+            return $response;
+        }
     }
 
 

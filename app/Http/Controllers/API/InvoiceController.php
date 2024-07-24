@@ -16,6 +16,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
+
 
 class InvoiceController extends Controller
 {
@@ -58,11 +60,26 @@ class InvoiceController extends Controller
         return response()->json(ListInvoiceResource::collection($data));
     }
 
-    public function indexDerek()
+    public function indexDerek(Request $request)
     {
         DB::enableQueryLog();
 
-        $data = TransInvoiceDerek::with('petugas','cashier')->get();
+        $data = TransInvoiceDerek::with('petugas','cashier')
+            ->when($tenant_id = request()->tenant_id, function ($query) use ($tenant_id) {
+                return $query->where('tenant_id', $tenant_id);
+            })->when($id = request()->id, function ($query) use ($id) {
+                return $query->where('id', $id);
+            }) ->when($start_date = $request->start_date, function ($q) use ($start_date) {
+               return $q->whereDate('claim_date', '>=', date("Y-m-d", strtotime($start_date)));
+            })
+            ->when($end_date = $request->end_date, function ($q) use ($end_date) {
+               return $q->whereDate('claim_date', '<=', date("Y-m-d", strtotime($end_date)));
+            })
+            ->when($status = $request->status, function ($q) use ($status) {
+                return $q->where('status', $status);
+            })
+          ->get();
+
         return response()->json(ListInvoiceResourceDerek::collection($data));
     }
 
@@ -130,6 +147,7 @@ class InvoiceController extends Controller
                 $invoice->id = $uuid;
                 $invoice->invoice_id ='DRK'.'-'. $uuid;
                 $invoice->cashier_id = auth()->user()->id;
+                $invoice->tenant_id = auth()->user()->tenant->id;
                 $invoice->nominal = $nominal ;
                 $invoice->claim_date = $now;
                 $invoice->status = TransInvoice::UNPAID;
@@ -175,19 +193,53 @@ class InvoiceController extends Controller
 
     public function paidInvoiceDerek(Request $request, $id)
     {
-        $data = TransInvoiceDerek::findOrfail($id);
-        if ($data->status == TransInvoiceDerek::PAID) {
-            return response()->json(['message' => 'Invoice sudah dibayar'], 400);
+            if(auth()->user()->role != User::FINANCE) {
+                return response()->json(['status' => 'error', 'message'=> 'Anda Tidak Memiliki Akses!'], 403);
+            }
+            $validator = Validator::make($request->all(), [
+            'amount' => 'numeric', // Ensures it's a number
+            // Additional check to ensure it's a floating-point number
+            'file' => 'required|file|mimes:jpeg,png,pdf|max:10000', // max size in kilobytes
+        ]);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->toArray();
+        
+            // Check if 'amount' field has errors
+            if (isset($errors['amount'])) {
+                // Handle errors for 'amount' field
+                return response()->json(['status' => 'error', 'message' => 'Nominal Input Tidak Sesuai!', 'errors' => $errors['amount']], 422);
+            }
+        
+            // Check if 'file' field has errors
+            if (isset($errors['file'])) {
+                // Handle errors for 'file' field
+                return response()->json(['status' => 'error', 'message' => 'Format File Tidak Sesuai', 'errors' => $errors['file']], 422);
+            }
+        
+            // Handle other errors if needed
+            return response()->json(['status' => 'error', 'message' => 'Periksa Format Bukti Bayar', 'errors' => $errors], 422);
         }
-
-        $data->status = TransInvoice::PAID;
-        $data->pay_petugas_id = auth()->user()->id;
-        $data->paid_date = Carbon::now();
-        $data->kwitansi_id = ($data->pay_petugas_id ?? '0').'-RCP-'. date('YmdHis'); ;
-        $data->file = $request->file;
-        $data->save();
-
-        return response()->json($data);
+        
+    
+            try {
+                $data = TransInvoiceDerek::findOrFail($id);
+                if($data->paid_date){
+                    return response()->json(['status' => 'error', 'message'=> 'Invoice Sudah Dibayar'], 404);
+                }
+            } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+                return response()->json(['status' => 'error', 'message'=> 'Invoice not found.'], 404);
+            }           
+            $data->status = TransInvoice::PAID;
+            $data->pay_petugas_id = auth()->user()->id;
+            $data->paid_date = Carbon::now();
+            $data->kwitansi_id = ($data->pay_petugas_id ?? '0') . '-RCP-' . date('YmdHis');
+            $data->selisih = $request->amount - $data->nominal;
+            ;
+            $data->file = $request->file;
+            $data->save();
+            return response()->json($data);
+       
     }
 
     public function show()

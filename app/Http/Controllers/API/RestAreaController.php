@@ -18,16 +18,26 @@ class RestAreaController extends Controller
      */
     public function index()
     {
-        // dd('x');
 
         $role = auth()->user()->role;
-        $data = RestArea::when($name = request()->name, function ($q) use ($name) {
-            return $q->where('name', 'like', "%$name%");
-        });
-        // ->when($role === 'OWNER', function ($q) {
-        //     $data_tenant = Tenant::where('business_id', auth()->user()->business_id)->distinct()->pluck('rest_area_id')->toArray();
-        //     return $q->whereIn('id', $data_tenant);
-        // });
+        $business_id = auth()->user()->business_id ?? null;
+        if ($role === 'OWNER') {
+            $data = RestArea::whereHas('tenant', function ($query) use ($business_id) {
+                $query->where('business_id', $business_id)->when($name = request()->name, function ($q) use ($name) {
+                    return $q->where('name', 'like', "%$name%");
+                });
+                ;
+            });
+
+        } else {
+            $data = RestArea::when($name = request()->name, function ($q) use ($name) {
+                return $q->where('name', 'like', "%$name%");
+            });
+            // ->when($role === 'OWNER', function ($q) {
+            //     $data_tenant = Tenant::where('business_id', auth()->user()->business_id)->distinct()->pluck('rest_area_id')->toArray();
+            //     return $q->whereIn('id', $data_tenant);
+            // });
+        }
         $data = $data->get();
         if (request()->lat && request()->lon) {
             $data = $data->filter(function ($item) {
@@ -86,18 +96,18 @@ class RestAreaController extends Controller
      */
     public function destroy(RestArea $restArea)
     {
-        $tenant = Tenant::where('rest_area_id',$restArea->id)->count();
-        if($tenant > 0) {
+        $tenant = Tenant::where('rest_area_id', $restArea->id)->count();
+        if ($tenant > 0) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'area '.$restArea->name. ' masih memiliki tenant aktif!'
+                'message' => 'area ' . $restArea->name . ' masih memiliki tenant aktif!'
             ], 422);
         }
         $restArea->delete();
         // return response()->noContent();
         return response()->json([
             'status' => 'Sukses',
-            'message' => 'Rest area '.$restArea->name. ' berhasil dihapus!'
+            'message' => 'Rest area ' . $restArea->name . ' berhasil dihapus!'
         ], 200);
     }
 

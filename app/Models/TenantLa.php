@@ -21,5 +21,7 @@ class TenantLa extends BaseModel
         'merchant_pan',
         'merchant_name',
         'merchant_criteria',
+        'postal_code',
+        'city'
     ];
 }

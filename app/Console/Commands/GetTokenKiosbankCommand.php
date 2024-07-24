@@ -43,7 +43,7 @@ class GetTokenKiosbankCommand extends Command
         try {
             Log::info("Cron get token kios");
             $session = $this->kiosbankService->signOn();
-            Redis::set('session_kios_bank', $session);
+            Redis::set('session_kios_bank', [$session]);
     
             //lifetime 1 day
             $lifetime = 86400;

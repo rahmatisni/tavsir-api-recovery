@@ -6,6 +6,7 @@ use App\Models\KiosBank\ProductKiosBank;
 use App\Models\TransOrder;
 use App\Services\External\JatelindoService;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
 /**
@@ -16,7 +17,7 @@ use Illuminate\Support\Collection;
 function rupiah($angka)
 {
 
-    $hasil_rupiah = "Rp." . number_format($angka, 0, ',', '.');
+    $hasil_rupiah = "Rp. " . number_format($angka, 0, ',', '.');
     return $hasil_rupiah;
 
 }
@@ -44,35 +45,54 @@ class TsOrderResource extends JsonResource
         $product_kios = null;
         $rest_area_name = $this->rest_area?->name ?? null;
         $tenant_name = $this->tenant->name ?? null;
+        $product_kios_bank = $this->productKiosbank();
+
         if ($this->order_type == TransOrder::ORDER_TRAVOY) {
             $product = explode('-', $this->order_id);
-            $product_kios_bank = $this->productKiosbank();
+            // $product_kios_bank = $this->productKiosbank();
 
             if ($product_kios_bank) {
                 $product_kios = $product_kios_bank->only([
                     'kategori',
                     'sub_kategori',
                     'kode',
+                    'harga',
                     'name',
                     'logo_url'
                 ]);
                 $product_kios['handphone'] = $product[1];
+                $product_kios['Nomor_Cust'] = $product[1];
                 if ($product_kios_bank->integrator == 'JATELINDO') {
+                    // $product_kios['RP_BAYAR'] = $product_kios['harga'];
                     unset($product_kios['handphone']);
                     unset($product_kios['kode']);
-                    
+
+
+
                     $product_kios = array_merge($product_kios, JatelindoService::infoPelanggan($this->log_kiosbank, $this->status));
                     // if ($this->status === TransOrder::WAITING_PAYMENT) {
-                        unset($product_kios['Transaksi_ID']);
-                        unset($product_kios['Vending_Number']);
-                        unset($product_kios['Informasi']);
-                        unset($product_kios['Flag']);
-                        unset($product_kios['Pilihan_Pembelian']);
-                        unset($product_kios['Transaksi_ID']);
-                        unset($product_kios['Total_Token_Unsold']);
-                        unset($product_kios['Pilihan_Token']);
-                        unset($product_kios['Token_Unsold_1']);
-                        unset($product_kios['Token_Unsold_2']);
+                    // unset($product_kios['RP_BAYAR']);
+                    if (isset($product_kios['RP_BAYAR'])){
+                        $product_kios['RP_BAYAR'] = rupiah((int)$product_kios['harga']+$this->service_fee+$product_kios['Admin_Bank']);
+                        $product_kios['Admin_Bank'] =rupiah((int) $this->service_fee+$product_kios['Admin_Bank']);
+                    }
+                    if (isset($product_kios['Daya'])){
+                        $product_kios['Daya'] = str_pad($product_kios['Daya'], 9, '0', STR_PAD_LEFT); 
+                    }
+                    unset($product_kios['logo_url']);
+                    unset($product_kios['Transaksi_ID']);
+                    unset($product_kios['Vending_Number']);
+                    $note = $product_kios['Informasi'] ?? null;
+                    $title = 'STRUK PEMBELIAN LISTRIK PRABAYAR';
+                    unset($product_kios['Informasi']);
+                    unset($product_kios['Flag']);
+                    unset($product_kios['Pilihan_Pembelian']);
+                    unset($product_kios['Transaksi_ID']);
+                    unset($product_kios['Total_Token_Unsold']);
+                    unset($product_kios['Pilihan_Token']);
+                    unset($product_kios['Token_Unsold_1']);
+                    unset($product_kios['Token_Unsold_2']);
+
                     // }
                     // if ($this->status === TransOrder::DONE) {
                     //     unset($product_kios['flag']);
@@ -174,9 +194,10 @@ class TsOrderResource extends JsonResource
             }
 
 
-            $temps['data']['Diskon'] = '-' . rupiah((int) $this->discount);
+            // $temps['data']['Diskon'] = '-' . rupiah((int) $this->discount);
+            $temps['data']['Diskon'] = $this->discount == 0 ? rupiah((int) $this->discount) : '-' . rupiah((int) $this->discount);
             unset($temps['sessionID']);
-            // unset($temps['customerID']);
+            unset($temps['customerID']);
             unset($temps['merchantID']);
             unset($temps['referenceID']);
             unset($temps['productID']);
@@ -186,10 +207,32 @@ class TsOrderResource extends JsonResource
             $tenant_name = 'Multibiller';
         }
 
-        $logo = $this->tenant->log ?? null;
+        $log_kios_bank = $this->order_type === 'ORDER_TRAVOY' ? ($product_kios_bank?->integrator == 'JATELINDO' ? ['data' => $product_kios] : ($temps ?? $this->log_kiosbank)) : null;
+        unset($log_kios_bank['data']['name']);
+        $logo = $this->tenant->logo ?? null;
 
+
+        $repeat_date = $this->log_kiosbank->data['repeate_date'] ?? null;
+        $repeat_count = $this->log_kiosbank->data['repeate_count'] ?? 0;
+
+        if(($this->status == TransOrder::PAYMENT_SUCCESS || $this->status == TransOrder::READY) && $product_kios_bank?->integrator == 'JATELINDO'){
+            $log_kios_bank['data'] = Arr::only($log_kios_bank['data'],[
+                "kategori",
+                "sub_kategori",
+                "harga",
+                "Nomor_Cust",
+            ]);
+
+            if($repeat_count >=3){
+                $log_kios_bank['data']['KETERANGAN'] = 'TRANSAKI SUSPECT,MOHON HUBUNGI CUSTOMER SERVICE'; 
+            }
+        }
+        
         return [
             "id" => $this->id,
+            'can_repeate' => $can_repete ?? false,
+            "repeate_date" => $repeat_date,
+            "repeate_count" => $repeat_count,
             'rest_area_name' => $rest_area_name,
             'business_name' => $this->tenant->business->name ?? null,
             'tenant_id' => $this->tenant_id,
@@ -220,8 +263,9 @@ class TsOrderResource extends JsonResource
             'description' => $this->description,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'paid_date' => $this->payment?->updated_at->format('Y-m-d H:i:s') ?? null,
-            'payment' => $this->payment->data ?? null,
-            'log_kiosbank' => $this->order_type === 'ORDER_TRAVOY' ? ($product_kios_bank->integrator == 'JATELINDO' ? ['data' => $product_kios] : ($temps ?? $this->log_kiosbank)) : null,
+            // 'payment' => $this->payment->data ?? null,
+            'payment' => $this->payment?->data['responseData'] ?? $this->payment->data ?? null,
+            'log_kiosbank' => $log_kios_bank ?? null,
             'addon_total' => $this->addon_total,
             'addon_price' => $this->addon_price,
             'detil_kios' => $product_kios,
@@ -230,7 +274,8 @@ class TsOrderResource extends JsonResource
             "instagram" => $this->tenant->instagram ?? null,
             "facebook" => $this->tenant->facebook ?? null,
             "website" => $this->tenant->website ?? null,
-            "note" => $this->tenant->note ?? null,
+            "note" => $this->tenant->note ?? $note ?? null,
+            'title' => $title ?? null,
             'detil' => TsOrderDetilResource::collection($this->detil),
         ];
     }

@@ -3,6 +3,7 @@
 namespace App\Services\External;
 
 use App\Models\KiosBank\ProductKiosBank;
+use App\Models\LogJatelindo;
 use App\Models\TransOrder;
 use Carbon\Carbon;
 use Exception;
@@ -179,70 +180,81 @@ class KiosBankService
 
     public function getProduct($kategori_pulsa = null, $kategori = null, $sub_kategori = null)
     {
-        $product = $this->cekStatusProduct();
+        $product = [
+            'rc'=>'00'
+        ];
+
+        // uncommand disini
+        // $product = $this->cekStatusProduct();
         $status_respon = $product['rc'] ?? '';
+        $list_harga_pulsa = collect([]);
         if ($status_respon == '00') {
             if ($kategori && $sub_kategori) {
                 $data = ProductKiosBank::where('kategori', strtoupper($kategori))
                     ->where('sub_kategori', ucwords($sub_kategori))
                     ->where('is_active', 1)
-                    ->orderBy('kode', 'asc')
+                    // ->orderBy('kode', 'asc')
+                    ->orderByRaw("CAST(REGEXP_REPLACE(name, '[^0-9]+', '') AS DECIMAL) ASC")
                     ->get();
             } else if ($kategori) {
                 $data = ProductKiosBank::where('kategori', strtoupper($kategori))
                     ->where('is_active', 1)
-                    ->orderBy('kode', 'asc')
+                    // ->orderBy('kode', 'asc')
+                    ->orderByRaw("CAST(REGEXP_REPLACE(name, '[^0-9]+', '') AS DECIMAL) ASC")
                     ->get();
 
             } else if ($sub_kategori) {
                 $data = ProductKiosBank::when($sub_kategori, function ($q) use ($sub_kategori) {
                     return $q->where('sub_kategori', $sub_kategori);
+                })->when($kategori_pulsa, function ($q) use ($kategori_pulsa) {
+                    return $q->where('kategori', $kategori_pulsa);
                 })->where('is_active', 1)
-                    ->orderBy('kode', 'asc')
+                    // ->orderBy('kode', 'asc')
+                    ->orderByRaw("CAST(REGEXP_REPLACE(name, '[^0-9]+', '') AS DECIMAL) ASC")
                     ->get();
             } else {
                 $data = ProductKiosBank::when($kategori_pulsa, function ($q) use ($kategori_pulsa) {
                     return $q->where('kategori', $kategori_pulsa);
                 })->where('is_active', 1)
                     // ->orderBy('name', 'asc')
-                    ->orderBy('kode', 'asc')
+                    // ->orderBy('kode', 'asc')
+                    ->orderByRaw("CAST(REGEXP_REPLACE(name, '[^0-9]+', '') AS DECIMAL) ASC")
                     ->get();
-            }
-
-
-            $active = $product['active'];
-            $active = explode(',', $active);
-            foreach ($data as $key => $value) {
-                $value->status = false;
-            }
-
-            if (count($active) > 1) {
-                foreach ($active as $key => $value) {
-                    foreach ($data as $k => $v) {
-                        if ($value == $v->kode) {
-                            $v->status = true;
-                        }
-
-                        if($v?->integrator == 'JATELINDO')
-                        {
-                            $v->status = true;
-                        }
-
-                        if($v?->integrator == 'JATELINDO')
-                        {
-                            $v->status = true;
-                        }
+                $prefix_id = $data->first()?->prefix_id;
+                if($prefix_id){
+                    $data_kios = $this->listProductOperatorPulsa($prefix_id);
+                    if ($data_kios['rc'] == '00') {
+                        $list_harga_pulsa = collect($data_kios['record']);
                     }
                 }
-
-                // foreach ($data as $x => $z){
-                //     if($z->status == false){
-                //         unset($data[$x]);
-                //     }
-
-                // }
             }
 
+            // uncommand disini
+
+            // $active = $product['active'];
+            // $active = explode(',', $active);
+            // foreach ($data as $key => $value) {
+            //     $value->status = false;
+            // }
+
+            // if (count($active) > 1) {
+            //     foreach ($active as $key => $value) {
+            //         foreach ($data as $k => $v) {
+            //             if ($value == $v->kode) {
+            //                 $v->status = true;
+            //                 $price_from_kios = $list_harga_pulsa->where('code', $v->kode)->first()['price'] ?? 0;
+            //                 $v->price = $price_from_kios;
+            //                 $v->price_jmto = $price_from_kios > 0 ? $v->harga + $price_from_kios : null;
+            //             }
+            //             if($v?->integrator == 'JATELINDO')
+            //             {
+            //                 $v->status = true;
+            //             }
+            //         }
+            //     }
+            // }
+        
+            // uncommand disini
             return $data->groupBy('sub_kategori');
         } else {
             return $product;
@@ -514,25 +526,32 @@ class KiosBankService
         $order->customer_phone = $data['customer_phone'];
         $order->merchant_id = '';
         $order->sub_merchant_id = env('MERCHANT_KIOS', '');
-        $order->fee = env('PLATFORM_FEE');
+        $order->fee = env('PLATFORM_FEE', 0);
         $order->description = 'dual';
         $order->status = TransOrder::WAITING_PAYMENT;
 
         $product = ProductKiosBank::where('kode', $data['code'])->first();
         if($product?->integrator == 'JATELINDO')
         {
-            $res_jatelindo = JatelindoService::inquiry($data['flag'] ?? 0, $data['phone'], $product)->json();
+            $res_jatelindo = $data['result_pln'] ?? [];
+            $res_jatelindo['bit4'] = str_pad($product->kode, 12, '0', STR_PAD_LEFT);
             if(($res_jatelindo['bit39'] ?? '') == '00'){
                 $pilihan_token = $data['pilihan_token'] ?? 0;
                 Log::info('Pilihan Token '.$pilihan_token);
                 Log::info('bit 48 '.$res_jatelindo['bit48']);
                 $res_jatelindo['bit48'] = $res_jatelindo['bit48'].$pilihan_token;
                 Log::info('bit 48 add pilihan '.$res_jatelindo['bit48']);
-                $order->sub_total = $product->harga;
+                $res_jatelindo['ADMIN_BANK'] = env('JATELINDO_FEE') ?? 0; 
+                $order->sub_total = $product->harga + $res_jatelindo['ADMIN_BANK'];
                 $order->total = $order->sub_total + $order->fee;
                 $order->save();
                 $order->log_kiosbank()->updateOrCreate(['trans_order_id' => $order->id], [
-                    'data' => $res_jatelindo
+                    'data' => $res_jatelindo,
+                    'inquiry' => $res_jatelindo
+                ]);
+                $order->log_kiosbank()->updateOrCreate(['trans_order_id' => $order->id], [
+                    'type' => LogJatelindo::inquiry,
+                    'response' => $res_jatelindo
                 ]);
                 return ['code' => 200, 'data' => $order];
             }else{
@@ -599,7 +618,8 @@ class KiosBankService
 
                 $order->save();
                 $order->log_kiosbank()->updateOrCreate(['trans_order_id' => $order->id], [
-                    'data' => $res_json
+                    'data' => $res_json,
+                    'inquiry' => $res_json
                 ]);
 
                 //minta tambah updateOrCreate ke column inquiry
@@ -634,7 +654,8 @@ class KiosBankService
 
                 $order->save();
                 $order->log_kiosbank()->updateOrCreate(['trans_order_id' => $order->id], [
-                    'data' => $res_json
+                    'data' => $res_json,
+                    'inquiry' => $res_json
                 ]);
 
                 //minta tambah updateOrCreate ke column inquiry
@@ -691,7 +712,9 @@ class KiosBankService
                 $res_json['description'] = 'INQUIRY';
                 $order->save();
                 $order->log_kiosbank()->updateOrCreate(['trans_order_id' => $order->id], [
-                    'data' => $res_json
+                    'data' => $res_json,
+                    'inquiry' => $res_json
+
                 ]);
 
                 //minta tambah updateOrCreate ke column inquiry

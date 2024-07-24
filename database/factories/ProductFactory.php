@@ -26,7 +26,9 @@ class ProductFactory extends Factory
             'sku' => 'P-'.$faker->unique()->numberBetween(1,9999),
             'photo' => $this->faker->imageUrl,
             'price' => 10000,
-            'is_active' => $this->faker->boolean,
+            'discount' => rand(0,100),
+            'stock' => rand(1,100),
+            'is_active' => true,
             'description' => $this->faker->word,
             'updated_at' => null,
         ];

@@ -40,6 +40,7 @@ use App\Services\External\JatelindoService;
 use App\Models\NumberTable;
 use App\Services\External\KiosBankService;
 use App\Services\External\TravoyService;
+use App\Services\Payment\PaymentService;
 use App\Services\StockServices;
 use App\Services\TransSharingServices;
 use Illuminate\Support\Facades\DB;
@@ -51,21 +52,14 @@ use Illuminate\Validation\ValidationException;
 
 class TravShopController extends Controller
 {
-    protected $stock_service;
-    protected $trans_sharing_service;
-    protected $kiosBankService;
-    protected $travoyService;
-
-    public function __construct(StockServices $stock_service, TransSharingServices $trans_sharing_service, KiosBankService $kiosBankService, TravoyService $travoyService)
-    {
-        $this->stock_service = $stock_service;
-        $this->trans_sharing_service = $trans_sharing_service;
-        $this->kiosBankService = $kiosBankService;
-        $this->travoyService = $travoyService;
-
+    public function __construct(
+        protected StockServices $stock_service,
+        protected TransSharingServices $trans_sharing_service,
+        protected KiosBankService $kiosBankService,
+        protected TravoyService $travoyService,
+        protected PaymentService $servicePayment,
+    ) {
     }
-
-
 
     public function tableList(Request $request)
     {
@@ -581,7 +575,7 @@ class TravShopController extends Controller
                 $data->sharing_proportion = [100];
                 $data->sharing_amount = [$data->sub_total + (int) ($data->addon_total)];
             }
-            
+
             $data->save();
 
             DB::commit();
@@ -593,7 +587,82 @@ class TravShopController extends Controller
             return response()->json(['error' => 'Format Data Salah'], 500);
         }
     }
+    public function huOrder(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+            $data = new TransOrder;
+            // $tenant = Tenant::find($request->tenant_id);
+            // dd($tenant);
+            $data->order_type = TransOrder::ORDER_HU;
+            $data->order_id = $request->order_id;
+            // $data->order_id = ($tenant->rest_area_id ?? '0') . '-' . ($tenant->id ?? '0') . '-DO-' . date('YmdHis');
+            $data->order_id = $request->order_id;
+            $data->rest_area_id = 0;
+            $data->tenant_id = $request->tenant_id;
+            $data->business_id =  0;
+            $data->customer_id = $request->customer_id;
+            $data->customer_name = $request->customer_name;
+            $data->customer_phone = $request->customer_phone;
+            $data->merchant_id =  0;
+            $data->sub_merchant_id = '13';
+            $data->sub_total = $request->sub_total;
 
+            $data->save();
+
+            $sub_total = $request->sub_total;
+
+            // $extra_price = ExtraPrice::byTenant($data->tenant_id)->aktif()->get();
+            // foreach ($extra_price as $value) {
+            //     $addon = new AddonPrice();
+            //     $addon->trans_order_id = $data->id;
+            //     $addon->name = $value->name;
+            //     $addon->price = $value->price;
+            //     if ($value->is_percent == 1) {
+            //         $addon->price = ($sub_total * $value->price) / 100;
+            //     }
+
+            //     $addon->save();
+            //     $data->addon_total += $addon->price;
+            // }
+
+            $data->fee = env('PLATFORM_FEE');
+            $data->sub_total = $sub_total;
+            $data->total = $data->sub_total + $data->fee + $data->service_fee + $data->addon_total;
+            $data->status = TransOrder::WAITING_PAYMENT;
+// 
+            // $now = Carbon::now()->format('Y-m-d H:i:s');
+            // $sharing = Sharing::where('tenant_id', $request->tenant_id)->whereIn('status', ['sedang_berjalan', 'belum_berjalan'])
+            //     ->where('waktu_mulai', '<=', $now)
+            //     ->where('waktu_selesai', '>=', $now)->first();
+            // if ($sharing?->sharing_config) {
+            //     $nilai_sharing = json_decode($sharing->sharing_config);
+            //     foreach ($nilai_sharing as $value) {
+            //         $harga = (int) ($data->sub_total) + (int) ($data->addon_total);
+            //         $sharing_amount_unround = (($value / 100) * $harga);
+            //         // $sharing_amount[] = ($value/100).'|'.$harga.'|'.$sharing_amount_unround;
+            //         $sharing_amount[] = $sharing_amount_unround;
+            //     }
+            //     $data->sharing_code = $sharing->sharing_code ?? null;
+            //     $data->sharing_amount = $sharing_amount ?? null;
+            //     $data->sharing_proportion = $sharing->sharing_config ?? null;
+            // } else {
+            //     $data->sharing_code = [(string) $data->tenant_id];
+            //     $data->sharing_proportion = [100];
+            //     $data->sharing_amount = [$data->sub_total + (int) ($data->addon_total)];
+            // }
+
+            $data->save();
+
+            DB::commit();
+            $data = TransOrder::findOrfail($data->id);
+            // return ('oke');
+            return response()->json(new TsOrderResource($data));
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return response()->json(['error' => 'Format Data Salah'], 500);
+        }
+    }
 
     public function orderByMeja($id, Request $request)
     {
@@ -649,7 +718,6 @@ class TravShopController extends Controller
         }
         return response()->json($data);
     }
-
 
     public function orderCustomer($id, Request $request)
     {
@@ -728,10 +796,17 @@ class TravShopController extends Controller
         return response()->json($resource);
     }
 
-    public function orderById($id)
-    {
+    public function orderById($id, Request $request)
+    {   
         $data = TransOrder::findOrfail($id);
-        // dd($data);
+        if($data->order_type === TransOrder::ORDER_HU){
+            $travoy = $this->travoyService->detailHUPlan($id);
+            $response = new TsOrderResource($data);
+            $responseArray = $response->toArray(request());
+            $responseArray['detil_hu'] = $travoy?->message ?? [];
+
+            return response()->json($responseArray);    
+        }
         return response()->json(new TsOrderResource($data));
     }
 
@@ -911,7 +986,7 @@ class TravShopController extends Controller
     {
         $paymentMethods = PaymentMethod::all();
         $self_order = [4, 5, 7, 9, 11];
-        $travshop = [5, 6, 7, 8, 9, 11];
+        $travshop = [5, 6, 7, 8, 9, 11, 12, 13, 14];
         $tavsir = [1, 2, 3, 4, 10];
 
         if ($request->trans_order_id) {
@@ -919,11 +994,19 @@ class TravShopController extends Controller
             $param_removes = Tenant::where('id', $trans_order->tenant_id)->first();
             if ($param_removes == null && $trans_order->order_type == 'ORDER_TRAVOY') {
                 $self_order = [];
-                $travshop = [5, 6, 7, 8, 9, 11];
+                $travshop = [5, 6, 7, 8, 9, 11, 12, 13];
                 // $travshop = [5, 6, 7, 8, 9];
                 $tavsir = [];
 
-            } else {
+            }
+            else if ($param_removes == null && $trans_order->order_type == 'HU_ORDER') {
+                $self_order = [];
+                $travshop = [5, 6, 7, 8, 9, 11, 12, 13];
+                // $travshop = [5, 6, 7, 8, 9];
+                $tavsir = [];
+
+            } 
+            else {
                 $intersect = json_decode($param_removes->list_payment);
                 if ($param_removes->list_payment == null) {
                     $self_order = [];
@@ -960,7 +1043,7 @@ class TravShopController extends Controller
 
 
             foreach ($paymentMethods as $value) {
-                Log::warning($value);
+                // Log::warning($value);
                 $value->platform_fee = env('PLATFORM_FEE');
                 $value->fee = 0;
 
@@ -1004,14 +1087,15 @@ class TravShopController extends Controller
                         $value->percentage = null;
                         $value->fee = null;
                     } else {
-                        $data = PgJmto::tarifFee($value->sof_id, $value->payment_method_id, $value->sub_merchant_id, $trans_order->sub_total);
-                        Log::warning($data);
+                        $data = PgJmto::tarifFee($value->sof_id, $value->payment_method_id, $trans_order->sub_merchant_id, $trans_order->sub_total);
+                        // Log::warning($data);
+                        // dump($data);
                         $value->percentage = $data['is_presentage'] ?? null;
                         $x = $data['value'] ?? 'x';
                         $state = $data['is_presentage'] ?? null;
 
 
-                        if ($state == (false || null)) {
+                        if ($state == (false || null)) {    
                             $value->fee = $data['value'] ?? null;
                         } else {
                             $value->fee = (int) ceil((float) $x / 100 * $trans_order->sub_total);
@@ -1021,7 +1105,9 @@ class TravShopController extends Controller
                 if ($value->id == 4) {
                     $value->fee = 0;
                 }
-
+                if ($value->id == 14) {
+                    $value->fee = 0;
+                }
             }
 
         }
@@ -1078,7 +1164,7 @@ class TravShopController extends Controller
 
             $res = 'Invalid';
             $payment_method = PaymentMethod::find($request->payment_method_id);
-            if ($data->order_type != TransOrder::ORDER_TRAVOY) {
+            if ($data->order_type != TransOrder::ORDER_TRAVOY || $data->order_type != TransOrder::ORDER_HU) {
                 $data->total = $data->sub_total + $data->addon_total + $data->fee;
 
                 //Cek stok
@@ -1101,6 +1187,37 @@ class TravShopController extends Controller
                     throw ValidationException::withMessages($error);
                 }
             }
+
+            $paymentResult = $this->servicePayment->create($payment_method, $data, $request->all());
+            $payment_payload = $paymentResult->data;
+            
+
+            if ($paymentResult->status == false) {
+                return response()->json($paymentResult, 422);
+            }
+            $data->service_fee = $paymentResult->data['responseData']['fee'];
+            // $data->total = $data->total + $data->service_fee;
+            $data->total = $data->sub_total + $data->addon_total + $data->fee + $data->service_fee;
+            $data->sub_merchant_id = $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id;
+            $data->save();
+            $response = $paymentResult->data;
+            if (preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $response['responseData']['exp_date'])) {
+            } else {
+                // The date is not in the desired format, so convert it
+                $carbonDate = Carbon::parse($response['responseData']['exp_date']);
+                $response['responseData']['exp_date'] = $carbonDate->format('Y-m-d H:i:s');
+            }
+            // unset($response['responseSnap']);
+            DB::commit();
+            
+            if($data->order_type === 'HU_ORDER'){
+                $this->travoyService->PaymentRequesthu($data->id);
+            }
+            return response()->json($response);
+
+            //END REFACTOR
+            //CODE DIBWAH INI TIDAK DI EKSEUSI, SEMENTARA UNTUK KOMPARE DATA DENGAN REFACTOR
+
             switch ($payment_method->code_name) {
                 case 'pg_va_mandiri':
                     $payment_payload = [
@@ -1151,7 +1268,7 @@ class TravShopController extends Controller
                 case 'pg_va_bsi':
                     $payment_payload = [
                         "sof_code" => $payment_method->code,
-                        'bill_id' => $data->order_id,
+                        'bill_id' => app('env') != 'production' ? random_int(1000, 9999) : $data->order_id,
                         'bill_name' => 'GetPay',
                         'amount' => (string) $data->total,
                         'desc' => $data->tenant->name ?? 'Travoy',
@@ -1165,7 +1282,7 @@ class TravShopController extends Controller
 
                     $res = PgJmto::vaCreate(
                         $payment_method->code,
-                        $data->order_id,
+                        app('env') != 'production' ? random_int(100000, 999999) : $data->order_id,
                         'GetPay',
                         $data->total,
                         $data->tenant->name ?? 'Travoy',
@@ -1174,6 +1291,7 @@ class TravShopController extends Controller
                         $request->customer_name,
                         $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id
                     );
+
                     if ($res['status'] == 'success') {
                         $pay = null;
                         if ($data->payment === null) {
@@ -1609,8 +1727,6 @@ class TravShopController extends Controller
         }
     }
 
-
-
     public function payKios($data, $id)
     {
         $kios = [];
@@ -1623,13 +1739,15 @@ class TravShopController extends Controller
             $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
             if ($data->productKiosbank()->integrator == 'JATELINDO') {
                 //1. Purchase
-                $res_jatelindo = JatelindoService::purchase($data->log_kiosbank->data ?? []);
+                $res_jatelindo = JatelindoService::purchase($data->log_kiosbank->data ?? [], $data);
                 $result_jatelindo = $res_jatelindo->json();
+
                 $rc = $result_jatelindo['bit39'] ?? '';
+
                 //2. Cek req timout code 18
                 if ($rc == '18') {
                     //3. Advice 1 kali
-                    $res_jatelindo = JatelindoService::advice($data->log_kiosbank->data ?? []);
+                    $res_jatelindo = JatelindoService::advice($data->log_kiosbank->data ?? [], $data);
                     $result_jatelindo = $res_jatelindo->json();
                     $rc = $result_jatelindo['bit39'] ?? '';
                     //4. Cek advice timout
@@ -1637,7 +1755,7 @@ class TravShopController extends Controller
                         //5. Advice Repeate max 3x percobaan
                         $try = 1;
                         do {
-                            $res_jatelindo = JatelindoService::repeat($data->log_kiosbank->data ?? []);
+                            $res_jatelindo = JatelindoService::repeat($data->log_kiosbank->data ?? [], $data);
                             $result_jatelindo = $res_jatelindo->json();
                             $rc = $result_jatelindo['bit39'] ?? '';
                             $try++;
@@ -1650,12 +1768,20 @@ class TravShopController extends Controller
                     //return token listrik
                     $data->status = TransOrder::DONE;
                     $log_kios = $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-                        'data' => $result_jatelindo
+                        'data' => $result_jatelindo,
+                        'payment' => $result_jatelindo
+
                     ]);
                     $data->save();
                     DB::commit();
                     $info = JatelindoService::infoPelanggan($log_kios, $data->status);
-                    return response()->json($info);
+                    $map = [
+                        'status' => $data->status,
+                        'kiosbank' => [
+                                'data' => $info
+                            ]
+                    ];
+                    return response()->json($map);
                 } else {
                     return response()->json(['status' => 422, 'data' => JatelindoService::responseTranslation($result_jatelindo)], 422);
                 }
@@ -1740,6 +1866,10 @@ class TravShopController extends Controller
                 if ($data->order_type == TransOrder::ORDER_TRAVOY && $data->status != TransOrder::DONE) {
 
                     if ($data->productKiosbank()->integrator == 'JATELINDO') {
+                        $is_success = $data->log_kiosbank->data['is_success'] ?? false;
+                        if (!$is_success) {
+                            return $this->servicePayment->payKios($data);
+                        }
                         return response()->json(['token' => $data->log_kiosbank->data['bit62'] ?? '']);
                     }
 
@@ -1805,7 +1935,9 @@ class TravShopController extends Controller
 
                                 $data->save();
                                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-                                    'data' => $res_json
+                                    'data' => $res_json,
+                                    'payment' => $res_json
+
                                 ]);
                             } else {
                                 $data->harga_kios = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'] ?? $data->harga_kios;
@@ -1820,7 +1952,7 @@ class TravShopController extends Controller
                                 $res_json['data']['adminBank'] = $res_json['data']['adminBank'] ?? $res_json['data']['AB'] ?? '000000000000';
 
                                 $data->save();
-                                Log::info($data);
+                                // Log::info($data);
                                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
                                     'data' => $res_json
                                 ]);
@@ -1900,7 +2032,8 @@ class TravShopController extends Controller
                     }
 
                     $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-                        'data' => $kios
+                        'data' => $kios,
+                        'payment' => $kios
                     ]);
                     $data->save();
                     DB::commit();
@@ -1909,6 +2042,21 @@ class TravShopController extends Controller
                     $travoy = $this->travoyService->detailDerek($id, $request->id_user, $request->token);
                     return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
 
+                }
+                if ($data->order_type == TransOrder::ORDER_HU) {
+                    $travoy = $this->travoyService->detailHU($id);
+                    return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
+
+                }
+                $product_kios_bank = $data->productKiosbank();
+                if ($product_kios_bank->integrator == 'JATELINDO') {
+                    $infoPelanggan = JatelindoService::infoPelanggan($data->log_kiosbank, $data);
+                    return response()->json([
+                        'status' => $data->status,
+                        'kiosbank' => [
+                                'data' => $infoPelanggan
+                            ]
+                    ]);
                 }
                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
             }
@@ -1921,7 +2069,23 @@ class TravShopController extends Controller
                 return response()->json(['status' => $data->status, 'responseData' => null]);
             }
 
-            $data_payment = $data->payment->data;
+            $payment_result = $this->servicePayment->statusOrder($data, $request->all());
+            if ($payment_result->status != true) {
+                return response()->json([
+                    ...$payment_result->data,
+                    'status' => $data->status
+                ], 422);
+            }
+            $data->save();
+            DB::commit();
+            
+            if ($data->order_type == TransOrder::ORDER_HU) {
+                $travoy = $this->travoyService->detailHU($id);
+                return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
+            }
+            return response()->json($payment_result->data);
+            //END REFACTOR
+            //CODE DIBWAH INI TIDAK DI EKSEUSI, SEMENTARA UNTUK KOMPARE DATA DENGAN REFACTOR
             if ($data->payment_method->code_name == 'pg_dd_bri') {
                 $payload = $data_payment;
                 $payload['submerchant_id'] = $data->sub_merchant_id;
@@ -1936,18 +2100,19 @@ class TravShopController extends Controller
                         return response()->json([
                             "message" => "ERROR!",
                             "errors" => [
-                                $res
-                            ]
+                                    $res
+                                ]
                         ], 422);
                     }
                     $is_dd_pg_success = $res['responseData']['pay_refnum'] ?? null;
                     if ($is_dd_pg_success == null) {
+                        $res['rcm'] = "PENDING";
                         return response()->json([
-                            "message" => "ERROR!",
+                            "message" => "PENDING",
                             "errors" => [
-                                $res
-                            ]
-                        ], 422);
+                                    $res
+                                ]
+                        ], 201);
                     }
 
                     $respon = $res['responseData'];
@@ -1978,6 +2143,14 @@ class TravShopController extends Controller
 
                         $travoy = $this->travoyService->detailDerek($id, $request->id_user, $request->token);
                         return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
+                    }
+
+                    if ($data->order_type == TransOrder::ORDER_HU) {
+                        $data->save();
+                        DB::commit();
+                        $travoy = $this->travoyService->detailHU($id);
+                        return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
+    
                     }
 
                     //End payment kios
@@ -1993,20 +2166,12 @@ class TravShopController extends Controller
             }
 
             if ($data->payment_method->code_name == 'pg_dd_mandiri') {
-                if (!$request->otp) {
-                    return response()->json([
-                        "message" => "The given data was invalid.",
-                        "errors" => [
-                            "otp" => [
-                                "The otp field is required."
-                            ]
-                        ]
-                    ], 422);
-                }
                 $payload = $data_payment;
-                $payload['otp'] = $request->otp;
                 $payload['submerchant_id'] = $data->sub_merchant_id;
-                $res = PgJmto::paymentDD($payload);
+                $payload['payrefnum'] = $data_payment['refnum'];
+                $res = PgJmto::statusDD($payload);
+                // $res = PgJmto::paymentDD($payload);
+
                 if ($res->successful()) {
                     $res = $res->json();
 
@@ -2014,11 +2179,21 @@ class TravShopController extends Controller
                         return response()->json([
                             "message" => "ERROR!",
                             "errors" => [
-                                $res
-                            ]
+                                    $res
+                                ]
                         ], 422);
                     }
-                    $res['responseData']['card_id'] = $payload['card_id'] ?? '';
+
+                    $is_dd_pg_success = $res['responseData']['pay_refnum'] ?? null;
+                    if ($is_dd_pg_success == null) {
+                        return response()->json([
+                            "message" => "PENDING",
+                            "errors" => [
+                                    $res
+                                ]
+                        ], 201);
+                    }
+
                     $respon = $res['responseData'];
                     if ($data->payment === null) {
                         $payment = new TransPayment();
@@ -2030,8 +2205,8 @@ class TravShopController extends Controller
                         $pay->save();
                     }
 
-                    $data->status = TransOrder::PAYMENT_SUCCESS;
 
+                    $data->status = TransOrder::PAYMENT_SUCCESS;
                     if ($data->order_type === TransOrder::ORDER_TRAVOY) {
                         return $this->payKios($data, $id);
                     }
@@ -2048,14 +2223,24 @@ class TravShopController extends Controller
                         $travoy = $this->travoyService->detailDerek($id, $request->id_user, $request->token);
                         return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
                     }
+                    
+                    if ($data->order_type === TransOrder::ORDER_HU) {
+                        $data->save();
+                        DB::commit();
 
+                        $travoy = $this->travoyService->detailHU($id);
+                        return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
+                    }
+
+                    //End payment kios
                     foreach ($data->detil as $key => $value) {
                         $this->stock_service->updateStockProduct($value);
                     }
                     $this->trans_sharing_service->calculateSharing($data);
                     DB::commit();
-                    return $data;
+                    return response()->json($data);
                 }
+
                 return response()->json($res->json(), 400);
             }
 
@@ -2106,6 +2291,15 @@ class TravShopController extends Controller
                             DB::commit();
 
                             $travoy = $this->travoyService->detailDerek($id, $request->id_user, $request->token);
+                            return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
+
+                        }
+                        if ($data->order_type === TransOrder::ORDER_HU) {
+                            $data->status = TransOrder::PAYMENT_SUCCESS;
+                            $data->save();
+                            DB::commit();
+
+                            $travoy = $this->travoyService->detailHU($id);
                             return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
 
                         }
@@ -2182,6 +2376,8 @@ class TravShopController extends Controller
                         return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
 
                     }
+
+                 
                     foreach ($data->detil as $key => $value) {
                         $this->stock_service->updateStockProduct($value);
                     }
@@ -2208,8 +2404,6 @@ class TravShopController extends Controller
             // return response()->json(['error' => 'Coba Kembali'], 500);
         }
     }
-
-
 
     public function statusPaymentDD(Request $request, $id)
     {
@@ -2300,7 +2494,8 @@ class TravShopController extends Controller
 
                                 $data->save();
                                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-                                    'data' => $res_json
+                                    'data' => $res_json,
+                                    'inquiry' => $res_json
                                 ]);
                             } else {
                                 $data->harga_kios = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'] ?? $data->harga_kios;
@@ -2317,7 +2512,9 @@ class TravShopController extends Controller
                                 $data->save();
                                 Log::info($data);
                                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-                                    'data' => $res_json
+                                    'data' => $res_json,
+                                    'payment' => $res_json
+                                    
                                 ]);
                             }
 
@@ -2395,7 +2592,8 @@ class TravShopController extends Controller
                     }
 
                     $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-                        'data' => $kios
+                        'data' => $kios,
+                        'payment' => $kios
                     ]);
                     $data->save();
                     DB::commit();
@@ -2426,18 +2624,19 @@ class TravShopController extends Controller
                         return response()->json([
                             "message" => "ERROR!",
                             "errors" => [
-                                $res
-                            ]
+                                    $res
+                                ]
                         ], 422);
                     }
                     $is_dd_pg_success = $res['responseData']['pay_refnum'] ?? null;
+                    $res['rcm'] = "PENDING";
                     if ($is_dd_pg_success == null) {
                         return response()->json([
-                            "message" => "ERROR!",
+                            "message" => "PENDING",
                             "errors" => [
-                                $res
-                            ]
-                        ], 422);
+                                    $res
+                                ]
+                        ], 201);
                     }
 
                     $respon = $res['responseData'];
@@ -2544,15 +2743,15 @@ class TravShopController extends Controller
                     return response()->json([
                         "message" => "The given data was invalid.",
                         "errors" => [
-                            "otp" => [
-                                "The otp field is required."
+                                "otp" => [
+                                    "The otp field is required."
+                                ]
                             ]
-                        ]
                     ], 422);
                 }
                 $payload = $data_payment;
                 $payload['otp'] = $request->otp;
-                $payload['submerchant_id'] = $data->sub_merchant_id;
+                // $payload['submerchant_id'] = $data->sub_merchant_id;
                 $res = PgJmto::paymentDD($payload);
                 if ($res->successful()) {
                     $res = $res->json();
@@ -2561,10 +2760,21 @@ class TravShopController extends Controller
                         return response()->json([
                             "message" => "ERROR!",
                             "errors" => [
-                                $res
-                            ]
+                                    $res
+                                ]
                         ], 422);
                     }
+                    $is_dd_pg_success = $res['responseData']['pay_refnum'] ?? null;
+                    if ($is_dd_pg_success == null || $is_dd_pg_success == "") {
+                        $res['rcm'] = "PENDING";
+                        return response()->json([
+                            "message" => "PENDING",
+                            "errors" => [
+                                    $res
+                                ]
+                        ], 201);
+                    }
+
                     $res['responseData']['card_id'] = $payload['card_id'] ?? '';
                     $respon = $res['responseData'];
                     if ($data->payment === null) {
@@ -2580,6 +2790,20 @@ class TravShopController extends Controller
                     $data->status = TransOrder::PAYMENT_SUCCESS;
                     if ($data->order_type == TransOrder::POS) {
                         $data->status = TransOrder::DONE;
+                    }
+                    if ($data->order_type === TransOrder::ORDER_DEREK_ONLINE) {
+                        $data->save();
+                        DB::commit();
+
+                        $travoy = $this->travoyService->detailDerek($id, $request->id_user, $request->token);
+                        return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
+                    }
+                    if ($data->order_type === TransOrder::ORDER_HU) {
+                        $data->save();
+                        DB::commit();
+
+                        $travoy = $this->travoyService->detailHU($id);
+                        return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
                     }
                     $data->save();
                     foreach ($data->detil as $key => $value) {
@@ -2792,7 +3016,8 @@ class TravShopController extends Controller
 
                                 $data->save();
                                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-                                    'data' => $res_json
+                                    'data' => $res_json,
+                                    'payment' => $res_json
                                 ]);
                             } else {
                                 $data->harga_kios = $res_json['data']['harga'] ?? $res_json['data']['total'] ?? $res_json['data']['totalBayar'] ?? $res_json['data']['tagihan'] ?? $data->harga_kios;
@@ -2809,7 +3034,8 @@ class TravShopController extends Controller
                                 $data->save();
                                 Log::info($data);
                                 $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-                                    'data' => $res_json
+                                    'data' => $res_json,
+                                    'payment' => $res_json
                                 ]);
                             }
 
@@ -2887,7 +3113,9 @@ class TravShopController extends Controller
                     }
 
                     $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
-                        'data' => $kios
+                        'data' => $kios,
+                        'payment' => $kios
+
                     ]);
                     $data->save();
                     DB::commit();
@@ -2909,10 +3137,10 @@ class TravShopController extends Controller
                     return response()->json([
                         "message" => "The given data was invalid.",
                         "errors" => [
-                            "otp" => [
-                                "The otp field is required."
+                                "otp" => [
+                                    "The otp field is required."
+                                ]
                             ]
-                        ]
                     ], 422);
                 }
                 $payload = $data_payment;
@@ -2926,8 +3154,8 @@ class TravShopController extends Controller
                         return response()->json([
                             "message" => "ERROR!",
                             "errors" => [
-                                $res
-                            ]
+                                    $res
+                                ]
                         ], 422);
                     }
                     $res['responseData']['card_id'] = $payload['card_id'] ?? '';
@@ -2963,10 +3191,10 @@ class TravShopController extends Controller
                     return response()->json([
                         "message" => "The given data was invalid.",
                         "errors" => [
-                            "otp" => [
-                                "The otp field is required."
+                                "otp" => [
+                                    "The otp field is required."
+                                ]
                             ]
-                        ]
                     ], 422);
                 }
                 $payload = $data_payment;
@@ -2980,8 +3208,8 @@ class TravShopController extends Controller
                         return response()->json([
                             "message" => "ERROR!",
                             "errors" => [
-                                $res
-                            ]
+                                    $res
+                                ]
                         ], 422);
                     }
                     $res['responseData']['card_id'] = $payload['card_id'] ?? '';
@@ -3164,10 +3392,10 @@ class TravShopController extends Controller
             return response()->json([
                 "message" => "The given data was invalid.",
                 "errors" => [
-                    "code" => [
-                        "The code is invalid."
+                        "code" => [
+                            "The code is invalid."
+                        ]
                     ]
-                ]
             ], 422);
         }
         $data->save();
@@ -3202,8 +3430,136 @@ class TravShopController extends Controller
 
     }
 
+    public function callbackDerek(Request $request)
+    {
+        $data = TransOrder::where('order_type', TransOrder::ORDER_DEREK_ONLINE)->findOrFail($request->id);
+        if ($data) {
+            $all_sharing_amount = [];
+            $all_sharing_proportion = [];
+            try {
+                foreach (json_decode($data->sharing_code) as $item) {
+                    if ($item == 'JMTO') {
+                        array_push($all_sharing_amount, $data->sub_total);
+                        array_push($all_sharing_proportion, 100);
+                    } else {
+                        array_push($all_sharing_amount, 0);
+                        array_push($all_sharing_proportion, 0);
+                    }
+                }
+                $data->sharing_amount = $all_sharing_amount;
+                $data->sharing_proportion = $all_sharing_proportion;
+                $data->save();
+                return response()->json(['status' => 'success', 'data' => $data,], 200);
+            } catch (\Throwable $th) {
+                return response()->json(['status' => 'error', 'data' => 'Data Tidak di temukan',], 422);
+            }
+        }
+        return response()->json(['status' => 'error', 'data' => 'Data Tidak di temukan',], 422);
+    }
+
+    public function callbackpg(Request $request)
+    {
+        log::info('callback DD PG' ,[$request->all()]);
+        DB::beginTransaction();
+        $trans_payment = TransPayment::where('inquiry', 'like', '%' . $request->originalPartnerRewferenceNo . '%')->first();
+        try {
+            if ($trans_payment) {
+                $data = TransOrder::where('id', $trans_payment->trans_order_id)->firstOrFail();
+                if($request->latestTransactionStatus == '00' && $request->additionalInfo['description'] == 'Transaction completed' &&  $request->additionalInfo['responseMessage'] == 'SUCCESSFUL' && $request->additionalInfo['responseCode'] == '2005600' && $request->transactionStatusDesc == 'Success'){
+                    if($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::READY || $data->status == TransOrder::DONE){
+                    }
+                    $data->status = TransOrder::PAYMENT_SUCCESS;
+                    
+                    if ($data->order_type == TransOrder::ORDER_TRAVOY) {
+                        if ($data->description == 'single') {
+                            $kios = $this->kiosBankService->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
+                            Log::info(['bayar depan => ', $kios]);
+                        }
+                        if ($data->description == 'dual') {
+                            $datalog = $data->log_kiosbank()->where('trans_order_id', $id)->first();
+                            $tagihan = $datalog['data']['data']['tagihan'] ?? $datalog['data']['data']['harga_kios'];
+                            $admin = $datalog['data']['data']['adminBank'] ?? $datalog['data']['data']['AB'] ?? '000000000000';
+                            $total = $datalog['data']['data']['total'] ?? $datalog['data']['data']['harga_kios'] ?? $tagihan;
+                            $kios = $this->kiosBankService->dualPayment($data->sub_total, $data->order_id, $tagihan, $admin, $total);
+                            Log::info(['bayar depan => ', $kios]);
+
+                        }
+                        $kios['data']['harga'] = $kios['data']['harga'] ?? ($data->sub_total ?? '0');
+                        $kios['description'] = $kios['description'] ?? $kios['data']['status'] ?? $kios['data']['description'] ?? '';
+                        $kios['data']['harga_kios'] = $data->harga_kios;
+                        $kios['data']['harga'] = $data->sub_total ?? '0';
+
+                        if ($kios['rc'] == '00') {
+                            if (str_contains($kios['description'] ?? $kios['data']['status'], 'BERHASIL')) {
+                                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
+                                    'data' => $kios,
+                                    'payment' => $kios,
+
+                                ]);
+                                $data->status = TransOrder::DONE;
+                                $data->save();
+                                DB::commit();
+                                return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
+                            }
+                            if (str_contains($kios['description'] ?? $kios['data']['status'], 'SUKSES')) {
+                                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
+                                    'data' => $kios,
+                                    'payment' => $kios,
+
+                                ]);
+                                $data->status = TransOrder::DONE;
+                                $data->save();
+                                DB::commit();
+                                return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
+                            } else {
+                                $kios['description'] = $kios['description'] ?? $kios['data']['description'];
+                                $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
+                                    'data' => $kios,
+                                    'payment' => $kios,
+
+                                ]);
+                                $data->status = TransOrder::READY;
+                                $data->save();
+                                DB::commit();
+                                return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
+                            }
+                            // $data->status = TransOrder::DONE;
+                            // $data->save();
+                            // DB::commit();
+                            // return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
+                        } else {
+                            $data->log_kiosbank()->updateOrCreate(['trans_order_id' => $data->id], [
+                                'data' => $kios,
+                                'payment' => $kios,
+
+                            ]);
+                            $data->status = TransOrder::PAYMENT_SUCCESS;
+                            $data->save();
+                            DB::commit();
+                            return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
+                        }
+                    }
+                    // $data->save();
+                }
+                $trans_payment->update(['data' => $request->all(), 'payment' => $request->all()]);
+            }
+            DB::commit();
+            return response()->json(['status' => 'success', 'data' => 'Data di Terima'], 200);
+        }
+        catch (\Throwable $th) {
+            DB::rollback();
+            return response()->json(['error' => $th->getMessage()], 500);
+        }
+
+    }
+
     public function infoPln(Request $request)
     {
         return $this->response(JatelindoService::infoPln($request->meter_id));
+    }
+
+    public function repeateManual($id)
+    {
+        return $this->response($this->servicePayment->repeatManual($id));
     }
 }

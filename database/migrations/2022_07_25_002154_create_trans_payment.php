@@ -17,6 +17,8 @@ class CreateTransPayment extends Migration
             $table->id();
             $table->string('trans_order_id');
             $table->text('data');
+            $table->text('inquiry')->nullable();
+            $table->text('payment')->nullable();
             $table->timestamps();
         });
     }

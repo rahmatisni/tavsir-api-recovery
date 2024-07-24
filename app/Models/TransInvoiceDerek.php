@@ -16,6 +16,7 @@ class TransInvoiceDerek extends BaseModel
 
     protected $fillable = [
         'id',
+        'tenant_id',
         'invoice_id',
         'cashier_id',
         'pay_petugas_id',

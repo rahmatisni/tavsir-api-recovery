@@ -19,12 +19,32 @@ class LogKiosbank extends Model
 
     public function getDataAttribute($value)
     {
-        return json_decode($value, true);
+        return $value ? json_decode($value, true) : $value;
     }
 
     public function setDataAttribute($value)
     {
         $this->attributes['data'] = json_encode($value);
+    }
+
+    public function getInquiryAttribute($value)
+    {
+        return $value ? json_decode($value, true) : $value;
+    }
+
+    public function setInquiryAttribute($value)
+    {
+        $this->attributes['inquiry'] = json_encode($value);
+    }
+
+    public function getPaymentAttribute($value)
+    {
+        return $value ? json_decode($value, true) : $value;
+    }
+
+    public function setPaymentAttribute($value)
+    {
+        $this->attributes['payment'] = json_encode($value);
     }
 
     public function trans_order()
