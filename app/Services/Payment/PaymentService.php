@@ -804,6 +804,7 @@ class PaymentService
                     'repate_count' => $datalog->data['repeate_count'] ?? $repeate_count,
                 ]);
             }
+            dd($datalog);
             $tagihan = $datalog['data']['tagihan'] ?? $datalog['data']['harga_kios'];
             $admin = $datalog['data']['adminBank'] ?? $datalog['data']['AB'] ?? '000000000000';
             $total = $datalog['data']['total'] ?? $datalog['data']['harga_kios'] ?? $tagihan;
