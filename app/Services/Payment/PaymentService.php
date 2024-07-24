@@ -805,9 +805,9 @@ class PaymentService
                     'repate_count' => $datalog->data['repeate_count'] ?? $repeate_count,
                 ]);
             }
-            $tagihan = $datalog['data']['data']['tagihan'] ?? $datalog['data']['data']['harga_kios'];
-            $admin = $datalog['data']['data']['adminBank'] ?? $datalog['data']['data']['AB'] ?? '000000000000';
-            $total = $datalog['data']['data']['total'] ?? $datalog['data']['data']['harga_kios'] ?? $tagihan;
+            $tagihan = $datalog['inquiry']['data']['tagihan'] ?? $datalog['inquiry']['data']['harga_kios'];
+            $admin = $datalog['inquiry']['data']['adminBank'] ?? $datalog['inquiry']['data']['AB'] ?? '000000000000';
+            $total = $datalog['inquiry']['data']['total'] ?? $datalog['inquiry']['data']['harga_kios'] ?? $tagihan;
             $kios = $this->serviceKiosBank->dualPayment($data->sub_total, $data->order_id, $tagihan, $admin, $total);
             Log::info(['bayar depan => ', $kios]);
         }
