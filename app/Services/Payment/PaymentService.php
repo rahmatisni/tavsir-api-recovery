@@ -594,7 +594,7 @@ class PaymentService
                 'data' => $res['responseData'],
                 'payment' => $res['responseData']
             ]);
-            dd($updateResult);
+            $updateResult->save();
             DB::commit();
         }
 
