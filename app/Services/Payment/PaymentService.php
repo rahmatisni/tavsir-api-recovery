@@ -596,6 +596,8 @@ class PaymentService
             ],[
                 'payment' => $res['responseData']
             ]);
+            DB::commit();
+
         }
 
         return $this->responsePayment($status, $res);
