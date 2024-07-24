@@ -119,8 +119,8 @@ class PaymentService
         $data->payment()->updateOrCreate([
             'trans_order_id' => $data->id
         ],[
-            'data' => $result->responseData,
-            'payment' => $result->responseData
+            'data' => $result['responseData'],
+            'payment' => $result['responseData']
         ]);
 
         
