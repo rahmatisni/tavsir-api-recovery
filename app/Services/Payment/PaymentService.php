@@ -570,7 +570,6 @@ class PaymentService
     {
         $status = false;
         $payment_data = $trans_order->payment->inquiry ?? $trans_order->payment->data;
-        dd($payment_data);
         $res = PgJmto::vaStatus(
             $payment_data['sof_code'],
             $payment_data['bill_id'],
