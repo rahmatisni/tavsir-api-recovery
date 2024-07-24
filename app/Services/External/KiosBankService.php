@@ -344,7 +344,8 @@ class KiosBankService
         $order->log_kiosbank()->updateOrCreate([
             'trans_order_id' => $order->id
         ], [
-                'data' => $request
+                'data' => $request,
+                'inquiry' => $request
             ]);
 
         //minta tambah updateOrCreate ke column inquiry
