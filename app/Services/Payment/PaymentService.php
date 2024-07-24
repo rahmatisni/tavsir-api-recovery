@@ -730,9 +730,9 @@ class PaymentService
             $kios = $this->serviceKiosBank->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
             Log::info(['bayar depan => ', $kios]);
         }
-        $data_log_kios = $data->log_kiosbank->data ?? [];
+        $data_log_kios = $data->log_kiosbank->inquiry ?? [];
         $datalog = $data_log_kios;
-
+        dd($datalog);
         if ($data->description == 'dual') {
             if ($data->productKiosbank()->integrator == 'JATELINDO') {
                 $is_purchase = $data_log_kios['is_purchase'] ?? false;
