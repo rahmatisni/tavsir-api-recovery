@@ -20,8 +20,6 @@ Route::get('/', function () {
     return response()->json(['error' => 'Udah kenapa ga usah nyoba terus. gue mau pulang!'], 404);
 });
 
-
-
 Route::get('/cek', function () {
     $trans_order = TransOrder::first();
     $cek = StatusOrderEvent::dispatch($trans_order);
