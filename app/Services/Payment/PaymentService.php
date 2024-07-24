@@ -588,13 +588,14 @@ class PaymentService
             }else{
                 $res['responseData']['pay_status'] = 0;
             }
-            dd($res['responseData']);
-            $trans_order->payment()->updateOrCreate([
+            $updateResult = $trans_order->payment()->updateOrCreate([
                 'trans_order_id' => $trans_order->id
             ],[
                 'data' => $res['responseData'],
                 'payment' => $res['responseData']
             ]);
+            dd($updateResult);
+            DB::commit();
         }
 
         return $this->responsePayment($status, $res);
