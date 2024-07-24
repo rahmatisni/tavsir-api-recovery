@@ -114,8 +114,14 @@ class PaymentService
         if($result->status != true){
             return $result;
         }
-
         $data->status = TransOrder::PAYMENT_SUCCESS;
+        $data->payment()->updateOrCreate([
+            'trans_order_id' => $data->id
+        ],[
+            'data' => $result->data['responseData'],
+            'payment' => $result->data['responseData']
+        ]);
+        
         if ($data->order_type === TransOrder::ORDER_TRAVOY) {
             $data->save();
             Db::commit();
@@ -569,7 +575,7 @@ class PaymentService
     public function statusVA($trans_order)
     {
         $status = false;
-        $payment_data = $trans_order->payment->inquiry;
+        $payment_data = $trans_order->payment->inquiry ?? $trans_order->payment->data;
         $res = PgJmto::vaStatus(
             $payment_data['sof_code'],
             $payment_data['bill_id'],
@@ -583,17 +589,16 @@ class PaymentService
 
         if(($res['status'] ?? null) == 'success'){
             $status = ($res['responseData']['pay_status'] ?? 0) == 1 ? true : false;
-            if($status == true){
+            if ($status == true) {
                 $res['responseData']['pay_status'] = 1;
-            }else{
+            } else {
                 $res['responseData']['pay_status'] = 0;
             }
-
             $trans_order->payment()->updateOrCreate([
                 'trans_order_id' => $trans_order->id
-            ],[
+            ], [
                 'data' => $res['responseData'],
-                'payment' => $res['responseData'],
+                'payment' => $res['responseData']
             ]);
         }
 
@@ -730,9 +735,8 @@ class PaymentService
             $kios = $this->serviceKiosBank->singlePayment($data->sub_total, $data->order_id, $data->harga_kios);
             Log::info(['bayar depan => ', $kios]);
         }
-        $data_log_kios = $data->log_kiosbank->data ?? [];
+        $data_log_kios = $data->log_kiosbank->inquiry ??  $data->log_kiosbank->data ??[];
         $datalog = $data_log_kios;
-
         if ($data->description == 'dual') {
             if ($data->productKiosbank()->integrator == 'JATELINDO') {
                 $is_purchase = $data_log_kios['is_purchase'] ?? false;
@@ -805,9 +809,9 @@ class PaymentService
                     'repate_count' => $datalog->data['repeate_count'] ?? $repeate_count,
                 ]);
             }
-            $tagihan = $datalog['data']['data']['tagihan'] ?? $datalog['data']['data']['harga_kios'];
-            $admin = $datalog['data']['data']['adminBank'] ?? $datalog['data']['data']['AB'] ?? '000000000000';
-            $total = $datalog['data']['data']['total'] ?? $datalog['data']['data']['harga_kios'] ?? $tagihan;
+            $tagihan = $datalog['data']['tagihan'] ?? $datalog['data']['harga_kios'];
+            $admin = $datalog['data']['adminBank'] ?? $datalog['data']['AB'] ?? '000000000000';
+            $total = $datalog['data']['total'] ?? $datalog['data']['harga_kios'] ?? $tagihan;
             $kios = $this->serviceKiosBank->dualPayment($data->sub_total, $data->order_id, $tagihan, $admin, $total);
             Log::info(['bayar depan => ', $kios]);
         }
