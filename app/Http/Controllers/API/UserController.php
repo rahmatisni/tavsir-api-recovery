@@ -32,7 +32,7 @@ class UserController extends Controller
     public function index()
     {
         $role = ['ADMIN', 'SUPERADMIN'];
-        $business =in_array(auth()->user()->role, $role) ?false :auth()->user()?->business_id;
+        $business = in_array(auth()->user()->role, $role) ? false : auth()->user()?->business_id;
         $data = User::when($name = request()->name, function ($q) use ($name) {
             $q->where('name', 'like', '%' . $name . '%');
         })->when($email = request()->email, function ($q) use ($email) {
@@ -49,9 +49,11 @@ class UserController extends Controller
             return $q->where('rest_area_id', $rest_area_id);
         })->when($sort = request()->sort, function ($q) use ($sort) {
             return $q->where('rest_area_id', $sort);
-        })->when($business != false, function ($q) use ($business) {
-            return $q->where('business_id', $business);
-        }
+        })->when(
+                $business != false,
+                function ($q) use ($business) {
+                    return $q->where('business_id', $business);
+                }
             )
             ->mySortOrder(request())
             ->get();
@@ -158,8 +160,8 @@ class UserController extends Controller
             }
 
             $data = User::where('email', $request->email)->first();
-            if($data){
-            return response()->json(['status'=>'Error','message' => 'Email Duplikat'],420);
+            if ($data) {
+                return response()->json(['status' => 'Error', 'message' => 'Email Duplikat'], 420);
             }
             $user = User::create([
                 'name' => $request->name,
@@ -242,33 +244,31 @@ class UserController extends Controller
 
     public function resetPass(Request $request)
     {
-        // try {
-        DB::beginTransaction();
+        try {
+            DB::beginTransaction();
 
-        $data = User::where('register_uuid', $request->uuid)->first();
-        $validator = Validator::make(['password' => $request->password], [
-            'password' => [
-                'required',
-                'min:6',
-                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*(_|[^\w])).+$/'        
-            ]
-            
-        ]);
-        
-        if ($validator->fails()) {
-            $value =$validator->errors()->messages()['password'];
-            $resultString = implode("\n", $value);
-            return response()->json(['status' => 'Error', 'message' => $resultString], 422);
+            $data = User::where('register_uuid', $request->uuid)->first();
+            $validator = Validator::make(['password' => $request->password], [
+                'password' => [
+                    'required',
+                    'min:6',
+                    'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*(_|[^\w])).+$/'
+                ]
+            ]);
+            if ($validator->fails()) {
+                $value = $validator->errors()->messages()['password'];
+                $resultString = implode("\n", $value);
+                return response()->json(['status' => 'Error', 'message' => $resultString], 422);
+            } else {
+                $data->password = bcrypt($request->password);
+                $data->register_uuid = NULL;
+                $data->save();
+                DB::commit();
+                return response()->json($data);
+            }
+        } catch (\Throwable $th) {
+            return response()->json(['status' => 'Error', 'message' => 'Update Password Gagal'], 422);
         }
-        $data->password = bcrypt($request->password);
-        $data->register_uuid = NULL;
-        $data->save();
-        DB::commit();
-        return response()->json($data);
-
-        // } catch (\Throwable $th) {
-        //     return response()->json(['status'=>'Error','message' => 'Update Password Gagal'],422);
-        // }
     }
 
     /**
