@@ -11,7 +11,12 @@ class NumberSaveServices
 {
     public function list($filter)
     {
-        return NumberSave::where('customer_id', $filter)->get();
+        // return NumberSave::where('customer_id', $filter)->get();
+        return NumberSave::where('customer_id', $filter)
+            ->orderBy('created_at', 'desc')
+            ->groupBy('number')
+            ->get();
+
     }
 
     public function create(array $paylod)
