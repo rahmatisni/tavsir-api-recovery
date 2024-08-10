@@ -85,17 +85,17 @@ class TavsirController extends Controller
     {
         $identifier = auth()->user()?->tenant;
         $data = Supertenant::where('id', $identifier?->supertenant_id)->when($identifier, function ($q) use ($identifier) {
-                if ($identifier?->is_supertenant != NULL) {
-                    return $q->with('tenant');
-                } else {
-                    return $q->with([
-                        'tenant' => function ($query) use ($identifier) {
+            if ($identifier?->is_supertenant != NULL) {
+                return $q->with('tenant');
+            } else {
+                return $q->with([
+                    'tenant' => function ($query) use ($identifier) {
 
-                            $query->where('ref_tenant.id', '=', $identifier->id);
-                        }
-                    ]);
-                }
-            })
+                        $query->where('ref_tenant.id', '=', $identifier->id);
+                    }
+                ]);
+            }
+        })
             ->firstOrFail();
         return response()->json($data);
     }
@@ -521,7 +521,7 @@ class TavsirController extends Controller
         return response()->json([
             'message' => 'Refund sebesar ' . $total_refund,
             'data' =>
-            new TrOrderResource($data)
+                new TrOrderResource($data)
 
         ]);
     }
@@ -959,8 +959,6 @@ class TavsirController extends Controller
                 }
             }
 
-
-
             $tenant = $trans_order->tenant;
             $tenant_is_verified = $tenant?->is_verified;
 
@@ -981,10 +979,7 @@ class TavsirController extends Controller
                     }
                 }
             }
-
-
             foreach ($paymentMethods as $value) {
-                // Log::warning($value);
                 $value->platform_fee = env('PLATFORM_FEE');
                 $value->fee = 0;
 
@@ -994,37 +989,19 @@ class TavsirController extends Controller
 
                 if (in_array($value->id, $self_order)) {
                     $value->self_order = true;
-                    // dump(['so',$value->id, $self_order,true]);
                 }
 
                 if (in_array($value->id, $travshop)) {
                     $value->travshop = true;
-
-                    // dump(['tng',$value->id, $travshop,true]);
                 }
                 if (in_array($value->id, $tavsir)) {
                     $value->tavsir = true;
 
-                    // dump(['pos',$value->id, $travshop, true]);
                 }
-
-                // if ($trans_order->order_type != TransOrder::ORDER_TRAVOY) {
-
-                //     if (in_array($value->id, $removes)) {
-                //         $value->self_order = false;
-                //         $value->travshop = false;
-                //         $value->tavsir = false;
-                //     }
-
-                // }
-
 
                 if ($value?->sof_id) {
 
-                    // tenant_is_verified
-                    // if ($tenant_is_verified || $trans_order->order_type == TransOrder::ORDER_TRAVOY) {
-
-                    if ($value?->sof_id == null) {
+                    if ($value?->sof_id == null || $tenant_is_verified == null) {
                         $value->percentage = null;
                         $value->fee = null;
                     } else {
@@ -1033,7 +1010,6 @@ class TavsirController extends Controller
                         $value->percentage = $data['is_presentage'] ?? null;
                         $x = $data['value'] ?? 'x';
                         $state = $data['is_presentage'] ?? null;
-
 
                         if ($state == (false || null)) {
                             $value->fee = $data['value'] ?? null;
@@ -1045,11 +1021,7 @@ class TavsirController extends Controller
             }
         }
 
-        // dd('x');
 
-        // $merchant = PgJmto::listSubMerchant();
-        // log::info($merchant);
-        // $paymentMethods = $paymentMethods->whereNotIn('id', $remove);
         return response()->json($paymentMethods);
     }
 
@@ -1076,7 +1048,7 @@ class TavsirController extends Controller
             // if ($data->status != TransOrder::WAITING_PAYMENT) {
             //     return response()->json(['info' => $data->status], 422);
             // }
-            
+
             //Cek deposit
             if ($data->order_type == TransOrder::ORDER_TRAVOY) {
                 $cekProduct = ProductKiosBank::where('kode', $data->codeProductKiosbank())->first();
