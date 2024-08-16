@@ -187,18 +187,17 @@ class PgJmtoSnap extends Model
             "customerNo" => (string) $virtualNumber,
             "partnerServiceId" => $partnerServiceId,
             "virtualAccountNo" => $partnerServiceId . $virtualNumber,
-            // "virtualAccountName" => $customer_name,
+            "virtualAccountName" => $customer_name ?? 'TRAVOY',
             "virtualAccountEmail" => $email,
             "virtualAccountPhone" => $phone,
             "totalAmount" => ["value" => $amount . ".00", "currency" => "IDR"],
             "billDetails" => [["billName" => $bill_name]],
-            "virtualAccountTrxType" => "close",
+            "virtualAccountTrxType" => "c",
             "expiredDate" => Carbon::now()->addMinutes(10)->format('c'),
             "trxId" => $trx_id,
             "additionalInfo" => ["description" => ($bill_id . '-' . $desc . '-' . $amount)],
         ];
 
-        // dd(['hehehe',$payload]);
         if (env('PG_FAKE_RESPON') === true) {
             $fake = [
                 "responseCode"=> "2002700",
