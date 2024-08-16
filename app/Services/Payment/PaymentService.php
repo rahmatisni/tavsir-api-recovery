@@ -162,7 +162,7 @@ class PaymentService
     {
 
         $x = $trans_order->type == 'ORDER_TRAVOY' ? env('PREFIX_PG') : $trans_order->tenant?->prefix_va;
-        dd($x);
+        dd(['123',$x, env('PREFIX_PG')]);
 
         $status = false;
         $res = PgJmtoSnap::vaCreate(
