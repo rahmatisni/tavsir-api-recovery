@@ -170,7 +170,6 @@ class PgJmtoSnap extends Model
         if ($sof_code === 'MANDIRI') {
             $partnerServiceId = '51105031051';
             $virtualNumber = rand(10000, 99999);
-            dd($virtualNumber);
 
         }
         if ($sof_code === 'BRI') {
@@ -197,6 +196,7 @@ class PgJmtoSnap extends Model
             "trxId" => $trx_id,
             "additionalInfo" => ["description" => ($bill_id . '-' . $desc . '-' . $amount)],
         ];
+        dd($payload);
 
         if (env('PG_FAKE_RESPON') === true) {
             $fake = [
