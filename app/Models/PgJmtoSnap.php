@@ -168,8 +168,8 @@ class PgJmtoSnap extends Model
     public static function vaCreate($sof_code, $bill_id, $bill_name, $amount, $desc, $phone, $email, $customer_name, $sub_merchant_id)
     {
         if ($sof_code === 'MANDIRI') {
-            $partnerServiceId = '51105031051';
-            $virtualNumber = rand(10000, 99999);
+            $partnerServiceId = '51105031';
+            $virtualNumber = '005'.rand(10000, 99999);
 
         }
         if ($sof_code === 'BRI') {
