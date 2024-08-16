@@ -170,7 +170,8 @@ class PaymentService
             phone: $additonal_data['customer_phone'] ?? $trans_order->customer_phone ?? ($trans_order->tenant->phone ?? '08123456789'),
             email: env('APP_ENV') == 'testing' ? 'rahmatisni@gmail.com' : ($additonal_data['customer_email'] ?? $trans_order->tenant->email ?? 'travoy@jmto.co.id'),
             desc: $trans_order->tenant->name ?? 'Travoy',
-            sub_merchant_id: $trans_order->tenant?->sub_merchant_id ?? $trans_order->sub_merchant_id
+            sub_merchant_id: $trans_order->tenant?->sub_merchant_id ?? $trans_order->sub_merchant_id,
+            prefix : $trans_order->type == 'ORDER_TRAVOY' ? env('PREFIX_PG'): $trans_order->tenant?->prefix_va
         );
         $code = ($res['responseData']['responseSnap']['responseCode'] ?? false);
         $exp = $res['responseData']['responseSnap']['virtualAccountData']['expiredDate'];
