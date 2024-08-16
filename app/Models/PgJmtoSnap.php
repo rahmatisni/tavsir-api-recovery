@@ -225,7 +225,7 @@ class PgJmtoSnap extends Model
                 "rcm" => "success",
                 "responseData" => [
                     "sof_code" => $sof_code,
-                    "va_number" => $res['virtualAccountData']['virtualAccountNo'],
+                    "va_number" => str_replace(' ', '', $res['virtualAccountData']['partnerServiceId'].$res['virtualAccountData']['virtualAccountNo']),
                     "bill" => (string)((int) $res['virtualAccountData']['totalAmount']['value']),
                     "bill_id" => $bill_id,
                     "bill_name" => $bill_name,
@@ -242,6 +242,7 @@ class PgJmtoSnap extends Model
                 ],
             ];
         }
+
         return $res;
     }
 
