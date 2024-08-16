@@ -169,7 +169,7 @@ class PgJmtoSnap extends Model
     {
         if ($sof_code === 'MANDIRI') {
             $partnerServiceId = '51105031';
-            $virtualNumber = rand(10000000, 99999999);
+            $virtualNumber = 005 . rand(10000, 99999);
 
         }
         if ($sof_code === 'BRI') {
@@ -182,7 +182,6 @@ class PgJmtoSnap extends Model
         $trx_id = 'Travoy'. Str::random(25);
 
 
-        // $virtualNumber = '12345678';
         $payload = [
             "customerNo" => (string) $virtualNumber,
             "partnerServiceId" => $partnerServiceId,
