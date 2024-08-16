@@ -543,8 +543,7 @@ class PaymentService
 
         $payment_data = $trans_order->payment->inquiry['responseSnap']['virtualAccountData'] ?? [];
         $res = PgJmtoSnap::vaStatus($payment_data);
-
-        if(($res['responseCode'] ?? null) == '2002700'){
+        if(($res['responseCode'] ?? null) == '2002600'){
             $status = ($res['virtualAccountData']['paymentFlagStatus'] ?? 0) == 1 ? true : false;
             $res = $trans_order->payment->data;
             if($status == true){
