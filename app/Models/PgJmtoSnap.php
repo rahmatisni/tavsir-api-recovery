@@ -198,7 +198,7 @@ class PgJmtoSnap extends Model
             "additionalInfo" => ["description" => ($bill_id . '-' . $desc . '-' . $amount)],
         ];
 
-        dd(['hehehe',$payload]);
+        // dd(['hehehe',$payload]);
         if (env('PG_FAKE_RESPON') === true) {
             $fake = [
                 "responseCode"=> "2002700",
