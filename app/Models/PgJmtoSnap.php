@@ -167,11 +167,10 @@ class PgJmtoSnap extends Model
 
     public static function vaCreate($sof_code, $bill_id, $bill_name, $amount, $desc, $phone, $email, $customer_name, $sub_merchant_id, $prefix)
     {
-        dd($prefix);
 
         if ($sof_code === 'MANDIRI') {
-            $partnerServiceId = '51105031';
-            $virtualNumber = '005'.rand(10000, 99999);
+            $partnerServiceId = '51105';
+            $virtualNumber = $prefix.rand(10000000, 99999999);
 
         }
         if ($sof_code === 'BRI') {
@@ -199,6 +198,7 @@ class PgJmtoSnap extends Model
             "additionalInfo" => ["description" => ($bill_id . '-' . $desc . '-' . $amount)],
         ];
 
+        dd(['hehehe',$payload]);
         if (env('PG_FAKE_RESPON') === true) {
             $fake = [
                 "responseCode"=> "2002700",
