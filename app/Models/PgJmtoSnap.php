@@ -170,6 +170,7 @@ class PgJmtoSnap extends Model
         if ($sof_code === 'MANDIRI') {
             $partnerServiceId = '51105031';
             $virtualNumber = 005 . rand(10000, 99999);
+            dd($virtualNumber);
 
         }
         if ($sof_code === 'BRI') {
