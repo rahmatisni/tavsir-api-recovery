@@ -160,6 +160,10 @@ class PaymentService
 
     public function createSnapVA($payment_method, $trans_order, $additonal_data) : object
     {
+
+        $x = $trans_order->type == 'ORDER_TRAVOY' ? env('PREFIX_PG') : $trans_order->tenant?->prefix_va;
+        dd($x);
+
         $status = false;
         $res = PgJmtoSnap::vaCreate(
             sof_code: $payment_method->code,
@@ -171,7 +175,7 @@ class PaymentService
             email: env('APP_ENV') == 'testing' ? 'rahmatisni@gmail.com' : ($additonal_data['customer_email'] ?? $trans_order->tenant->email ?? 'travoy@jmto.co.id'),
             desc: $trans_order->tenant->name ?? 'Travoy',
             sub_merchant_id: $trans_order->tenant?->sub_merchant_id ?? $trans_order->sub_merchant_id,
-            prefix : $trans_order->type == 'ORDER_TRAVOY' ? env('PREFIX_PG'): $trans_order->tenant?->prefix_va
+            prefix : $trans_order->type == 'ORDER_TRAVOY' ? env('PREFIX_PG') : $trans_order->tenant?->prefix_va
         );
         $code = ($res['responseData']['responseSnap']['responseCode'] ?? false);
         $exp = $res['responseData']['responseSnap']['virtualAccountData']['expiredDate'];
