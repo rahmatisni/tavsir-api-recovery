@@ -169,7 +169,7 @@ class PgJmtoSnap extends Model
     {
 
         if ($sof_code === 'MANDIRI') {
-            $partnerServiceId = '51105';
+            $partnerServiceId = '89080';
             $virtualNumber = $prefix.rand(10000000, 99999999);
 
         }
@@ -192,7 +192,7 @@ class PgJmtoSnap extends Model
             "virtualAccountPhone" => $phone,
             "totalAmount" => ["value" => $amount . ".00", "currency" => "IDR"],
             "billDetails" => [["billName" => $bill_name]],
-            "virtualAccountTrxType" => "c",
+            "virtualAccountTrxType" => "O",
             "expiredDate" => Carbon::now()->addMinutes(10)->format('c'),
             "trxId" => $trx_id,
             "additionalInfo" => ["description" => ($bill_id . '-' . $desc . '-' . $amount)],
@@ -248,6 +248,13 @@ class PgJmtoSnap extends Model
 
     public static function vaStatus($payload)
     {
+        
+        try{
+            $payload['virtualAccountNo'] =  $payload['partnerServiceId'].$payload['customerNo'];
+        }
+        catch (\Throwable $th) {        
+            log::error([$payload,'format va salah']);
+        }
         $payload = Arr::only($payload,[
             "partnerServiceId",
             "customerNo",
@@ -255,7 +262,7 @@ class PgJmtoSnap extends Model
             "additionalInfo",
             "inquiryRequestId",
             "virtualAccountEmail",
-            // "virtualAccountName",
+            "virtualAccountName",
             "virtualAccountPhone",
             "trxId",
         ]);

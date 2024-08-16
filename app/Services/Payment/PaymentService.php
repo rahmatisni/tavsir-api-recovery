@@ -165,7 +165,7 @@ class PaymentService
             sof_code: $payment_method->code,
             bill_id: $trans_order->order_id,
             bill_name: 'GetPay',
-            amount: $trans_order->total - $trans_order->service_fee,
+            amount: $trans_order->total,
             customer_name: $trans_order->customer_name ?? ($trans_order->tenant->name ?? 'Travoy'),
             phone: $additonal_data['customer_phone'] ?? $trans_order->customer_phone ?? ($trans_order->tenant->phone ?? '08123456789'),
             email: env('APP_ENV') == 'testing' ? 'rahmatisni@gmail.com' : ($additonal_data['customer_email'] ?? $trans_order->tenant->email ?? 'travoy@jmto.co.id'),
@@ -539,6 +539,8 @@ class PaymentService
     public function statusSnapVA($trans_order)
     {
         $status = false;
+        $status_order = null;
+
         $payment_data = $trans_order->payment->inquiry['responseSnap']['virtualAccountData'] ?? [];
         $res = PgJmtoSnap::vaStatus($payment_data);
 
