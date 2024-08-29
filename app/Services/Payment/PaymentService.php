@@ -200,8 +200,7 @@ class PaymentService
         $fee = 0;
         $res = PgJmto::vaCreate(
             sof_code: $payment_method->code,
-            // bill_id: $trans_order->order_id,
-            bill_id: '123456',
+            bill_id: $trans_order->order_id,
             bill_name: 'GetPay',
             amount: $trans_order->total,
             desc: $trans_order->tenant->name ?? 'Travoy',
