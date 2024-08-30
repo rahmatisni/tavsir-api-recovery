@@ -985,7 +985,7 @@ class TravShopController extends Controller
     public function paymentMethod(Request $request)
     {
         $paymentMethods = PaymentMethod::all();
-        $self_order = [4, 5, 7, 9, 11];
+        $self_order = [4, 5, 7, 9, 11,12,13,14];
         $travshop = [5, 6, 7, 8, 9, 11, 12, 13, 14];
         $tavsir = [1, 2, 3, 4, 10];
 
