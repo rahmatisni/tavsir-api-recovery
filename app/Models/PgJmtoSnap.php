@@ -165,12 +165,12 @@ class PgJmtoSnap extends Model
         }
     }
 
-    public static function vaCreate($sof_code, $bill_id, $bill_name, $amount, $desc, $phone, $email, $customer_name, $sub_merchant_id, $prefix)
+    public static function vaCreate($sof_code, $bill_id, $bill_name, $amount, $desc, $phone, $email, $customer_name, $sub_merchant_id, $prefix, $data)
     {
 
         if ($sof_code === 'MANDIRI') {
             $partnerServiceId = '89080';
-            $virtualNumber = $prefix.rand(10000000, 99999999);
+            // $virtualNumber = $prefix.rand(10000000, 99999999);
 
         }
         if ($sof_code === 'BRI') {
@@ -180,6 +180,13 @@ class PgJmtoSnap extends Model
 
         }
 
+        if ($data->order_type == 'ORDER_TRAVOY'){
+            $virtualNumber = $prefix.env('PREFIX_KIOS').rand(10000, 99999);
+        }
+        else {
+            $vacode = $data->tenant->prefix_va ?? '000';
+            $virtualNumber = $prefix.$vacode.rand(10000, 99999);
+        }
         $trx_id = 'Travoy'. Str::random(25);
 
 

@@ -171,7 +171,8 @@ class PaymentService
             email: env('APP_ENV') == 'testing' ? 'rahmatisni@gmail.com' : ($additonal_data['customer_email'] ?? $trans_order->tenant->email ?? 'travoy@jmto.co.id'),
             desc: $trans_order->tenant->name ?? 'Travoy',
             sub_merchant_id: $trans_order->tenant?->sub_merchant_id ?? $trans_order->sub_merchant_id,
-            prefix : $trans_order->order_type == 'ORDER_TRAVOY' ? env('PREFIX_PG') : $trans_order->tenant?->prefix_va
+            prefix : env('PREFIX_PG'),
+            data : $trans_order
         );
         $code = ($res['responseData']['responseSnap']['responseCode'] ?? false);
         $exp = $res['responseData']['responseSnap']['virtualAccountData']['expiredDate'];
