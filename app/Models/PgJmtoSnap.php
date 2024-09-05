@@ -221,7 +221,7 @@ class PgJmtoSnap extends Model
             ]);
         }
         $res = self::service('POST', '/snap/merchant/v1.0/transfer-va/create-va', $payload)->json();
-        Log::info(['Payload PG =>', $payload, 'Va status => ', $res ?? 'ERROR']);
+        Log::info(['Payload PG =>', $payload, 'Va Create => ', $res ?? 'ERROR']);
 
         if(($res['responseCode'] ?? null) == 2002700){
             //remove nanti kalau dari pg sudah d fix padding respon virtual accountNo
