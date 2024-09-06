@@ -170,8 +170,13 @@ class PgJmtoSnap extends Model
 
         if ($sof_code === 'MANDIRI') {
             $partnerServiceId = '89080';
-            // $virtualNumber = $prefix.rand(10000000, 99999999);
-
+            if ($data->order_type == 'ORDER_TRAVOY'){
+                $virtualNumber = $prefix.env('PREFIX_KIOS').rand(10000, 99999);
+            }
+            else {
+                $vacode = $data->tenant->prefix_va ?? '000';
+                $virtualNumber = $prefix.$vacode.rand(10000, 99999);
+            }
         }
         if ($sof_code === 'BRI') {
             $partnerServiceId = '77777031';
@@ -179,16 +184,19 @@ class PgJmtoSnap extends Model
             $virtualNumber = rand(10000000, 99999999);
 
         }
+        if ($sof_code === 'BNI') {
+            $partnerServiceId = '98820861';
+            $virtualNumber = rand(10000000, 99999999);
+        }
 
-        if ($data->order_type == 'ORDER_TRAVOY'){
-            $virtualNumber = $prefix.env('PREFIX_KIOS').rand(10000, 99999);
-        }
-        else {
-            $vacode = $data->tenant->prefix_va ?? '000';
-            $virtualNumber = $prefix.$vacode.rand(10000, 99999);
-        }
+        // if ($data->order_type == 'ORDER_TRAVOY'){
+        //     $virtualNumber = $prefix.env('PREFIX_KIOS').rand(10000, 99999);
+        // }
+        // else {
+        //     $vacode = $data->tenant->prefix_va ?? '000';
+        //     $virtualNumber = $prefix.$vacode.rand(10000, 99999);
+        // }
         $trx_id = 'Travoy'. Str::random(25);
-
 
         $payload = [
             "customerNo" => (string) $virtualNumber,
@@ -202,9 +210,10 @@ class PgJmtoSnap extends Model
             "virtualAccountTrxType" => "O",
             "expiredDate" => Carbon::now()->addMinutes(10)->format('c'),
             "trxId" => $trx_id,
-            "additionalInfo" => ["description" => ($bill_id . '-' . $desc . '-' . $amount)],
+            "additionalInfo" => ["description" => ($bill_id . '-' . $desc . '-' . $amount), "submerch_id" => $sub_merchant_id],
         ];
 
+        
         if (env('PG_FAKE_RESPON') === true) {
             $fake = [
                 "responseCode"=> "2002700",
@@ -221,6 +230,7 @@ class PgJmtoSnap extends Model
             ]);
         }
         $res = self::service('POST', '/snap/merchant/v1.0/transfer-va/create-va', $payload)->json();
+
         Log::info(['Payload PG =>', $payload, 'Va Create => ', $res ?? 'ERROR']);
 
         if(($res['responseCode'] ?? null) == 2002700){

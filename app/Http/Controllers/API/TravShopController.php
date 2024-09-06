@@ -1080,11 +1080,29 @@ class TravShopController extends Controller
                         $value->fee = (int) ceil((float) $x / 100 * $trans_order->sub_total);
                     }
                 }
+
                 if ($value->id == 4) {
                     $value->fee = 0;
                 }
                 if ($value->id == 14) {
                     $value->fee = 0;
+                }
+
+
+                if ($value->id == 13 && $trans_order->customer_phone == '082113088725') {
+                    if ($value->integrator == 'getoll') {
+                        $data = PgJmto::tarifFee(4, $value->payment_method_id, $trans_order->sub_merchant_id, $trans_order->sub_total);
+                    }
+                    $value->percentage = $data['is_presentage'] ?? null;
+                    $x = $data['value'] ?? 'x';
+                    $state = $data['is_presentage'] ?? null;
+    
+                    if ($state == (false || null)) {
+                        $value->fee = $data['value'] ?? null;
+                    } else {
+                        $value->fee = (int) ceil((float) $x / 100 * $trans_order->sub_total);
+                    }
+
                 }
             }
 
@@ -1122,6 +1140,8 @@ class TravShopController extends Controller
                 //Skip jika jatelindo
                 if ($cekProduct?->integrator != 'JATELINDO') {
                     $deposit = $this->kiosBankService->cekDeposit();
+                    // $deposit['rc'] = '00';
+                    // $deposit['deposit'] = '100000000000';
                     if ($deposit['rc'] == '00') {
                         if ((int) $deposit['deposit'] < $data->sub_total) {
                             return response()->json(['info' => 'Deposit ' . $deposit['deposit'] . ' < ' . $data->sub_total], 422);
