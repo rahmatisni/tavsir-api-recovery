@@ -38,7 +38,8 @@ class PaymentService
     public function create(PaymentMethod $payment_method, TransOrder $data, $additonal_data = []) : object
     {
         switch (true) {
-            case Str::contains($payment_method->code_name, PaymentMethodCode::SNAP_VA):
+            // case Str::contains($payment_method->code_name, PaymentMethodCode::SNAP_VA):
+            case Str::contains($payment_method->is_snap, 1):
                 $result = $this->createSnapVA($payment_method, $data, $additonal_data);
                 break;
 
@@ -77,7 +78,9 @@ class PaymentService
     {
         $payment_method = $data->payment_method;
         switch (true) {
-            case Str::contains($payment_method->code_name, PaymentMethodCode::SNAP_VA):
+            // case Str::contains($payment_method->code_name, PaymentMethodCode::SNAP_VA):
+            case Str::contains($payment_method->is_snap, 1):
+
                 $result = $this->statusSnapVA($data);
                 break;
 

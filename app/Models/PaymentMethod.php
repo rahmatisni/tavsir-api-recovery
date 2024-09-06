@@ -11,6 +11,7 @@ class PaymentMethod extends BaseModel
 
     protected $fillable = [
         'code_name',
+        'is_snap',
         'sof_id',
         'code',
         'logo',
