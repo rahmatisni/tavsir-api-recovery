@@ -186,16 +186,16 @@ class PgJmtoSnap extends Model
         }
         if ($sof_code === 'BNI') {
             $partnerServiceId = '98820861';
-            $virtualNumber = rand(10000000, 99999999);
+            if ($data->order_type == 'ORDER_TRAVOY'){
+                $virtualNumber = env('PREFIX_KIOS').rand(10000, 99999);
+            }
+            else {
+                $vacode = $data->tenant->prefix_va ?? '005';
+                $virtualNumber = $vacode.rand(10000, 99999);
+            }
+
         }
 
-        // if ($data->order_type == 'ORDER_TRAVOY'){
-        //     $virtualNumber = $prefix.env('PREFIX_KIOS').rand(10000, 99999);
-        // }
-        // else {
-        //     $vacode = $data->tenant->prefix_va ?? '000';
-        //     $virtualNumber = $prefix.$vacode.rand(10000, 99999);
-        // }
         $trx_id = 'Travoy'. Str::random(25);
 
         $payload = [
@@ -267,12 +267,12 @@ class PgJmtoSnap extends Model
     public static function vaStatus($payload)
     {
         
-        try{
-            $payload['virtualAccountNo'] =  $payload['partnerServiceId'].$payload['customerNo'];
-        }
-        catch (\Throwable $th) {        
-            log::error([$payload,'format va salah']);
-        }
+        // try{
+        //     $payload['virtualAccountNo'] =  $payload['partnerServiceId'].$payload['customerNo'];
+        // }
+        // catch (\Throwable $th) {        
+        //     log::error([$payload,'format va salah']);
+        // }
         $payload = Arr::only($payload,[
             "partnerServiceId",
             "customerNo",
