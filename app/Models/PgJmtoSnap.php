@@ -213,6 +213,10 @@ class PgJmtoSnap extends Model
             "additionalInfo" => ["description" => ($bill_id . '-' . $desc . '-' . $amount), "submerch_id" => $sub_merchant_id],
         ];
 
+        if($data->tenant?->prefix_va == NULL){
+            $payload['additionalInfo'] = ["description" => ($bill_id . '-' . $desc . '-' . $amount)];
+        }
+
         
         if (env('PG_FAKE_RESPON') === true) {
             $fake = [
