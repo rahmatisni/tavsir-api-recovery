@@ -1108,9 +1108,9 @@ class TravShopController extends Controller
                 }
                 if ($value->id == 12 && $trans_order->customer_phone == '082113088725') {
                     if ($value->integrator == 'getoll') {
-                        $data = PgJmto::tarifFee(4, $value->payment_method_id, $trans_order->sub_merchant_id, $trans_order->sub_total);
+                        $data = PgJmto::tarifFee(3, $value->payment_method_id, $trans_order->sub_merchant_id, $trans_order->sub_total);
                     }
-                    $value['sof_id'] = 4;
+                    $value['sof_id'] = 3;
                     $value->percentage = $data['is_presentage'] ?? null;
                     $x = $data['value'] ?? 'x';
                     $state = $data['is_presentage'] ?? null;
