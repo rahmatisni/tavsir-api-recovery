@@ -1106,6 +1106,23 @@ class TravShopController extends Controller
                     }
 
                 }
+                if ($value->id == 12 && $trans_order->customer_phone == '082113088725') {
+                    if ($value->integrator == 'getoll') {
+                        $data = PgJmto::tarifFee(4, $value->payment_method_id, $trans_order->sub_merchant_id, $trans_order->sub_total);
+                    }
+                    $value['sof_id'] = 4;
+                    $value->percentage = $data['is_presentage'] ?? null;
+                    $x = $data['value'] ?? 'x';
+                    $state = $data['is_presentage'] ?? null;
+
+                
+                    if ($state == (false || null)) {
+                        $value->fee = $data['value'] ?? null;
+                    } else {
+                        $value->fee = (int) ceil((float) $x / 100 * $trans_order->sub_total);
+                    }
+
+                }
             }
 
         }
