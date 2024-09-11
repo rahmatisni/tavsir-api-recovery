@@ -216,8 +216,9 @@ class PgJmtoSnap extends Model
         if($data->tenant?->prefix_va == NULL){
             $payload['additionalInfo'] = ["description" => ($bill_id . '-' . $desc . '-' . $amount)];
         }
-
-        
+         if($data->order_type == 'ORDER_TRAVOY'){
+            $payload['additionalInfo'] =  ["description" => ($bill_id . '-' . $desc . '-' . $amount), "submerch_id" => $data->$sub_merchant_id];
+        }
         if (env('PG_FAKE_RESPON') === true) {
             $fake = [
                 "responseCode"=> "2002700",
