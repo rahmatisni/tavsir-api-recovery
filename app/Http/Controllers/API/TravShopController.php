@@ -2133,6 +2133,11 @@ class TravShopController extends Controller
                     return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
 
                 }
+                  if ($data->order_type == TransOrder::ORDER_PARKIR) {
+                    // $travoy = $this->travoyService->detailHU($id);
+                    return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '']);
+
+                }
                 $product_kios_bank = $data->productKiosbank();
                 if ($product_kios_bank->integrator == 'JATELINDO') {
                     $infoPelanggan = JatelindoService::infoPelanggan($data->log_kiosbank, $data);
