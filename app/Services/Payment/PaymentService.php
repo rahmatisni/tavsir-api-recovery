@@ -286,6 +286,8 @@ class PaymentService
         );
 
         if (($res['status'] ?? null) == 'success') {
+           $res['responseData']['qr_string'] = $res['responseData']['qrString'] ;
+
             $trans_order->payment()->updateOrCreate([
                 'trans_order_id' => $trans_order->id
             ],[
