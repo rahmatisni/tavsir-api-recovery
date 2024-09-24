@@ -12,6 +12,6 @@ class PaymentMethodCode
    const PG_DD_BRI = 'pg_dd_bri';
    const PG_DD_MANDIRI = 'pg_dd_mandiri';
    const QR = 'qr';
-   const LINK = 'link';
-   const QRJTL = 'pg_qris';
+   // const LINK = 'link';
+   const LINK = 'pg_qris';
 }
