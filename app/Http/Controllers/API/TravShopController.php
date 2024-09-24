@@ -592,20 +592,20 @@ class TravShopController extends Controller
         try {
             DB::beginTransaction();
             $data = new TransOrder;
-            // $tenant = Tenant::find($request->tenant_id);
+            $tenant_id = 86;
+            $tenant = Tenant::find($tenant_id);
             // dd($tenant);
             $data->order_type = TransOrder::ORDER_HU;
             $data->order_id = $request->order_id;
-            // $data->order_id = ($tenant->rest_area_id ?? '0') . '-' . ($tenant->id ?? '0') . '-DO-' . date('YmdHis');
             $data->order_id = $request->order_id;
-            $data->rest_area_id = 0;
-            $data->tenant_id = $request->tenant_id;
-            $data->business_id = 0;
+            $data->rest_area_id = $tenant->rest_area_id;
+            $data->tenant_id = $tenant->id;
+            $data->business_id = $tenant->business_id;
             $data->customer_id = $request->customer_id;
             $data->customer_name = $request->customer_name;
             $data->customer_phone = $request->customer_phone;
-            $data->merchant_id = 0;
-            $data->sub_merchant_id = '13';
+            $data->merchant_id = $tenant->merchant_id;
+            $data->sub_merchant_id =  $tenant->sub_merchant_id;
             $data->sub_total = $request->sub_total;
 
             $data->save();
@@ -1071,12 +1071,13 @@ class TravShopController extends Controller
                 $travshop = [5, 6, 7, 8, 9, 11, 12, 13, 14];
                 $tavsir = [];
 
-            } else if ($param_removes == null && $trans_order->order_type == 'HU_ORDER') {
-                $self_order = [];
-                $travshop = [5, 6, 7, 8, 9, 11, 12, 13, 14];
-                $tavsir = [];
+            // } else if ($param_removes == null && $trans_order->order_type == 'HU_ORDER') {
+            //     $self_order = [];
+            //     $travshop = [5, 6, 7, 8, 9, 11, 12, 13, 14];
+            //     $tavsir = [];
 
-            } else {
+            }
+             else {
                 $intersect = json_decode($param_removes->list_payment);
                 if ($param_removes->list_payment == null) {
                     $self_order = [];
