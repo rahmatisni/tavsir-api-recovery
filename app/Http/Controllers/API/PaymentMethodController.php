@@ -48,6 +48,12 @@ class PaymentMethodController extends Controller
         return response()->json($paymentMethods);
     }
 
+    public function indexPublic(Request $request)
+    {
+        $paymentMethods = PaymentMethod::where('id', $request->id)->get();
+        return response()->json($paymentMethods);
+    }
+
 
     public function indexSof(Request $request)
     {
