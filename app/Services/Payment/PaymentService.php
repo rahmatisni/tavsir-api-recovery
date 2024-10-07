@@ -24,6 +24,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use ParagonIE\Sodium\Core\Curve25519\Fe;
 
 class PaymentService
 {
@@ -38,10 +39,17 @@ class PaymentService
     public function create(PaymentMethod $payment_method, TransOrder $data, $additonal_data = []) : object
     {
         switch (true) {
-            // case Str::contains($payment_method->code_name, PaymentMethodCode::SNAP_VA):
-            case Str::contains($payment_method->is_snap, 1):
+            case Str::contains($payment_method->is_snap, 1) && $payment_method->payment_method_code == 'VA':
                 $result = $this->createSnapVA($payment_method, $data, $additonal_data);
                 break;
+            
+            case Str::contains($payment_method->is_snap, 1) && $payment_method->payment_method_code == 'DD':
+                $result = $this->createSnapDirectDebit($additonal_data['card_id'], $data);
+                break;
+            
+            case Str::contains($payment_method->code_name, PaymentMethodCode::SNAP_DD):
+                    $result = $this->createSnapVA($payment_method, $data, $additonal_data);
+                    break;
 
             case Str::contains($payment_method->code_name, PaymentMethodCode::PG_VA):
                 $result = $this->createPgVA($payment_method, $data, $additonal_data);
@@ -78,10 +86,12 @@ class PaymentService
     {
         $payment_method = $data->payment_method;
         switch (true) {
-            // case Str::contains($payment_method->code_name, PaymentMethodCode::SNAP_VA):
-            case Str::contains($payment_method->is_snap, 1):
-
+            case Str::contains($payment_method->is_snap, 1) && $payment_method->payment_method_code == 'VA':
                 $result = $this->statusSnapVA($data);
+                break;
+            
+            case Str::contains($payment_method->is_snap, 1) && $payment_method->payment_method_code == 'DD':
+                $result = $this->statusSnapDirectDebit($data, $additonal_data['otp']);
                 break;
 
             case Str::contains($payment_method->code_name, PaymentMethodCode::PG_VA):
@@ -121,8 +131,8 @@ class PaymentService
         $data->payment()->updateOrCreate([
             'trans_order_id' => $data->id
         ],[
-            'data' => $result->data['responseData'],
-            'payment' => $result->data['responseData']
+            'data' => $result->data['responseData'] ?? $result->data,
+            'payment' => $result->data['responseData'] ?? $result->data
         ]);
         
         if ($data->order_type === TransOrder::ORDER_TRAVOY) {
@@ -970,5 +980,150 @@ class PaymentService
                 'id' => $id
             ]);
         }
+    }
+
+    public function createSnapDirectDebit($card_id, $trans_order) : object
+    {
+        $status = false;
+        $fee = 0;
+
+        $bind = Bind::where('id', $card_id)->first();
+        $bind_before = TransPayment::where('trans_order_id', $trans_order->id)->first();
+        if (!$bind) {
+            return $this->responsePayment(
+                status: $status,
+                data: [
+                    'message' => 'Card Not Found'
+                ]
+            );
+        }
+        if (!$bind->is_valid) {
+            return $this->responsePayment(
+                status: $status,
+                data: [
+                    'message' => 'Card Not Valid'
+                ]
+            );
+        }
+
+        $payment_payload = [
+            'amount' => (string) $trans_order->sub_total,
+            'bindId' => $bind->bind_id ?? $bind_before->data['bind_id'],
+            'accountName' => $bind->customer_name ?? $bind_before->data['customer_name'],
+            'phoneNo' => $bind->phone ?? $bind_before->data['phone'],
+            'email' => $bind->email ?? $bind_before->data['email'],
+            'sofCode' => $bind->sof_code ?? $bind_before->data['sof_code'],
+            'remarks' => $trans_order->tenant->name ?? 'Travoy',
+        ];
+
+        $respon = PgJmtoSnap::paymentDD($payment_payload);
+
+        if ($respon->successful()) {
+            $res = $respon->json();
+            if (substr($res['responseCode'], 0, 3) != '200') {
+                $status = false;
+                return $this->responsePayment($status, $res, $fee);
+            }
+            $fee = $respon->json('additionalInfo.feeAmount.value');
+            $res['bind_id'] = $bind->bind_id;
+            $res['sof_code'] = $bind->sof_code;
+            $res['card_id'] = $card_id;
+            $res['responseData']['fee'] = $fee;
+            $res['responseData']['exp_date'] = Carbon::now()->addHour();
+
+            $trans_order->payment()->updateOrCreate([
+                'trans_order_id' => $trans_order->id
+            ],[
+                'data' => $res,
+                'inquiry' => $res
+            ]);
+
+            $status = true;
+            return $this->responsePayment($status, $res, $fee);
+        }
+    }
+
+    public function statusSnapDirectDebit($trans_order, $otp)
+    {
+        $trans_payment = $trans_order->payment->inquiry;
+        $param = [
+            'originalReferenceNo' => $trans_payment['referenceNo'],
+            'otp' => $otp,
+            'sofCode' => $trans_payment['sof_code'],
+            'bindId' => $trans_payment['bind_id']
+        ];
+        return $this->verifyPaymentSnapDD($param);
+    }
+
+    public function verifyPaymentSnapDD($param)
+    {
+        $status = false;
+        $payload = [
+            'originalReferenceNo'=> $param['originalReferenceNo'],
+            'type'=> 'payment',
+            'otp'=> $param['otp'],
+            'deviceId'=> '12345679237',
+            'channel'=> 'mobilephone',
+            'sofCode'=> $param['sofCode'],
+            'bindId'=> $param['bindId'],
+        ];
+
+        $res = PgJmtoSnap::bindValidateDD($payload);
+        if ($res->successful()) {
+            $response = $res->json();
+            if (substr($response['responseCode'], 0, 3) == '200') {
+                $status = true;
+            }
+        }
+
+        return $this->responsePayment($status, $res->json());
+    }
+
+    public function statusSnapDD($trans_order)
+    {
+        $status = false;
+
+        $data_payment = $trans_order->payment->inquiry;
+        $payload = [
+            'originalReferenceNo' => $data_payment['referenceNo'],
+            'bindId' => $data_payment['bind_id'],
+            'sofCode' => $data_payment['sof_code'],
+        ];
+        $res = PgJmtoSnap::statusDD($payload);
+
+        if (!$res->successful()) {
+            return $this->responsePayment($status, $res->json());
+        }
+
+        $res = $res->json();
+        if ($res['status'] == 'ERROR') {
+            return $this->responsePayment(
+                status: $status,
+                data: $res
+            );
+        }
+
+        $is_dd_pg_success = $res['responseData']['pay_refnum'] ?? null;
+        if ($is_dd_pg_success == null) {
+            return $this->responsePayment(
+                status: $status,
+                data: $res
+            );
+        }
+
+        $respon = $res['responseData'];
+        $trans_order->payment()->updateOrCreate([
+            'trans_order_id' => $trans_order->id
+        ],[
+            'data' => $respon,
+            'payment' => $respon,
+        ]);
+
+        $status = true;
+
+        return $this->responsePayment(
+            status: $status,
+            data: $res
+        );
     }
 }

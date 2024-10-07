@@ -23,7 +23,7 @@ class CreateRefBindTable extends Migration
             $table->string('card_no');
             $table->string('phone');
             $table->string('email');
-            $table->date('exp_date');
+            $table->string('exp_date')->length(4);
             $table->timestamps();
         });
     }

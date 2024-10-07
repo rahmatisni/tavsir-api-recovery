@@ -6,6 +6,7 @@ namespace App\Models\Constanta;
 class PaymentMethodCode
 {
    const SNAP_VA = 'snap_va_';
+   const SNAP_DD = 'snap_dd_';
    const PG_VA = 'pg_va_';
    const PG_VA_BRI = 'pg_va_bri';
    const PG_DD = 'pg_dd_';
@@ -14,4 +15,5 @@ class PaymentMethodCode
    const QR = 'qr';
    // const LINK = 'link';
    const LINK = 'pg_qris';
+   const QRJTL = 'pg_qrjtl';
 }

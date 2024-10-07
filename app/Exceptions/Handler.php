@@ -58,5 +58,9 @@ class Handler extends ExceptionHandler
         if($exception instanceof NotFoundHttpException) {
             return response(['message' => 'Not Found.'], 404);
         }
+
+        if ($exception instanceof ApiRequestException) {
+            return response()->json( $exception->responseBody, 400);
+        }
     }
 }
