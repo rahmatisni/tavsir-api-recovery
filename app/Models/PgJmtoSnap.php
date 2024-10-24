@@ -185,7 +185,10 @@ class PgJmtoSnap extends Model
 
         }
         if ($sof_code === 'BNI') {
-            $partnerServiceId = '98820861';
+            // $partnerServiceId = '98820861';
+            $partnerServiceId = ENV('APP_ENV') == 'dev' ? '98844433' : '98820861' ;
+
+            
             if ($data->order_type == 'ORDER_TRAVOY'){
                 $virtualNumber = env('PREFIX_KIOS').rand(10000, 99999);
             }
