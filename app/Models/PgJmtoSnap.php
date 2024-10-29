@@ -135,6 +135,8 @@ class PgJmtoSnap extends Model
                     clock()->event("pg{$path}")->end();
                     return $response;
                 } catch (\Exception $e) {
+                    Log::channels('pg')->error($payload);
+                    Log::channels('pg')->error($e->getMessage());
                 }
 
             case 'GET':
