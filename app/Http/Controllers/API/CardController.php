@@ -43,4 +43,12 @@ class CardController extends Controller
         $result = $this->service->unBinding($id);
         return response()->json($result);
     }
+
+
+    // Non Snap
+    public function unBindOld($id)
+    {
+        $result = $this->service->unBindOld($id);
+        return response()->json($result);
+    }
 }
