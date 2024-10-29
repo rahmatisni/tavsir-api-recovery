@@ -326,6 +326,7 @@ Route::post('/card', [App\Http\Controllers\API\CardController::class, 'bind']);
 Route::post('/card/rebind/{id}', [App\Http\Controllers\API\CardController::class, 'rebind']);
 Route::put('/card/{id}', [App\Http\Controllers\API\CardController::class, 'bindValidate']);
 Route::delete('/card/{id}', [App\Http\Controllers\API\CardController::class, 'unBind']);
+Route::delete('/card-old/{id}', [App\Http\Controllers\API\CardController::class, 'unBindOld']);
 
 Route::get('chat', [App\Http\Controllers\API\ChatController::class, 'index']);
 Route::get('chat/{chat}', [App\Http\Controllers\API\ChatController::class, 'show']);

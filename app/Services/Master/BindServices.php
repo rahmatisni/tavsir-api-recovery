@@ -21,22 +21,19 @@ class BindServices
 
     public function binding(array $param)
     {
-        $payment_method = PaymentMethod::find($param['payment_method_id']);
-        if ($payment_method->is_snap) {
-            return $this->bindSnap($param);
-        } else {
-            return $this->bindStandar($param);
-        }
+        return $this->bindSnap($param);
     }
 
     public function unBinding($id)
     {
         $bind = Bind::findOrFail($id);
-        if ($bind->is_snap) {
-            return $this->unbindSnap($bind);
-        } else {
-            return $this->unBindStandar($bind);
-        }
+        return $this->unbindSnap($bind);
+    }
+
+    public function unBindOld($id)
+    {
+        $bind = Bind::findOrFail($id);
+        return $this->unBindStandar($bind);
     }
 
     public function bindStandar($param)
@@ -115,11 +112,7 @@ class BindServices
             throw new Exception('Not Found.', 404);
         }
 
-        if ($bind->payment_method?->is_snap) {
-            return $this->rebindSnap($bind);
-        } else {
-            return $this->rebindStandar($bind);
-        }
+        return $this->rebindSnap($bind);
     }
 
     public function rebindStandar($bind)
@@ -188,16 +181,12 @@ class BindServices
 
     public function bindValidate($id, $param)
     {
-        $bind = Bind::whereNull('bind_id')->where('id', $id)->with('payment_method')->first();
+        $bind = Bind::whereNull('bind_id')->where('id', $id)->first();
         if (!$bind) {
             throw new Exception("Not Found", 400);
         }
 
-        if($bind->is_snap){
-            return $this->bindValidateSnap($bind, $param['otp']);
-        }else{
-            return $this->bindValidateStandar($bind, $param['otp']);
-        }
+        return $this->bindValidateSnap($bind, $param['otp']);
 
     }
 
