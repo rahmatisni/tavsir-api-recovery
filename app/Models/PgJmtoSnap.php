@@ -501,6 +501,7 @@ class PgJmtoSnap extends Model
         }
 
         $res = self::service('POST', '/snap/merchant/v1.0/registration-card-bind', $param);
+        Log::info('DD bind param', $param);
         Log::info('DD bind', $res->json());
         return $res;
     }
@@ -554,6 +555,7 @@ class PgJmtoSnap extends Model
             //end fake
         }
         $res = self::service('POST', '/snap/merchant/v1.0/otp-verification', $param);
+        Log::info('DD bind validate param', $param);
         Log::info('DD bind validate', $res->json());
         return $res;
     }
@@ -593,6 +595,7 @@ class PgJmtoSnap extends Model
             //end fake
         }
         $res = self::service('POST', '/snap/merchant/v1.0/registration-card-unbind', $payload);
+        Log::info('DD unbind param', $payload);
         Log::info('DD unbind', $res->json());
         return $res;
     }
