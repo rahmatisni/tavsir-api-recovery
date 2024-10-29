@@ -19,6 +19,13 @@ class PaymentMethodSeeder extends Seeder
     {
         $data = [
             [
+                'name' => 'BRI Direct Debit SNAP',
+                'is_snap' => 1,
+                'code_name' => 'snap_dd_bri',
+                'payment_method_code' => 'DD',
+                'code' => 'BRI',
+            ],
+            [
                 'name' => 'Kartu Debit / Kredit',
                 'code_name' => 'edc',
             ],

@@ -26,11 +26,11 @@ class BindRequest extends FormRequest
     public function rules(Request $request)
     {
         return [
-            'customer_id' => 'required',
+            'payment_method_id' => 'required|exists:ref_payment_method,id',
             'sof_code' => 'required',
             'customer_name' => 'required',
             'card_no' => ['required',Rule::unique('ref_bind')->where(function ($query) use ($request) {
-                return $query->where('customer_id', $request->customer_id);
+                return $query->where('customer_id', $request->customer_id)->whereNotNull('bind_id');
             })],
             'phone' => 'required',
             'email' => 'required',

@@ -22,16 +22,15 @@ class PgJmtoSnap extends Model
     {
         $token = Redis::get('token_snap_pg');
         if (!$token) {
-            $now = Carbon::now();
-            $hours = Carbon::now()->addMinute(59);
-            $diff = $now->diffInMinutes($hours) * 60;
-            $token = self::generateToken()['access_token'] ?? '';
+            $result = self::generateToken();
+            $token = $result['accessToken'] ?? '';
+            $expire = $result['expiresIn'] ?? 0;
             if ($token == '') {
                 // throw new Exception("token not found",422);
             }
             if (env('PG_FAKE_RESPON') != true) {
                 Redis::set('token_snap_pg', $token);
-                Redis::expire('token_snap_pg', $diff);
+                Redis::expire('token_snap_pg', $expire);
             }
         }
         return $token;
@@ -42,11 +41,11 @@ class PgJmtoSnap extends Model
         if (env('PG_FAKE_RESPON') === true) {
             //for fake
             Http::fake([
-                env('PG_BASE_URL_SNAP') . '/oauth/token' => function () {
+                env('PG_BASE_URL_SNAP') . '/snap/merchant/v1.0/access-token/b2b' => function () {
                     return Http::response([
-                        'access_token' => 'ini-fake-access-token',
-                        "token_type" => "Bearer",
-                        "expires_in" => 36000,
+                        'accessToken' => 'ini-fake-access-token',
+                        "tokenType" => "Bearer",
+                        "expiresIn" => 36000,
                         "scope" => "resource.WRITE resource.READ"
                     ], 200);
                 },
@@ -73,7 +72,7 @@ class PgJmtoSnap extends Model
             'X-SIGNATURE' => $signature
         ])
         ->withoutVerifying()
-        ->post(env('PG_BASE_URL_SNAP') . '/oauth/token', ['grant_type' => 'client_credentials', 'additionalInfo' => array()]);
+        ->post(env('PG_BASE_URL_SNAP') . '/snap/merchant/v1.0/access-token/b2b', ['grantType' => 'client_credentials', 'additionalInfo' => array()]);
         clock()->event("oauth token")->end();
         return $response->json();
     }
@@ -134,7 +133,6 @@ class PgJmtoSnap extends Model
                         ->withoutVerifying()
                         ->post(env('PG_BASE_URL_SNAP') . $path, $payload);
                     clock()->event("pg{$path}")->end();
-
                     return $response;
                 } catch (\Exception $e) {
                 }
@@ -397,116 +395,202 @@ class PgJmtoSnap extends Model
 
     public static function bindDD($payload)
     {
+        // Daftar kunci yang wajib ada dalam array
+        $requiredKeys = [
+            'bankCardNo', 
+            'bankCardType', 
+            'email', 
+            'expiryDate', 
+            'identificationNo', 
+            'identificationType',
+            'accountName',
+            'phoneNo',
+            'deviceId',
+            'channel',
+            'sofCode',
+        ];
+
+        // Memeriksa apakah semua kunci yang diperlukan ada di array
+        foreach ($requiredKeys as $key) {
+            if (!Arr::has($payload, $key)) {
+                throw new Exception("Missing required key: " . $key);
+            }
+        }
+
+        // Example
+        // $cardData = [ //Encrypted using AES-256
+        //     'bankCardNo' => '5221849061514792', //Max 19 Digit
+        //     'bankCardType' => 'D', //D : Debit, C: Credit
+        //     "email"=> "expired@mail.com",
+        //     'expiryDate' => '0525', // MMYY (ex: 0524)
+        //     'identificationNo' => '3434448790988882',
+        //     'identificationType' => '02',
+        // ];
+
+        //ambil key tertentu
+        $cardData = Arr::only(
+            $payload,
+            [
+                'bankCardNo', 
+                'bankCardType', 
+                'email', 
+                'expiryDate', 
+                'identificationNo', 
+                'identificationType'
+            ]
+        );
+
+        // key
+        $client_secret = env('PG_CLIENT_SECRET');
+        $key = md5($client_secret);
+        $iv = substr($key, 0, 16);
+
+        $encryptedData = openssl_encrypt(
+            data: json_encode($cardData),
+            cipher_algo: 'aes-256-cbc',
+            passphrase: substr($key, 0, 32),
+            iv: $iv // Initialization vector (IV)
+        );
+
+        // Example
+        // $payload = [
+        //     'cardData' => $encryptedData,
+        //     "accountName" => "yanto",
+        //     "custIdMerchant" => "0012345679504",
+        //     "phoneNo" => "628132063356",
+        //     "additionalInfo" => [
+        //         "deviceId" => "12345679237",
+        //         "channel" => "mobilephone",
+        //         "sofCode" => "BRI"
+        //     ]
+        // ];
+
+        $param = [
+            'cardData' => $encryptedData,
+            "accountName" => $payload['accountName'],
+            "custIdMerchant" => "0012345679504",
+            "phoneNo" => $payload['phoneNo'],
+            "additionalInfo" => [
+                "deviceId" => $payload['deviceId'] ?? '12345679237',
+                "channel" => $payload['channel'] ?? "mobilephone",
+                "sofCode" => $payload['sofCode']
+            ]
+        ];
+
         if (env('PG_FAKE_RESPON') === true) {
-            $mandiri_page = "<form name=\"frm_request\" id=\"frm_request\" action=\"https://dev.yokke.bankmandiri.co.id:9773/MTIDDPortal/registration\" method=\"post\">
-                <input type=\"hidden\" name=\"signature\" value=\"9aac4ee218d861f9dd220d5a98debdb680ec43fe82dc7ea2d3b1eae765e6cb55c84e95b28f01c1b67f11e8fd11d788a53f1e5d0dddac2345494cdbff5315eb9e\"/>
-                <input type=\"hidden\" name=\"merchantID\" value=\"000071000022169\"/>
-                <input type=\"hidden\" name=\"requestID\" value=\"1052479112\"/>
-                <input type=\"hidden\" name=\"jwt\" value=\"eyJraWQiOiJzc29zIiwiYWxnIjoiUlM1MTIifQ.eyJzdWIiOiJkOGExMmM4MS1iOWQ2LTQ3ZTctOTk3NC0yZjBiZTBiOWYwZGQiLCJhdWQiOm51bGwsIm5iZiI6MTY2NzUyNzY3OCwiaXNzIjoiSldUTVRJIiwiZXhwIjoxNjY3NTI4NTc4LCJpYXQiOjE2Njc1Mjc2Nzh9.jITAwxBvz3IAahi3CYJyGdEHwDTOrnj7we4aD3SD8fS26-3_XcrcACU3R_6rFKCFB-h6MUIBIflGH-fgWJfsdEdKyVJzbzc8KHXcrnkeDsJ0yathk4OkPWwcojq0PPDpiJGukH1afHxVQfCtlifvK2oUImqjY6pXgxMbHLxMnxizl4rbGKdCvBOl6ZoTmawqlMqadyco_7XFMe09Kv4Y-iLzFiSS5Puxb4HxcQjG6wIHq04610QpiUIm9GQSFImelBEvRAB4VM8LUDrZ2sJ90WbKYYmSWRu5QK0bUSZmOHvXVzLJKaKVuXG96KHwKdna-iuATQYNwDAGT0iJRPr77A\"/>
-                <input type=\"hidden\" name=\"language\" value=\"ID\"/>
-                <input type=\"hidden\" name=\"isBindAndPay\" value=\"N\"/>
-                <input type=\"hidden\" name=\"publicKey\" value=\"MIIBCQKCAQCUFOPYrm95cRxbEymJqLgtFWPsddKJIskOknNsdnVzVZdJJijnTliIU/Zw7ryVyTJgZkUv/NhK6qxfkm5Fv7UMMNFFDfWjfFkl2vydMbMD+3rec4C0pgTWFRe418LPPDF/RzZZ/bUG3WM1uyvCVpRMEmogXHCjru4P7LRBcOCMSsUl39j0rIDP9gX2/kjeLIWHYPi2+Dy2r4b0KoSidjRxxOX40+y6McCATBl5//eU6MxxKz2gFnkn3JKDcqvHEYimhWBL66TGjEfHCx8Z3NeaW3OYJ2BSb4svBwROnfD4xJ+UjW3Wm8uFYiGmokskuN4uFoyzFqSvtmy1f50xZ8AVAgMBAAE=\"/>
-                <input type=\"hidden\" name=\"terminalID\" value=\"73001308\"/>
-                <input type=\"hidden\" name=\"additionalData\" value=\"{&quot;userID&quot;:&quot;JASAMARGA&quot;}\"/>
-                <input type=\"hidden\" name=\"tokenRequestorID\" value=\"JASAMARGA\"/>
-                <input type=\"hidden\" name=\"journeyID\" value=\"BIND636473807eaeb\"/></form><script>window.onload = function(){document.forms['frm_request'].submit();}</script>";
             //for fake
             Http::fake([
-                env('PG_BASE_URL') . '/sof/bind' => function () use ($payload, $mandiri_page) {
-                    $responseData = [
-                        "sof_code" => $payload['sof_code'],
-                        "card_no" => $payload['card_no'],
-                        "phone" => $payload['phone'],
-                        "email" => $payload['email'],
-                        "customer_name" => $payload['customer_name'],
-                        "refnum" => "BIND" . Str::lower(Str::random(13))
-                    ];
-                    if ($payload['sof_code'] == 'MANDIRI') {
-                        $responseData['landing_page_form'] = $mandiri_page;
-                    }
+                env('PG_BASE_URL_SNAP') . '/snap/merchant/v1.0/registration-card-bind' => function () use ($payload) {
                     return Http::response([
-                        "status" => "success",
-                        "rc" => "0000",
-                        "rcm" => "success",
-                        "responseData" => $responseData,
-                        "requestData" => $payload
+                        "responseCode" => "2000100",
+                        "responseMessage" => "Request has been processed successfully",
+                        "referenceNo" => "BIND66e3e3fe54902",
+                        "additionalInfo" => [
+                            "sofCode" => $payload['sofCode'],
+                            "bankCardNo" => $payload['bankCardNo'],
+                            "phoneNo" => $payload['phoneNo'],
+                            "email" => $payload['email'],
+                            "accountName" => $payload['accountName'],
+                        ]
                     ], 200);
                 },
             ]);
             //end fake
         }
-        $payload = [
-            "sof_code" => $payload['sof_code'],
-            "card_no" => $payload['card_no'],
-            "phone" => $payload['phone'],
-            "email" => $payload['email'],
-            "customer_name" => $payload['customer_name'],
-            "submerchant_id" => null,
-            "exp_date" => $payload['exp_date'],
-            "custom_field_1" => "test",
-            "custom_field_2" => "",
-            "custom_field_3" => "",
-            "custom_field_4" => "",
-            "custom_field_5" => ""
-        ];
-        $res = self::service('POST', '/sof/bind', $payload);
+
+        $res = self::service('POST', '/snap/merchant/v1.0/registration-card-bind', $param);
         Log::info('DD bind', $res->json());
         return $res;
     }
 
     public static function bindValidateDD($payload)
     {
+        // Example
+        // $payload = [
+        //     'originalReferenceNo'=> 'DD66d5692ab8b47',
+        //     'type'=> 'card',
+        //     'otp'=> '999999',
+        //     'additionalInfo'=> [
+        //         'deviceId'=> '12345679237',
+        //         'channel'=> 'mobilephone',
+        //         'sofCode'=> 'BRI',
+        //     ]
+        // ];
+
+        $param = [
+            'originalReferenceNo'=> $payload['originalReferenceNo'],
+            'type'=> $payload['type'],
+            'otp'=> $payload['otp'],
+            'additionalInfo'=> [
+                'deviceId'=> '12345679237',
+                'channel'=> 'mobilephone',
+                'sofCode'=> $payload['sofCode'],
+                'bindId'=> $payload['bindId'] ?? '',
+            ]
+        ];
+
         if (env('PG_FAKE_RESPON') === true) {
             //for fake
             Http::fake([
-                env('PG_BASE_URL') . '/sof/bind-validate' => function () use ($payload) {
+                env('PG_BASE_URL_SNAP') . '/snap/merchant/v1.0/otp-verification' => function () use ($payload) {
                     return Http::response([
-                        "status" => "success",
-                        "rc" => "0000",
-                        "rcm" => "binding success",
-                        "responseData" => [
-                            "sof_code" => $payload['sof_code'],
-                            "card_no" => $payload['card_no'],
-                            "phone" => $payload['phone'],
-                            "email" => $payload['email'],
-                            "customer_name" => $payload['customer_name'],
-                            "bind_id" => rand(1, 999)
-                        ],
-                        "request" => $payload
+                        "responseCode" => "2000400",
+                        "responseMessage" => "Request has been processed successfully",
+                        "referenceNo" => "BIND66e3e4e140694",
+                        "bankCardToken" => "card_.eyJpYXQiOjE3MjYyMTE0MzIsImlzcyI6IkJhbmsgQlJJIC0gRENFIiwianRpIjoiMWVjN2M4YjEtMTIzZC00M2UzLWExODAtM2E5OTdlZDZhZWZlIiwicGFydG5lcklkIjoi77-9Iiwic2VydmljZU5hbWUiOiJERF9FWFRFUk5BTF9TRVJWSUNFIn0.P-MqW9pxWpXk6nuo0Yss7Punuc4G1tbK95hhlPnRP1uQEndQxXLGBYh0iKvYijDpLbSTNSZHI_va2s6ANdeJAuN4fTf86RfcCXeFVHFjKIzdhAMVzJxDf5cTBu1_mtLy7x-2HGAavfeUUcFnVX1vJ0QvjUO4oIDdzWtTDkQLJyUK2a_1UzNv7-Oldq79UhId9PHhzE7l0RIDBJ3YmfOqZYRX1W5aCYfqxzK4uCAQqM2Xguq98E6PDFaBfiANeZueS3WjUm3nMApsP77hW4ybmnqxAOq6rEgikIy7JEv0EjaqDQK0C9GGtksARbs7UyS0MU6bxhw3l9F3x8harZdOWw",
+                        "additionalInfo" => [
+                            "sofCode" => $payload['sofCode'],
+                            "bankCardNo" => "5221849061514792",
+                            "phoneNo" => "628132063356",
+                            "email" => "expired@mail.com",
+                            "accountName" => "yanto",
+                            "bindId" => "9999"
+                        ]
                     ], 200);
                 },
             ]);
             //end fake
         }
-        $res = self::service('POST', '/sof/bind-validate', $payload);
+        $res = self::service('POST', '/snap/merchant/v1.0/otp-verification', $param);
         Log::info('DD bind validate', $res->json());
         return $res;
     }
 
-    public static function unBindDD($payload)
+    public static function  unBindDD($payload)
     {
+        // Sample Payload
+        // "partnerReferenceNo" => "BIND66ecde9e61e9c",
+        // "token" => "card_.eyJpYXQiOjE3MjY3OTk3MzQsImlzcyI6IkJhbmsgQlJJIC0gRENFIiwianRpIjoiZDk2YjM2MzYtMTBmZi00ZmMxLWFlZjItMzczMjZkMjQ1NzhlIiwicGFydG5lcklkIjoi77-9Iiwic2VydmljZU5hbWUiOiJERF9FWFRFUk5BTF9TRVJWSUNFIn0.an4jOHnX3I9kyk1ytINfX4cqnUmcQLewIbp8qOrOdRI6A5LO0XahinVDMYFDE1WJjRIyBvDVXEes3usFL484cEk3T9Dl-k4s07nqe-wlHc4d6xJUS4Ay3xkghuKw8gK_zZs9TfYcMc0ESCM-7cQpkRM4tipCqeuJniQtrOQM1MmULwy-0Aiv2YmGg_rMjMfegI0Y7XHp8PLT6gjXogBLE56H3xFbyd_dZXAYBzWbX0BPFBLbN1QtIYLEzXVgNGLUQdgzLACU6MIB_jG9rN2Qfq7FStD7sWi38jehc9OPnd1-BLoHO3u5iRkM3NxBuWlTaK-StINx3u_B7VZkXFshIg",
+        // "additionalInfo" => [
+        //     "deviceId" => "12345679237",
+        //     "channel" => "mobilephone",
+        //     "bindId" => "475",
+        //     "sofCode" => "BRI"
+        // ]
+        $payload = [
+            'partnerReferenceNo' => $payload['partnerReferenceNo'],
+            'token' => $payload['token'],
+            'additionalInfo'=> [
+                'deviceId'=> '12345679237',
+                'channel'=> 'mobilephone',
+                'bindId'=> $payload['bindId'],
+                'sofCode'=> $payload['sofCode']
+            ]
+        ];
         if (env('PG_FAKE_RESPON') === true) {
             //for fake
             Http::fake([
-                env('PG_BASE_URL') . '/sof/unbind' => function () use ($payload) {
+                env('PG_BASE_URL_SNAP') . '/snap/merchant/v1.0/registration-card-unbind' => function () use ($payload) {
                     return Http::response([
-                        "status" => "success",
-                        "rc" => "0000",
-                        "rcm" => "success",
-                        "responseData" => [
-                            "sof_code" => $payload['sof_code'],
-                            "card_no" => $payload['card_no'],
-                            "email" => $payload['email'],
-                            "phone" => $payload['phone'],
-                            "customer_name" => $payload['customer_name'],
-                        ],
-                        "requestData" => $payload
+                        "responseCode" => "2000500",
+                        "responseMessage" => "Request has been processed successfully",
+                        "referenceNo" => "BIND66e3e4e140694",
                     ], 200);
                 },
             ]);
             //end fake
         }
-        $res = self::service('POST', '/sof/unbind', $payload);
+        $res = self::service('POST', '/snap/merchant/v1.0/registration-card-unbind', $payload);
         Log::info('DD unbind', $res->json());
         return $res;
     }
@@ -549,134 +633,62 @@ class PgJmtoSnap extends Model
 
     public static function paymentDD($payload)
     {
+        // Example
+        // $payload = [
+        //     'originalPartnerReferenceNo'=> '591802',
+        //     'amount'=> [
+        //         'currency'=> 'IDR',
+        //         'value'=> '120000.00'
+        //     ],
+        //     'additionalInfo'=> [
+        //         'deviceId'=> '12345679237',
+        //         'channel'=> 'mobilephone',
+        //         'bindId'=> '468',
+        //         'accountName'=> 'yanto',
+        //         'phoneNo'=> '628132063356',
+        //         'email'=> 'expired@mail.com',
+        //         'sofCode'=> 'BRI',
+        //         'remarks'=> 'bayar bakso hehe'
+        //     ]
+        // ];
+
+        $param = [
+            'originalPartnerReferenceNo'=> '591802',
+            'amount'=> [
+                'currency'=> 'IDR',
+                'value'=> $payload['amount']
+            ],
+            'additionalInfo'=> [
+                'deviceId'=> '12345679237',
+                'channel'=> 'mobilephone',
+                'bindId'=> $payload['bindId'],
+                'accountName'=> $payload['accountName'],
+                'phoneNo'=> $payload['phoneNo'],
+                'email'=> $payload['email'],
+                'sofCode'=> $payload['sofCode'],
+                'remarks'=> $payload['remarks']
+            ]
+        ];
         if (env('PG_FAKE_RESPON') === true) {
             //for fake
             Http::fake([
-                env('PG_BASE_URL') . '/directdebit/payment' => function () use ($payload) {
+                env('PG_BASE_URL_SNAP') . '/snap/merchant/v1.0/debit/payment-host-to-host' => function () use ($payload) {
                     return Http::response([
-                        "status" => "success",
-                        "rc" => "0000",
-                        "rcm" => "success",
-                        "responseData" => [
-                            "sof_code" => $payload['sof_code'],
-                            "bill" => $payload['bill'],
-                            "fee" => $payload['fee'],
-                            "amount" => $payload['bill'] + 2500,
-                            "trxid" => $payload['trxid'],
-                            "remarks" => $payload['remarks'],
-                            "refnum" => $payload['refnum'],
-                            "pay_refnum" => "88888" . rand(1000000, 9999999),
-                            "email" => $payload['email'],
-                            "phone" => $payload['phone'],
-                            "customer_name" => $payload['customer_name'],
-                        ],
-                        "requestData" => $payload
-                    ], 200);
-                },
-            ]);
-            //end fake
-        }
-
-        unset($payload["card_id"]);
-        Log::info('DD Payment Request', $payload);
-        $res = self::service('POST', '/directdebit/payment', $payload);
-        Log::info('DD payment Response', $res->json());
-        return $res;
-    }
-
-    public static function statusDD($payload)
-    {
-        if (env('PG_FAKE_RESPON') === true) {
-            //for fake
-            Http::fake([
-                env('PG_BASE_URL') . '/directdebit/payment' => function () use ($payload) {
-                    return Http::response([
-                        "status" => "success",
-                        "rc" => "0000",
-                        "rcm" => "success",
-                        "responseData" => [
-                            "sof_code" => $payload['sof_code'],
-                            "bill" => $payload['bill'],
-                            "fee" => $payload['fee'],
-                            "amount" => $payload['bill'] + 2500,
-                            "trxid" => $payload['trxid'],
-                            "remarks" => $payload['remarks'],
-                            "refnum" => $payload['refnum'],
-                            "pay_refnum" => "88888" . rand(1000000, 9999999),
-                            "email" => $payload['email'],
-                            "phone" => $payload['phone'],
-                            "customer_name" => $payload['customer_name'],
-                        ],
-                        "requestData" => $payload
-                    ], 200);
-                },
-            ]);
-            //end fake
-        }
-        unset($payload["card_id"]);
-        Log::info('DD Status Request', $payload);
-        $res = self::service('POST', '/directdebit/advice', $payload);
-        Log::info('DD Status Response', $res->json());
-        return $res;
-    }
-
-    public static function cardList($payload)
-    {
-        $res = self::service('POST', '/sof/cardlist', $payload);
-        Log::info('Card list', $res->json() ?? 'ERROR');
-        return $res;
-    }
-
-    public static function sofList()
-    {
-        if (env('PG_FAKE_RESPON') === true) {
-            //for fake
-            Http::fake([
-                env('PG_BASE_URL') . '/sof/list' => function () {
-                    return Http::response([
-                        "status" => "success",
-                        "rc" => "0000",
-                        "rcm" => "success",
-                        "responseData" => [
-                            [
-                                "sof_id" => 4,
-                                "code" => "BNI",
-                                "name" => "Bank Negara Indonesia",
-                                "description" => "BNI",
-                                "payment_method_id" => 2,
-                                "payment_method_code" => "VA"
+                        "responseCode" => "2005400",
+                        "responseMessage" => "Request has been processed successfully",
+                        "referenceNo" => "DD99999999999",
+                        "additionalInfo" => [
+                            "amount" => [
+                                "value" => $payload['amount'],
+                                "currency" => "IDR"
                             ],
-                            [
-                                "sof_id" => 3,
-                                "code" => "MANDIRI",
-                                "name" => "Bank Mandiri",
-                                "description" => "Bank Mandiri",
-                                "payment_method_id" => 2,
-                                "payment_method_code" => "VA"
+                            "feeAmount" => [
+                                "value" => "2400.00",
+                                "currency" => "IDR"
                             ],
-                            [
-                                "sof_id" => 3,
-                                "code" => "MANDIRI",
-                                "name" => "Bank Mandiri",
-                                "description" => "Bank Mandiri",
-                                "payment_method_id" => 1,
-                                "payment_method_code" => "DD"
-                            ],
-                            [
-                                "sof_id" => 254,
-                                "code" => "BRI",
-                                "name" => "PT Bank Rakyat Indonesia Tbk - Prod",
-                                "description" => "PT Bank Rakyat Indonesia Tbk-Prod",
-                                "payment_method_id" => 2,
-                                "payment_method_code" => "VA"
-                            ],
-                            [
-                                "sof_id" => 254,
-                                "code" => "BRI",
-                                "name" => "PT Bank Rakyat Indonesia Tbk - Prod",
-                                "description" => "PT Bank Rakyat Indonesia Tbk-Prod",
-                                "payment_method_id" => 1,
-                                "payment_method_code" => "DD"
+                            "totalAmount" => [
+                                "value" => (string)((float) $payload['amount'] + 2400.00),
+                                "currency" => "IDR"
                             ]
                         ]
                     ], 200);
@@ -685,14 +697,65 @@ class PgJmtoSnap extends Model
             //end fake
         }
 
-        $res = self::service('POST', '/sof/list', []);
-        Log::info('SOF list', $res->json() ?? 'ERROR');
+        Log::info('DD Payment Request', $param);
+        $res = self::service('POST', '/snap/merchant/v1.0/debit/payment-host-to-host', $param);
+        Log::info('DD payment Response', $res->json());
         return $res;
     }
 
-    public static function listSubMerchant()
+    public static function statusDD($param)
     {
-        $res = self::service('GET', '/merchant-data/submerchant', []);
+        // Example
+        // $payload = [
+        //      "originalReferenceNo"=> "DD66e1815995d46",
+        //      "serviceCode"=> "55",
+        //      "additionalInfo"=> [
+        //          "bindId"=> "476",
+        //          "sofCode"=> "BRI"
+        //      ]
+        // ];
+
+        $payload = [
+            'originalPartnerReferenceNo'=> '591801',
+            'originalReferenceNo'=> $param['originalReferenceNo'],
+            'serviceCode'=> '55',
+            'additionalInfo'=> [
+                'bindId'=> $param['bindId'],
+                'sofCode'=> $param['sofCode'],
+            ]
+        ];
+
+
+        if (env('PG_FAKE_RESPON') === true) {
+            //for fake
+            Http::fake([
+                env('PG_BASE_URL') . '/snap/merchant/v1.0/debit/status' => function () use ($payload) {
+                    return Http::response([
+                        "responseCode"=> "2005500",
+                        "responseMessage"=> "Request has been processed successfully",
+                        "originalPartnerReferenceNo"=> "591801",
+                        "originalReferenceNo"=> "DD66e1815995d46",
+                        "serviceCode"=> "17",
+                        "latestTransactionStatus"=> "00",
+                        "transactionStatusDesc"=> "paid",
+                        "originalResponseCode"=> "2005500",
+                        "originalResponseMessage"=> "Request has been processed successfully",
+                        "refundHistory"=> [],
+                        "transAmount"=> [
+                            "value"=> "120000.00",
+                            "currency"=> "IDR"
+                        ],
+                        "paidTime"=> "2024-09-11 18=>40=>54",
+                        "additionalInfo"=> []
+                    ], 200);
+                },
+            ]);
+            //end fake
+        }
+
+        Log::info('DD Status Request', $payload);
+        $res = self::service('POST', '/snap/merchant/v1.0/debit/status', $payload);
+        Log::info('DD Status Response', $res->json());
         return $res;
     }
 }

@@ -5,158 +5,42 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BindRequest;
 use App\Http\Requests\BindValidateRequest;
-use App\Models\Bind;
-use App\Models\PgJmto;
+use App\Services\Master\BindServices;
+use Illuminate\Http\Request;
 
 class CardController extends Controller
 {
-    public function index()
+    public function __construct(protected BindServices $service)
     {
-        $data = Bind::when($customer_id = request()->customer_id, function ($q) use ($customer_id) {
-            $q->where('customer_id', $customer_id);
-        })->get();
+    }
+
+    public function index(Request $request)
+    {
+        $data = $this->service->list($request->customer_id);
         return response()->json($data);
     }
 
     public function bind(BindRequest $request)
     {
-        try {
-            $res = PgJmto::bindDD($request->validated());
-            if ($res->successful()) {
-                $res = $res->json();
-                if ($res['status'] == 'ERROR') {
-                    return response()->json($res, 400);
-                }
-                $bind = new Bind();
-                $res = $res['responseData'];
-                $res['customer_id'] = $request['customer_id'];
-                $res['exp_date'] = $request['exp_date'];
-                $bind->fill($res);
-                $bind->save();
-                return response()->json([
-                    'data' => $bind,
-                    'info' => $res
-                ]);
-            }
-            return response()->json($res->json(), 400);
-        } catch (\Throwable $th) {
-            return response()->json($th->getMessage(), 400);
-        }
+        $result = $this->service->binding($request->all());
+        return response()->json($result);
     }
 
     public function rebind($id)
     {
-        try {
-            $bind = Bind::whereNull('bind_id')->where('id', $id)->first();
-            if (!$bind) {
-                return response()->json(['message' => 'Not Found.'], 404);
-            }
-
-            $data = $bind->toArray();
-            $res = PgJmto::bindDD($data);
-            if ($res->successful()) {
-                $res = $res->json();
-                if ($res['status'] == 'ERROR') {
-                    return response()->json($res, 400);
-                }
-                $res = $res['responseData'];
-                $res['customer_id'] = $data['customer_id'];
-                $bind->fill($res);
-                $bind->save();
-                return response()->json([
-                    'data' => $bind,
-                    'info' => $res
-                ]);
-            }
-            return response()->json($res->json(), 400);
-        } catch (\Throwable $th) {
-            return response()->json($th->getMessage(), 400);
-        }
+        $result = $this->service->rebinding($id);
+        return response()->json($result);
     }
 
     public function bindValidate(BindValidateRequest $request, $id)
     {
-        try {
-            $bind = Bind::whereNull('bind_id')->where('id', $id)->first();
-            if (!$bind) {
-                return response()->json(['message' => 'Not Found.'], 404);
-            }
-
-            if($bind->sof_code == 'MANDIRI')
-            {
-                $res = PgJmto::cardList(['sof_id' => '']);
-                if ($res['status'] == 'ERROR') {
-                    return response()->json($res, 400);
-                }
-                $respon = collect($res['responseData']);
-                $respon = $respon->where('sof_code','MANDIRI')->where('card_number',$bind->card_no)->first();
-                if(!$respon){
-                    return response()->json(['message' => 'Unvalidate'], 400);
-                }
-                $bind->bind_id = $respon['id'];
-                $bind->save();
-                return $bind;
-            }
-
-            $payload = $bind->toArray();
-            $payload['otp'] = $request->otp;
-            unset($payload['created_at']);
-            unset($payload['updated_at']);
-            unset($payload['id']);
-            unset($payload['customer_id']);
-            unset($payload['is_valid']);
-            unset($payload['bind_id']);
-            $res = PgJmto::bindValidateDD($payload);
-
-            if ($res->successful()) {
-                $res = $res->json();
-                if ($res['status'] == 'ERROR') {
-                    return response()->json($res, 400);
-                }
-                $respon = $res['responseData'];
-                $bind->bind_id = $respon['bind_id'];
-                $bind->save();
-                return $bind;
-            }
-            return response()->json($res->json(), 400);
-        } catch (\Throwable $th) {
-            return response()->json($th->getMessage(), 400);
-        }
+        $result = $this->service->bindValidate($id, $request->validated());
+        return response()->json($result);
     }
 
     public function unBind($id)
     {
-        try {
-            $bind = Bind::where('id', $id)->first();
-            if (!$bind) {
-                return response()->json(['message' => 'Not Found.'], 404);
-            }
-            if(!$bind->bind_id){
-                $bind->delete();
-                return ['message' => 'Success delete.'];
-            }
-            $payload = $bind->toArray();
-            unset($payload['created_at']);
-            unset($payload['updated_at']);
-            unset($payload['id']);
-            unset($payload['customer_id']);
-            unset($payload['is_valid']);
-            unset($payload['bind_id']);
-            $res = PgJmto::unBindDD($payload);
-            if ($res->successful()) {
-                $res = $res->json();
-                if ($res['status'] == 'ERROR') {
-                    // $bind->delete();
-                    return ['message' => 'Kartu sudah terunbind sebelumnya.'];
-                    // return response()->json($res, 400);
-
-                }
-                $bind->delete();
-                return ['message' => 'Success unbind.'];
-            }
-            return response()->json($res->json(), 400);
-        } catch (\Throwable $th) {
-            return response()->json($th->getMessage(), 400);
-        }
+        $result = $this->service->unBinding($id);
+        return response()->json($result);
     }
 }
