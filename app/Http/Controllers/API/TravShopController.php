@@ -1280,7 +1280,7 @@ class TravShopController extends Controller
             if ($paymentResult->status == false) {
                 return response()->json($paymentResult, 422);
             }
-            $data->service_fee = $paymentResult->data['responseData']['fee'];
+            $data->service_fee = (int) $paymentResult->data['responseData']['fee'];
             // $data->total = $data->total + $data->service_fee;
             $data->total = $data->sub_total + $data->addon_total + $data->fee + $data->service_fee;
             $data->sub_merchant_id = $data->tenant?->sub_merchant_id ?? $data->sub_merchant_id;
