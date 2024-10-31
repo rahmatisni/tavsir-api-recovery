@@ -1007,7 +1007,7 @@ class PaymentService
         }
 
         $payment_payload = [
-            'amount' => (string) $trans_order->sub_total,
+            'amount' => (string) $trans_order->sub_total .'.00',
             'bindId' => $bind->bind_id ?? $bind_before->data['bind_id'],
             'accountName' => $bind->customer_name ?? $bind_before->data['customer_name'],
             'phoneNo' => $bind->phone ?? $bind_before->data['phone'],
