@@ -658,7 +658,7 @@ class PgJmtoSnap extends Model
         // ];
 
         $param = [
-            'originalPartnerReferenceNo'=> '591802',
+            'partnerReferenceNo'=> '591802',
             'amount'=> [
                 'currency'=> 'IDR',
                 'value'=> $payload['amount']
