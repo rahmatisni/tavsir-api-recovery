@@ -2173,7 +2173,7 @@ class TravShopController extends Controller
                 $travoy = $this->travoyService->detailHU($id);
                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
             }
-            return response()->json($payment_result->data);
+            return response()->json(['status' => $data->status, ...$payment_result->data]);
             //END REFACTOR
             //CODE DIBWAH INI TIDAK DI EKSEUSI, SEMENTARA UNTUK KOMPARE DATA DENGAN REFACTOR
             if ($data->payment_method->code_name == 'pg_dd_bri') {
