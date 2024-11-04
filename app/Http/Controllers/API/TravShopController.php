@@ -619,12 +619,13 @@ class TravShopController extends Controller
             $data->customer_phone = $request->customer_phone;
             $data->merchant_id = $tenant->merchant_id;
             $data->sub_merchant_id = $tenant->sub_merchant_id;
-            $data->sub_total = $request->sub_total;
+            $product = Product::find(ENV('LET_IT_FLO_PID'));
+            $data->sub_total = $product->price;
 
 
             $data->save();
 
-            $sub_total = $request->sub_total;
+            $sub_total = $product->price;
 
             $extra_price = ExtraPrice::byTenant($data->tenant_id)->aktif()->get();
             foreach ($extra_price as $value) {
@@ -670,7 +671,6 @@ class TravShopController extends Controller
 
             DB::commit();
             $data = TransOrder::findOrfail($data->id);
-            // return ('oke');
             return response()->json(new TsOrderResourceFlo($data));
         } catch (\Throwable $th) {
             DB::rollback();
