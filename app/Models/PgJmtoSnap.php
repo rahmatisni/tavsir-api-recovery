@@ -442,6 +442,7 @@ class PgJmtoSnap extends Model
             ]
         );
 
+        log::info($cardData);
         // key
         $client_secret = env('PG_CLIENT_SECRET');
         $key = md5($client_secret);
