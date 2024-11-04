@@ -123,11 +123,12 @@ class PaymentService
 
     public function statusOrder(TransOrder $data, $additonal_data = [])
     {
+        $data->status = TransOrder::PAYMENT_SUCCESS;
         $result = $this->cekStatus($data, $additonal_data);
         if($result->status != true){
+            $data->status = TransOrder::WAITING_PAYMENT;
             return $result;
         }
-        $data->status = TransOrder::PAYMENT_SUCCESS;
         $data->payment()->updateOrCreate([
             'trans_order_id' => $data->id
         ],[
