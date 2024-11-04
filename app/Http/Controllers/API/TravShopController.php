@@ -50,6 +50,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Validator;
 
 class TravShopController extends Controller
 {
@@ -592,9 +593,19 @@ class TravShopController extends Controller
     public function floOrder(Request $request)
     {
         try {
+
+            $validator = Validator::make($request->all(), [
+                'customer_name' => 'required|string',
+                'customer_phone' => 'required|string',
+            ]);
+        
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 422);
+            }
+
             DB::beginTransaction();
             $data = new TransOrder;
-            
+
 
             $tenant = Tenant::find(env('LET_IT_FLO_TID'));
             $data->order_type = TransOrder::ORDER_FLO;
