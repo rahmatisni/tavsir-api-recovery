@@ -598,7 +598,7 @@ class TravShopController extends Controller
                 'customer_name' => 'required|string',
                 'customer_phone' => 'required|string',
             ]);
-        
+
             if ($validator->fails()) {
                 return response()->json(['error' => $validator->errors()], 422);
             }
@@ -626,6 +626,60 @@ class TravShopController extends Controller
             $data->save();
 
             $sub_total = $product->price;
+
+            $request->product = [
+
+                [
+                    "product_id" => ENV('LET_IT_FLO_PID'),
+                    "customize" => [],
+                    "pilihan" => [],
+                    "note" => "",
+                    "qty" => 1
+                ]
+
+            ];
+            $margin = 0;
+
+            foreach ($request->product as $k => $v) {
+                $product = Product::byType(ProductType::PRODUCT)->find($v['product_id']);
+                $order_detil = new TransOrderDetil();
+                $order_detil->trans_order_id = $data->id;
+                $order_detil->product_id = $product->id;
+                $order_detil->product_name = $product->name;
+                $order_detil->price_capital = $product->price_capital;
+                $order_detil->base_price = $product->price;
+                $order_detil->price = $product->price;
+                $customize_x = array();
+                foreach ($v['customize'] as $key => $value) {
+                    $customize_y = collect($product->customize)->where('id', $value)->first();
+                    if ($customize_y) {
+                        $pilihan = collect($customize_y->pilihan);
+                        $pilihan = $pilihan->where('id', $v['pilihan'][$key])->first();
+                        if ($pilihan) {
+                            $customize_z = [
+                                'customize_id' => $customize_y->id,
+                                'customize_name' => $customize_y->name,
+                                'pilihan_id' => $pilihan->id,
+                                'pilihan_name' => $pilihan->name,
+                                'pilihan_price' => (int) $pilihan->price,
+                            ];
+                            $customize_x[] = $customize_z;
+                            $order_detil->price += $pilihan->price;
+                        }
+                    }
+                }
+                $order_detil->customize = json_encode($customize_x);
+                $order_detil->qty = $v['qty'];
+                $raw_margin = $order_detil->price_capital * $v['qty'];
+
+                $order_detil->total_price = $order_detil->price * $v['qty'];
+                $order_detil->note = $v['note'];
+
+                $sub_total += $order_detil->total_price;
+                $margin += $raw_margin;
+
+                $order_detil_many[] = $order_detil;
+            }
 
             $extra_price = ExtraPrice::byTenant($data->tenant_id)->aktif()->get();
             foreach ($extra_price as $value) {
@@ -666,6 +720,8 @@ class TravShopController extends Controller
                 $data->sharing_proportion = [100];
                 $data->sharing_amount = [$data->sub_total + (int) ($data->addon_total)];
             }
+
+            $data->detil()->saveMany($order_detil_many);
 
             $data->save();
 
@@ -973,7 +1029,7 @@ class TravShopController extends Controller
             return response()->json($responseArray);
         }
 
-        if($data->order_type === TransOrder::ORDER_FLO){
+        if ($data->order_type === TransOrder::ORDER_FLO) {
             return response()->json(new TsOrderResourceFlo($data));
 
         }
@@ -1164,7 +1220,7 @@ class TravShopController extends Controller
             $param_removes = Tenant::where('id', $trans_order->tenant_id)->first();
             if ($param_removes == null && $trans_order->order_type == 'ORDER_TRAVOY') {
                 $self_order = [];
-                $travshop = [4,5, 6, 7, 8, 9, 11, 12, 13, 14, 15];
+                $travshop = [4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15];
                 $tavsir = [];
 
                 // } else if ($param_removes == null && $trans_order->order_type == 'HU_ORDER') {
@@ -1891,9 +1947,9 @@ class TravShopController extends Controller
                 CURLOPT_CUSTOMREQUEST => 'POST',
                 CURLOPT_POSTFIELDS => $query,
                 CURLOPT_HTTPHEADER => array(
-                        $header,
-                        'content-type:application/json'
-                    ),
+                    $header,
+                    'content-type:application/json'
+                ),
                 CURLOPT_SSL_VERIFYHOST => 0,
                 CURLOPT_SSL_VERIFYPEER => 0
             )
@@ -1959,8 +2015,8 @@ class TravShopController extends Controller
                     $map = [
                         'status' => $data->status,
                         'kiosbank' => [
-                                'data' => $info
-                            ]
+                            'data' => $info
+                        ]
                     ];
                     return response()->json($map);
                 } else {
@@ -2239,8 +2295,8 @@ class TravShopController extends Controller
                     return response()->json([
                         'status' => $data->status,
                         'kiosbank' => [
-                                'data' => $infoPelanggan
-                            ]
+                            'data' => $infoPelanggan
+                        ]
                     ]);
                 }
                 return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'kiosbank' => $kios]);
@@ -2285,8 +2341,8 @@ class TravShopController extends Controller
                         return response()->json([
                             "message" => "ERROR!",
                             "errors" => [
-                                    $res
-                                ]
+                                $res
+                            ]
                         ], 422);
                     }
                     $is_dd_pg_success = $res['responseData']['pay_refnum'] ?? null;
@@ -2295,8 +2351,8 @@ class TravShopController extends Controller
                         return response()->json([
                             "message" => "PENDING",
                             "errors" => [
-                                    $res
-                                ]
+                                $res
+                            ]
                         ], 201);
                     }
 
@@ -2364,8 +2420,8 @@ class TravShopController extends Controller
                         return response()->json([
                             "message" => "ERROR!",
                             "errors" => [
-                                    $res
-                                ]
+                                $res
+                            ]
                         ], 422);
                     }
 
@@ -2374,8 +2430,8 @@ class TravShopController extends Controller
                         return response()->json([
                             "message" => "PENDING",
                             "errors" => [
-                                    $res
-                                ]
+                                $res
+                            ]
                         ], 201);
                     }
 
@@ -2809,8 +2865,8 @@ class TravShopController extends Controller
                         return response()->json([
                             "message" => "ERROR!",
                             "errors" => [
-                                    $res
-                                ]
+                                $res
+                            ]
                         ], 422);
                     }
                     $is_dd_pg_success = $res['responseData']['pay_refnum'] ?? null;
@@ -2819,8 +2875,8 @@ class TravShopController extends Controller
                         return response()->json([
                             "message" => "PENDING",
                             "errors" => [
-                                    $res
-                                ]
+                                $res
+                            ]
                         ], 201);
                     }
 
@@ -2928,10 +2984,10 @@ class TravShopController extends Controller
                     return response()->json([
                         "message" => "The given data was invalid.",
                         "errors" => [
-                                "otp" => [
-                                    "The otp field is required."
-                                ]
+                            "otp" => [
+                                "The otp field is required."
                             ]
+                        ]
                     ], 422);
                 }
                 $payload = $data_payment;
@@ -2945,8 +3001,8 @@ class TravShopController extends Controller
                         return response()->json([
                             "message" => "ERROR!",
                             "errors" => [
-                                    $res
-                                ]
+                                $res
+                            ]
                         ], 422);
                     }
                     $is_dd_pg_success = $res['responseData']['pay_refnum'] ?? null;
@@ -2955,8 +3011,8 @@ class TravShopController extends Controller
                         return response()->json([
                             "message" => "PENDING",
                             "errors" => [
-                                    $res
-                                ]
+                                $res
+                            ]
                         ], 201);
                     }
 
@@ -3322,10 +3378,10 @@ class TravShopController extends Controller
                     return response()->json([
                         "message" => "The given data was invalid.",
                         "errors" => [
-                                "otp" => [
-                                    "The otp field is required."
-                                ]
+                            "otp" => [
+                                "The otp field is required."
                             ]
+                        ]
                     ], 422);
                 }
                 $payload = $data_payment;
@@ -3339,8 +3395,8 @@ class TravShopController extends Controller
                         return response()->json([
                             "message" => "ERROR!",
                             "errors" => [
-                                    $res
-                                ]
+                                $res
+                            ]
                         ], 422);
                     }
                     $res['responseData']['card_id'] = $payload['card_id'] ?? '';
@@ -3376,10 +3432,10 @@ class TravShopController extends Controller
                     return response()->json([
                         "message" => "The given data was invalid.",
                         "errors" => [
-                                "otp" => [
-                                    "The otp field is required."
-                                ]
+                            "otp" => [
+                                "The otp field is required."
                             ]
+                        ]
                     ], 422);
                 }
                 $payload = $data_payment;
@@ -3393,8 +3449,8 @@ class TravShopController extends Controller
                         return response()->json([
                             "message" => "ERROR!",
                             "errors" => [
-                                    $res
-                                ]
+                                $res
+                            ]
                         ], 422);
                     }
                     $res['responseData']['card_id'] = $payload['card_id'] ?? '';
@@ -3577,10 +3633,10 @@ class TravShopController extends Controller
             return response()->json([
                 "message" => "The given data was invalid.",
                 "errors" => [
-                        "code" => [
-                            "The code is invalid."
-                        ]
+                    "code" => [
+                        "The code is invalid."
                     ]
+                ]
             ], 422);
         }
         $data->save();
