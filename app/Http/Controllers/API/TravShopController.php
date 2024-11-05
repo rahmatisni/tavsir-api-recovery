@@ -620,12 +620,10 @@ class TravShopController extends Controller
             $data->merchant_id = $tenant->merchant_id;
             $data->sub_merchant_id = $tenant->sub_merchant_id;
             $product = Product::find(ENV('LET_IT_FLO_PID'));
-            $data->sub_total = $product->price;
 
 
             $data->save();
 
-            $sub_total = $product->price;
 
             $request->product = [
 
@@ -639,6 +637,7 @@ class TravShopController extends Controller
 
             ];
             $margin = 0;
+            $sub_total = 0;
 
             foreach ($request->product as $k => $v) {
                 $product = Product::byType(ProductType::PRODUCT)->find($v['product_id']);
