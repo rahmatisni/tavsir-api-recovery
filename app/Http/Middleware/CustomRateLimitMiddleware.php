@@ -4,21 +4,41 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\RateLimiter;
 
 class CustomRateLimitMiddleware
 {
+    // public function handle($request, Closure $next, $key, $maxRequests, $decaySeconds)
+    // {
+    //     $cacheKey = 'rate_limit:' . $key;
+
+    //     $requests = Cache::get($cacheKey, 0);
+    //     $requests++;
+
+    //     if ($requests > $maxRequests) {
+    //         return response()->json(['message' => 'Rate limit exceeded'], 429);
+    //     }
+
+    //     Cache::put($cacheKey, $requests, now()->addSeconds($decaySeconds));
+
+    //     return $next($request);
+    // }
+
+
     public function handle($request, Closure $next, $key, $maxRequests, $decaySeconds)
     {
-        $cacheKey = 'rate_limit:' . $key;
+        // Unique key using route, id parameter, and key prefix
+        $uniqueKey = "{$key}:{$request->path()}";
 
-        $requests = Cache::get($cacheKey, 0);
-        $requests++;
-
-        if ($requests > $maxRequests) {
-            return response()->json(['message' => 'Rate limit exceeded'], 429);
+        // Apply rate limiting
+        if (RateLimiter::tooManyAttempts($uniqueKey, $maxRequests)) {
+            return response()->json([
+                'message' => 'Too many requests. Please try again later.'
+            ],429);
         }
 
-        Cache::put($cacheKey, $requests, now()->addSeconds($decaySeconds));
+        // Increment attempt count
+        RateLimiter::hit($uniqueKey, $decaySeconds);
 
         return $next($request);
     }
