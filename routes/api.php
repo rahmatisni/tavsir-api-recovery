@@ -313,7 +313,7 @@ Route::prefix('travshop')->group(function () {
     Route::post('/repeate-manual/{id}', [App\Http\Controllers\API\TravShopController::class, 'repeateManual']);
 });
 
-Route::middleware('customRateLimit:key,1,10')->group(function () {
+Route::middleware('customRateLimit:key,1,5')->group(function () {
     Route::get('/travshop/payment-status/{id}', [App\Http\Controllers\API\TravShopController::class, 'statusPayment']);
 });
 

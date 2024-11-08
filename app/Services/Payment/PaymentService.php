@@ -122,7 +122,7 @@ class PaymentService
     }
 
     public function statusOrder(TransOrder $data, $additonal_data = [])
-    {
+    {        
         $result = $this->cekStatus($data, $additonal_data);
         if($result->status != true){
             $data->status = TransOrder::WAITING_PAYMENT;
@@ -144,12 +144,12 @@ class PaymentService
         }
         if ($data->order_type === TransOrder::ORDER_DEREK_ONLINE) {
             $data->save();
-
             $travoy = $this->travoyService->detailDerek($data->id, ($additonal_data['id_user'] ?? null), ($additonal_data['token'] ?? null));
             $result->data['travoy'] = $travoy ?? '';
             return $result;
         }
         if ($data->order_type == TransOrder::ORDER_HU) {
+                $data->status = TransOrder::DONE;
                 $data->save();
                 DB::commit();
                 $travoy = $this->travoyService->detailHU($data->id);
@@ -157,11 +157,15 @@ class PaymentService
                 return $result;
     
                 // return response()->json(['status' => $data->status, 'responseData' => $data->payment->data ?? '', 'travoy' => $travoy ?? '']);
-
-            
         }
         if ($data->order_type == TransOrder::POS) {
             $data->status = TransOrder::DONE;
+        }
+        if ($data->order_type == TransOrder::ORDER_SELF_ORDER && $data->tenant->in_selforder === 4){
+            $this->trans_sharing_service->calculateSharing($data);
+            $data->status = TransOrder::DONE;
+            $data->save();
+            return $result;
         }
 
         foreach ($data->detil as $value) {

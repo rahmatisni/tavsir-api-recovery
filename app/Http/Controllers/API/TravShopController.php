@@ -608,7 +608,7 @@ class TravShopController extends Controller
 
 
             $tenant = Tenant::find(env('LET_IT_FLO_TID'));
-            $data->order_type = TransOrder::ORDER_FLO;
+            $data->order_type = TransOrder::ORDER_SELF_ORDER;
             // $data->order_id = ($tenant->rest_area_id ?? '0') . '-' . ($tenant->id ?? '0') . '-DO-' . date('YmdHis');
             $data->tenant_id = $tenant->id;
             $data->order_id = $request->order_id;
@@ -1028,10 +1028,15 @@ class TravShopController extends Controller
             return response()->json($responseArray);
         }
 
-        if ($data->order_type === TransOrder::ORDER_FLO) {
+        // if ($data->order_type === TransOrder::ORDER_FLO) {
+        //     return response()->json(new TsOrderResourceFlo($data));
+
+        // }
+        if ($data->tenant_id == env('LET_IT_FLO_TID')) {
             return response()->json(new TsOrderResourceFlo($data));
 
         }
+
         return response()->json(new TsOrderResource($data));
     }
 
