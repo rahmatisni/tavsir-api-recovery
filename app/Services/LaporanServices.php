@@ -92,9 +92,8 @@ class LaporanServices
 
             $sum_jumlah_transaksi += $jumlah_transaksi;
             $sum_total_transaksi += $total_transaksi;
-
             array_push($hasil, [
-                'kategori' => $k,
+                'kategori' => $i[0]['product']['category']['name'],
                 'tenant_name' => $i[0]['product']['tenant']['name'] ?? '',
                 'jumlah_terjual' => $jumlah_transaksi,
                 'pendapatan_kategori' => $total_transaksi,
