@@ -24,10 +24,100 @@ use Illuminate\Http\Request;
 class LaporanServices
 {
 
-    public function penjualanKategori(Request $request)
+    public function penjualanKategori(DownloadLaporanRequest $request)
     {
+        $tanggal_awal = $request->tanggal_awal;
+        $tanggal_akhir = $request->tanggal_akhir;
+        $tenant_id = $request->tenant_id;
+        $rest_area_id = $request->rest_area_id;
+        $business_id = $request->business_id;
+        $super_tenant_id = auth()->user()->supertenant_id ?? null;
 
+        if (auth()->user()->role === 'TENANT') {
+            $data = TransOrderDetil::whereHas(
+                'trans_order',
+                function ($q) use ($tanggal_awal, $tanggal_akhir, $super_tenant_id, $business_id, $rest_area_id, $tenant_id) {
+                    return $q->where('status', TransOrder::DONE)
+                        ->when(($tanggal_awal && $tanggal_akhir), function ($qq) use ($tanggal_awal, $tanggal_akhir) {
+                            return $qq->whereBetween(
+                                'created_at',
+                                [
+                                    $tanggal_awal,
+                                    $tanggal_akhir . ' 23:59:59'
+                                ]
+                            );
+                        })->when($super_tenant_id, function ($qq) use ($super_tenant_id) {
+                            return $qq->where('supertenant_id', $super_tenant_id);
+                        });
+                }
+            )->whereHas('product', function ($qq) use ($tenant_id) {
+                if (auth()->user()->tenant->is_supertenant != null) {
+                    if ($tenant_id != null) {
+                        $qq->where('tenant_id', $tenant_id);
+                    }
+                } else {
+                    $qq->where('tenant_id', auth()->user()->tenant->id);
+                };
+            })->get()->groupBy('product.category.id');
+
+
+        } else {
+
+            $data = TransOrderDetil::whereHas('trans_order', function ($q) use ($tanggal_awal, $tanggal_akhir, $tenant_id, $rest_area_id, $business_id) {
+                return $q->where('status', TransOrder::DONE)
+                    ->when(($tanggal_awal && $tanggal_akhir), function ($qq) use ($tanggal_awal, $tanggal_akhir) {
+                        return $qq->whereBetween(
+                            'created_at',
+                            [
+                                $tanggal_awal,
+                                $tanggal_akhir . ' 23:59:59'
+                            ]
+                        );
+                    })->when($tenant_id, function ($qq) use ($tenant_id) {
+                        return $qq->where('tenant_id', $tenant_id);
+                    })->when($rest_area_id, function ($qq) use ($rest_area_id) {
+                        return $qq->where('rest_area_id', $rest_area_id);
+                    })->when($business_id, function ($qq) use ($business_id) {
+                        return $qq->where('business_id', $business_id);
+                    });
+            })->with('product.category')->get()
+                ->groupBy('product.category.id');
+        }
+        $hasil = [];
+        $sum_total_transaksi = 0;
+        $sum_jumlah_transaksi = 0;
+        foreach ($data as $k => $i) {
+            $jumlah_transaksi = $i->sum('qty');
+            $total_transaksi = $i->sum('total_price');
+
+            $sum_jumlah_transaksi += $jumlah_transaksi;
+            $sum_total_transaksi += $total_transaksi;
+
+            array_push($hasil, [
+                'kategori' => $k,
+                'tenant_name' => $i[0]['product']['tenant']['name'] ?? '',
+                'jumlah_terjual' => $jumlah_transaksi,
+                'pendapatan_kategori' => $total_transaksi,
+            ]);
+        }
+
+        if ($data->count() == 0) {
+            abort(404);
+        }
+        $record = [
+            'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
+            'tanggal_awal' => $tanggal_awal ?? 'Semua Tanggal',
+            'tanggal_akhir' => $tanggal_akhir ?? 'Semua Tanggal',
+            'sum_jumlah_transaksi' => $sum_jumlah_transaksi,
+            'sum_total_transaksi' => $sum_total_transaksi,
+            'data' => $hasil,
+        ];
+        return $record;
     }
+
+
+
+
     public function listRekon(Request $request)
     {
         $tanggal_awal = $request->tanggal_awal;
@@ -38,7 +128,7 @@ class LaporanServices
         $status_rekon = $request->status_rekon;
         $status_derek = $request->status_derek;
         $paymentMethodsparent = PaymentMethod::where('integrator', $sof)->pluck('id');
-        $all_rekon = CompareReport::with('detilDerek.detail', 'detilDerek.refund','detilReport')->when(
+        $all_rekon = CompareReport::with('detilDerek.detail', 'detilDerek.refund', 'detilReport')->when(
             ($tanggal_awal && $tanggal_akhir),
             function ($q) use ($tanggal_awal, $tanggal_akhir) {
                 return $q->whereBetween(
@@ -52,7 +142,7 @@ class LaporanServices
         )->
             when($status_derek = request()->status_derek, function ($q) use ($status_derek) {
                 $q->whereHas('detilDerek', function ($qq) use ($status_derek) {
-                    $qq->where('is_solve_derek',$status_derek);
+                    $qq->where('is_solve_derek', $status_derek);
                 });
             })->
             when($sof, function ($qq) use ($paymentMethodsparent) {
@@ -292,6 +382,7 @@ class LaporanServices
         if ($data->count() == 0) {
             abort(404);
         }
+
         // $datax = [];
 
         // foreach ($data as $k => $i) {
@@ -328,13 +419,47 @@ class LaporanServices
 
 
         $res = json_decode(LaporanPenjualanResource::collection($data)->toJson());
+
+
+        $groupedData = [];
+
+        foreach ($res as $item) {
+            $productId = $item->product_id;
+        
+            if (!isset($groupedData[$productId])) {
+                // Initialize the grouped data for this product_id, including all required fields
+                $groupedData[$productId] = [
+                    'tenant_id' => $item->tenant_id,
+                    'tenant_name' => $item->tenant_name,
+                    'sku' => $item->sku,
+                    'nama_product' => $item->nama_product,
+                    'product_id' => $item->product_id,
+                    'nama_varian' => $item->nama_varian,
+                    'kategori' => $item->kategori,
+                    'jumlah' => 0,
+                    'harga' => 0,
+                    'harga_varian' => 0,
+                    'pendapatan' => 0
+                ];
+            }
+        
+            // Accumulate the values for the summable fields
+            $groupedData[$productId]['jumlah'] += $item->jumlah;
+            $groupedData[$productId]['harga'] += $item->harga;
+            $groupedData[$productId]['harga_varian'] += $item->harga_varian;
+            $groupedData[$productId]['pendapatan'] += $item->pendapatan;
+        }
+        
+        // Convert grouped data back to a sequential array if needed
+        $groupedData = array_values($groupedData);
+
         $record = [
             'nama_tenant' => Tenant::find($tenant_id)->name ?? 'Semua Tenant',
             'tanggal_awal' => $tanggal_awal ?? 'Semua Tanggal',
             'tanggal_akhir' => $tanggal_akhir ?? 'Semua Tanggal',
             'total_jumlah' => $data->sum('qty'),
             'total_pendapatan' => $data->sum('total_price'),
-            'record' => $res
+            'record' => $groupedData
         ];
         return $record;
     }
