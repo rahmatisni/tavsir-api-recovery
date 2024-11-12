@@ -29,7 +29,17 @@ class CardController extends Controller
     public function rebind($id)
     {
         $result = $this->service->rebinding($id);
-        return response()->json($result);
+        
+        if (!isset($result['data'])) {
+            return response()->json([
+                'status' => 'error',
+                'responseMessage' => 'Silahkan coba kembali dalam 1x24 jam',
+            ], 422);
+        }
+        else {
+            return response()->json($result);
+
+        }
     }
 
     public function bindValidate(BindValidateRequest $request, $id)
