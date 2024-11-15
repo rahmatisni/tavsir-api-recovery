@@ -16,4 +16,7 @@ class PaymentMethodCode
    // const LINK = 'link';
    const LINK = 'pg_qris';
    const QRJTL = 'pg_qrjtl';
+   const MIDTRANS_VA_BCA = 'midtrans_va_bca';
+   const MIDTRANS_CARD = 'midtrans_card';
+   const MIDTRANS_GOPAY = 'midtrans_gopay';
 }
