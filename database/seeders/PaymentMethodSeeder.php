@@ -77,6 +77,21 @@ class PaymentMethodSeeder extends Seeder
                 'logo' => 'images/DOntCFLHbI9iRn4lJxeXX2ERtc0Nl1PbTfTCvRxr.png',
                 'integrator' => 'getoll',
             ],
+            [
+                'name' => 'BCA Virtual Account',
+                'code_name' => 'midtrans_va_bca',
+                'code' => 'BCA',
+            ],
+            [
+                'name' => 'Card',
+                'code_name' => 'midtrans_card',
+                'code' => 'Card',
+            ],
+            [
+                'name' => 'Gopay',
+                'code_name' => 'midtrans_gopay',
+                'code' => 'Qris',
+            ],
 
         ];
 

@@ -1,8 +1,8 @@
 <?php
 
-use App\Events\StatusOrderEvent;
-use App\Models\TransOrder;
-use App\Services\External\JatelindoService;
+use App\Services\Payment\MidtransService;
+use App\Services\Payment\PaymentService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,8 +20,19 @@ Route::get('/', function () {
     return response()->json(['error' => 'Udah kenapa ga usah nyoba terus. gue mau pulang!'], 404);
 });
 
-Route::get('/cek', function () {
-    $trans_order = TransOrder::first();
-    $cek = StatusOrderEvent::dispatch($trans_order);
-    return $cek;
+Route::post('/external/{vendor}/{apikey}', function(Request $request, $vendor, $apikey){
+    if($apikey !== env('API_KEY_EXTERNAL', null)) {
+        return response('401 unauthorized', 401);
+    }
+    $service = app(PaymentService::class);
+    
+    switch ($vendor) {
+        case 'midtrans':
+            return $service->midtransNotificationCallback($request->all());
+            break;
+        
+        default:
+            return response('400', 400);
+            break;
+    }
 });

@@ -22,9 +22,11 @@ use App\Services\StockServices;
 use App\Services\TransSharingServices;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use ParagonIE\Sodium\Core\Curve25519\Fe;
+use Midtrans\Config;
+use Midtrans\Snap;
 
 class PaymentService
 {
@@ -74,6 +76,18 @@ class PaymentService
                 $customer_phone = $additonal_data['customer_phone'] ?? null;
                 $result = $this->payQR($data, $voucher, $customer_name, $customer_email, $customer_phone);
                 break;
+            
+            case Str::contains($payment_method->code_name, PaymentMethodCode::MIDTRANS_VA_BCA):
+                $result = $this->midtransVaBca($data);
+                break;
+            
+            case Str::contains($payment_method->code_name, PaymentMethodCode::MIDTRANS_CARD):
+                $result = $this->midtransCard($data);
+                break;
+            
+            case Str::contains($payment_method->code_name, PaymentMethodCode::MIDTRANS_GOPAY):
+                $result = $this->midtransGopay($data);
+                break;
 
             default:
                 $result = $this->responsePayment(false, ['message' => $payment_method->name . ' Belum tersedia']);
@@ -112,6 +126,18 @@ class PaymentService
 
             case Str::contains($payment_method->code_name, PaymentMethodCode::QRJTL):
                 $result = $this->statusQRISPG($data);   
+                break;
+            
+            case Str::contains($payment_method->code_name, PaymentMethodCode::MIDTRANS_VA_BCA):
+                $result = $this->midtransCekStatus($data);   
+                break;
+            
+            case Str::contains($payment_method->code_name, PaymentMethodCode::MIDTRANS_CARD):
+                $result = $this->midtransCekStatus($data);   
+                break;
+            
+            case Str::contains($payment_method->code_name, PaymentMethodCode::MIDTRANS_GOPAY):
+                $result = $this->midtransCekStatus($data);   
                 break;
 
                 
@@ -1131,5 +1157,135 @@ class PaymentService
             status: $status,
             data: $res
         );
+    }
+
+    public function midtransCreate(TransOrder $data, $method)
+    {
+        if($data?->payment?->inquiry) {
+            return $this->responsePayment(
+                status: true,
+                data: [
+                    'responseData' => [
+                        'fee' => 0,
+                        'exp_date' => Carbon::now()->addDay()->format('c'),
+                        ...$data->payment->inquiry
+                    ]
+                ]
+            );
+        }
+        // Set your Merchant Server Key
+        Config::$serverKey = config('midtrans.server_key');
+        // Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
+        Config::$isProduction = config('midtrans.is_production');
+        // Set sanitization on (default)
+        Config::$isSanitized = config('midtrans.is_sanitized');
+        // Set 3DS transaction for credit card to true
+        Config::$is3ds = config('midtrans.is_3ds');
+
+        $payload = [
+            "transaction_details"=> [
+                "order_id"=> $data->id,
+                "gross_amount"=> $data->total
+            ],
+            "enabled_payments"=> [$method],
+        ];
+
+        try {
+            $result = Snap::createTransaction($payload);
+            $payment = [
+                'token' => $result->token,
+                'redirect_url' => $result->redirect_url,
+            ];
+
+            $data->payment()->updateOrCreate([
+                'trans_order_id' => $data->id
+            ],[
+                'data' => $payment,
+                'inquiry' => $payment
+            ]);
+            
+            return $this->responsePayment(
+                status: true,
+                data: [
+                    'responseData' => [
+                        'fee' => 0,
+                        'exp_date' => Carbon::now()->addDay()->format('c'),
+                        ...$payment
+                    ]
+                ]
+            );
+        }
+        catch (\Exception $e) {
+            return $this->responsePayment(
+                status: false,
+                data: $e->getMessage()
+            );
+        }
+    }
+
+    public function midtransNotificationCallback($data)
+    {
+        try {
+            $status = false;
+            $order = TransOrder::find($data['order_id'] ?? 0);
+            $status = $data['status_code'] ?? null;
+            if ($order && $status == '200') {
+                Db::transaction(function() use ($order, $data, &$status) {
+                    $order->status = TransOrder::PAYMENT_SUCCESS;
+                    $order->save();
+
+                    $order->payment()->updateOrCreate([
+                        'trans_order_id' => $order->id
+                    ],[
+                        'data' => $data,
+                        'payment' => $data
+                    ]);
+                    $status = true;
+                });
+            }
+            return $this->responsePayment(
+                status: $status,
+                data: [
+                    'order_id' => $order?->order_id,
+                    'status' => $order?->status
+                ]
+            );
+        }
+        catch (\Exception $e) {
+            return $this->responsePayment(
+                status: false,
+                data: $e->getMessage()
+            );
+        }
+    }
+
+    public function midtransCekStatus(TransOrder $data) 
+    {
+        Config::$serverKey = config('midtrans.server_key');
+        $result = Http::withHeaders(['Authorization' => 'Basic ' . base64_encode(Config::$serverKey . ':')])->get(Config::getBaseUrl()."/v2/{$data?->id}/status");
+        $status = false;
+        if($result->json('status_code') == 200) {
+           $status = true;
+        }
+
+        return $this->responsePayment(
+            status: $status,
+            data: $result->json()
+        );
+    }
+
+    public function midtransVaBca(TransOrder $data)
+    {
+        return $this->midtransCreate($data, 'bca_va');
+    }
+
+    public function midtransCard(TransOrder $data)
+    {
+        return $this->midtransCreate($data, 'credit_card');
+    }
+
+    public function midtransGopay(TransOrder $data)
+    {
+        return $this->midtransCreate($data, 'gopay');
     }
 }
