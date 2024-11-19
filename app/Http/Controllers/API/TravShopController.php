@@ -592,8 +592,26 @@ class TravShopController extends Controller
 
     public function floOrder(Request $request)
     {
-        try {
 
+        $authorizationHeader = $request->header('Authorization');
+        // Jika Basic Auth tidak ditemukan
+        if (!$authorizationHeader || !str_starts_with($authorizationHeader, 'Basic ')) {
+            return response()->json(['message' => 'Authorization header is missing or invalid.'], 401);
+        }
+
+
+
+        try {
+            $credentials = base64_decode(substr($authorizationHeader, 6));
+
+            [$username, $password] = explode(':', $credentials, 2);
+            $validUsername = env('usr_flo'); // Contoh username valid
+            $validPassword = env('pwd_flo'); // Contoh password valid
+
+            if ($username !== $validUsername || $password !== $validPassword) {
+                return response()->json(['message' => 'Invalid credentials.'], 401)
+                    ->header('WWW-Authenticate', 'Basic realm="Access to the API"');
+            }
             $validator = Validator::make($request->all(), [
                 'customer_name' => 'required|string',
                 'customer_phone' => 'required|string',
@@ -1186,7 +1204,7 @@ class TravShopController extends Controller
                 if ($value->id == 4 || $value->id == 16 || $value->id == 17 || $value->id == 18) {
                     $value->fee = 0;
                 }
-                
+
                 if ($value->id == 14) {
                     $value->fee = 0;
                 }
