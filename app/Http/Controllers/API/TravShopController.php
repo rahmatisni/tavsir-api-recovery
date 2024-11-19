@@ -1084,139 +1084,11 @@ class TravShopController extends Controller
         return response()->json(new TsOrderResource($data));
     }
 
-
-    // public function paymentMethod(Request $request)
-    // {
-    //     $paymentMethods = PaymentMethod::all();
-    //     $self_order = [5,7,9,11];
-    //     $travshop = [5, 6, 7, 8, 9, 11];
-    //     $tavsir = [1,2,3,4,10];
-
-    //     if ($request->trans_order_id) {
-    //         $trans_order = TransOrder::with('tenant')->findOrfail($request->trans_order_id);
-    //         $param_removes = Tenant::where('id', $trans_order->tenant_id)->first();
-    //         if($param_removes == null && $trans_order->order_type == 'ORDER_TRAVOY'){
-    //             $self_order =[];
-    //             $travshop = [5, 6, 7, 8, 9, 11];
-    //             $tavsir = [];
-
-    //         }
-    //         else {
-    //             $intersect = json_decode($param_removes->list_payment);           
-    //             if($param_removes->list_payment == null){
-    //                 $self_order = [];
-    //                 $travshop = [];
-    //                 $tavsir = [1,2];
-    //             }
-    //             else {
-    //                 $self_order = array_intersect($self_order, $intersect);
-    //                 $travshop = array_intersect($travshop, $intersect);
-    //                 $tavsir = array_intersect($tavsir, $intersect);
-    //             }
-
-    //         }
-
-
-
-    //         $tenant = $trans_order->tenant;
-    //         $tenant_is_verified = $tenant?->is_verified;
-
-    //         if ($tenant_is_verified === false && $trans_order->order_type != TransOrder::ORDER_TRAVOY) {
-    //             $merchant = PgJmto::listSubMerchant();
-    //             if ($merchant->successful()) {
-    //                 $merchant = $merchant->json();
-    //                 if ($merchant['status'] == 'success') {
-    //                     $merchant = $merchant['responseData'];
-    //                     foreach ($merchant as $key => $value) {
-    //                         if ($value['email'] == $tenant->email) {
-    //                             $trans_order->tenant()->update([
-    //                                 'is_verified' => 1,
-    //                                 'sub_merchant_id' => $value['merchant_id']
-    //                             ]);
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //         }
-
-
-    //         foreach ($paymentMethods as $value) {
-    //             Log::warning($value);
-    //             $value->platform_fee = env('PLATFORM_FEE');
-    //             $value->fee = 0;
-
-    //             $value->self_order = false;
-    //             $value->travshop = false;
-    //             $value->tavsir = false;
-
-    //             if (in_array($value->id, $self_order)) {
-    //                 $value->self_order = true;
-    //                 // dump(['so',$value->id, $self_order,true]);
-    //             }
-
-    //             if (in_array($value->id, $travshop)) {
-    //                 $value->travshop = true;
-
-    //                 // dump(['tng',$value->id, $travshop,true]);
-    //             }
-    //             if (in_array($value->id, $tavsir)) {
-    //                 $value->tavsir = true;
-
-    //                 // dump(['pos',$value->id, $travshop, true]);
-    //             }
-
-    //             // if ($trans_order->order_type != TransOrder::ORDER_TRAVOY) {
-
-    //             //     if (in_array($value->id, $removes)) {
-    //             //         $value->self_order = false;
-    //             //         $value->travshop = false;
-    //             //         $value->tavsir = false;
-    //             //     }
-
-    //             // }
-
-
-    //             if ($value?->sof_id) {
-
-    //                 // tenant_is_verified
-    //                 // if ($tenant_is_verified || $trans_order->order_type == TransOrder::ORDER_TRAVOY) {
-
-    //                 if ($value?->sof_id == null) {
-    //                     $value->percentage = null;
-    //                     $value->fee = null;
-    //                 } else {
-    //                     $data = PgJmto::tarifFee($value->sof_id, $value->payment_method_id, $value->sub_merchant_id, $trans_order->sub_total);
-    //                     Log::warning($data);
-    //                     $value->percentage = $data['is_presentage'] ?? null;
-    //                     $x = $data['value'] ?? 'x';
-    //                     $state = $data['is_presentage'] ?? null;
-
-
-    //                     if ($state == (false || null)) {
-    //                         $value->fee = $data['value'] ?? null;
-    //                     } else {
-    //                         $value->fee = (int) ceil((float) $x / 100 * $trans_order->sub_total);
-    //                     }
-    //                 }
-    //             }
-    //         }
-
-    //     }
-
-    //     // dd('x');
-
-    //     // $merchant = PgJmto::listSubMerchant();
-    //     // log::info($merchant);
-    //     // $paymentMethods = $paymentMethods->whereNotIn('id', $remove);
-    //     return response()->json($paymentMethods);
-    // }
-
-
     public function paymentMethod(Request $request)
     {
         $paymentMethods = PaymentMethod::all();
-        $self_order = [4, 5, 7, 9, 11, 12, 13, 14, 15];
-        $travshop = [4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15];
+        $self_order = [4, 5, 7, 9, 11, 12, 13, 14, 16, 17, 18];
+        $travshop = [4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18];
         $tavsir = [1, 2, 3, 4, 10];
 
         if ($request->trans_order_id) {
@@ -1224,7 +1096,7 @@ class TravShopController extends Controller
             $param_removes = Tenant::where('id', $trans_order->tenant_id)->first();
             if ($param_removes == null && $trans_order->order_type == 'ORDER_TRAVOY') {
                 $self_order = [];
-                $travshop = [4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15];
+                $travshop = [4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18];
                 $tavsir = [];
 
                 // } else if ($param_removes == null && $trans_order->order_type == 'HU_ORDER') {
@@ -1311,9 +1183,10 @@ class TravShopController extends Controller
                     }
                 }
 
-                if ($value->id == 4) {
+                if ($value->id == 4 || $value->id == 16 || $value->id == 17 || $value->id == 18) {
                     $value->fee = 0;
                 }
+                
                 if ($value->id == 14) {
                     $value->fee = 0;
                 }
