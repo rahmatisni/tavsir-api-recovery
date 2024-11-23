@@ -1050,7 +1050,7 @@ class TravShopController extends Controller
         //     return response()->json(new TsOrderResourceFlo($data));
 
         // }
-        if ($data->tenant_id == env('LET_IT_FLO_TID')) {
+        if ($data?->tenant_id === env('LET_IT_FLO_TID')) {
             return response()->json(new TsOrderResourceFlo($data));
 
         }
