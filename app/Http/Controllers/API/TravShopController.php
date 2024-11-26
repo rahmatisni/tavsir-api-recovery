@@ -3702,8 +3702,8 @@ class TravShopController extends Controller
     {
         $fake = $request?->fake;
         if($fake){
-            return response()->json(['rc' => '00'], 200);
+            return response()->json(['rc' => '00', 'message' => 'Request Berhasil'], 200);
         }
-        return response()->json(['rc' => '500'], 500);
+        return response()->json(['rc' => '500','message' => 'Request Gagal Hubungi Customer Care'], 500);
     }
 }
