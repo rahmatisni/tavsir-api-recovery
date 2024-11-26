@@ -3697,4 +3697,13 @@ class TravShopController extends Controller
     {
         return $this->response($this->servicePayment->repeatManual($id));
     }
+
+    public function callbackFlo(Request $request)
+    {
+        $fake = $request?->fake;
+        if($fake){
+            return response()->json(['rc' => '00'], 200);
+        }
+        return response()->json(['rc' => '500'], 500);
+    }
 }

@@ -322,6 +322,9 @@ Route::middleware('customRateLimit:key,1,5')->group(function () {
     Route::post('/lupa-password', [App\Http\Controllers\API\UserController::class, 'forgetPass']);
 // });
 
+
+Route::post('/handle-payment-callback', [App\Http\Controllers\API\TravShopController::class, 'callbackFlo']);
+
 Route::get('/card', [App\Http\Controllers\API\CardController::class, 'index']);
 Route::post('/card', [App\Http\Controllers\API\CardController::class, 'bind']);
 Route::post('/card/rebind/{id}', [App\Http\Controllers\API\CardController::class, 'rebind']);
