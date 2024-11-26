@@ -662,7 +662,7 @@ class PaymentService
             $data_payment['bill_id'],
             $data_la
         );
-
+        $status = false;
         if(($res['status'] ?? null) == 'success'){
             $status = ($res['responseData']['pay_status'] ?? 0) == 1 ? true : false;
             unset($res['la_response']);
