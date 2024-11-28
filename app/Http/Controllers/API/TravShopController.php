@@ -3706,7 +3706,9 @@ class TravShopController extends Controller
         }
         else{
             try {
-                $payload = $request->all();
+                $data = TransOrder::findOrfail($request->trans_order_id);
+                $callBack = new TsOrderResourceFlo($data);
+                $payload = $callBack->toArray($request);
                 $response = Http::withHeaders([
                 ])
                     // ->withBody(json_encode($payload), 'Application/json')
@@ -3715,6 +3717,8 @@ class TravShopController extends Controller
                     ->withoutVerifying()
                     ->post(env('URL_FLO') .'/handle-payment-callback', $payload);
                 clock()->event("flo/handle-payment-callback")->end();
+                Log::info(['Payload FLO =>', $payload, 'Response => ', $response ?? 'ERROR']);
+
                 if($response->status() === 200){
                     return $response->json();
                 }
@@ -3724,6 +3728,7 @@ class TravShopController extends Controller
                 }
 
             } catch (\Exception $e) {
+                Log::info(['Payload FLO =>', $payload, 'E => ', $e ?? 'ERROR']);
                 return response()->json(['rc' => '500','message' => 'Request Gagal Hubungi Customer Care','e'=>$e], 500);
 
             }
