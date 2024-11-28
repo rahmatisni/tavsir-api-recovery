@@ -3704,6 +3704,29 @@ class TravShopController extends Controller
         if($fake){
             return response()->json(['rc' => '00', 'message' => 'Request Berhasil'], 200);
         }
-        return response()->json(['rc' => '500','message' => 'Request Gagal Hubungi Customer Care'], 500);
+        else{
+            try {
+                $payload = $request->all();
+                $response = Http::withHeaders([
+                ])
+                    // ->withBody(json_encode($payload), 'Application/json')
+                    ->timeout(10)
+                    ->retry(1, 100)
+                    ->withoutVerifying()
+                    ->post(env('URL_FLO') .'/handle-payment-callback', $payload);
+                clock()->event("flo/handle-payment-callback")->end();
+                if($response->status() === 200){
+                    return $response->json();
+                }
+                else {
+                    return response()->json(['rc' => '500','message' => 'Request Gagal Hubungi Customer Care','response'=>$response->json()], 501);
+
+                }
+
+            } catch (\Exception $e) {
+                return response()->json(['rc' => '500','message' => 'Request Gagal Hubungi Customer Care','e'=>$e], 500);
+
+            }
+        }
     }
 }
