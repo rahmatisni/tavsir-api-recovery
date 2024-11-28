@@ -84,7 +84,7 @@ class TsOrderResourceFlo extends JsonResource
             // 'payment' => $this->payment?->data['responseData'] ?? $this->payment->data ?? null,
             'log_kiosbank' => $log_kios_bank ?? null,
             'addon_total' => $this->addon_total,
-            'addon_price' => $this->addon_price,
+            'addon_price' => null,
             'detil_kios' => $product_kios,
             "logo" => $logo ? asset($logo) : null,
             "additional_information" => $this->tenant->additional_information ?? null,
@@ -93,7 +93,7 @@ class TsOrderResourceFlo extends JsonResource
             "website" => $this->tenant->website ?? null,
             "note" => $this->tenant->note ?? $note ?? null,
             'title' => $title ?? null,
-            'detil' => TsOrderDetilResource::collection($this->detil),
+            'detil' => null,
             'self_order_url' => ENV('URL_SELF_ORDER').'/?trans_order_id='.$this->id
         ];
     }
