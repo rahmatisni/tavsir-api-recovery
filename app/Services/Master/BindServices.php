@@ -303,10 +303,6 @@ class BindServices
             $bind->delete();
             return ['message' => 'Success unbind.'];
         }
-        else {
-            return json_decode(['rc' => '500','message' => 'Request Gagal Hubungi Customer Care'], 500);
-        }
-
-        // throw new ApiRequestException($res->json());
+        throw new ApiRequestException($res->json());
     }
 }
