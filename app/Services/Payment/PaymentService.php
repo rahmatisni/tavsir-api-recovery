@@ -772,6 +772,7 @@ class PaymentService
         if($error){
             return (object) [
                 'status' => $status,
+                'data' => $error,
                 'fee' => $fee,
                 'error'=> $error,
                 'message' => $error,
