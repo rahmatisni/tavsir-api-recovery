@@ -775,8 +775,8 @@ class PaymentService
                 'data' => $data,
                 'fee' => $fee,
                 'error'=> $error,
-                'message' => $error
-
+                'message' => $error,
+                'responseMessage' =>  $error
             ];
             
         }
