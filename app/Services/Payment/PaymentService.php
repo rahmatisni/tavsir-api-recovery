@@ -768,15 +768,16 @@ class PaymentService
 
     private function responsePayment($status = false, $data = null, $fee = 0) : object
     {
+        // dd($data);
         $error = $data['responseMessage'];
         if($error){
             return (object) [
                 'status' => $status,
-                // 'data' => $error,
+                'data' =>null, 
                 'fee' => $fee,
                 'error'=> $error,
                 'message' => $error,
-                'responseMessage' =>  $error
+                'responseMessage' => $error
             ];
             
         }
