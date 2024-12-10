@@ -1073,6 +1073,9 @@ class PaymentService
             $status = true;
             return $this->responsePayment($status, $res, $fee);
         }
+        else {
+            return $this->responsePayment($status, $respon->json(), $fee);
+        }
     }
 
     public function statusSnapDirectDebit($trans_order, $otp)
