@@ -768,10 +768,20 @@ class PaymentService
 
     private function responsePayment($status = false, $data = null, $fee = 0) : object
     {
+        $error = $data['responseMessage'];
+        if($error){
+            return (object) [
+                'status' => $status,
+                'data' => $data,
+                'fee' => $fee,
+                'error'=> $error
+            ];
+            
+        }
         return (object) [
             'status' => $status,
             'data' => $data,
-            'fee' => $fee
+            'fee' => $fee,
         ];
     }
     
@@ -1073,9 +1083,9 @@ class PaymentService
             $status = true;
             return $this->responsePayment($status, $res, $fee);
         }
-        else {
-            return $this->responsePayment($status, $respon->json(), $fee);
-        }
+        $res = $respon->json();
+        return $this->responsePayment($status, $res);
+
     }
 
     public function statusSnapDirectDebit($trans_order, $otp)
