@@ -1061,7 +1061,15 @@ class PaymentService
             'email' => $bind->email ?? $bind_before->data['email'],
             'sofCode' => $bind->sof_code ?? $bind_before->data['sof_code'],
             'remarks' => $trans_order->tenant->name ?? 'Travoy',
+            'bill_id' => $trans_order->order_id,
+            'bill_name' => 'GetPay',
+            'sub_merchant_id' => $trans_order->tenant?->sub_merchant_id ?? $trans_order->sub_merchant_id,
+            'prefix' => env('PREFIX_PG'),
+            'data' => $trans_order
         ];
+
+
+
 
         $respon = PgJmtoSnap::paymentDD($payment_payload);
 

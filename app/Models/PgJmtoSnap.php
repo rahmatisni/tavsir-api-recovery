@@ -672,8 +672,12 @@ class PgJmtoSnap extends Model
                 'phoneNo'=> $payload['phoneNo'],
                 'email'=> $payload['email'],
                 'sofCode'=> $payload['sofCode'],
-                'remarks'=> $payload['remarks']
+                'remarks'=> $payload['remarks'],
+                "description" => ($payload['bill_id'] . '-' . 'Travoy' . '-' . $payload['amount']),
+                "submerch_id" => $payload['sub_merchant_id']
             ]
+            
+
         ];
         if (env('PG_FAKE_RESPON') === true) {
             //for fake
