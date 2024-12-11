@@ -770,14 +770,16 @@ class PaymentService
     {
         // dd($data);
         $error = $data['responseCode'];
+        $responseMessage = $data['responseMessage'];
+
         if($error == 4005400){
             return (object) [
                 'status' => $status,
                 'data' =>null, 
                 'fee' => $fee,
                 'error'=> $error,
-                'message' => $error,
-                'responseMessage' => $error
+                'message' => $responseMessage,
+                'responseMessage' => $responseMessage
             ];
             
         }
