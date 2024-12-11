@@ -768,6 +768,7 @@ class PaymentService
 
     private function responsePayment($status = false, $data = null, $fee = 0) : object
     {
+        dd($data);
         $error = $data['responseCode'];
         $responseMessage = $data['responseMessage'];
 
@@ -777,7 +778,7 @@ class PaymentService
                 'status' => $status,
                 'data' => null, 
                 'fee' => $fee,
-                'error'=> (string)$responseMessage,
+                'error'=> (string)$error,
                 'message' => $responseMessage,
                 'responseMessage' => $responseMessage
             ];
