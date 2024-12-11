@@ -766,23 +766,30 @@ class PaymentService
         return $this->responsePayment($status, $res);
     }
 
-    private function responsePayment($status = false, $data = null, $fee = 0) : object
+    private function responsePayment($status = false, $data = null, $fee = 0): object
     {
-        dd($data);
-        $error = $data['responseCode'];
-        $responseMessage = $data['responseMessage'];
 
-        if($error == 4005400){
-            // dd($error, $responseMessage);
-            return (object) [
-                'status' => $status,
-                'data' => null, 
-                'fee' => $fee,
-                'error'=> (string)$error,
-                'message' => $responseMessage,
-                'responseMessage' => $responseMessage
-            ];
-            
+        if ($status == false) {
+            $error = $data['responseCode'];
+            $responseMessage = $data['responseMessage'];
+            if ($error == 4005400) {
+                // dd($error, $responseMessage);
+                return (object) [
+                    'status' => $status,
+                    'data' => null,
+                    'fee' => $fee,
+                    'error' => (string) $error,
+                    'message' => $responseMessage,
+                    'responseMessage' => $responseMessage
+                ];
+
+            } else {
+                return (object) [
+                    'status' => $status,
+                    'data' => $data,
+                    'fee' => $fee,
+                ];
+            }
         }
         return (object) [
             'status' => $status,
@@ -790,7 +797,7 @@ class PaymentService
             'fee' => $fee,
         ];
     }
-    
+
     public function payKios($data)
     {
         $status = false;
