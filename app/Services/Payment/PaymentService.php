@@ -777,7 +777,7 @@ class PaymentService
                 'status' => $status,
                 'data' => null, 
                 'fee' => $fee,
-                'error'=> (string)$error,
+                'error'=> (string)$responseMessage,
                 'message' => $responseMessage,
                 'responseMessage' => $responseMessage
             ];
