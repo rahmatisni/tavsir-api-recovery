@@ -33,7 +33,9 @@ class CustomRateLimitMiddleware
         // Apply rate limiting
         if (RateLimiter::tooManyAttempts($uniqueKey, $maxRequests)) {
             return response()->json([
-                'message' => 'Too many requests. Please try again later.'
+                'message' => 'Too many requests. Please try again later.',
+                "error" => 'Too many requests. Please try again later.',
+                "responseMessage" => 'Too many requests. Please try again later.'
             ],429);
         }
 
