@@ -254,21 +254,13 @@ class BindServices
             }
         }
         // throw new ApiRequestException($response);
-        else {
-            $res = $res->json();
+        $response = [
 
-            // throw new ApiRequestException($res->json());
-            $response = [
+            "responseCode" => 0000,
+            "responseMessage" => "Verifikasi Gagal"
+        ];
 
-                "responseCode" => $res->responseCode,
-                "responseMessage" => "Verifikasi Gagal"
-            ];
-            
-            // throw new ApiRequestException($response);
-            return $response;
-
-        }
-
+        throw new ApiRequestException($response);
     }
 
     public function unBindStandar($bind)
