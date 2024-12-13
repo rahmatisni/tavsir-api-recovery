@@ -253,6 +253,7 @@ class BindServices
                 return $bind;
             }
         }
+        $res = $res->json();
 
         // throw new ApiRequestException($res->json());
         $response = [
