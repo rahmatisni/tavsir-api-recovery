@@ -677,8 +677,12 @@ class PgJmtoSnap extends Model
                 "submerch_id" => $payload['sub_merchant_id']
             ]
             
-
         ];
+
+        if($payload['sub_merchant_id']){
+            $param['subMerchantId'] = $payload['sub_merchant_id'];
+        }
+
         if (env('PG_FAKE_RESPON') === true) {
             //for fake
             Http::fake([
