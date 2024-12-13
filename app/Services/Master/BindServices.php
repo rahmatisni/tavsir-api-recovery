@@ -264,7 +264,8 @@ class BindServices
                 "responseMessage" => "Verifikasi Gagal"
             ];
             
-            throw new ApiRequestException($response);
+            // throw new ApiRequestException($response);
+            return $response;
 
         }
 
