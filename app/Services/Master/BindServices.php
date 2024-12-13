@@ -42,7 +42,7 @@ class BindServices
         if ($res->successful()) {
             $res = $res->json();
             if ($res['status'] == 'ERROR') {
-                throw new Exception( json_encode($res), 400);
+                throw new Exception(json_encode($res), 400);
             }
             $bind = new Bind();
             $res = $res['responseData'];
@@ -63,13 +63,13 @@ class BindServices
         $payload = [
             'bankCardNo' => $param['card_no'],
             'bankCardType' => 'D',
-            "email"=> $param['email'],
+            "email" => $param['email'],
             'expiryDate' => $param['exp_date'],
             'identificationNo' => '123456789',
             'identificationType' => '02',
             'accountName' => $param['customer_name'],
             'phoneNo' => $param['phone'],
-            'deviceId'=> '12345679237',
+            'deviceId' => '12345679237',
             'channel' => 'mobilephone',
             'sofCode' => $param['sof_code'],
         ];
@@ -77,7 +77,7 @@ class BindServices
         if ($res->successful()) {
             $res = $res->json();
             if ($res['responseCode'] != '2000100') {
-                throw new Exception( json_encode($res), 400);
+                throw new Exception(json_encode($res), 400);
             }
 
             $bind = new Bind();
@@ -140,13 +140,13 @@ class BindServices
         $payload = [
             'bankCardNo' => $bind['card_no'],
             'bankCardType' => 'D',
-            "email"=> $bind['email'],
+            "email" => $bind['email'],
             'expiryDate' => $bind['exp_date'],
             'identificationNo' => '12345',
             'identificationType' => '02',
             'accountName' => $bind['customer_name'],
             'phoneNo' => $bind['phone'],
-            'deviceId'=> '12345679237',
+            'deviceId' => '12345679237',
             'channel' => 'mobilephone',
             'sofCode' => $bind['sof_code'],
         ];
@@ -199,7 +199,7 @@ class BindServices
             }
 
             $respon = collect($res['responseData']);
-            $respon = $respon->where('sof_code','MANDIRI')->where('card_number',$bind->card_no)->first();
+            $respon = $respon->where('sof_code', 'MANDIRI')->where('card_number', $bind->card_no)->first();
             if (!$respon) {
                 throw new Exception('Unvalidate', 400);
             }
@@ -235,12 +235,12 @@ class BindServices
     public function bindValidateSnap($bind, $otp)
     {
         $payload = [
-            'originalReferenceNo'=> $bind->refnum,
-            'type'=> $bind->type ?? 'card',
-            'otp'=> $otp,
-            'deviceId'=> '12345679237',
-            'channel'=> 'mobilephone',
-            'sofCode'=> $bind->sof_code,
+            'originalReferenceNo' => $bind->refnum,
+            'type' => $bind->type ?? 'card',
+            'otp' => $otp,
+            'deviceId' => '12345679237',
+            'channel' => 'mobilephone',
+            'sofCode' => $bind->sof_code,
         ];
 
         $res = PgJmtoSnap::bindValidateDD($payload);
@@ -254,12 +254,19 @@ class BindServices
             }
         }
 
-        throw new ApiRequestException($res->json());
+        // throw new ApiRequestException($res->json());
+        $response = [
+
+            "responseCode" => $res->responseCode,
+            "responseMessage" => "Verifikasi Gagal"
+        ];
+        throw new ApiRequestException($response);
+
     }
 
     public function unBindStandar($bind)
     {
-        if(!$bind->bind_id){
+        if (!$bind->bind_id) {
             $bind->delete();
             return ['message' => 'Success delete.'];
         }
@@ -284,7 +291,7 @@ class BindServices
 
     public function unbindSnap($bind)
     {
-        if(!$bind->bind_id){
+        if (!$bind->bind_id) {
             $bind->delete();
             return ['message' => 'Success delete.'];
         }
