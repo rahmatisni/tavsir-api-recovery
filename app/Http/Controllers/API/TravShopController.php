@@ -3761,6 +3761,7 @@ class TravShopController extends Controller
 
                 // dd($response->json());
                 if($response->status() === 200){
+                    Log::info(['callback'=>'FLO', 'response' => $response->json()]);
                     return true;
                 }
                 else {
