@@ -3722,7 +3722,7 @@ class TravShopController extends Controller
                     ->withoutVerifying()
                     ->post(env('URL_FLO') .'/handle-payment-callback', $payload);
                 clock()->event("flo/handle-payment-callback")->end();
-                Log::info(['Payload FLO =>', $payload, 'Response => ', $response ?? 'ERROR']);
+                Log::info(['Payload FLO =>', $payload, 'Response => ', $response->json() ?? 'ERROR']);
 
                 if($response->status() === 200){
                     return $response->json();
@@ -3757,7 +3757,7 @@ class TravShopController extends Controller
                     ->withoutVerifying()
                     ->post(env('URL_FLO') .'/handle-payment-callback', $payload);
                 clock()->event("flo/handle-payment-callback")->end();
-                Log::info(['Payload FLO =>', $payload, 'Response => ', $response ?? 'ERROR']);
+                Log::info(['Payload FLO =>', $payload, 'Response => ', $response->json() ?? 'ERROR']);
 
                 // dd($response->json());
                 if($response->status() === 200){
