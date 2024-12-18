@@ -2212,6 +2212,12 @@ class TravShopController extends Controller
                     'status' => $data->status
                 ], 422);
             }
+            $request = null;
+            if($data->tenant_id == env('LET_IT_FLO_TID')){
+
+                $x = $this?->callbackFloServices($data->id);
+                Log::info($x);
+            }
             $data->save();
             DB::commit();
 
@@ -3733,5 +3739,45 @@ class TravShopController extends Controller
 
             }
         }
+
+        
+    }
+
+    public function callbackFloServices($id)
+    {
+
+            try {
+                $data = TransOrder::findOrfail($id);
+                $callBack = new TsOrderResourceFlo($data);
+                $payload = $callBack->toArray($id);
+                $response = Http::withHeaders([
+                ])
+                    // ->withBody(json_encode($payload), 'Application/json')
+                    ->timeout(10)
+                    ->retry(1, 100)
+                    ->withoutVerifying()
+                    ->post(env('URL_FLO') .'/handle-payment-callback', $payload);
+                clock()->event("flo/handle-payment-callback")->end();
+                Log::info(['Payload FLO =>', $payload, 'Response => ', $response ?? 'ERROR']);
+
+                // dd($response->json());
+                if($response->status() === 200){
+                    return true;
+                }
+                else {
+                    return false;
+                    // return response()->json(['rc' => '500','message' => 'Request Gagal Hubungi Customer Care','response'=>$response->json()], 501);
+
+                }
+
+            } catch (\Exception $e) {
+                Log::info(['Payload FLO =>', $payload, 'E => ', $e ?? 'ERROR']);
+                // return response()->json(['rc' => '500','message' => 'Request Gagal Hubungi Customer Care','e'=>$e], 500);
+                return false;
+
+            }
+        
+
+        
     }
 }
