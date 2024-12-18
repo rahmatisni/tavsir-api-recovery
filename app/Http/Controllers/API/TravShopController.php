@@ -2212,7 +2212,6 @@ class TravShopController extends Controller
                     'status' => $data->status
                 ], 422);
             }
-            $request = null;
             if($data->tenant_id == env('LET_IT_FLO_TID')){
 
                 $x = $this?->callbackFloServices($data->id);
