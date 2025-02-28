@@ -1202,7 +1202,7 @@ class TravShopController extends Controller
                     }
                 }
 
-                if ($value->id == 4 || $value->id == 16 || $value->id == 17 || $value->id == 18 || $value->id == 20) {
+                if ($value->id == 4 || $value->id == 16 || $value->id == 17 || $value->id == 18 || $value->id == 19 || $value->id == 20) {
                     $value->fee = 0;
                 }
 
