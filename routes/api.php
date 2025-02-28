@@ -314,11 +314,11 @@ Route::prefix('travshop')->group(function () {
 });
 
 // ratelimit
-Route::middleware('customRateLimit:key,1,5')->group(function () {
-    Route::get('/travshop/payment-status/{id}', [App\Http\Controllers\API\TravShopController::class, 'statusPayment']);
-});
+// Route::middleware('customRateLimit:key,1,5')->group(function () {
+//     Route::get('/travshop/payment-status/{id}', [App\Http\Controllers\API\TravShopController::class, 'statusPayment']);
+// });
 
-// Route::get('/travshop/payment-status/{id}', [App\Http\Controllers\API\TravShopController::class, 'statusPayment']);
+Route::get('/travshop/payment-status/{id}', [App\Http\Controllers\API\TravShopController::class, 'statusPayment']);
 
 
 Route::post('/reset-password', [App\Http\Controllers\API\UserController::class, 'resetPass']);

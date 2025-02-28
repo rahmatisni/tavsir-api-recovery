@@ -1992,25 +1992,25 @@ class TravShopController extends Controller
     {
         $data = TransOrder::with('payment_method')->findOrfail($id);
         try {
-            if ($data->tenant_id != env('LET_IT_FLO_TID')) {
-                $limit = app(CustomRateLimitMiddleware::class)->handle(
-                    $request,
-                    function ($request) {
-                        // Closure kosong sebagai pemroses berikutnya
-                    },
-                    'statusPayment:' . $id, // Kunci unik untuk rate limit
-                    1,                      // Maksimal 1 request
-                    10                      // Dalam waktu 5 menit
-                );
-                if ($limit[0]) {
-                    return response()->json([
-                        'status' => 'error',
-                        'message' => 'Too many requests. Please try again later.',
-                        'retry' => $limit[1]
-                    ], 429);
-                }
+            // if ($data->tenant_id != env('LET_IT_FLO_TID')) {
+            //     $limit = app(CustomRateLimitMiddleware::class)->handle(
+            //         $request,
+            //         function ($request) {
+            //             // Closure kosong sebagai pemroses berikutnya
+            //         },
+            //         'statusPayment:' . $id, // Kunci unik untuk rate limit
+            //         1,                      // Maksimal 1 request
+            //         10                      // Dalam waktu 5 menit
+            //     );
+            //     if ($limit[0]) {
+            //         return response()->json([
+            //             'status' => 'error',
+            //             'message' => 'Too many requests. Please try again later.',
+            //             'retry' => $limit[1]
+            //         ], 429);
+            //     }
 
-            }
+            // }
             DB::beginTransaction();
             if ($data->status == TransOrder::PAYMENT_SUCCESS || $data->status == TransOrder::DONE || $data->status == TransOrder::READY) {
                 $kios = [];
