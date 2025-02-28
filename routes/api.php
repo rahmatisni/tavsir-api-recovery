@@ -45,12 +45,12 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('tenant', App\Http\Controllers\API\TenantController::class);
     Route::apiResource('supertenant', App\Http\Controllers\API\SupertenantController::class);
 
-    Route::prefix('category-tenant')->controller(CategoryTenantController::class)->group(function(){
-        Route::get('/','index');
-        Route::get('/{id}','show');
-        Route::post('/','store');
-        Route::post('/{id}','update');
-        Route::delete('/{id}','delete');
+    Route::prefix('category-tenant')->controller(CategoryTenantController::class)->group(function () {
+        Route::get('/', 'index');
+        Route::get('/{id}', 'show');
+        Route::post('/', 'store');
+        Route::post('/{id}', 'update');
+        Route::delete('/{id}', 'delete');
     });
 
     Route::post('/tenant/buka-tutup-toko', [App\Http\Controllers\API\TenantController::class, 'bukaTutupToko']);
@@ -62,15 +62,15 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/product/update-status', [App\Http\Controllers\API\ProductController::class, 'updateStatus']);
     Route::apiResource('product', App\Http\Controllers\API\ProductController::class);
 
-    Route::post('/payment-method/rule/', [App\Http\Controllers\API\PaymentMethodController::class,'storeRule']);
-    Route::post('/payment-method/rule/{id}', [App\Http\Controllers\API\PaymentMethodController::class,'updateRule']);
-    Route::delete('/payment-method/rule/{id}', [App\Http\Controllers\API\PaymentMethodController::class,'deleteRule']);
-    Route::get('/payment-method', [App\Http\Controllers\API\PaymentMethodController::class,'index']);
-    Route::get('/payment-sof', [App\Http\Controllers\API\PaymentMethodController::class,'indexSof']);
-    Route::get('/payment-method/{id}', [App\Http\Controllers\API\PaymentMethodController::class,'show']);
-    Route::post('/payment-method', [App\Http\Controllers\API\PaymentMethodController::class,'store']);
-    Route::post('/payment-method/{id}', [App\Http\Controllers\API\PaymentMethodController::class,'update']);
-    Route::delete('/payment-method/{id}', [App\Http\Controllers\API\PaymentMethodController::class,'destroy']);
+    Route::post('/payment-method/rule/', [App\Http\Controllers\API\PaymentMethodController::class, 'storeRule']);
+    Route::post('/payment-method/rule/{id}', [App\Http\Controllers\API\PaymentMethodController::class, 'updateRule']);
+    Route::delete('/payment-method/rule/{id}', [App\Http\Controllers\API\PaymentMethodController::class, 'deleteRule']);
+    Route::get('/payment-method', [App\Http\Controllers\API\PaymentMethodController::class, 'index']);
+    Route::get('/payment-sof', [App\Http\Controllers\API\PaymentMethodController::class, 'indexSof']);
+    Route::get('/payment-method/{id}', [App\Http\Controllers\API\PaymentMethodController::class, 'show']);
+    Route::post('/payment-method', [App\Http\Controllers\API\PaymentMethodController::class, 'store']);
+    Route::post('/payment-method/{id}', [App\Http\Controllers\API\PaymentMethodController::class, 'update']);
+    Route::delete('/payment-method/{id}', [App\Http\Controllers\API\PaymentMethodController::class, 'destroy']);
 
     Route::apiResource('paystation', App\Http\Controllers\API\PaystationController::class);
     Route::apiResource('voucher', App\Http\Controllers\API\VoucherController::class);
@@ -126,29 +126,29 @@ Route::middleware('auth:api')->group(function () {
     Route::get('trans-sharing', [App\Http\Controllers\API\TransSharingController::class, 'index']);
     Route::get('trans-sharing/{id}', [App\Http\Controllers\API\TransSharingController::class, 'show']);
 
-    Route::get('extra-price', [App\Http\Controllers\API\ExtraPriceController::class,'index']);
-    Route::get('extra-price/{id}', [App\Http\Controllers\API\ExtraPriceController::class,'show']);
+    Route::get('extra-price', [App\Http\Controllers\API\ExtraPriceController::class, 'index']);
+    Route::get('extra-price/{id}', [App\Http\Controllers\API\ExtraPriceController::class, 'show']);
     Route::post('extra-price/{id}/status', [App\Http\Controllers\API\ExtraPriceController::class, 'changeStatus']);
-    Route::post('extra-price', [App\Http\Controllers\API\ExtraPriceController::class,'store']);
-    Route::post('extra-price/{id}', [App\Http\Controllers\API\ExtraPriceController::class,'update']);
-    Route::delete('extra-price/{id}', [App\Http\Controllers\API\ExtraPriceController::class,'destroy']);
+    Route::post('extra-price', [App\Http\Controllers\API\ExtraPriceController::class, 'store']);
+    Route::post('extra-price/{id}', [App\Http\Controllers\API\ExtraPriceController::class, 'update']);
+    Route::delete('extra-price/{id}', [App\Http\Controllers\API\ExtraPriceController::class, 'destroy']);
 
-    Route::get('number-table', [App\Http\Controllers\API\NumberTableController::class,'index']);
-    Route::get('number-table/{id}', [App\Http\Controllers\API\NumberTableController::class,'show']);
-    Route::get('number-table/{id}/qr', [App\Http\Controllers\API\NumberTableController::class,'showQr']);
-    Route::post('number-table', [App\Http\Controllers\API\NumberTableController::class,'store']);
-    Route::post('number-table/{id}', [App\Http\Controllers\API\NumberTableController::class,'update']);
-    Route::delete('number-table/{id}', [App\Http\Controllers\API\NumberTableController::class,'destroy']);
+    Route::get('number-table', [App\Http\Controllers\API\NumberTableController::class, 'index']);
+    Route::get('number-table/{id}', [App\Http\Controllers\API\NumberTableController::class, 'show']);
+    Route::get('number-table/{id}/qr', [App\Http\Controllers\API\NumberTableController::class, 'showQr']);
+    Route::post('number-table', [App\Http\Controllers\API\NumberTableController::class, 'store']);
+    Route::post('number-table/{id}', [App\Http\Controllers\API\NumberTableController::class, 'update']);
+    Route::delete('number-table/{id}', [App\Http\Controllers\API\NumberTableController::class, 'destroy']);
 
-    Route::get('tenant-terpadu', [App\Http\Controllers\API\TenantTerpaduController::class,'index']);
-    Route::get('tenant-terpadu/member', [App\Http\Controllers\API\TenantTerpaduController::class,'indexMember']);
-    Route::get('tenant-terpadu/member-laporan', [App\Http\Controllers\API\TenantTerpaduController::class,'indexMemberLaporan']);
+    Route::get('tenant-terpadu', [App\Http\Controllers\API\TenantTerpaduController::class, 'index']);
+    Route::get('tenant-terpadu/member', [App\Http\Controllers\API\TenantTerpaduController::class, 'indexMember']);
+    Route::get('tenant-terpadu/member-laporan', [App\Http\Controllers\API\TenantTerpaduController::class, 'indexMemberLaporan']);
 
-    Route::get('tenant-terpadu/{id}', [App\Http\Controllers\API\TenantTerpaduController::class,'show']);
-    Route::post('tenant-terpadu/set-supertenant/{id}', [App\Http\Controllers\API\TenantTerpaduController::class,'setSuperTenant']);
-    Route::post('tenant-terpadu/{id}', [App\Http\Controllers\API\TenantTerpaduController::class,'store']);
-    Route::post('tenant-terpadu-unbind/{id}', [App\Http\Controllers\API\TenantTerpaduController::class,'unbind']);
-    
+    Route::get('tenant-terpadu/{id}', [App\Http\Controllers\API\TenantTerpaduController::class, 'show']);
+    Route::post('tenant-terpadu/set-supertenant/{id}', [App\Http\Controllers\API\TenantTerpaduController::class, 'setSuperTenant']);
+    Route::post('tenant-terpadu/{id}', [App\Http\Controllers\API\TenantTerpaduController::class, 'store']);
+    Route::post('tenant-terpadu-unbind/{id}', [App\Http\Controllers\API\TenantTerpaduController::class, 'unbind']);
+
 
     Route::prefix('tavsir')->group(function () {
         #Supertenant
@@ -163,9 +163,9 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/tenant-supertenant-order-confirm', [App\Http\Controllers\API\TavsirController::class, 'confirmOrderMemberSupertenant']);
         Route::post('/tenant-supertenant-order-done/{id}', [App\Http\Controllers\API\TavsirController::class, 'doneOrderMemberSupertenant']);
         Route::post('/tenant-supertenant-order-refund/{id}', [App\Http\Controllers\API\TavsirController::class, 'orderRefund']);
-        
+
         #EndSupertenant
-        
+
         Route::post('/product/change-status', [App\Http\Controllers\API\TavsirController::class, 'updateStatusProduct']);
         Route::get('/product', [App\Http\Controllers\API\TavsirController::class, 'productList']);
         Route::post('/send-notif', [App\Http\Controllers\API\TavsirController::class, 'sendNotif']);
@@ -214,7 +214,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/subscription/tenant-owner', [App\Http\Controllers\API\SubscriptionController::class, 'showMemberTenantOwner']);
         Route::get('/subscription/tenant-cashier/{id?}', [App\Http\Controllers\API\SubscriptionController::class, 'showKasirTenant']);
         // Route::get('/subscription/tenant-cashier/{id?}',[App\Http\Controllers\API\SubscriptionController::class, 'showKasirTenant']);
-        
+
         Route::post('/subscription/mapping-tenant', [App\Http\Controllers\API\SubscriptionController::class, 'maapingSubscriptionTenant']);
         Route::post('/subscription/mapping-kasir', [App\Http\Controllers\API\SubscriptionController::class, 'maapingSubscriptionKasir']);
         Route::get('/subscription', [App\Http\Controllers\API\SubscriptionController::class, 'index']);
@@ -261,7 +261,7 @@ Route::post('/login', [App\Http\Controllers\API\AuthController::class, 'login'])
 
 
 Route::prefix('travshop')->group(function () {
-    Route::get('/number-table', [App\Http\Controllers\API\TravShopController::class,'tableList']);
+    Route::get('/number-table', [App\Http\Controllers\API\TravShopController::class, 'tableList']);
     Route::post('/rest-area', [App\Http\Controllers\API\TravShopController::class, 'restArea']);
     Route::get('/tenant/{id}', [App\Http\Controllers\API\TravShopController::class, 'tenantById']);
     Route::get('/tenant-category', [App\Http\Controllers\API\TravShopController::class, 'tenantByCategory']);
@@ -277,7 +277,7 @@ Route::prefix('travshop')->group(function () {
     Route::post('/parkir-order', [App\Http\Controllers\API\TravShopController::class, 'parkirOrder']);
     Route::post('/hu-order', [App\Http\Controllers\API\TravShopController::class, 'huOrder']);
 
-    
+
 
     Route::get('/order/{id}', [App\Http\Controllers\API\TravShopController::class, 'orderById']);
     Route::get('/order-meja/{id}', [App\Http\Controllers\API\TravShopController::class, 'orderByMeja']);
@@ -314,17 +314,16 @@ Route::prefix('travshop')->group(function () {
 });
 
 // ratelimit
-// Route::middleware('customRateLimit:key,1,5')->group(function () {
-//     Route::get('/travshop/payment-status/{id}', [App\Http\Controllers\API\TravShopController::class, 'statusPayment']);
-// });
+Route::middleware('customRateLimit:key,1,5')->group(function () {
+    Route::get('/travshop/payment-status/{id}', [App\Http\Controllers\API\TravShopController::class, 'statusPayment']);
+});
 
-Route::get('/travshop/payment-status/{id}', [App\Http\Controllers\API\TravShopController::class, 'statusPayment']);
+// Route::get('/travshop/payment-status/{id}', [App\Http\Controllers\API\TravShopController::class, 'statusPayment']);
 
 
-// Route::middleware('customRateLimit:key,10,60')->group(function () {
-    Route::post('/reset-password', [App\Http\Controllers\API\UserController::class, 'resetPass']);
-    Route::post('/lupa-password', [App\Http\Controllers\API\UserController::class, 'forgetPass']);
-// });
+Route::post('/reset-password', [App\Http\Controllers\API\UserController::class, 'resetPass']);
+Route::post('/lupa-password', [App\Http\Controllers\API\UserController::class, 'forgetPass']);
+
 
 
 Route::post('/handle-payment-callback', [App\Http\Controllers\API\TravShopController::class, 'callbackFlo']);
@@ -353,11 +352,11 @@ Route::post('payment-gateway/dd/payment', [App\Http\Controllers\API\PaymentGatew
 Route::post('/CallbackLinkAjaQRIS', [App\Http\Controllers\API\TavsirController::class, 'CallbackLinkAjaQRIS']);
 Route::post('/callbackDerek', [App\Http\Controllers\API\TravShopController::class, 'callbackDerek']);
 Route::post('/callbackPg', [App\Http\Controllers\API\TravShopController::class, 'callbackpg']);
-Route::post('/payment-method-id', [App\Http\Controllers\API\PaymentMethodController::class,'indexPublic']);
+Route::post('/payment-method-id', [App\Http\Controllers\API\PaymentMethodController::class, 'indexPublic']);
 
 
 Route::get('/tokenpg', function (Request $request) {
-return PgJmto::generateToken();
+    return PgJmto::generateToken();
 });
 
 Route::get('/pg-tarif', function () {
@@ -388,42 +387,42 @@ Route::get('test-notif', function () {
 });
 
 
-Route::get('cek', function(Request $request){
+Route::get('cek', function (Request $request) {
 
     $current_date_time = Carbon::now()->toDateTimeString();
-    Log::info("REQ".$current_date_time);
+    Log::info("REQ" . $current_date_time);
     $kios = new KiosBankService();
     $data = $kios->cek();
-    Log::info("RESP".$current_date_time);
+    Log::info("RESP" . $current_date_time);
 
     $current_date_times = Carbon::now()->toDateTimeString();
-    Log::info('REQ =>'.$current_date_time.' | RESP=>'.$current_date_times);
+    Log::info('REQ =>' . $current_date_time . ' | RESP=>' . $current_date_times);
 
     return response()->json($data);
 });
 
 
 //Kiosbank
-Route::prefix('kios-bank')->group(function(){
-    Route::controller(KiosBankController::class)->group(function(){
-        Route::any('/callback','callback');
-        Route::post('/cek-deposit','cekDeposit');
+Route::prefix('kios-bank')->group(function () {
+    Route::controller(KiosBankController::class)->group(function () {
+        Route::any('/callback', 'callback');
+        Route::post('/cek-deposit', 'cekDeposit');
     });
 
-    Route::controller(KiosBankController::class)->group(function(){
-        Route::get('/product','index');
-        Route::get('/product/{id}','show');
-        Route::get('/product/{id}','show');
-        Route::get('/product-sub-kategori','getSubKategoriProduct');
+    Route::controller(KiosBankController::class)->group(function () {
+        Route::get('/product', 'index');
+        Route::get('/product/{id}', 'show');
+        Route::get('/product/{id}', 'show');
+        Route::get('/product-sub-kategori', 'getSubKategoriProduct');
     });
 
-    Route::prefix('pulsa')->controller(KiosBankController::class)->group(function(){
-        Route::get('/operator','listOperatorPulsa');
-        Route::get('/operator-product/{id}','listProductOperatorPulsa');
-        Route::post('/order','orderPulsa');
+    Route::prefix('pulsa')->controller(KiosBankController::class)->group(function () {
+        Route::get('/operator', 'listOperatorPulsa');
+        Route::get('/operator-product/{id}', 'listProductOperatorPulsa');
+        Route::post('/order', 'orderPulsa');
     });
 
-    Route::prefix('uang-elektronik')->controller(KiosBankController::class)->group(function(){
-        Route::post('/order','orderUangElektronik');
+    Route::prefix('uang-elektronik')->controller(KiosBankController::class)->group(function () {
+        Route::post('/order', 'orderUangElektronik');
     });
 });

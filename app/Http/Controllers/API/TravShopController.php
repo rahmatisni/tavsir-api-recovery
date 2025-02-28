@@ -1106,8 +1106,8 @@ class TravShopController extends Controller
     public function paymentMethod(Request $request)
     {
         $paymentMethods = PaymentMethod::all();
-        $self_order = [4, 5, 7, 9, 11, 12, 13, 14, 16, 17, 18];
-        $travshop = [4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18];
+        $self_order = [4, 5, 7, 9, 11, 12, 13, 14, 16, 17, 18, 19];
+        $travshop = [4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18,19,20];
         $tavsir = [1, 2, 3, 4, 10];
 
         if ($request->trans_order_id) {
@@ -1115,7 +1115,7 @@ class TravShopController extends Controller
             $param_removes = Tenant::where('id', $trans_order->tenant_id)->first();
             if ($param_removes == null && $trans_order->order_type == 'ORDER_TRAVOY') {
                 $self_order = [];
-                $travshop = [5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18];
+                $travshop = [5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
                 $tavsir = [];
 
                 // } else if ($param_removes == null && $trans_order->order_type == 'HU_ORDER') {
@@ -1202,7 +1202,7 @@ class TravShopController extends Controller
                     }
                 }
 
-                if ($value->id == 4 || $value->id == 16 || $value->id == 17 || $value->id == 18) {
+                if ($value->id == 4 || $value->id == 16 || $value->id == 17 || $value->id == 18 || $value->id == 20) {
                     $value->fee = 0;
                 }
 
@@ -1280,9 +1280,9 @@ class TravShopController extends Controller
                 $cekProduct = ProductKiosBank::where('kode', $data->codeProductKiosbank())->first();
                 //Skip jika jatelindo
                 if ($cekProduct?->integrator != 'JATELINDO') {
-                    $deposit = $this->kiosBankService->cekDeposit();
-                    // $deposit['rc'] = '00';
-                    // $deposit['deposit'] = '100000000000';
+                    // $deposit = $this->kiosBankService->cekDeposit();
+                    $deposit['rc'] = '00';
+                    $deposit['deposit'] = '100000000000';
                     if ($deposit['rc'] == '00') {
                         if ((int) $deposit['deposit'] < $data->sub_total) {
                             return response()->json(['info' => 'Deposit ' . $deposit['deposit'] . ' < ' . $data->sub_total], 422);

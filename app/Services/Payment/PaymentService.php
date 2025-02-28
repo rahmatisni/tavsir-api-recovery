@@ -80,7 +80,14 @@ class PaymentService
             case Str::contains($payment_method->code_name, PaymentMethodCode::MIDTRANS_VA_BCA):
                 $result = $this->midtransVaBca($data);
                 break;
+
+            case Str::contains($payment_method->code_name, PaymentMethodCode::MIDTRANS_VA_CIMB):
+                $result = $this->midtransVaCIMB($data);
+                break;
             
+            case Str::contains($payment_method->code_name, PaymentMethodCode::MIDTRANS_VA_PERMATA):
+                $result = $this->midtransVaPermata($data);
+                break;
             case Str::contains($payment_method->code_name, PaymentMethodCode::MIDTRANS_CARD):
                 $result = $this->midtransCard($data);
                 break;
@@ -132,6 +139,14 @@ class PaymentService
                 $result = $this->midtransCekStatus($data);   
                 break;
             
+            case Str::contains($payment_method->code_name, PaymentMethodCode::MIDTRANS_VA_CIMB):
+                $result = $this->midtransCekStatus($data);   
+                break;
+                
+            case Str::contains($payment_method->code_name, PaymentMethodCode::MIDTRANS_VA_PERMATA):
+                $result = $this->midtransCekStatus($data);
+                break;
+
             case Str::contains($payment_method->code_name, PaymentMethodCode::MIDTRANS_CARD):
                 $result = $this->midtransCekStatus($data);   
                 break;
@@ -1312,6 +1327,15 @@ class PaymentService
         return $this->midtransCreate($data, 'bca_va');
     }
 
+    public function midtransVaCIMB(TransOrder $data)
+    {
+        return $this->midtransCreate($data, 'cimb_va');
+    }
+    public function midtransVaPermata(TransOrder $data)
+    {
+        return $this->midtransCreate($data, 'permata_va');
+    }
+    
     public function midtransCard(TransOrder $data)
     {
         return $this->midtransCreate($data, 'credit_card');

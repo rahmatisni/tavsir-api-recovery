@@ -19,4 +19,7 @@ class PaymentMethodCode
    const MIDTRANS_VA_BCA = 'midtrans_va_bca';
    const MIDTRANS_CARD = 'midtrans_card';
    const MIDTRANS_GOPAY = 'midtrans_gopay';
+   const MIDTRANS_VA_CIMB = 'midtrans_va_cimb';
+   const MIDTRANS_VA_PERMATA = 'midtrans_va_permata';
+
 }
