@@ -1229,11 +1229,27 @@ class PaymentService
         Config::$isSanitized = config('midtrans.is_sanitized');
         // Set 3DS transaction for credit card to true
         Config::$is3ds = config('midtrans.is_3ds');
+        $fee = 0;
+        if ($data->payment_method->integrator == 'midtrans'){
+            switch ($data->payment_method->is_percent) {
+                case '1':
+                    $fee = (int) ceil((float) $data->payment_method->service_fee / 100 * $data->sub_total);
+                    break;
+                
+                case '2':
+                    $fee = (int)$data->payment_method->service_fee;
+                    break;
+                default:
+                    # code...
+                    $fee = 0;
+                    break;
+            }
+        }
 
         $payload = [
             "transaction_details"=> [
                 "order_id"=> $data->id,
-                "gross_amount"=> $data->total
+                "gross_amount"=> $data->sub_total + (int)$fee
             ],
             "enabled_payments"=> [$method],
         ];
@@ -1256,7 +1272,7 @@ class PaymentService
                 status: true,
                 data: [
                     'responseData' => [
-                        'fee' => 0,
+                        'fee' => (int)$fee,
                         'exp_date' => Carbon::now()->addDay()->format('c'),
                         ...$payment
                     ]

@@ -1177,10 +1177,24 @@ class TravShopController extends Controller
                 if (in_array($value->id, $tavsir)) {
                     $value->tavsir = true;
                 }
-
                 if ($value?->sof_id == null) {
                     $value->percentage = null;
                     $value->fee = null;
+                    if ($value->integrator == 'midtrans'){
+                        switch ($value->is_percent) {
+                            case '1':
+                                $value->fee = (int) ceil((float) $value->service_fee / 100 * $trans_order->sub_total);
+                                break;
+                            
+                            case '2':
+                                $value->fee = (int)$value->service_fee;
+                                break;
+                            default:
+                                # code...
+                                $value->fee = 0;
+                                break;
+                        }
+                    }
                 } else {
                     if ($value->integrator == 'getoll') {
                         $data = PgJmto::tarifFee($value->sof_id, $value->payment_method_id, $trans_order->sub_merchant_id, $trans_order->sub_total);
@@ -1189,6 +1203,8 @@ class TravShopController extends Controller
                         $value->percentage = null;
                         $value->fee = null;
                     }
+
+                   
 
                     $value->percentage = $data['is_presentage'] ?? null;
                     $x = $data['value'] ?? 'x';
@@ -1202,49 +1218,13 @@ class TravShopController extends Controller
                     }
                 }
 
-                if ($value->id == 4 || $value->id == 16 || $value->id == 17 || $value->id == 18 || $value->id == 19 || $value->id == 20) {
+                if ($value->id == 4) {
                     $value->fee = 0;
                 }
 
                 if ($value->id == 14) {
                     $value->fee = 0;
                 }
-
-
-                // if ($value->id == 13 && $trans_order->customer_phone == '082113088725') {
-                //     if ($value->integrator == 'getoll') {
-                //         $data = PgJmto::tarifFee(4, $value->payment_method_id, $trans_order->sub_merchant_id, $trans_order->sub_total);
-                //     }
-                //     $value['sof_id'] = 4;
-                //     $value->percentage = $data['is_presentage'] ?? null;
-                //     $x = $data['value'] ?? 'x';
-                //     $state = $data['is_presentage'] ?? null;
-
-
-                //     if ($state == (false || null)) {
-                //         $value->fee = $data['value'] ?? null;
-                //     } else {
-                //         $value->fee = (int) ceil((float) $x / 100 * $trans_order->sub_total);
-                //     }
-
-                // }
-                // if ($value->id == 12 && $trans_order->customer_phone == '082113088725') {
-                //     if ($value->integrator == 'getoll') {
-                //         $data = PgJmto::tarifFee(3, $value->payment_method_id, $trans_order->sub_merchant_id, $trans_order->sub_total);
-                //     }
-                //     $value['sof_id'] = 3;
-                //     $value->percentage = $data['is_presentage'] ?? null;
-                //     $x = $data['value'] ?? 'x';
-                //     $state = $data['is_presentage'] ?? null;
-
-
-                //     if ($state == (false || null)) {
-                //         $value->fee = $data['value'] ?? null;
-                //     } else {
-                //         $value->fee = (int) ceil((float) $x / 100 * $trans_order->sub_total);
-                //     }
-
-                // }
             }
 
         }

@@ -19,6 +19,8 @@ class PaymentMethod extends BaseModel
         'description',
         'payment_method_id',
         'payment_method_code',
+        'is_percent',
+        'service_fee'
     ];
 
     public function order()
