@@ -1166,6 +1166,7 @@ class TravShopController extends Controller
                 $value->travshop = false;
                 $value->tavsir = false;
 
+
                 if (in_array($value->id, $self_order)) {
                     $value->self_order = true;
                 }
@@ -1173,9 +1174,11 @@ class TravShopController extends Controller
                 if (in_array($value->id, $travshop)) {
                     $value->travshop = true;
                 }
+
                 if (in_array($value->id, $tavsir)) {
                     $value->tavsir = true;
                 }
+
                 if ($value?->sof_id == null) {
                     $value->percentage = null;
                     $value->fee = null;
@@ -1223,6 +1226,12 @@ class TravShopController extends Controller
 
                 if ($value->id == 14) {
                     $value->fee = 0;
+                }
+
+                if ($value?->minimum_amount > $trans_order->sub_total + $value->fee) {
+                    $value->self_order = false;
+                    $value->travshop = false;
+                    $value->tavsir = false;
                 }
             }
 

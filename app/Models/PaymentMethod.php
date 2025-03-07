@@ -20,7 +20,11 @@ class PaymentMethod extends BaseModel
         'payment_method_id',
         'payment_method_code',
         'is_percent',
-        'service_fee'
+        'service_fee', 
+        'travshop',
+        'self_order',
+        'tavsir',
+        'minimum_amount',
     ];
 
     public function order()
