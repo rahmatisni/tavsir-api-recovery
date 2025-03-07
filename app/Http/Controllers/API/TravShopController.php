@@ -1216,7 +1216,10 @@ class TravShopController extends Controller
                         $value->fee = (int) ceil((float) $x / 100 * $trans_order->sub_total);
                     }
                     // DUMMY
-                    $value->fee = (int)PaymentMethod::where('id', $value->id)->pluck('service_fee')->first();
+                    $value->fee = (int) PaymentMethod::where('id', $value->id)
+                    ->whereNotNull('service_fee')
+                    ->value('service_fee');
+                
                 }
 
                 if ($value->id == 4) {
