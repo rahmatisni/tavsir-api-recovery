@@ -1217,9 +1217,9 @@ class TravShopController extends Controller
                     }
                     // DUMMY
                     $value->fee = (int) PaymentMethod::where('id', $value->id)
-                    ->whereNotNull('service_fee')
+                    ->where('service_fee', '>', 0)
                     ->value('service_fee');
-                
+                                
                 }
 
                 if ($value->id == 4) {
