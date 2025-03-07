@@ -1106,18 +1106,17 @@ class TravShopController extends Controller
     public function paymentMethod(Request $request)
     {
         $paymentMethods = PaymentMethod::all();
-        $self_order = [4, 5, 7, 9, 11, 12, 13, 14, 16, 17, 18, 19];
-        $travshop = [4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18,19,20];
-        $tavsir = [1, 2, 3, 4, 10];
-
+        $self_order = PaymentMethod::where('self_order', 1)->pluck('id')->toArray();
+        $travshop = PaymentMethod::where('travshop', 1)->pluck('id')->toArray();
+        $tavsir = PaymentMethod::where('tavsir', 1)->pluck('id')->toArray();
+        $travshop_ppob = $travshop;
         if ($request->trans_order_id) {
             $trans_order = TransOrder::with('tenant')->findOrfail($request->trans_order_id);
             $param_removes = Tenant::where('id', $trans_order->tenant_id)->first();
             if ($param_removes == null && $trans_order->order_type == 'ORDER_TRAVOY') {
                 $self_order = [];
-                $travshop = [5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+                $travshop = $travshop_ppob;
                 $tavsir = [];
-
                 // } else if ($param_removes == null && $trans_order->order_type == 'HU_ORDER') {
                 //     $self_order = [];
                 //     $travshop = [5, 6, 7, 8, 9, 11, 12, 13, 14];
@@ -1180,14 +1179,14 @@ class TravShopController extends Controller
                 if ($value?->sof_id == null) {
                     $value->percentage = null;
                     $value->fee = null;
-                    if ($value->integrator == 'midtrans'){
+                    if ($value->integrator == 'midtrans') {
                         switch ($value->is_percent) {
                             case '1':
                                 $value->fee = (int) ceil((float) $value->service_fee / 100 * $trans_order->sub_total);
                                 break;
-                            
+
                             case '2':
-                                $value->fee = (int)$value->service_fee;
+                                $value->fee = (int) $value->service_fee;
                                 break;
                             default:
                                 # code...
@@ -1204,7 +1203,7 @@ class TravShopController extends Controller
                         $value->fee = null;
                     }
 
-                   
+
 
                     $value->percentage = $data['is_presentage'] ?? null;
                     $x = $data['value'] ?? 'x';
