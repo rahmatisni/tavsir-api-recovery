@@ -1268,9 +1268,9 @@ class TravShopController extends Controller
                 $cekProduct = ProductKiosBank::where('kode', $data->codeProductKiosbank())->first();
                 //Skip jika jatelindo
                 if ($cekProduct?->integrator != 'JATELINDO') {
-                    // $deposit = $this->kiosBankService->cekDeposit();
-                    $deposit['rc'] = '00';
-                    $deposit['deposit'] = '100000000000';
+                    $deposit = $this->kiosBankService->cekDeposit();
+                    // $deposit['rc'] = '00';
+                    // $deposit['deposit'] = '100000000000';
                     if ($deposit['rc'] == '00') {
                         if ((int) $deposit['deposit'] < $data->sub_total) {
                             return response()->json(['info' => 'Deposit ' . $deposit['deposit'] . ' < ' . $data->sub_total], 422);
