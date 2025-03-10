@@ -327,7 +327,7 @@ class PaymentService
     public function createLinkAja($payment_method, $trans_order) : object
     {
         $status = false;
-        $fee = 0;
+        $fee = $trans_order?->fee ?? 0;
         $data_la = TenantLa::where('tenant_id', $trans_order?->Tenant?->id)->first();
         if(!$data_la){
             $data_la = TenantLa::where('tenant_id', '111')->firstOrFail();

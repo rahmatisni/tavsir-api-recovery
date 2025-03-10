@@ -1310,6 +1310,7 @@ class TravShopController extends Controller
             }
             //QRIS PAY  + FEE
             $data->fee = $data->payment_method_id == 4 ? env('PLATFORM_QRIS') : 0;
+            $data->save();
             $paymentResult = $this->servicePayment->create($payment_method, $data, $request->all());
             $payment_payload = $paymentResult->data;
 
