@@ -329,6 +329,7 @@ class PaymentService
         $status = false;
         $fee = 0;
         $data_la = TenantLa::where('tenant_id', $trans_order->Tenant->id)->firstOrFail();
+        dd($data_la);
         if($trans_order->order_type == 'ORDER_TRAVOY'){
             $data_la = TenantLa::where('tenant_id', '111')->firstOrFail();
         }
