@@ -330,6 +330,7 @@ class PaymentService
         $fee = $trans_order?->fee ?? 0;
         $data_la = TenantLa::where('tenant_id', $trans_order?->Tenant?->id)->first();
         if(!$data_la){
+            $trans_order->total = $trans_order->sub_total + env('PLATFORM_QRIS');
             $data_la = TenantLa::where('tenant_id', '111')->firstOrFail();
         }
         $res = LaJmto::qrCreate(
