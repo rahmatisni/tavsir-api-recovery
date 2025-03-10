@@ -1182,7 +1182,7 @@ class TravShopController extends Controller
                 if ($value?->sof_id == null) {
                     $value->percentage = null;
                     $value->fee = null;
-                    if ($value->integrator == 'midtrans') {
+                    if ($value->integrator == 'midtrans' || $value->integrator == 'linkaja') {
                         switch ($value->is_percent) {
                             case '1':
                                 $value->fee = (int) ceil((float) $value->service_fee / 100 * $trans_order->sub_total);
