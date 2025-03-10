@@ -328,7 +328,7 @@ class PaymentService
     {
         $status = false;
         $fee = 0;
-        $data_la = TenantLa::where('tenant_id', $trans_order->Tenant->id)->firstOrFail();
+        $data_la = TenantLa::where('tenant_id', $trans_order?->Tenant?->id)->first();
         if(!$data_la){
             $data_la = TenantLa::where('tenant_id', '111')->firstOrFail();
         }
