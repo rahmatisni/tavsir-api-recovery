@@ -676,7 +676,11 @@ class PaymentService
     public function statusLinkAja($trans_order)
     {
         $data_payment = $trans_order->payment->inquiry;
-        $data_la = TenantLa::where('tenant_id', $trans_order->tenant_id)->firstOrFail();
+        $data_la = TenantLa::where('tenant_id', $trans_order?->Tenant?->id)->first();
+        if(!$data_la){
+            $trans_order->total = $trans_order->sub_total + env('PLATFORM_QRIS');
+            $data_la = TenantLa::where('tenant_id', '111')->firstOrFail();
+        }
         $res = LAJmto::qrStatus(
             $data_payment['bill_id'],
             $data_la
