@@ -338,8 +338,8 @@ class PaymentService
             bill_name: 'GetPay',
             amount: $trans_order->total,
             desc: $trans_order->tenant->name ?? 'Travoy',
-            phone: $trans_order->tenant->phone,
-            email: $trans_order->tenant->email,
+            phone: $trans_order?->tenant->phone ?? $trans_order->phone,
+            email: $trans_order?->tenant->email ?? $trans_order->email,
             customer_name: $trans_order->nomor_name,
             sub_merchant_id:$trans_order->tenant?->sub_merchant_id ?? $trans_order->sub_merchant_id,
             data_la: $data_la
