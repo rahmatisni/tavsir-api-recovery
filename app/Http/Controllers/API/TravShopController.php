@@ -1229,9 +1229,9 @@ class TravShopController extends Controller
                     $value->tavsir = false;
                 }
                 if ($value->include_platform == 1) {
-                    $value->platform_fee = env('PLATFORM_FEE');
+                    $value->platform_fee = env('PLATFORM_MDR');
                 } else {
-                    $value->platform_fee = null;
+                    $value->platform_fee = 0;
                 }
             }
 
@@ -1310,7 +1310,7 @@ class TravShopController extends Controller
             }
             //QRIS PAY  + FEE
             if($payment_method?->include_platform == 1){
-                $data->fee = (int)env('PLATFORM_FEE');
+                $data->fee = (int)env('PLATFORM_MDR');
                 $data->total = $data->total + $data->fee;
             }
             $paymentResult = $this->servicePayment->create($payment_method, $data, $request->all());
