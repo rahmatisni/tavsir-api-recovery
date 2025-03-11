@@ -327,10 +327,8 @@ class PaymentService
     public function createLinkAja($payment_method, $trans_order) : object
     {
         $status = false;
-        $fee = $trans_order?->fee ?? 0;
         $data_la = TenantLa::where('tenant_id', $trans_order?->Tenant?->id)->first();
         if(!$data_la){
-            $trans_order->total = $trans_order->sub_total + env('PLATFORM_QRIS');
             $data_la = TenantLa::where('tenant_id', '111')->firstOrFail();
         }
         $res = LaJmto::qrCreate(
@@ -678,7 +676,6 @@ class PaymentService
         $data_payment = $trans_order->payment->inquiry;
         $data_la = TenantLa::where('tenant_id', $trans_order?->Tenant?->id)->first();
         if(!$data_la){
-            $trans_order->total = $trans_order->sub_total + env('PLATFORM_QRIS');
             $data_la = TenantLa::where('tenant_id', '111')->firstOrFail();
         }
         $res = LAJmto::qrStatus(

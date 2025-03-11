@@ -1316,7 +1316,7 @@ class TravShopController extends Controller
             if ($paymentResult->status == false) {
                 return response()->json($paymentResult, 422);
             }
-            $data->fee = $data->payment_method_id == 4 ? env('PLATFORM_QRIS') : 0;
+            // $data->fee = $data->payment_method_id == 4 ? env('PLATFORM_QRIS') : 0;
             $data->service_fee = (float) $paymentResult->data['responseData']['fee'];
             // $data->total = $data->total + $data->service_fee;
             $data->total = $data->sub_total + $data->addon_total + $data->fee + $data->service_fee;
