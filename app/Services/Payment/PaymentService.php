@@ -1264,6 +1264,7 @@ class PaymentService
 
         try {
             $result = Snap::createTransaction($payload);
+            Log::info('Midtrans Log', ['payload' => $payload, 'result' => $result]);
             $payment = [
                 'token' => $result->token,
                 'redirect_url' => $result->redirect_url,
