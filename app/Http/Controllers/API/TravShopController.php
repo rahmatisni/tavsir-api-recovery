@@ -1229,7 +1229,7 @@ class TravShopController extends Controller
                     $value->tavsir = false;
                 }
                 if ($value->include_platform == 1) {
-                    $value->platform_fee = env('PLATFORM_MDR');
+                    $value->platform_fee = (int)env('PLATFORM_MDR');
                 } else {
                     $value->platform_fee = 0;
                 }
