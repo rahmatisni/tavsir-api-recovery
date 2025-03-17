@@ -1228,7 +1228,7 @@ class TravShopController extends Controller
                     $value->travshop = false;
                     $value->tavsir = false;
                 }
-                if ($value?->maximum_amount <= $trans_order->sub_total + $value->fee) {
+                if ($value?->maximum_amount >= $trans_order->sub_total + $value->fee) {
                     $value->self_order = false;
                     $value->travshop = false;
                     $value->tavsir = false;
