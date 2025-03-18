@@ -329,7 +329,7 @@ class PaymentService
         $status = false;
         $data_la = TenantLa::where('tenant_id', $trans_order?->Tenant?->id)->first();
         if(!$data_la){
-            $data_la = TenantLa::where('tenant_id', '111')->firstOrFail();
+            $data_la = TenantLa::where('tenant_id', '0')->firstOrFail();
         }
         $res = LaJmto::qrCreate(
             sof_code: $payment_method->code,
@@ -676,7 +676,7 @@ class PaymentService
         $data_payment = $trans_order->payment->inquiry;
         $data_la = TenantLa::where('tenant_id', $trans_order?->Tenant?->id)->first();
         if(!$data_la){
-            $data_la = TenantLa::where('tenant_id', '111')->firstOrFail();
+            $data_la = TenantLa::where('tenant_id', '0')->firstOrFail();
         }
         $res = LAJmto::qrStatus(
             $data_payment['bill_id'],
