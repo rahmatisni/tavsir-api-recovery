@@ -1235,6 +1235,11 @@ class TravShopController extends Controller
                 } else {
                     $value->platform_fee = '0';
                 }
+                $allowed_numbers = ['081210654090', '085314090235', '085640224722'];
+
+                if (!in_array($trans_order->customer_phone, $allowed_numbers)) {
+                    $value->travhop = false;
+                }                
             }
 
         }
