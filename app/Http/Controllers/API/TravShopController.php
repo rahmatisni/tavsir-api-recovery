@@ -1225,17 +1225,19 @@ class TravShopController extends Controller
                     $value->travshop = $value->travshop == true ? false : $value->travshop;
                     $value->tavsir = $value->tavsir == true ? false : $value->tavsir;
                 }
-                if ($value?->maximum_amount <= $trans_order->sub_total + $value->fee) {
-                    $value->self_order = $value->self_order == true ? false : $value->self_order;
-                    $value->travshop = $value->travshop == true ? false : $value->travshop;
-                    $value->tavsir = $value->tavsir == true ? false : $value->tavsir;
-                }
+              
                 if ($value->include_platform == 1) {
                     $value->platform_fee = env('PLATFORM_MDR');
                 } else {
                     $value->platform_fee = '0';
                 }
                 $allowed_numbers = ['081210654090', '085314090235', '085640224722'];
+
+                if ($value?->maximum_amount <= $trans_order->sub_total + $value->fee + (int)$value->platform_fee) {
+                    $value->self_order = $value->self_order == true ? false : $value->self_order;
+                    $value->travshop = $value->travshop == true ? false : $value->travshop;
+                    $value->tavsir = $value->tavsir == true ? false : $value->tavsir;
+                }
 
                 if (!in_array($trans_order->customer_phone, $allowed_numbers)) {
                     $value->travhop = false;
