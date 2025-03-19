@@ -1240,7 +1240,9 @@ class TravShopController extends Controller
                 }
 
                 if (!in_array($trans_order->customer_phone, $allowed_numbers)) {
-                    $value->travhop = false;
+                    if ($value->integrator == 'midtrans' || $value->integrator == 'linkaja') {
+                    $value->travshop = false;
+                    }
                 }                
             }
 
