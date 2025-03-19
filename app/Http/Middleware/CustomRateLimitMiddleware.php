@@ -61,33 +61,33 @@ class CustomRateLimitMiddleware
      */
     public function handle($request, Closure $next, $key, $maxAttempts = 1, $decayMinutes = 1)
     {
-        // dd($decayMinutes, $maxAttempts);
-        $rateLimitKey = $request->id;
+        $rateLimitKey = $request->id; // Gunakan ID dari request sebagai key
         $maxAttempts = (int) $maxAttempts;
-        $decaySeconds = $decayMinutes;
+        $decaySeconds = $decayMinutes * 60; // Konversi menit ke detik
 
-        // Check current attempts
+        // Ambil jumlah percobaan (attempts) saat ini dari cache
         $attempts = Cache::get($rateLimitKey, 0);
 
         if ($attempts >= $maxAttempts) {
             $retryAfter = Cache::get("{$rateLimitKey}:timer", time() + $decaySeconds) - time();
 
-            // Return Too Many Requests response
-            // return response()->json([
-            //     'status' => 'error',
-            //     'message' => 'Too many requests. Please try again later.',
-            //     'retry_after' => $retryAfter,
-            // ], 429);
-            return [true, $retryAfter];
+            // Jika sudah melebihi rate limit, kirim response JSON
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terlalu banyak permintaan. Silakan coba lagi setelah ' . $retryAfter . ' detik.',
+                'retry_after' => $retryAfter,
+            ], 429);
         }
 
-        // Increment attempts and set timer if necessary
+        // Jika belum melebihi, increment attempt count
         Cache::put($rateLimitKey, $attempts + 1, $decaySeconds);
+
+        // Set timer jika belum ada
         if (!Cache::has("{$rateLimitKey}:timer")) {
             Cache::put("{$rateLimitKey}:timer", time() + $decaySeconds, $decaySeconds);
         }
 
-        // return $next($request);
-        return [false];
+        // Lanjutkan request
+        return $next($request);
     }
 }
