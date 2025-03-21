@@ -1191,6 +1191,10 @@ class TravShopController extends Controller
                             case '2':
                                 $value->fee = (int) $value->service_fee;
                                 break;
+
+                            case '3':
+                                $value->fee = (int) ceil((float) $value->service_fee / 100 * $trans_order->sub_total + 2220);
+                                break;
                             default:
                                 # code...
                                 $value->fee = 0;
