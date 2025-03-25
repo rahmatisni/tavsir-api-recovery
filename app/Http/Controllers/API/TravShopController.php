@@ -1235,19 +1235,19 @@ class TravShopController extends Controller
                 } else {
                     $value->platform_fee = '0';
                 }
-                $allowed_numbers = ['081210654090', '085314090235', '085640224722'];
-
+                
                 if ($value?->maximum_amount <= $trans_order->sub_total + $value->fee + (int)$value->platform_fee) {
                     $value->self_order = $value->self_order == true ? false : $value->self_order;
                     $value->travshop = $value->travshop == true ? false : $value->travshop;
                     $value->tavsir = $value->tavsir == true ? false : $value->tavsir;
                 }
-
-                if (!in_array($trans_order->customer_phone, $allowed_numbers)) {
-                    if ($value->integrator == 'midtrans' || $value->integrator == 'linkaja') {
-                    $value->travshop = false;
-                    }
-                }                
+                // $allowed_numbers = ['081210654090', '085314090235', '085640224722'];
+                
+                // if (!in_array($trans_order->customer_phone, $allowed_numbers)) {
+                //     if ($value->integrator == 'midtrans' || $value->integrator == 'linkaja') {
+                //     $value->travshop = false;
+                //     }
+                // }                
             }
 
         }
